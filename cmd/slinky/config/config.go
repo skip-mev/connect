@@ -156,22 +156,6 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
-func GetLegacyOracleConfig(path string) (config.OracleConfig, error) {
-	viper.SetConfigFile(path)
-	viper.SetConfigType("json")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return config.OracleConfig{}, err
-	}
-
-	var cfg config.OracleConfig
-	if err := viper.Unmarshal(&cfg); err != nil {
-		return config.OracleConfig{}, err
-	}
-
-	return cfg, cfg.ValidateBasic()
-}
-
 // ReadOracleConfigFromFile reads a config from a file and returns the config.
 func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (config.OracleConfig, error) {
 	// if the path is non-nil read data from a file\
