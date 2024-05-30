@@ -56,7 +56,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
             type=semver,pattern=v{{major}}
-            type=sha,prefix=
+            type=sha,priority=700,prefix=
             type=ref,event=branch
       - name: Build and push
         uses: docker/build-push-action@v5
