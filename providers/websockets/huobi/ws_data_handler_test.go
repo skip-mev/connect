@@ -18,10 +18,10 @@ import (
 
 var (
 	btcusdt = types.DefaultProviderTicker{
-		OffChainTicker: "BTCUSDT",
+		OffChainTicker: "btcusdt",
 	}
 	ethusdt = types.DefaultProviderTicker{
-		OffChainTicker: "ETHUSDT",
+		OffChainTicker: "ethusdt",
 	}
 	logger = zap.NewExample()
 )

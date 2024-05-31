@@ -17,10 +17,10 @@ import (
 
 var (
 	mogusd = types.DefaultProviderTicker{
-		OffChainTicker: "MOGUSD",
+		OffChainTicker: "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
 	}
 	pepeusd = types.DefaultProviderTicker{
-		OffChainTicker: "PEPEUSD",
+		OffChainTicker: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
 	}
 )
 

@@ -19,13 +19,13 @@ import (
 
 var (
 	btcusd = types.DefaultProviderTicker{
-		OffChainTicker: "BTCUSD",
+		OffChainTicker: "BTCUSD-PERP",
 	}
 	ethusd = types.DefaultProviderTicker{
-		OffChainTicker: "ETHUSD",
+		OffChainTicker: "ETHUSD-PERP",
 	}
 	solusd = types.DefaultProviderTicker{
-		OffChainTicker: "SOLUSD",
+		OffChainTicker: "SOLUSD-PERP",
 	}
 	logger = zap.NewExample()
 )

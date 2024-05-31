@@ -161,7 +161,7 @@ var (
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			btcusdt.String(): {
+			btcusdtcp.String(): {
 				Ticker: mmtypes.Ticker{
 					CurrencyPair:     btcusdtcp,
 					MinProviderCount: 1,
@@ -171,11 +171,11 @@ var (
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           coinbase.Name,
-						OffChainTicker: "BTCUSD",
+						OffChainTicker: coinbasebtcusd.GetOffChainTicker(),
 					},
 					{
 						Name:           okx.Name,
-						OffChainTicker: "BTC-USD",
+						OffChainTicker: okxbtcusd.GetOffChainTicker(),
 					},
 				},
 			},
@@ -189,11 +189,11 @@ var (
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           coinbase.Name,
-						OffChainTicker: "ETHUSD",
+						OffChainTicker: coinbaseethusd.GetOffChainTicker(),
 					},
 					{
 						Name:           okx.Name,
-						OffChainTicker: "ETH-USD",
+						OffChainTicker: okxethusd.GetOffChainTicker(),
 					},
 				},
 			},

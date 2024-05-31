@@ -18,10 +18,10 @@ import (
 
 var (
 	mogusd = types.DefaultProviderTicker{
-		OffChainTicker: "MOGUSD",
+		OffChainTicker: "MOG-USD",
 	}
 	ethusd = types.DefaultProviderTicker{
-		OffChainTicker: "ETHUSD",
+		OffChainTicker: "ETH-USD",
 	}
 )
 
@@ -43,7 +43,7 @@ func TestCreateURL(t *testing.T) {
 			cps: []types.ProviderTicker{
 				mogusd,
 			},
-			url:         "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+			url:         "https://api.coinbase.com/v2/prices/MOG-USD/spot",
 			expectedErr: false,
 		},
 		{

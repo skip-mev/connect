@@ -18,23 +18,23 @@ import (
 )
 
 var (
-	btcusdt = oracletypes.DefaultProviderTicker{
-		OffChainTicker: "BTCUSDT",
-	}
-	ethusdt = oracletypes.DefaultProviderTicker{
-		OffChainTicker: "ETHUSDT",
-	}
-	btcusd = oracletypes.DefaultProviderTicker{
+	coinbasebtcusd = oracletypes.DefaultProviderTicker{
 		OffChainTicker: "BTCUSD",
 	}
-	ethusd = oracletypes.DefaultProviderTicker{
+	coinbaseethusd = oracletypes.DefaultProviderTicker{
 		OffChainTicker: "ETHUSD",
+	}
+	okxbtcusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "BTC-USD",
+	}
+	okxethusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "ETH-USD",
 	}
 )
 
 func TestInit(t *testing.T) {
 	t.Run("creates all providers without a marketmap", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := orchestrator.NewProviderOrchestrator( 
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -82,8 +82,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				btcusd,
-				ethusd,
+				coinbasebtcusd,
+				coinbaseethusd,
 			},
 			coinbase.Name,
 			providertypes.API,
@@ -96,8 +96,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				btcusdt,
-				ethusdt,
+				okxbtcusd,
+				okxethusd,
 			},
 			okx.Name,
 			providertypes.WebSockets,
