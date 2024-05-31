@@ -30,24 +30,23 @@ var (
 	logger = zap.NewExample()
 
 	oracleCfg = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
@@ -58,75 +57,72 @@ var (
 	}
 
 	oracleCfgWithMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
 			},
 			// Market map provider.
-			mapperCfg,
+			mapperCfg.Name: mapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
 	}
 
 	oracleCfgWithMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
 			},
 			// Market map provider.
-			mockMapperCfg,
+			mockMapperCfg.Name: mockMapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
 	}
 
 	oracleCfgWithOnlyMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
+		Providers: map[string]config.ProviderConfig{
 			// Market map provider.
-			mockMapperCfg,
+			mockMapperCfg.Name: mockMapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
@@ -282,4 +278,16 @@ func marketMapperFactory(
 	) (*mmclienttypes.MarketMapProvider, error) {
 		return provider, nil
 	}
+}
+
+func copyConfig(cfg config.OracleConfig) config.OracleConfig {
+	// copy providers map
+	newCfg := cfg
+
+	newCfg.Providers = make(map[string]config.ProviderConfig)
+	for k, v := range cfg.Providers {
+		newCfg.Providers[k] = v
+	}
+
+	return newCfg
 }
