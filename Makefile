@@ -10,11 +10,7 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
-ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.json
-DYDX_ORACLE_CONFIG_FILE ?= $(CURDIR)/config/dydx/oracle.json
-DYDX_RESEARCH_ORACLE_CONFIG_FILE ?= $(CURDIR)/config/dydx_research/oracle.json
-MARKET_CONFIG_FILE ?= $(CURDIR)/config/local/market.json
-CONFIG_DIR ?= $(CURDIR)/config
+CONFIG_DIR ?= $(CURDIR)/cmd/constants
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -22,10 +18,8 @@ APP_TOML ?= $(HOMEDIR)/config/app.toml
 CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
-DEFI_PROVIDERS_ENABLED ?= false
-SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
-ORACLE_GROUP ?= core
-GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
+ORACLE_GROUP := core
+GENESIS_MARKETS :=  $(CONFIG_DIR)/markets.go
 MARKETS := $(shell cat ${GENESIS_MARKETS})
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
@@ -49,18 +43,12 @@ BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
 build: tidy
 	go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
-
-run-oracle-server: build
-	@./build/slinky --market-config-path ${MARKET_CONFIG_FILE}
+	
+build-dev-markets:
+	@GENESIS_MARKETS=$(GENESIS_MARKETS) sh ./scripts/markets.sh
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
-
-run-prom-client: 
-	@$(DOCKER) run \
-		-p 9090:9090 \
-		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-		prom/prometheus
 
 start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
@@ -91,7 +79,7 @@ install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 
-.PHONY: build run-oracle-server install
+.PHONY: build install
 
 ###############################################################################
 ##                                  Docker                                   ##
