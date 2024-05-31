@@ -25,7 +25,7 @@ const (
 	ChainID = "dydx-node"
 
 	// Endpoint is the endpoint for the dYdX market map API.
-	Endpoint = "%s/dydxprotocol/prices/params/market?limit=10000"
+	Endpoint = "%s/dydxprotocol/prices/params/market?pagination.limit=10000"
 
 	// Delimiter is the delimiter used to separate the base and quote assets in a pair.
 	Delimiter = "-"
@@ -52,7 +52,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	Endpoints:        []config.Endpoint{{URL: "localhost:1317"}},
+	Endpoints:        []config.Endpoint{{URL: "http://localhost:1317"}},
 }
 
 // DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.
