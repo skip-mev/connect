@@ -25,7 +25,7 @@ const (
 	ChainID = "dydx-node"
 
 	// Endpoint is the endpoint for the dYdX market map API.
-	Endpoint = "%s/dydxprotocol/prices/params/market?limit=10000"
+	Endpoint = "%s/dydxprotocol/prices/params/market?pagination.limit=10000"
 
 	// Delimiter is the delimiter used to separate the base and quote assets in a pair.
 	Delimiter = "-"
