@@ -20,8 +20,8 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
@@ -52,8 +52,8 @@ func TestOracleConfig(t *testing.T) {
 			name: "bad config w/ no max-price-age",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
@@ -90,8 +90,8 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
@@ -126,8 +126,8 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
@@ -158,8 +158,8 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
