@@ -9,7 +9,6 @@ RUN go mod download
 COPY . .
 
 RUN make build
-RUN make update-local-configs
 
 FROM ubuntu:rolling
 EXPOSE 8080 8002
