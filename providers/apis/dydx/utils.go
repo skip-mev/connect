@@ -52,7 +52,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	Endpoints:        []config.Endpoint{{URL: "localhost:1317"}},
+	Endpoints:        []config.Endpoint{{URL: "http://localhost:1317"}},
 }
 
 // DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.
