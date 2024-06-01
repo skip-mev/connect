@@ -2,7 +2,7 @@
 
 ## Overview
 
-The aggregator is a aggregation alias that allows developers to plug and play different data aggregation strategies based on the type of data they are working with. The aggregator maintains the latest data i.e. price for a given asset pair for each provider - whether its a validator, API provider, or other. When a aggregated information is requested, the price aggregator will utilize its configured strategies to determine the final result to return to the caller. In the case of price aggregation, the aggregator may return something like the median price across all providers.
+The aggregator is an aggregation alias that allows developers to plug and play different data aggregation strategies based on the type of data they are working with. The aggregator maintains the latest data i.e. price for a given asset pair for each provider - whether it's a validator, API provider, or other. When an aggregated information is requested, the price aggregator will utilize its configured strategies to determine the final result to return to the caller. In the case of price aggregation, the aggregator may return something like the median price across all providers.
 
 > **NOTE**: Each strategy must be deterministic if used in a distributed environment. This means that the same inputs must always produce the same outputs.
 
