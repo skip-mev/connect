@@ -27,7 +27,7 @@ The slinky repository is composed of the following core packages:
 * **x/oracle** - This package contains a Cosmos SDK module that allows you to store oracle data on a blockchain.
 * **x/alerts** - This package contains a Cosmos SDK module that allows network participants to create alerts when oracle data that is in violation of some condition is broadcast to the network and stored on the blockchain.
 * **x/sla** - This package contains a Cosmos SDK module that allows you to create service level agreements (SLAs) that can be used to incentivize network participants to consistently, reliably provide data with high uptime.
-* **x/marketmap** - This [package](./x/marketmap/README.md) contains  a Cosmos SDK module that allows for market configuration to be stored and updated on a blockchain.
+* **x/marketmap** - This [package](./x/marketmap/README.md) contains a Cosmos SDK module that allows for market configuration to be stored and updated on a blockchain.
 
 ## Validator Usage
 
