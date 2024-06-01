@@ -28,7 +28,7 @@ For example, if the `expectedUptime` is set to 0.9, then the validator must have
 
 ### SlashConstant
 
-This constant determines the how much the validator will be slashed if they deviate from the expected uptime. The formula for slashing is:
+This constant determines how much the validator will be slashed if they deviate from the expected uptime. The formula for slashing is:
 
 ```go
 slashPercentage := ((expectedUptime - actualUptime) / expectedUptime) * slashConstant
@@ -42,4 +42,4 @@ Frequency defines how often the criteria of an SLA should be checked. This is a 
 
 ## Slashing
 
-As described above, slashing is variable to how far the validator's uptime deviates from the expected uptime. Slashing is proportional to the each validator's power and therefore is relative. The larger the validator, the more they will be slashed. This is expected as larger validators have a larger say in the final aggregated price that is posted on chain to the `x/oracle` module.
+As described above, slashing is variable to how far the validator's uptime deviates from the expected uptime. Slashing is proportional to each validator's power and therefore is relative. The larger the validator, the more they will be slashed. This is expected as larger validators have a larger say in the final aggregated price that is posted on chain to the `x/oracle` module.
