@@ -10,11 +10,6 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
-ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.json
-DYDX_ORACLE_CONFIG_FILE ?= $(CURDIR)/config/dydx/oracle.json
-DYDX_RESEARCH_ORACLE_CONFIG_FILE ?= $(CURDIR)/config/dydx_research/oracle.json
-MARKET_CONFIG_FILE ?= $(CURDIR)/config/local/market.json
-CONFIG_DIR ?= $(CURDIR)/config
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -22,11 +17,9 @@ APP_TOML ?= $(HOMEDIR)/config/app.toml
 CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
-DEFI_PROVIDERS_ENABLED ?= false
-SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
-ORACLE_GROUP ?= core
-GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
-MARKETS := $(shell cat ${GENESIS_MARKETS})
+USE_CORE_MARKETS ?= true
+USE_RAYDIUM_MARKETS ?= false
+SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
@@ -38,7 +31,9 @@ export HOMEDIR := $(HOMEDIR)
 export APP_TOML := $(APP_TOML)
 export GENESIS := $(GENESIS)
 export GENESIS_TMP := $(GENESIS_TMP)
-export MARKETS := $(MARKETS)
+export USE_CORE_MARKETS := $(USE_CORE_MARKETS)
+export USE_RAYDIUM_MARKETS := $(USE_RAYDIUM_MARKETS)
+export SCRIPT_DIR := $(SCRIPT_DIR)
 
 BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
 
@@ -50,48 +45,22 @@ build: tidy
 	go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
 
-run-oracle-server: build
-	@./build/slinky --market-config-path ${MARKET_CONFIG_FILE}
-
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
 
-run-prom-client: 
-	@$(DOCKER) run \
-		-p 9090:9090 \
-		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-		prom/prometheus
-
 start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
-
-start-all-%-dev:
-	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
 stop-all-dev:
 	@echo "Stopping development network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
-
-
-start-sidecar-dev:
-	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
-
-start-sidecar-%-dev:
-	@echo "Starting development oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
-
-stop-sidecar-dev:
-	@echo "Stopping development network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 
-.PHONY: build run-oracle-server install
+.PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
 ###############################################################################
 ##                                  Docker                                   ##
@@ -164,10 +133,15 @@ $(BUILD_TARGETS): $(BUILD_DIR)/
 $(BUILD_DIR)/:
 	@mkdir -p $(BUILD_DIR)/
 
-# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
-build-configs:
+delete-configs:
 	@rm -rf ./tests/.slinkyd/
+
+build-market-map:
+	@echo "Building market map..."
 	@sh ./scripts/genesis.sh
+
+# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
+build-configs: delete-configs build-market-map
 	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
 	@dasel put -r toml 'rpc.laddr' -f $(CONFIG_TOML) -t string -v "tcp://0.0.0.0:26657"
 	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
@@ -187,7 +161,7 @@ start-app:
 # This will allow users to bootstrap their wallet with a balance.
 build-and-start-app: build-configs start-app
 
-.PHONY: build-test-app build-configs build-and-start-app start-app
+.PHONY: build-test-app build-configs build-and-start-app start-app delete-configs
 
 ###############################################################################
 ###                               Testing                                   ###

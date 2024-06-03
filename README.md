@@ -38,7 +38,7 @@ To read how to run the oracle as a validator based on the chain, please referenc
 To run the oracle, run the following command.
 
 ```bash
-$ make start-all-core-dev
+$ make start-all-dev
 ```
 
 This will:
