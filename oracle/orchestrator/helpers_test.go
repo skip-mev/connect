@@ -27,8 +27,8 @@ import (
 )
 
 var (
-	btcusdtcp = slinkytypes.NewCurrencyPair("BTC", "USDT")
-	ethusdtcp = slinkytypes.NewCurrencyPair("ETH", "USDT")
+	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	ethusdtCP = slinkytypes.NewCurrencyPair("ETH", "USDT")
 )
 
 var (
@@ -161,9 +161,9 @@ var (
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			btcusdtcp.String(): {
+			btcusdtCP.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     btcusdtcp,
+					CurrencyPair:     btcusdtCP,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,
@@ -179,9 +179,9 @@ var (
 					},
 				},
 			},
-			ethusdtcp.String(): {
+			ethusdtCP.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     ethusdtcp,
+					CurrencyPair:     ethusdtCP,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,

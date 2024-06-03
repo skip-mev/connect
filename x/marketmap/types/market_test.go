@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	btcusdtcp = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
 
 	btcusdt = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair:     btcusdtcp,
+			CurrencyPair:     btcusdtCP,
 			Decimals:         8,
 			MinProviderCount: 1,
 			Enabled:          true,
@@ -210,7 +210,7 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "market with no ticker",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {
+					btcusdtCP.String(): {
 						ProviderConfigs: []types.ProviderConfig{
 							{
 								Name:           coinbase.Name,
@@ -226,7 +226,7 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "empty market",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {},
+					btcusdtCP.String(): {},
 				},
 			},
 			expectErr: true,
@@ -235,9 +235,9 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "provider config includes a ticker that is not supported",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {
+					btcusdtCP.String(): {
 						Ticker: types.Ticker{
-							CurrencyPair:     btcusdtcp,
+							CurrencyPair:     btcusdtCP,
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -259,9 +259,9 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "empty provider name",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {
+					btcusdtCP.String(): {
 						Ticker: types.Ticker{
-							CurrencyPair:     btcusdtcp,
+							CurrencyPair:     btcusdtCP,
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -282,9 +282,9 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "no provider configs",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {
+					btcusdtCP.String(): {
 						Ticker: types.Ticker{
-							CurrencyPair:     btcusdtcp,
+							CurrencyPair:     btcusdtCP,
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -298,9 +298,9 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			name: "valid single provider",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
-					btcusdtcp.String(): {
+					btcusdtCP.String(): {
 						Ticker: types.Ticker{
-							CurrencyPair:     btcusdtcp,
+							CurrencyPair:     btcusdtCP,
 							Decimals:         8,
 							MinProviderCount: 1,
 						},

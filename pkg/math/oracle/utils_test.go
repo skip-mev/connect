@@ -101,7 +101,7 @@ func TestGetIndexPrice(t *testing.T) {
 		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		_, err = agg.GetIndexPrice(ethusd)
+		_, err = agg.GetIndexPrice(ethusdCP)
 		require.Error(t, err)
 	})
 
@@ -110,11 +110,11 @@ func TestGetIndexPrice(t *testing.T) {
 		require.NoError(t, err)
 
 		prices := types.Prices{
-			btcusd.String(): big.NewFloat(100),
+			btcusdCP.String(): big.NewFloat(100),
 		}
 		agg.SetIndexPrices(prices)
 
-		price, err := agg.GetIndexPrice(btcusd)
+		price, err := agg.GetIndexPrice(btcusdCP)
 		require.NoError(t, err)
 		require.Equal(t, big.NewFloat(100), price)
 	})
@@ -124,11 +124,11 @@ func TestGetIndexPrice(t *testing.T) {
 		require.NoError(t, err)
 
 		prices := types.Prices{
-			btcusd.String(): nil,
+			btcusdCP.String(): nil,
 		}
 		agg.SetIndexPrices(prices)
 
-		_, err = agg.GetIndexPrice(btcusd)
+		_, err = agg.GetIndexPrice(btcusdCP)
 		require.Error(t, err)
 	})
 }

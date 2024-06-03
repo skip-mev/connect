@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	usdtusd = pkgtypes.NewCurrencyPair("USDT", "USD")
-	btcusd  = pkgtypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = pkgtypes.NewCurrencyPair("ETH", "USD")
+	usdtusdCP = pkgtypes.NewCurrencyPair("USDT", "USD")
+	btcusdCP  = pkgtypes.NewCurrencyPair("BTC", "USD")
+	ethusdCP  = pkgtypes.NewCurrencyPair("ETH", "USD")
 )
 
 func TestAggregateData(t *testing.T) {
@@ -74,7 +74,7 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetProviderPrices(binance.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.1),
+					usdtusdCP.String(): big.NewFloat(1.1),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -216,7 +216,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				aggregator.SetProviderPrices(coinbase.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.1),
+					usdtusdCP.String(): big.NewFloat(1.1),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -243,7 +243,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				aggregator.SetProviderPrices(kucoin.Name, prices)
 
 				indexPrices := types.Prices{
-					btcusd.String(): big.NewFloat(77_000),
+					btcusdCP.String(): big.NewFloat(77_000),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -329,7 +329,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				aggregator.SetProviderPrices(binance.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.1),
+					usdtusdCP.String(): big.NewFloat(1.1),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -450,7 +450,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(coinbase.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.0),
+					usdtusdCP.String(): big.NewFloat(1.0),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -476,7 +476,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(kucoin.Name, prices)
 
 				indexPrices := types.Prices{
-					btcusd.String(): big.NewFloat(77_000),
+					btcusdCP.String(): big.NewFloat(77_000),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -518,7 +518,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(coinbase.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.1),
+					usdtusdCP.String(): big.NewFloat(1.1),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -544,7 +544,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(kucoin.Name, prices)
 
 				indexPrices := types.Prices{
-					ethusd.String(): big.NewFloat(4_000),
+					ethusdCP.String(): big.NewFloat(4_000),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -569,7 +569,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(binance.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.1),
+					usdtusdCP.String(): big.NewFloat(1.1),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
@@ -610,7 +610,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				aggregator.SetProviderPrices(coinbase.Name, prices)
 
 				indexPrices := types.Prices{
-					usdtusd.String(): big.NewFloat(1.0),
+					usdtusdCP.String(): big.NewFloat(1.0),
 				}
 				aggregator.SetIndexPrices(indexPrices)
 			},
