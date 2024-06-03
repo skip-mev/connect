@@ -14,7 +14,7 @@ import (
 var (
 	useCore    = flag.Bool("use-core", false, "use core markets")
 	useRaydium = flag.Bool("use-raydium", false, "use raydium markets")
-	tempFile   = flag.String("temp-file", "markets.json", "temporary file")
+	tempFile   = flag.String("temp-file", "markets.json", "temporary file to store the market map")
 )
 
 func main() {
