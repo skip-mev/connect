@@ -17,8 +17,8 @@ APP_TOML ?= $(HOMEDIR)/config/app.toml
 CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
-USE_CORE_MARKETS := true
-USE_RAYDIUM_MARKETS := true
+USE_CORE_MARKETS ?= true
+USE_RAYDIUM_MARKETS ?= false
 SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
