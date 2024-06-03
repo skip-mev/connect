@@ -10,7 +10,6 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
-CONFIG_DIR ?= $(CURDIR)/cmd/constants
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -19,10 +18,8 @@ CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 USE_CORE_MARKETS := true
-USE_RAYDIUM_MARKETS := false
+USE_RAYDIUM_MARKETS := true
 SCRIPT_DIR := $(CURDIR)/scripts
-GENESIS_MARKETS :=  $(CONFIG_DIR)/markets.go
-MARKETS := $(shell cat ${GENESIS_MARKETS})
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
@@ -53,11 +50,11 @@ run-oracle-client: build
 
 start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
 stop-all-dev:
 	@echo "Stopping development network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
