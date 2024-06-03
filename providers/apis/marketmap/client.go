@@ -48,6 +48,7 @@ func NewGRPCClient(
 	conn, err := grpc.NewClient(
 		api.Endpoints[0].URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithNoProxy(),
 	)
 	if err != nil {
 		return nil, err
