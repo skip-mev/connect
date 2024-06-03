@@ -144,8 +144,9 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when a provider is not supported by the api query handler factory", func(t *testing.T) {
-		cfg := oracleCfg
-		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
+		cfg := copyConfig(oracleCfg)
+
+		cfg.Providers["unsupported"] = config.ProviderConfig{
 			Name: "unsupported",
 			API: config.APIConfig{
 				Enabled:          true,
@@ -157,7 +158,7 @@ func TestInit(t *testing.T) {
 				Name:             "unsupported",
 			},
 			Type: oracletypes.ConfigType,
-		})
+		}
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
@@ -172,15 +173,15 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
-		cfg := oracleCfg
+		cfg := copyConfig(oracleCfg)
 
 		okxCfg := okx.DefaultWebSocketConfig
 		okxCfg.Name = "unsupported"
-		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
+		cfg.Providers["unsupported"] = config.ProviderConfig{
 			Name:      "unsupported",
 			WebSocket: okxCfg,
 			Type:      oracletypes.ConfigType,
-		})
+		}
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
