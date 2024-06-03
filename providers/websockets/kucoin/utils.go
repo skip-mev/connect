@@ -26,6 +26,12 @@ const (
 
 	// DefaultPingInterval is the default ping interval for the KuCoin websocket.
 	DefaultPingInterval = 10 * time.Second
+
+	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions
+	// per connection for the KuCoin websocket.
+	//
+	// ref: https://www.kucoin.com/docs/basic-info/request-rate-limit/websocket
+	DefaultMaxSubscriptionsPerConnection = 50
 )
 
 var (
@@ -48,7 +54,7 @@ var (
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultAPIConfig defines the default API config for KuCoin. This is

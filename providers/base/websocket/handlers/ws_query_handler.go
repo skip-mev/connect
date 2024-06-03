@@ -159,6 +159,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		return errors.ErrDialWithErr(err)
 	}
 
+	time.Sleep(2000 * time.Millisecond)
+
 	// Create the initial set of events that the channel will subscribe to.
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
 	messages, err := h.dataHandler.CreateMessages(h.ids)
@@ -180,6 +182,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 			return errors.ErrWriteWithErr(err)
 		}
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	h.logger.Debug("initial payload sent; websocket connection successfully started")

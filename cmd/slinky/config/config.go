@@ -19,13 +19,13 @@ const (
 	// DefaultMaxPriceAge is the default value for the oldest price considered in an aggregate price response by slinky.
 	DefaultMaxPriceAge = 120000000000
 	// DefaultPrometheusServerAddress is the default value for the prometheus server address in slinky.
-	DefaultPrometheusServerAddress = "0.0.0.0:8002"
+	DefaultPrometheusServerAddress = "0.0.0.0:8003"
 	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
 	DefaultMetricsEnabled = true
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"
 	// DefaultPort is the default for the slinky oracle server port.
-	DefaultPort = "8080"
+	DefaultPort = "8081"
 	// jsonFieldDelimiter is the delimiter used to separate fields in the JSON output.
 	jsonFieldDelimiter = "."
 	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
