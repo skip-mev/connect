@@ -34,7 +34,7 @@ var (
 
 func TestInit(t *testing.T) {
 	t.Run("creates all providers without a marketmap", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator( 
+		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
