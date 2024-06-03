@@ -46,7 +46,7 @@ build: tidy
 	 -o ./build/ ./...
 
 run-oracle-client: build
-	echo "Running oracle client..."
+	echo "Running oracle client...asdf"
 	@./build/client --host localhost --port 8080
 
 start-all-dev:
