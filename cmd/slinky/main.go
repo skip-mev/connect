@@ -341,14 +341,14 @@ func runOracle() error {
 }
 
 func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
-	for i, provider := range cfg.Providers {
+	for providerName, provider := range cfg.Providers {
 		if provider.Type == mmservicetypes.ConfigType {
 			provider.API.Endpoints = []config.Endpoint{
 				{
 					URL: overwrite,
 				},
 			}
-			cfg.Providers[i] = provider
+			cfg.Providers[providerName] = provider
 			return cfg, cfg.ValidateBasic()
 		}
 	}

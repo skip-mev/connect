@@ -62,13 +62,6 @@ run-prom-client:
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
 
-update-local-configs: build
-	@echo "Updating local config..."
-	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE} --raydium-enabled ${DEFI_ORACLE_ENABLED} \
-		--solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
-	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
-	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_RESEARCH_ORACLE_CONFIG_FILE} --dydx-research-json-market-map=true --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
-
 start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
@@ -97,7 +90,6 @@ stop-sidecar-dev:
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
 

@@ -22,8 +22,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
-	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -59,16 +57,16 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 	}
 }
 
-func DefaultOracleConfig(url string) cmdconfig.OracleConfig {
+func DefaultOracleConfig(url string) oracleconfig.OracleConfig {
 	cfg := marketmap.DefaultAPIConfig
-	cfg.Endpoints = []config.Endpoint{
+	cfg.Endpoints = []oracleconfig.Endpoint{
 		{
 			URL: url,
 		},
 	}
 
 	// Create the oracle config
-	oracleConfig := cmdconfig.OracleConfig{
+	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    1 * time.Minute,
 		Host:           "0.0.0.0",
@@ -374,7 +372,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					Interval:         250 * time.Millisecond,
 					ReconnectTimeout: 250 * time.Millisecond,
 					MaxQueries:       1,
-					Endpoints: []config.Endpoint{
+					Endpoints: []oracleconfig.Endpoint{
 						{
 							URL: "http://un-used-url.com",
 						},
@@ -585,7 +583,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				Endpoints: []config.Endpoint{
+				Endpoints: []oracleconfig.Endpoint{
 					{
 						URL: "http://un-used-url.com",
 					},
@@ -658,7 +656,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				Endpoints: []config.Endpoint{
+				Endpoints: []oracleconfig.Endpoint{
 					{
 						URL: "http://un-used-url.com",
 					},
