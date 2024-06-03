@@ -28,3 +28,20 @@ func ReadMarketMapFromFile(path string) (MarketMap, error) {
 
 	return config, nil
 }
+
+// WriteMarketMapToFile writes a market map configuration to a file at the given path.
+func WriteMarketMapToFile(config MarketMap, path string) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(config); err != nil {
+		return err
+	}
+
+	return nil
+}
