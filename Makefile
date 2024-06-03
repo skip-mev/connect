@@ -18,7 +18,9 @@ APP_TOML ?= $(HOMEDIR)/config/app.toml
 CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
-ORACLE_GROUP := core
+USE_CORE_MARKETS := true
+USE_RAYDIUM_MARKETS := false
+SCRIPT_DIR := $(CURDIR)/scripts
 GENESIS_MARKETS :=  $(CONFIG_DIR)/markets.go
 MARKETS := $(shell cat ${GENESIS_MARKETS})
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
@@ -32,7 +34,9 @@ export HOMEDIR := $(HOMEDIR)
 export APP_TOML := $(APP_TOML)
 export GENESIS := $(GENESIS)
 export GENESIS_TMP := $(GENESIS_TMP)
-export MARKETS := $(MARKETS)
+export USE_CORE_MARKETS := $(USE_CORE_MARKETS)
+export USE_RAYDIUM_MARKETS := $(USE_RAYDIUM_MARKETS)
+export SCRIPT_DIR := $(SCRIPT_DIR)
 
 BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
 
@@ -43,9 +47,6 @@ BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
 build: tidy
 	go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
-	
-build-dev-markets:
-	@GENESIS_MARKETS=$(GENESIS_MARKETS) sh ./scripts/markets.sh
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -152,10 +153,15 @@ $(BUILD_TARGETS): $(BUILD_DIR)/
 $(BUILD_DIR)/:
 	@mkdir -p $(BUILD_DIR)/
 
-# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
-build-configs:
+delete-configs:
 	@rm -rf ./tests/.slinkyd/
+
+build-market-map:
+	@echo "Building market map..."
 	@sh ./scripts/genesis.sh
+
+# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
+build-configs: delete-configs build-market-map
 	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
 	@dasel put -r toml 'rpc.laddr' -f $(CONFIG_TOML) -t string -v "tcp://0.0.0.0:26657"
 	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
