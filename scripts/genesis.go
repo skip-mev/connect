@@ -51,27 +51,28 @@ func main() {
 // mergeMarketMaps merges the two market maps together. If a market already exists in one of the maps, we
 // merge based on the provider set.
 func mergeMarketMaps(this, other mmtypes.MarketMap) mmtypes.MarketMap {
-	for name, market := range other.Markets {
+	for name, otherMarket := range other.Markets {
 		// If the market does not exist in this map, we add it.
-		if _, ok := this.Markets[name]; !ok {
-			this.Markets[name] = market
+		thisMarket, ok := this.Markets[name]
+		if !ok {
+			this.Markets[name] = otherMarket
 			continue
 		}
 
 		seen := make(map[string]struct{})
-		for _, provider := range market.ProviderConfigs {
+		for _, provider := range thisMarket.ProviderConfigs {
 			key := providerConfigToKey(provider)
 			seen[key] = struct{}{}
 		}
 
-		for _, provider := range this.Markets[name].ProviderConfigs {
+		for _, provider := range otherMarket.ProviderConfigs {
 			key := providerConfigToKey(provider)
 			if _, ok := seen[key]; !ok {
-				market.ProviderConfigs = append(market.ProviderConfigs, provider)
+				thisMarket.ProviderConfigs = append(thisMarket.ProviderConfigs, provider)
 			}
 		}
 
-		this.Markets[name] = market
+		this.Markets[name] = thisMarket
 	}
 
 	return this
