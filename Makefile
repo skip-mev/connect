@@ -60,7 +60,7 @@ install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 
-.PHONY: build install
+.PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
 ###############################################################################
 ##                                  Docker                                   ##
@@ -161,7 +161,7 @@ start-app:
 # This will allow users to bootstrap their wallet with a balance.
 build-and-start-app: build-configs start-app
 
-.PHONY: build-test-app build-configs build-and-start-app start-app
+.PHONY: build-test-app build-configs build-and-start-app start-app delete-configs
 
 ###############################################################################
 ###                               Testing                                   ###
