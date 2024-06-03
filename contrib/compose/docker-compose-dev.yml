@@ -5,13 +5,11 @@ networks:
 services:
   blockchain:
     environment:
-      - SLINKY_DEV_TESTING=true
-      - ORACLE_GROUP=${ORACLE_GROUP:-core}
+      - USE_CORE_MARKETS=${USE_CORE_MARKETS:-true}
+      - USE_RAYDIUM_MARKETS=${USE_RAYDIUM_MARKETS:-true}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.local.Dockerfile
-    volumes:
-      - ../../cmd/constants/market.json:/oracle/market.json
     ports:
       - "26656:26656"
       - "26657:26657"
@@ -24,14 +22,9 @@ services:
       - oracle_network
 
   oracle:
-    environment:
-      - SLINKY_DEV_TESTING=true
-      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
-    volumes:
-      - ../../cmd/constants/market.json:/oracle/market.json
     entrypoint: [
       "slinky",
       "--update-market-config-path", "/oracle/market.json",

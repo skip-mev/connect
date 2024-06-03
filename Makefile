@@ -55,24 +55,7 @@ start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
-start-all-%-dev:
-	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
-
 stop-all-dev:
-	@echo "Stopping development network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
-
-
-start-sidecar-dev:
-	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
-
-start-sidecar-%-dev:
-	@echo "Starting development oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
-
-stop-sidecar-dev:
 	@echo "Stopping development network..."
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
