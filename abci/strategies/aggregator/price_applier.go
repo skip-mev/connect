@@ -1,0 +1,136 @@
+package aggregator
+
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	cometabci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/log"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
+	"cosmossdk.io/math"
+	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
+	"math/big"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+)
+
+// PriceApplier is an interface used in `ExtendVote` and `PreBlock` to apply the prices
+// derived from the latest votes to state.
+// 
+//go:generate mockery --name PriceApplier --filename mock_price_applier.go
+type PriceApplier interface {
+	// ApplyPricesFromVoteExtensions derives the aggregate prices per asset in accordance with the given
+	// vote extensions + VoteAggregator. If a price exists for an asset, it is written to state. The 
+	// prices aggregated from vote-extensions are returned if no errors are encountered in execution,
+	// otherwise an error is returned + nil prices.
+	ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[slinkytypes.CurrencyPair]*big.Int, error)
+
+	// GetPriceForValidator gets the prices reported by a given validator. This method depends
+	// on the prices from the latest set of aggregated votes.
+	GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
+}
+
+// oraclePriceApplier is an implementation of PriceApplier that applies prices to the oracle module.
+type oraclePriceApplier struct {
+	// va is a VoteAggregator that is used to aggregate votes into prices.
+	va VoteAggregator
+
+	// ok is the oracle keeper that is used to write prices to state.
+	ok slinkyabcitypes.OracleKeeper
+
+	// logger
+	logger log.Logger
+
+	// codecs
+	voteExtensionCodec codec.VoteExtensionCodec
+	extendedCommitCodec codec.ExtendedCommitCodec
+}
+
+// NewOraclePriceApplier returns a new oraclePriceApplier.
+func NewOraclePriceApplier(
+	va VoteAggregator,
+	ok slinkyabcitypes.OracleKeeper,
+	voteExtensionCodec codec.VoteExtensionCodec,
+	extendedCommitCodec codec.ExtendedCommitCodec,
+	logger log.Logger,
+) PriceApplier {
+	return &oraclePriceApplier{
+		va: va,
+		ok: ok,
+		logger: logger,
+		voteExtensionCodec: voteExtensionCodec,
+		extendedCommitCodec: extendedCommitCodec,
+	}
+}
+
+func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[slinkytypes.CurrencyPair]*big.Int, error) {
+	// If vote extensions have been enabled, the extended commit info - which
+	// contains the vote extensions - must be included in the request.
+	votes, err := GetOracleVotes(req.Txs, opa.voteExtensionCodec, opa.extendedCommitCodec)
+	if err != nil {
+		opa.logger.Error(
+			"failed to get extended commit info from proposal",
+			"height", req.Height,
+			"num_txs", len(req.Txs),
+			"err", err,
+		)
+
+		return nil, err
+	}
+
+	// Aggregate all oracle vote extensions into a single set of prices.
+	prices, err := opa.va.AggregateOracleVotes(ctx, votes)
+	if err != nil {
+		opa.logger.Error(
+			"failed to aggregate oracle votes",
+			"height", req.Height,
+			"err", err,
+		)
+
+		err = PriceAggregationError{
+			Err: err,
+		}
+		return nil, err
+	}
+
+	currencyPairs := opa.ok.GetAllCurrencyPairs(ctx)
+	for _, cp := range currencyPairs {
+		price, ok := prices[cp]
+		if !ok || price == nil {
+			opa.logger.Info(
+				"no price for currency pair",
+				"currency_pair", cp.String(),
+			)
+
+			continue
+		}
+
+		// Convert the price to a quote price and write it to state.
+		quotePrice := oracletypes.QuotePrice{
+			Price:          math.NewIntFromBigInt(price),
+			BlockTimestamp: ctx.BlockHeader().Time,
+			BlockHeight:    uint64(ctx.BlockHeight()),
+		}
+
+		if err := opa.ok.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
+			opa.logger.Error(
+				"failed to set price for currency pair",
+				"currency_pair", cp.String(),
+				"quote_price", cp.String(),
+				"err", err,
+			)
+
+			return nil, err
+		}
+
+		opa.logger.Info(
+			"set price for currency pair",
+			"currency_pair", cp.String(),
+			"quote_price", quotePrice.Price.String(),
+		)
+	}
+
+	return prices, nil
+}
+
+func (opa *oraclePriceApplier) GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
+	return opa.va.GetPriceForValidator(validator)
+}

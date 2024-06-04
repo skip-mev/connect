@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/preblock"
+	aggregatormocks "github.com/skip-mev/slinky/abci/strategies/aggregator/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	mockstrategies "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
@@ -281,13 +281,15 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				codec.NewZLibCompressor(),
 			)
 
+			mockPriceApplier := aggregatormocks.NewPriceApplier(s.T())
+			
 			h := ve.NewVoteExtensionHandler(
 				log.NewTestLogger(s.T()),
 				tc.oracleService(),
 				time.Second*1,
 				tc.currencyPairStrategy(),
 				cdc,
-				preblock.NoOpPreBlocker(),
+				mockPriceApplier,
 				servicemetrics.NewNopMetrics(),
 			)
 
@@ -295,6 +297,14 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			if tc.extendVoteRequest != nil {
 				req = tc.extendVoteRequest()
 			}
+			if req != nil {
+				finalizeBlockReq := &cometabci.RequestFinalizeBlock{
+					Txs: req.Txs,
+					Height: req.Height,
+				}
+				mockPriceApplier.On("ApplyPricesFromVoteExtensions", s.ctx, finalizeBlockReq).Return(nil, nil)
+			}
+
 			resp, err := h.ExtendVoteHandler()(s.ctx, req)
 			if !tc.expectedError {
 				if resp == nil || len(resp.VoteExtension) == 0 {
@@ -496,13 +506,14 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
+			mockPriceApplier := aggregatormocks.NewPriceApplier(s.T())
 			handler := ve.NewVoteExtensionHandler(
 				log.NewTestLogger(s.T()),
 				mocks.NewOracleClient(s.T()),
 				time.Second*1,
 				tc.currencyPairStrategy(),
 				cdc,
-				preblock.NoOpPreBlocker(),
+				mockPriceApplier,
 				servicemetrics.NewNopMetrics(),
 			).VerifyVoteExtensionHandler()
 
@@ -521,16 +532,19 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 func (s *VoteExtensionTestSuite) TestExtendVoteLatency() {
 	m := metricsmocks.NewMetrics(s.T())
 	os := mocks.NewOracleClient(s.T())
+
+	pamock := aggregatormocks.NewPriceApplier(s.T())
 	handler := ve.NewVoteExtensionHandler(
 		log.NewTestLogger(s.T()),
 		os,
 		time.Second*1,
 		mockstrategies.NewCurrencyPairStrategy(s.T()),
 		codec.NewDefaultVoteExtensionCodec(),
-		preblock.NoOpPreBlocker(),
+		pamock,
 		m,
 	)
 
+	pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
 	// mock
 	os.On("Prices", mock.Anything, mock.Anything).Return(
 		&servicetypes.QueryPricesResponse{
@@ -558,15 +572,17 @@ func (s *VoteExtensionTestSuite) TestExtendVoteLatency() {
 func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 	s.Run("test nil request", func() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			nil,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			nil,
-			preblock.NoOpPreBlocker(),
+			pamock,
 			mockMetrics,
 		)
+
 		expErr := slinkyabci.NilRequestError{
 			Handler: servicemetrics.ExtendVote,
 		}
@@ -579,17 +595,21 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 
 	s.Run("test panic", func() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			nil,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			nil,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				panic("panic")
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil).Run(func(_ mock.Arguments) {
+			panic("panic")
+		})
+	
 		expErr := ve.ErrPanic{
 			Err: fmt.Errorf("panic"),
 		}
@@ -603,17 +623,20 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 	s.Run("test pre-blocker failure", func() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
 		preBlockError := fmt.Errorf("pre-blocker failure")
+		pamock := aggregatormocks.NewPriceApplier(s.T())
+
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			nil,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			nil,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				return nil, preBlockError
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, preBlockError)
+
 		expErr := ve.PreBlockError{
 			Err: preBlockError,
 		}
@@ -628,17 +651,19 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
 		clientError := fmt.Errorf("client failure")
 		mockClient := mocks.NewOracleClient(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			mockClient,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			nil,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				return nil, nil
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
+
 		expErr := ve.OracleClientError{
 			Err: clientError,
 		}
@@ -654,17 +679,19 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
 		transformationError := fmt.Errorf("incorrectly formatted CurrencyPair: BTCETH")
 		mockClient := mocks.NewOracleClient(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			mockClient,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			nil,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				return nil, nil
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
+
 		expErr := ve.TransformPricesError{
 			Err: transformationError,
 		}
@@ -685,17 +712,19 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		codecError := fmt.Errorf("codec error")
 		mockClient := mocks.NewOracleClient(s.T())
 		cdc := codecmocks.NewVoteExtensionCodec(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			mockClient,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			cdc,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				return nil, nil
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
+
 		expErr := slinkyabci.CodecError{
 			Err: codecError,
 		}
@@ -716,17 +745,19 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
 		mockClient := mocks.NewOracleClient(s.T())
 		cdc := codecmocks.NewVoteExtensionCodec(s.T())
+		pamock := aggregatormocks.NewPriceApplier(s.T())
+
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),
 			mockClient,
 			time.Second*1,
 			mockstrategies.NewCurrencyPairStrategy(s.T()),
 			cdc,
-			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-				return nil, nil
-			},
+			pamock,
 			mockMetrics,
 		)
+
+		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
 		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, servicemetrics.Success{})
 		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(&servicetypes.QueryPricesResponse{
@@ -750,7 +781,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			time.Second*1,
 			nil,
 			nil,
-			preblock.NoOpPreBlocker(),
+			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
 		expErr := slinkyabci.NilRequestError{
@@ -773,7 +804,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			time.Second*1,
 			nil,
 			cdc,
-			preblock.NoOpPreBlocker(),
+			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
 		expErr := slinkyabci.CodecError{
@@ -804,7 +835,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			time.Second*1,
 			cpStrategy,
 			cdc,
-			preblock.NoOpPreBlocker(),
+			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
 		expErr := ve.ValidateVoteExtensionError{
@@ -836,7 +867,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			time.Second*1,
 			cpStrategy,
 			cdc,
-			preblock.NoOpPreBlocker(),
+			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
 
@@ -860,6 +891,7 @@ func (s *VoteExtensionTestSuite) TestVoteExtensionSize() {
 	cdc := codecmocks.NewVoteExtensionCodec(s.T())
 	cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
 	cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(1), nil).Once()
+	pamock := aggregatormocks.NewPriceApplier(s.T())
 
 	handler := ve.NewVoteExtensionHandler(
 		log.NewTestLogger(s.T()),
@@ -867,9 +899,7 @@ func (s *VoteExtensionTestSuite) TestVoteExtensionSize() {
 		time.Second*1,
 		cpStrategy,
 		cdc,
-		func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-			return nil, nil
-		},
+		pamock,
 		mockMetrics,
 	)
 

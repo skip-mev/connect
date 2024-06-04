@@ -9,7 +9,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
+	abciaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/types"
@@ -17,6 +17,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
 )
 
 // PreBlockHandler is responsible for aggregating oracle data from each
@@ -31,19 +32,10 @@ type PreBlockHandler struct { //golint:ignore
 
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
-	keeper Keeper
+	keeper slinkyabcitypes.OracleKeeper
 
-	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
-	// This is used to decode vote extensions included in transactions.
-	voteExtensionCodec codec.VoteExtensionCodec
-
-	// extendedCommitCodec is the codec used for encoding / decoding extended
-	// commit messages. This is used to decode extended commit messages included
-	// in transactions.
-	extendedCommitCodec codec.ExtendedCommitCodec
-
-	// voteAggregator is responsible for aggregating votes from an extended commit into the canonical prices
-	voteAggregator voteaggregator.VoteAggregator
+	// pa is the price applier that is used to decode vote-extensions, aggregate price reports, and write prices to state.
+	pa abciaggregator.PriceApplier
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -51,25 +43,30 @@ type PreBlockHandler struct { //golint:ignore
 func NewOraclePreBlockHandler(
 	logger log.Logger,
 	aggregateFn aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int],
-	oracleKeeper Keeper,
+	oracleKeeper slinkyabcitypes.OracleKeeper,
 	metrics servicemetrics.Metrics,
 	strategy currencypair.CurrencyPairStrategy,
 	veCodec codec.VoteExtensionCodec,
 	ecCodec codec.ExtendedCommitCodec,
 ) *PreBlockHandler {
-	va := voteaggregator.NewDefaultVoteAggregator(
+	va := abciaggregator.NewDefaultVoteAggregator(
 		logger,
 		aggregateFn,
 		strategy,
+	)
+	pa := abciaggregator.NewOraclePriceApplier(
+		va,
+		oracleKeeper,
+		veCodec,
+		ecCodec,
+		logger,
 	)
 
 	return &PreBlockHandler{
 		logger:              logger,
 		keeper:              oracleKeeper,
 		metrics:             metrics,
-		voteExtensionCodec:  veCodec,
-		extendedCommitCodec: ecCodec,
-		voteAggregator:      va,
+		pa: pa,
 	}
 }
 
@@ -126,46 +123,14 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			"height", req.Height,
 		)
 
-		// If vote extensions have been enabled, the extended commit info - which
-		// contains the vote extensions - must be included in the request.
-		votes, err := voteaggregator.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
+		// decode vote-extensions + apply prices to state
+		prices, err = h.pa.ApplyPricesFromVoteExtensions(ctx, req)
 		if err != nil {
 			h.logger.Error(
-				"failed to get extended commit info from proposal",
+				"failed to apply prices from vote extensions",
 				"height", req.Height,
-				"num_txs", len(req.Txs),
-				"err", err,
+				"error", err,
 			)
-
-			return &sdk.ResponsePreBlock{}, err
-		}
-
-		// Aggregate all oracle vote extensions into a single set of prices.
-		prices, err = h.voteAggregator.AggregateOracleVotes(ctx, votes)
-		if err != nil {
-			h.logger.Error(
-				"failed to aggregate oracle votes",
-				"height", req.Height,
-				"err", err,
-			)
-
-			err = PriceAggregationError{
-				Err: err,
-			}
-			return &sdk.ResponsePreBlock{}, err
-		}
-
-		// Write the oracle data to the store.
-		if err := h.WritePrices(ctx, prices); err != nil {
-			h.logger.Error(
-				"failed to write oracle data to store",
-				"prices", prices,
-				"err", err,
-			)
-
-			err = CommitPricesError{
-				Err: err,
-			}
 
 			return &sdk.ResponsePreBlock{}, err
 		}
