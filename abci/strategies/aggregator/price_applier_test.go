@@ -19,8 +19,8 @@ import (
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPriceApplier(t *testing.T) {
@@ -56,7 +56,7 @@ func TestPriceApplier(t *testing.T) {
 			1: []byte("price1"),
 		}
 		ca := sdk.ConsAddress("val1")
-		
+
 		vote1, err := testutils.CreateExtendedVoteInfo(
 			ca,
 			prices,
@@ -118,7 +118,6 @@ func TestPriceApplier(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-
 		_, extCommitInfoBz, err := testutils.CreateExtendedCommitInfo(
 			[]abcitypes.ExtendedVoteInfo{vote1, vote2},
 			extCommitcodec,
@@ -126,7 +125,7 @@ func TestPriceApplier(t *testing.T) {
 		require.NoError(t, err)
 
 		ctx := sdk.Context{}.WithBlockHeader(cmtproto.Header{
-			Time: time.Now(), 
+			Time: time.Now(),
 		}).WithBlockHeight(1)
 
 		// succeed vote aggregation
@@ -173,7 +172,7 @@ func TestPriceApplier(t *testing.T) {
 		// get prices from validators
 		expPrices := map[slinkytypes.CurrencyPair]*big.Int{
 			cp: big.NewInt(150),
-		} 
+		}
 		va.On("GetPriceForValidator", ca1).Return(
 			expPrices,
 		)

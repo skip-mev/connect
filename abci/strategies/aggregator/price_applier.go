@@ -1,24 +1,26 @@
 package aggregator
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	cometabci "github.com/cometbft/cometbft/abci/types"
-	"cosmossdk.io/log"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/skip-mev/slinky/abci/strategies/codec"
-	"cosmossdk.io/math"
-	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
 	"math/big"
+
+	"cosmossdk.io/log"
+	"cosmossdk.io/math"
+	cometabci "github.com/cometbft/cometbft/abci/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
+	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // PriceApplier is an interface used in `ExtendVote` and `PreBlock` to apply the prices
 // derived from the latest votes to state.
-// 
+//
 //go:generate mockery --name PriceApplier --filename mock_price_applier.go
 type PriceApplier interface {
 	// ApplyPricesFromVoteExtensions derives the aggregate prices per asset in accordance with the given
-	// vote extensions + VoteAggregator. If a price exists for an asset, it is written to state. The 
+	// vote extensions + VoteAggregator. If a price exists for an asset, it is written to state. The
 	// prices aggregated from vote-extensions are returned if no errors are encountered in execution,
 	// otherwise an error is returned + nil prices.
 	ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[slinkytypes.CurrencyPair]*big.Int, error)
@@ -40,7 +42,7 @@ type oraclePriceApplier struct {
 	logger log.Logger
 
 	// codecs
-	voteExtensionCodec codec.VoteExtensionCodec
+	voteExtensionCodec  codec.VoteExtensionCodec
 	extendedCommitCodec codec.ExtendedCommitCodec
 }
 
@@ -53,10 +55,10 @@ func NewOraclePriceApplier(
 	logger log.Logger,
 ) PriceApplier {
 	return &oraclePriceApplier{
-		va: va,
-		ok: ok,
-		logger: logger,
-		voteExtensionCodec: voteExtensionCodec,
+		va:                  va,
+		ok:                  ok,
+		logger:              logger,
+		voteExtensionCodec:  voteExtensionCodec,
 		extendedCommitCodec: extendedCommitCodec,
 	}
 }

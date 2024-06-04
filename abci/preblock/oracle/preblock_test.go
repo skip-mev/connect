@@ -27,10 +27,8 @@ import (
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
-	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	voteweightedmocks "github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/service/metrics"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -116,7 +114,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	s.ctx = testutils.CreateBaseSDKContextWithKeys(s.T(), s.key, s.transientKey).WithExecMode(sdk.ExecModeFinalize)
 
 	// Use the default aggregation function for testing
-	mockValidatorStore := mocks.NewValidatorStore(s.T())
+	mockValidatorStore := voteweightedmocks.NewValidatorStore(s.T())
 	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
@@ -143,7 +141,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 }
 
 func (s *PreBlockTestSuite) TestPreBlocker() {
-	mockValidatorStore := mocks.NewValidatorStore(s.T())
+	mockValidatorStore := voteweightedmocks.NewValidatorStore(s.T())
 	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
@@ -155,7 +153,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			log.NewTestLogger(s.T()),
 			aggregationFn,
 			&s.oracleKeeper,
-			metrics.NewNopMetrics(),
+			servicemetrics.NewNopMetrics(),
 			s.cpID,
 			s.veCodec,
 			s.commitCodec,
@@ -181,7 +179,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			log.NewTestLogger(s.T()),
 			aggregationFn,
 			&s.oracleKeeper,
-			metrics.NewNopMetrics(),
+			servicemetrics.NewNopMetrics(),
 			s.cpID,
 			s.veCodec,
 			s.commitCodec,
@@ -209,7 +207,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			log.NewTestLogger(s.T()),
 			aggregationFn,
 			&s.oracleKeeper,
-			metrics.NewNopMetrics(),
+			servicemetrics.NewNopMetrics(),
 			currencypair.NewDefaultCurrencyPairStrategy(
 				&s.oracleKeeper,
 			),
@@ -230,6 +228,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			prices1,
 			s.veCodec,
 		)
+		s.Require().NoError(err)
 
 		prices2 := map[uint64][]byte{
 			3: priceBz,
@@ -241,6 +240,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			prices2,
 			s.veCodec,
 		)
+		s.Require().NoError(err)
 
 		_, extCommitBz, err := testutils.CreateExtendedCommitInfo(
 			[]cometabci.ExtendedVoteInfo{
@@ -270,7 +270,6 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			Txs: [][]byte{extCommitBz},
 		})
 		s.Require().NoError(err)
-
 
 		// require no updates
 		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
@@ -288,7 +287,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			log.NewTestLogger(s.T()),
 			aggregationFn,
 			&s.oracleKeeper,
-			metrics.NewNopMetrics(),
+			servicemetrics.NewNopMetrics(),
 			currencypair.NewDefaultCurrencyPairStrategy(
 				&s.oracleKeeper,
 			),
@@ -297,7 +296,9 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 		)
 
 		price1Bz, err := big.NewInt(1).GobEncode()
+		s.Require().NoError(err)
 		price2Bz, err := big.NewInt(2).GobEncode()
+		s.Require().NoError(err)
 		price3Bz, err := big.NewInt(3).GobEncode()
 		s.Require().NoError(err)
 
@@ -313,6 +314,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			prices,
 			s.veCodec,
 		)
+		s.Require().NoError(err)
 
 		ca2 := sdk.ConsAddress([]byte("ca2"))
 
@@ -321,6 +323,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			prices,
 			s.veCodec,
 		)
+		s.Require().NoError(err)
 
 		_, extCommitBz, err := testutils.CreateExtendedCommitInfo(
 			[]cometabci.ExtendedVoteInfo{
@@ -349,6 +352,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 		_, err = s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{extCommitBz},
 		})
+		s.Require().NoError(err)
 
 		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
 		for _, cp := range cps {

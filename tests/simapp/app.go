@@ -365,9 +365,9 @@ func NewSimApp(
 			compression.NewZStdCompressor(),
 		),
 	)
-	
+
 	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker())
-	
+
 	// Create the vote extensions handler that will be used to extend and verify
 	// vote extensions (i.e. oracle data).
 	cps := currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper)

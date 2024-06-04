@@ -282,7 +282,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			)
 
 			mockPriceApplier := aggregatormocks.NewPriceApplier(s.T())
-			
+
 			h := ve.NewVoteExtensionHandler(
 				log.NewTestLogger(s.T()),
 				tc.oracleService(),
@@ -299,7 +299,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			}
 			if req != nil {
 				finalizeBlockReq := &cometabci.RequestFinalizeBlock{
-					Txs: req.Txs,
+					Txs:    req.Txs,
 					Height: req.Height,
 				}
 				mockPriceApplier.On("ApplyPricesFromVoteExtensions", s.ctx, finalizeBlockReq).Return(nil, nil)
@@ -609,7 +609,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil).Run(func(_ mock.Arguments) {
 			panic("panic")
 		})
-	
+
 		expErr := ve.ErrPanic{
 			Err: fmt.Errorf("panic"),
 		}

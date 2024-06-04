@@ -12,12 +12,11 @@ import (
 	abciaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/types"
+	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
 )
 
 // PreBlockHandler is responsible for aggregating oracle data from each
@@ -63,10 +62,10 @@ func NewOraclePreBlockHandler(
 	)
 
 	return &PreBlockHandler{
-		logger:              logger,
-		keeper:              oracleKeeper,
-		metrics:             metrics,
-		pa: pa,
+		logger:  logger,
+		keeper:  oracleKeeper,
+		metrics: metrics,
+		pa:      pa,
 	}
 }
 
@@ -95,7 +94,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
 				)
-				types.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+				slinkyabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
 
 				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
 				if err == nil && prices != nil {

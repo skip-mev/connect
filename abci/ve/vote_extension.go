@@ -67,7 +67,7 @@ func NewVoteExtensionHandler(
 		currencyPairStrategy: strategy,
 		voteExtensionCodec:   codec,
 		metrics:              metrics,
-		priceApplier: 	   priceAppllier,
+		priceApplier:         priceAppllier,
 	}
 }
 
