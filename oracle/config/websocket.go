@@ -118,7 +118,7 @@ type WebSocketConfig struct {
 	WriteTimeout time.Duration `json:"writeTimeout"`
 
 	// WriteInterval is the interval at which the provider should send messages to
-	// the server. Note that a write interval of 0 disables write batching.
+	// the server.
 	WriteInterval time.Duration `json:"writeInterval"`
 
 	// PingInterval is the interval to ping the server. Note that a ping interval
