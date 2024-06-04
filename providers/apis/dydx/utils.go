@@ -69,6 +69,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 			URL: "https://dydx-api.lavenderfive.com:443",
 		},
 		{
+			// TODO: Update once the PR is merged.
 			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/yujin/add_isolated_markets/public/configs/otherMarketData.json",
 		},
 	},
