@@ -3,7 +3,6 @@ package oracle_test
 import (
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -14,28 +13,28 @@ import (
 var (
 	// Create some custom tickers for testing.
 	BTC_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.BITCOIN_USD,
+		CurrencyPair:     pkgtypes.NewCurrencyPair("BTC", "USD"),
 		Decimals:         8,
 		MinProviderCount: 3,
 		Enabled:          true,
 	}
 
 	ETH_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.ETHEREUM_USD,
+		CurrencyPair:     pkgtypes.NewCurrencyPair("ETH", "USD"),
 		Decimals:         11,
 		MinProviderCount: 3,
 		Enabled:          true,
 	}
 
 	USDT_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.USDT_USD,
+		CurrencyPair:     pkgtypes.NewCurrencyPair("USDT", "USD"),
 		Decimals:         6,
 		MinProviderCount: 2,
 		Enabled:          true,
 	}
 
 	PEPE_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.PEPE_USD,
+		CurrencyPair:     pkgtypes.NewCurrencyPair("PEPE", "USD"),
 		Decimals:         18,
 		MinProviderCount: 1,
 		Enabled:          true,
