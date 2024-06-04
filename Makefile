@@ -19,7 +19,7 @@ COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 USE_CORE_MARKETS ?= false
 USE_RAYDIUM_MARKETS ?= false
-USE_UNISWAPV3_BASE_MARKETS ?= false
+USE_UNISWAPV3_BASE_MARKETS ?= true
 SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
