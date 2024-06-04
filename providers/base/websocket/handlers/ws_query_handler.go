@@ -159,7 +159,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		return errors.ErrDialWithErr(err)
 	}
 
-	time.Sleep(2000 * time.Millisecond)
+	// Wait for the post connection timeout before sending the initial payload.
+	time.Sleep(h.config.PostConnectionTimeout)
 
 	// Create the initial set of events that the channel will subscribe to.
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
@@ -183,7 +184,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		}
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 
-		time.Sleep(500 * time.Millisecond)
+		// Wait for the write interval timeout before sending the next message.
+		time.Sleep(h.config.WriteInterval)
 	}
 
 	h.logger.Debug("initial payload sent; websocket connection successfully started")

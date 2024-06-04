@@ -25,20 +25,20 @@ const (
 
 // DefaultWebSocketConfig is the default configuration for the OKX Websocket.
 var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       1000,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	Endpoints: []config.Endpoint{
-		{
-			URL: URL_PROD,
-		},
-	},
-	ReadBufferSize:    config.DefaultReadBufferSize,
-	WriteBufferSize:   config.DefaultWriteBufferSize,
-	HandshakeTimeout:  config.DefaultHandshakeTimeout,
-	EnableCompression: config.DefaultEnableCompression,
-	ReadTimeout:       config.DefaultReadTimeout,
-	WriteTimeout:      config.DefaultWriteTimeout,
-	MaxReadErrorCount: config.DefaultMaxReadErrorCount,
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL_PROD}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteInterval:                 config.DefaultWriteInterval,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 }

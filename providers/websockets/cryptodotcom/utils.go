@@ -1,6 +1,8 @@
 package cryptodotcom
 
 import (
+	"time"
+
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
@@ -24,24 +26,29 @@ const (
 	//
 	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
 	DefaultMaxSubscriptionsPerConnection = 200
+
+	// DefaultPostConnectionTimeout is the default timeout for post connection setup. Sleep for a second to ensure
+	// the connection is established before sending the subscribe message. This is the recommended behaviour from
+	// the Crypto.com documentation.
+	//
+	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
+	DefaultPostConnectionTimeout = 1 * time.Second
 )
 
 // DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
 var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       config.DefaultMaxBufferSize,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	Endpoints: []config.Endpoint{
-		{
-			URL: URL_PROD,
-		},
-	},
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 config.DefaultMaxBufferSize,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL_PROD}},
 	ReadBufferSize:                config.DefaultReadBufferSize,
 	WriteBufferSize:               config.DefaultWriteBufferSize,
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
 	EnableCompression:             config.DefaultEnableCompression,
 	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteInterval:                 config.DefaultWriteInterval,
 	WriteTimeout:                  config.DefaultWriteTimeout,
 	PingInterval:                  config.DefaultPingInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,

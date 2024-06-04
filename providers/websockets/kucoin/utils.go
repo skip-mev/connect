@@ -30,25 +30,29 @@ const (
 	//
 	// ref: https://www.kucoin.com/docs/basic-info/request-rate-limit/websocket
 	DefaultMaxSubscriptionsPerConnection = 50
+
+	// DefaultWriteInterval is the default write interval for the KuCoin websocket.
+	DefaultWriteInterval = 10 * time.Millisecond
+
+	// DefaultReconnectionTimeout is the default reconnection timeout for the KuCoin websocket.
+	DefaultReconnectionTimeout = 1 * time.Minute
 )
 
 var (
 	// DefaultWebSocketConfig defines the default websocket config for Kucoin.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:             true,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: WSS,
-			},
-		},
+		Enabled:                       true,
+		MaxBufferSize:                 config.DefaultMaxBufferSize,
+		ReconnectionTimeout:           DefaultReconnectionTimeout,
+		PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+		Endpoints:                     []config.Endpoint{{URL: WSS}},
 		Name:                          Name,
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,
 		EnableCompression:             config.DefaultEnableCompression,
 		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteInterval:                 DefaultWriteInterval,
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
@@ -62,11 +66,7 @@ var (
 		Timeout:    5 * time.Second, // KuCoin recommends a timeout of 5 seconds.
 		Interval:   1 * time.Minute, // This is not used.
 		MaxQueries: 1,               // This is not used.
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL,
-			},
-		},
-		Name: Name,
+		Endpoints:  []config.Endpoint{{URL: URL}},
+		Name:       Name,
 	}
 )

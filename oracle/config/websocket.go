@@ -14,6 +14,10 @@ const (
 	// to reconnect to the websocket endpoint.
 	DefaultReconnectionTimeout = 10 * time.Second
 
+	// DefaultPostConnectionTimeout is the default timeout for the provider to wait
+	// after a connection is established before starting operations.
+	DefaultPostConnectionTimeout = 0 * time.Second
+
 	// DefaultReadBufferSize is the default I/O read buffer size. If a buffer size of
 	// 0 is specified, then a default buffer size is used i.e. the buffers allocated
 	// by the HTTP server.
@@ -38,6 +42,10 @@ const (
 	// DefaultWriteTimeout is the default write deadline on the underlying network
 	// connection.
 	DefaultWriteTimeout = 45 * time.Second
+
+	// DefaultWriteInterval is the default interval at which the provider should send
+	// messages to the server.
+	DefaultWriteInterval = 0 * time.Second
 
 	// DefaultPingInterval is the default interval at which the provider should send
 	// ping messages to the server.
@@ -69,6 +77,10 @@ type WebSocketConfig struct {
 	// ReconnectionTimeout is the timeout for the provider to attempt to reconnect
 	// to the websocket endpoint.
 	ReconnectionTimeout time.Duration `json:"reconnectionTimeout"`
+
+	// PostConnectionTimeout is the timeout for the provider to wait after a connection
+	// is established before starting operations.
+	PostConnectionTimeout time.Duration `json:"postConnectionTimeout"`
 
 	// Endpoints are the websocket endpoints for the provider. At least one endpoint
 	// must be specified.
@@ -105,6 +117,10 @@ type WebSocketConfig struct {
 	// not time out.
 	WriteTimeout time.Duration `json:"writeTimeout"`
 
+	// WriteInterval is the interval at which the provider should send messages to
+	// the server. Note that a write interval of 0 disables write batching.
+	WriteInterval time.Duration `json:"writeInterval"`
+
 	// PingInterval is the interval to ping the server. Note that a ping interval
 	// of 0 disables pings.
 	PingInterval time.Duration `json:"pingInterval"`
@@ -131,6 +147,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.ReconnectionTimeout <= 0 {
 		return fmt.Errorf("websocket reconnection timeout must be greater than 0")
+	}
+
+	if c.PostConnectionTimeout < 0 {
+		return fmt.Errorf("websocket post connection timeout cannot be negative")
 	}
 
 	if len(c.Endpoints) == 0 {
@@ -165,6 +185,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.WriteTimeout <= 0 {
 		return fmt.Errorf("websocket write timeout must be greater than 0")
+	}
+
+	if c.WriteInterval < 0 {
+		return fmt.Errorf("websocket write interval cannot be negative")
 	}
 
 	if c.PingInterval < 0 {
