@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
@@ -27,27 +27,31 @@ import (
 )
 
 var (
+	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	ethusdtCP = slinkytypes.NewCurrencyPair("ETH", "USDT")
+)
+
+var (
 	logger = zap.NewExample()
 
 	oracleCfg = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
@@ -58,75 +62,72 @@ var (
 	}
 
 	oracleCfgWithMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
 			},
 			// Market map provider.
-			mapperCfg,
+			mapperCfg.Name: mapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
 	}
 
 	oracleCfgWithMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
-			{ // Price API provider.
+		Providers: map[string]config.ProviderConfig{
+			binance.Name: { // Price API provider.
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price API provider.
+			coinbase.Name: { // Price API provider.
 				Name: coinbase.Name,
 				API:  coinbase.DefaultAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
-			{ // Price WebSocket provider.
+			okx.Name: { // Price WebSocket provider.
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
 			},
 			// Market map provider.
-			mockMapperCfg,
+			mockMapperCfg.Name: mockMapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
 	}
 
 	oracleCfgWithOnlyMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers: []config.ProviderConfig{
+		Providers: map[string]config.ProviderConfig{
 			// Market map provider.
-			mockMapperCfg,
+			mockMapperCfg.Name: mockMapperCfg,
 		},
 		Host: "localhost",
 		Port: "8080",
@@ -156,28 +157,40 @@ var (
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			constants.BITCOIN_USD.String(): {
+			btcusdtCP.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.BITCOIN_USD,
+					CurrencyPair:     btcusdtCP,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.BITCOIN_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.BITCOIN_USD),
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: coinbasebtcusd.GetOffChainTicker(),
+					},
+					{
+						Name:           okx.Name,
+						OffChainTicker: okxbtcusd.GetOffChainTicker(),
+					},
 				},
 			},
-			constants.ETHEREUM_USD.String(): {
+			ethusdtCP.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.ETHEREUM_USD,
+					CurrencyPair:     ethusdtCP,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.ETHEREUM_USD),
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: coinbaseethusd.GetOffChainTicker(),
+					},
+					{
+						Name:           okx.Name,
+						OffChainTicker: okxethusd.GetOffChainTicker(),
+					},
 				},
 			},
 		},
@@ -282,4 +295,16 @@ func marketMapperFactory(
 	) (*mmclienttypes.MarketMapProvider, error) {
 		return provider, nil
 	}
+}
+
+func copyConfig(cfg config.OracleConfig) config.OracleConfig {
+	// copy providers map
+	newCfg := cfg
+
+	newCfg.Providers = make(map[string]config.ProviderConfig)
+	for k, v := range cfg.Providers {
+		newCfg.Providers[k] = v
+	}
+
+	return newCfg
 }

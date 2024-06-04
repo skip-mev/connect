@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/spf13/viper"
 
@@ -33,8 +32,8 @@ const (
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
-func DefaultOracleConfig() OracleConfig {
-	cfg := OracleConfig{
+func DefaultOracleConfig() config.OracleConfig {
+	cfg := config.OracleConfig{
 		UpdateInterval: DefaultUpdateInterval,
 		MaxPriceAge:    DefaultMaxPriceAge,
 		Metrics: config.MetricsConfig{
@@ -55,71 +54,6 @@ func DefaultOracleConfig() OracleConfig {
 	}
 
 	return cfg
-}
-
-type OracleConfig struct {
-	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
-	UpdateInterval time.Duration `json:"updateInterval"`
-
-	// MaxPriceAge is the maximum age of a price that the oracle will consider valid. If a
-	// price is older than this, the oracle will not consider it valid and will not return it in /prices
-	// requests.
-	MaxPriceAge time.Duration `json:"maxPriceAge"`
-
-	// Providers is the map of provider names to providers that the oracle will fetch prices from.
-	Providers map[string]config.ProviderConfig `json:"providers"`
-
-	// Metrics is the metrics configurations for the oracle.
-	Metrics config.MetricsConfig `json:"metrics"`
-
-	// Host is the host that the oracle will listen on.
-	Host string `json:"host"`
-
-	// Port is the port that the oracle will listen on.
-	Port string `json:"port"`
-}
-
-func (c *OracleConfig) ValidateBasic() error {
-	if c.UpdateInterval <= 0 {
-		return fmt.Errorf("oracle update interval must be greater than 0")
-	}
-
-	if c.MaxPriceAge <= 0 {
-		return fmt.Errorf("oracle max price age must be greater than 0")
-	}
-
-	for _, p := range c.Providers {
-		if err := p.ValidateBasic(); err != nil {
-			return fmt.Errorf("provider %s is not formatted correctly: %w", p.Name, err)
-		}
-	}
-
-	if len(c.Host) == 0 {
-		return fmt.Errorf("oracle host cannot be empty")
-	}
-
-	if len(c.Port) == 0 {
-		return fmt.Errorf("oracle port cannot be empty")
-	}
-
-	return c.Metrics.ValidateBasic()
-}
-
-func (c *OracleConfig) ToLegacy() config.OracleConfig {
-	providers := make([]config.ProviderConfig, len(c.Providers))
-	var i int
-	for _, providerConfig := range c.Providers {
-		providers[i] = providerConfig
-		i++
-	}
-	return config.OracleConfig{
-		UpdateInterval: c.UpdateInterval,
-		MaxPriceAge:    c.MaxPriceAge,
-		Providers:      providers,
-		Metrics:        c.Metrics,
-		Host:           c.Host,
-		Port:           c.Port,
-	}
 }
 
 func SetDefaults() {
@@ -192,15 +126,14 @@ func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (confi
 		}
 	}
 
-	legacyCfg := cfg.ToLegacy()
-	return legacyCfg, legacyCfg.ValidateBasic()
+	return cfg, cfg.ValidateBasic()
 }
 
 // oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
-func oracleConfigFromViper() (OracleConfig, error) {
-	var cfg OracleConfig
+func oracleConfigFromViper() (config.OracleConfig, error) {
+	var cfg config.OracleConfig
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return OracleConfig{}, err
+		return config.OracleConfig{}, err
 	}
 
 	// for each api-provider, we'll have to manually fill the endpoints
@@ -238,7 +171,7 @@ func oracleConfigFromViper() (OracleConfig, error) {
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {
-		return OracleConfig{}, err
+		return config.OracleConfig{}, err
 	}
 
 	return cfg, nil

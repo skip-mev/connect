@@ -12,15 +12,18 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 )
 
 var (
-	btcusd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	ethusd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd = types.DefaultProviderTicker{
+		OffChainTicker: "BTC-USD",
+	}
+	ethusd = types.DefaultProviderTicker{
+		OffChainTicker: "ETH-USD",
+	}
 	logger = zap.NewExample()
 )
 
