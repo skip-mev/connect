@@ -90,6 +90,54 @@ func TestPriceApplier(t *testing.T) {
 		require.Nil(t, returnedPrices)
 	})
 
+	t.Run("ignore negative prices", func(t *testing.T) {
+		priceBz := big.NewInt(-100).Bytes()
+
+		prices := map[uint64][]byte{
+			1: priceBz,
+		}
+
+		ca := sdk.ConsAddress("val1")
+
+		vote1, err := testutils.CreateExtendedVoteInfo(
+			ca,
+			prices,
+			veCodec,
+		)
+		require.NoError(t, err)
+
+		_, extCommitInfoBz, err := testutils.CreateExtendedCommitInfo(
+			[]abcitypes.ExtendedVoteInfo{vote1},
+			extCommitcodec,
+		)
+		require.NoError(t, err)
+
+		ctx := sdk.Context{}
+
+		// succeed vote aggregation
+		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		va.On("AggregateOracleVotes", ctx, []aggregator.Vote{
+			{
+				OracleVoteExtension: vetypes.OracleVoteExtension{
+					Prices: prices,
+				},
+				ConsAddress: ca,
+			},
+		}).Return(map[slinkytypes.CurrencyPair]*big.Int{
+			cp: big.NewInt(-100),
+		}, nil)
+
+		ok.On("GetAllCurrencyPairs", ctx).Return(
+			[]slinkytypes.CurrencyPair{cp},
+		)
+
+		_, err = pa.ApplyPricesFromVoteExtensions(ctx, &abcitypes.RequestFinalizeBlock{
+			Txs: [][]byte{extCommitInfoBz},
+		})
+
+		require.NoError(t, err)
+	})
+
 	t.Run("update prices in state", func(t *testing.T) {
 		priceBz := big.NewInt(100).Bytes()
 

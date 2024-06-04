@@ -105,6 +105,16 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 			continue
 		}
 
+		if price.Sign() == -1 {
+			opa.logger.Error(
+				"price is negative",
+				"currency_pair", cp.String(),
+				"price", price.String(),
+			)
+
+			continue
+		}
+
 		// Convert the price to a quote price and write it to state.
 		quotePrice := oracletypes.QuotePrice{
 			Price:          math.NewIntFromBigInt(price),
