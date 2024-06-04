@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"time"
 
 	"go.uber.org/zap"
@@ -72,6 +73,12 @@ func WithPriceAggregator(agg PriceAggregator) Option {
 		}
 
 		o.priceAggregator = agg
+	}
+}
+
+func WithMarketMapProvider(fn func() mmtypes.MarketMap) Option {
+	return func(o *OracleImpl) {
+		o.marketMapGetter = fn
 	}
 }
 

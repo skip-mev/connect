@@ -3,6 +3,7 @@ package oracle
 import (
 	"context"
 	"fmt"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -23,6 +24,7 @@ type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
 	GetPrices() types.Prices
+	GetMarketMap() marketmaptypes.MarketMap
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -52,6 +54,9 @@ type OracleImpl struct { //nolint
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
 	priceAggregator PriceAggregator
+
+	// marketMapGetter gets the latest market map. It is a method implemented on ProviderOrchestrator.
+	marketMapGetter func() marketmaptypes.MarketMap
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics oraclemetrics.Metrics
@@ -258,4 +263,14 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 func (o *OracleImpl) GetPrices() types.Prices {
 	prices := o.priceAggregator.GetPrices()
 	return prices
+}
+
+// GetMarketMap returns the current market map configuration.
+//
+// TODO(Tyler): is the empty map ok? maybe? maybe not. lord save us all.
+func (o *OracleImpl) GetMarketMap() marketmaptypes.MarketMap {
+	if o.marketMapGetter != nil {
+		return o.marketMapGetter()
+	}
+	return marketmaptypes.MarketMap{}
 }

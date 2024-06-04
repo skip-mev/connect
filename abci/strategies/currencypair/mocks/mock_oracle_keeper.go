@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mock "github.com/stretchr/testify/mock"
 
 	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 

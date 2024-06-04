@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	metrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	mock "github.com/stretchr/testify/mock"
 
 	time "time"
 )

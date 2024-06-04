@@ -110,7 +110,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 	router := http.NewServeMux()
 	router.HandleFunc("/", os.routeRequest)
-
+	router.HandleFunc("/oracle/v1/marketmap", os.HandleGetMarketMap)
 	os.httpSrv.Handler = h2c.NewHandler(router, &http2.Server{})
 
 	eg, ctx := errgroup.WithContext(ctx)
@@ -193,6 +193,20 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 	case resp := <-resCh:
 		return resp, nil
 	}
+}
+
+func (os *OracleServer) HandleGetMarketMap(w http.ResponseWriter, _ *http.Request) {
+	mm := os.o.GetMarketMap()
+	bz, err := mm.Marshal()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		os.logger.Error("HandleGetMarketMap: failed to marshal market map to JSON", zap.Error(err))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(bz)
 }
 
 // Close closes the underlying oracle server, and blocks until all open requests have been satisfied.

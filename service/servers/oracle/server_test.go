@@ -170,6 +170,13 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.String(), cp2.String()))
 }
 
+func (s *ServerTestSuite) TestOracleMarketMap() {
+	// call from http client
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/marketmap", localhost, port))
+	s.Require().NoError(err)
+	fmt.Println(httpResp)
+}
+
 // test that the oracle server closes when expected.
 func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
