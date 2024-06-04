@@ -9,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -17,8 +16,12 @@ import (
 )
 
 var (
-	btcusdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	ethusdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	btcusdt = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSDT",
+	}
+	ethusdt = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSDT",
+	}
 )
 
 func TestCreateURL(t *testing.T) {

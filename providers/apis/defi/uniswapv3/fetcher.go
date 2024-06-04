@@ -95,18 +95,14 @@ func NewPriceFetcher(
 			apiMetrics,
 		)
 	case len(api.Endpoints) == 1:
-		client, err = ethmulticlient.NewGoEthereumClientImplFromEndpoint(
+		client, err = ethmulticlient.NewGoEthereumClientImpl(
 			ctx,
 			apiMetrics,
 			api,
 			0,
 		)
 	default:
-		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(
-			ctx,
-			apiMetrics,
-			api,
-		)
+		err = fmt.Errorf("no endpoints were provided")
 	}
 	if err != nil {
 		return nil, err

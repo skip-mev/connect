@@ -297,7 +297,7 @@ func TestNewPriceFetcher(t *testing.T) {
 				MaxQueries:       1,
 				Name:             "uniswapv3_api-ethereum",
 			},
-			err: fmt.Errorf("invalid api config: provider url and endpoints cannot be empty"),
+			err: fmt.Errorf("invalid api config"),
 		},
 		{
 			name:   "multiclient failure errors",
@@ -340,7 +340,7 @@ func TestNewPriceFetcher(t *testing.T) {
 				ReconnectTimeout: 1,
 				Interval:         1,
 				MaxQueries:       1,
-				URL:              "http://localhost:0",
+				Endpoints:        []config.Endpoint{{URL: "http://localhost:0"}},
 				Name:             "uniswapv3_api-ethereum",
 			},
 			err: nil,

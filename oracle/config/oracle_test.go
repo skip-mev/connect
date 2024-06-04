@@ -20,21 +20,25 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
+							Endpoints: []config.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    config.DefaultReadBufferSize,
+							WriteBufferSize:   config.DefaultWriteBufferSize,
+							HandshakeTimeout:  config.DefaultHandshakeTimeout,
+							EnableCompression: config.DefaultEnableCompression,
+							ReadTimeout:       config.DefaultReadTimeout,
+							WriteTimeout:      config.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -48,21 +52,25 @@ func TestOracleConfig(t *testing.T) {
 			name: "bad config w/ no max-price-age",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
+							Endpoints: []config.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    config.DefaultReadBufferSize,
+							WriteBufferSize:   config.DefaultWriteBufferSize,
+							HandshakeTimeout:  config.DefaultHandshakeTimeout,
+							EnableCompression: config.DefaultEnableCompression,
+							ReadTimeout:       config.DefaultReadTimeout,
+							WriteTimeout:      config.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -82,21 +90,25 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
+							Endpoints: []config.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    config.DefaultReadBufferSize,
+							WriteBufferSize:   config.DefaultWriteBufferSize,
+							HandshakeTimeout:  config.DefaultHandshakeTimeout,
+							EnableCompression: config.DefaultEnableCompression,
+							ReadTimeout:       config.DefaultReadTimeout,
+							WriteTimeout:      config.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -114,21 +126,25 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
+							Endpoints: []config.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    config.DefaultReadBufferSize,
+							WriteBufferSize:   config.DefaultWriteBufferSize,
+							HandshakeTimeout:  config.DefaultHandshakeTimeout,
+							EnableCompression: config.DefaultEnableCompression,
+							ReadTimeout:       config.DefaultReadTimeout,
+							WriteTimeout:      config.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -142,21 +158,25 @@ func TestOracleConfig(t *testing.T) {
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
 				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
+				Providers: map[string]config.ProviderConfig{
+					"test": {
 						Name: "test",
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
+							Endpoints: []config.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    config.DefaultReadBufferSize,
+							WriteBufferSize:   config.DefaultWriteBufferSize,
+							HandshakeTimeout:  config.DefaultHandshakeTimeout,
+							EnableCompression: config.DefaultEnableCompression,
+							ReadTimeout:       config.DefaultReadTimeout,
+							WriteTimeout:      config.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},

@@ -17,4 +17,4 @@ COPY --from=builder /src/slinky/build/* /usr/local/bin/
 RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--update-market-config-path", "/oracle/market.json", "--market-map-endpoint", "blockchain:9090", "--log-file-level", "debug"]
+ENTRYPOINT [ "slinky" ]

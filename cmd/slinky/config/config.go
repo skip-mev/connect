@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/spf13/viper"
 
@@ -33,8 +32,8 @@ const (
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
-func DefaultOracleConfig() OracleConfig {
-	cfg := OracleConfig{
+func DefaultOracleConfig() config.OracleConfig {
+	cfg := config.OracleConfig{
 		UpdateInterval: DefaultUpdateInterval,
 		MaxPriceAge:    DefaultMaxPriceAge,
 		Metrics: config.MetricsConfig{
@@ -50,72 +49,11 @@ func DefaultOracleConfig() OracleConfig {
 		cfg.Providers[provider.Name] = provider
 	}
 
+	if err := cfg.ValidateBasic(); err != nil {
+		panic(fmt.Sprintf("default oracle config is invalid: %s", err))
+	}
+
 	return cfg
-}
-
-type OracleConfig struct {
-	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
-	UpdateInterval time.Duration `json:"updateInterval"`
-
-	// MaxPriceAge is the maximum age of a price that the oracle will consider valid. If a
-	// price is older than this, the oracle will not consider it valid and will not return it in /prices
-	// requests.
-	MaxPriceAge time.Duration `json:"maxPriceAge"`
-
-	// Providers is the map of provider names to providers that the oracle will fetch prices from.
-	Providers map[string]config.ProviderConfig `json:"providers"`
-
-	// Metrics is the metrics configurations for the oracle.
-	Metrics config.MetricsConfig `json:"metrics"`
-
-	// Host is the host that the oracle will listen on.
-	Host string `json:"host"`
-
-	// Port is the port that the oracle will listen on.
-	Port string `json:"port"`
-}
-
-func (c *OracleConfig) ValidateBasic() error {
-	if c.UpdateInterval <= 0 {
-		return fmt.Errorf("oracle update interval must be greater than 0")
-	}
-
-	if c.MaxPriceAge <= 0 {
-		return fmt.Errorf("oracle max price age must be greater than 0")
-	}
-
-	for _, p := range c.Providers {
-		if err := p.ValidateBasic(); err != nil {
-			return fmt.Errorf("provider %s is not formatted correctly: %w", p.Name, err)
-		}
-	}
-
-	if len(c.Host) == 0 {
-		return fmt.Errorf("oracle host cannot be empty")
-	}
-
-	if len(c.Port) == 0 {
-		return fmt.Errorf("oracle port cannot be empty")
-	}
-
-	return c.Metrics.ValidateBasic()
-}
-
-func (c *OracleConfig) ToLegacy() config.OracleConfig {
-	providers := make([]config.ProviderConfig, len(c.Providers))
-	var i int
-	for _, providerConfig := range c.Providers {
-		providers[i] = providerConfig
-		i++
-	}
-	return config.OracleConfig{
-		UpdateInterval: c.UpdateInterval,
-		MaxPriceAge:    c.MaxPriceAge,
-		Providers:      providers,
-		Metrics:        c.Metrics,
-		Host:           c.Host,
-		Port:           c.Port,
-	}
 }
 
 func SetDefaults() {
@@ -156,22 +94,6 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
-func GetLegacyOracleConfig(path string) (config.OracleConfig, error) {
-	viper.SetConfigFile(path)
-	viper.SetConfigType("json")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return config.OracleConfig{}, err
-	}
-
-	var cfg config.OracleConfig
-	if err := viper.Unmarshal(&cfg); err != nil {
-		return config.OracleConfig{}, err
-	}
-
-	return cfg, cfg.ValidateBasic()
-}
-
 // ReadOracleConfigFromFile reads a config from a file and returns the config.
 func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (config.OracleConfig, error) {
 	// if the path is non-nil read data from a file\
@@ -204,41 +126,52 @@ func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (confi
 		}
 	}
 
-	return cfg.ToLegacy(), nil
+	return cfg, cfg.ValidateBasic()
 }
 
 // oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
-func oracleConfigFromViper() (OracleConfig, error) {
-	var cfg OracleConfig
+func oracleConfigFromViper() (config.OracleConfig, error) {
+	var cfg config.OracleConfig
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return OracleConfig{}, err
+		return config.OracleConfig{}, err
 	}
 
 	// for each api-provider, we'll have to manually fill the endpoints
 	for _, provider := range cfg.Providers {
-		// skip non-api providers
-		if provider.API.Enabled {
-			for i, endpoint := range provider.API.Endpoints {
-				provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i)
-			}
-
-			// start searching for environment variables from the first endpoint
-			firstEndpointFromViperIndex := len(provider.API.Endpoints)
-			for found := true; found; firstEndpointFromViperIndex++ {
-				var endpoint config.Endpoint
-				endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex)
-				if found {
-					provider.API.Endpoints = append(provider.API.Endpoints, endpoint)
-				}
-			}
-
-			// update the provider with the updated endpoints
-			cfg.Providers[provider.Name] = provider
+		// Update API endpoints
+		for i, endpoint := range provider.API.Endpoints {
+			provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i, "api")
 		}
+
+		firstEndpointFromViperIndex := len(provider.API.Endpoints)
+		for found := true; found; firstEndpointFromViperIndex++ {
+			var endpoint config.Endpoint
+			endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex, "api")
+			if found {
+				provider.API.Endpoints = append(provider.API.Endpoints, endpoint)
+			}
+		}
+
+		// Update WebSocket endpoints
+		for i, endpoint := range provider.WebSocket.Endpoints {
+			provider.WebSocket.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i, "webSocket")
+		}
+
+		firstEndpointFromViperIndex = len(provider.WebSocket.Endpoints)
+		for found := true; found; firstEndpointFromViperIndex++ {
+			var endpoint config.Endpoint
+			endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex, "webSocket")
+			if found {
+				provider.WebSocket.Endpoints = append(provider.WebSocket.Endpoints, endpoint)
+			}
+		}
+
+		// update the provider with the updated endpoints
+		cfg.Providers[provider.Name] = provider
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {
-		return OracleConfig{}, err
+		return config.OracleConfig{}, err
 	}
 
 	return cfg, nil
@@ -246,11 +179,11 @@ func oracleConfigFromViper() (OracleConfig, error) {
 
 // updateEndpointFromEnvironment returns an updated endpoint with the values from the environment. If viper is not aware of
 // any overrides variables for the endpoint, the original endpoint is returned with false.
-func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string, idx int) (config.Endpoint, bool) {
+func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string, idx int, configType string) (config.Endpoint, bool) {
 	// check if an environment variable exists for this endpoint
-	endpointURL := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.url", providerName, idx))
-	endpointAPIKey := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKey", providerName, idx))
-	endpointAPIKeyHeader := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKeyHeader", providerName, idx))
+	endpointURL := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.url", providerName, configType, idx))
+	endpointAPIKey := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.authentication.apiKey", providerName, configType, idx))
+	endpointAPIKeyHeader := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.authentication.apiKeyHeader", providerName, configType, idx))
 
 	// if the environment variable exists, set the endpoint to the value of the environment variable
 	if endpointURL != nil {

@@ -145,9 +145,10 @@ func (s *OracleTestSuite) TestProviders() {
 			defer cancel()
 
 			for _, provider := range providers {
+				p := provider
 				go func() {
 					// context deadline exceeded
-					s.Require().Error(provider.Start(ctx))
+					s.Require().Error(p.Start(ctx))
 				}()
 			}
 

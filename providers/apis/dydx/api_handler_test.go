@@ -35,7 +35,7 @@ func TestCreateURL(t *testing.T) {
 	t.Run("single chain", func(t *testing.T) {
 		url, err := handler.CreateURL(chains[:1])
 		require.NoError(t, err)
-		require.Equal(t, fmt.Sprintf(dydx.Endpoint, dydx.DefaultAPIConfig.URL), url)
+		require.Equal(t, fmt.Sprintf(dydx.Endpoint, dydx.DefaultAPIConfig.Endpoints[0].URL), url)
 	})
 }
 

@@ -56,9 +56,6 @@ func NewJSONRPCClient(
 	case len(api.Endpoints) == 1:
 		client, err = solanaClientFromEndpoint(api.Endpoints[0])
 		redactedURL = metrics.RedactedEndpointURL(0)
-	case len(api.URL) > 0:
-		client = rpc.New(api.URL)
-		redactedURL = metrics.RedactedURL
 	default:
 		return nil, fmt.Errorf("no valid endpoints or url were provided")
 	}

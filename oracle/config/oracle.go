@@ -21,13 +21,7 @@ type OracleConfig struct {
 	MaxPriceAge time.Duration `json:"maxPriceAge"`
 
 	// Providers is the list of providers that the oracle will fetch prices from.
-	Providers []ProviderConfig `json:"providers"`
-
-	// Production specifies whether the oracle is running in production mode. This is used to
-	// determine whether the oracle should be run in debug mode or not.
-	//
-	// Deprecated: This field is no longer used.
-	Production bool `json:"production"`
+	Providers map[string]ProviderConfig `json:"providers"`
 
 	// Metrics is the metrics configurations for the oracle.
 	Metrics MetricsConfig `json:"metrics"`

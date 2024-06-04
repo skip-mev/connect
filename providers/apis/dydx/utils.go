@@ -25,7 +25,7 @@ const (
 	ChainID = "dydx-node"
 
 	// Endpoint is the endpoint for the dYdX market map API.
-	Endpoint = "%s/dydxprotocol/prices/params/market?limit=10000"
+	Endpoint = "%s/dydxprotocol/prices/params/market?pagination.limit=10000"
 
 	// Delimiter is the delimiter used to separate the base and quote assets in a pair.
 	Delimiter = "-"
@@ -52,7 +52,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "localhost:1317",
+	Endpoints:        []config.Endpoint{{URL: "http://localhost:1317"}},
 }
 
 // DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.
@@ -63,9 +63,11 @@ var DefaultResearchAPIConfig = config.APIConfig{
 	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
-	URL:              "https://dydx-api.lavenderfive.com:443",
 	MaxQueries:       1,
 	Endpoints: []config.Endpoint{
+		{
+			URL: "https://dydx-api.lavenderfive.com:443",
+		},
 		{
 			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
 		},
