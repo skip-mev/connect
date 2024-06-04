@@ -39,7 +39,7 @@ func main() {
 
 	if *useUniswapV3Base {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using uniswapv3 base markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.BaseMarketMap)
+		marketMap = mergeMarketMaps(marketMap, constants.UniswapV3BaseMarketMap)
 	}
 
 	// Write the market map to the temporary file.
