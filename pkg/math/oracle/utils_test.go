@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -102,7 +101,7 @@ func TestGetIndexPrice(t *testing.T) {
 		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		_, err = agg.GetIndexPrice(constants.ETHEREUM_USD)
+		_, err = agg.GetIndexPrice(ethusdCP)
 		require.Error(t, err)
 	})
 
@@ -111,11 +110,11 @@ func TestGetIndexPrice(t *testing.T) {
 		require.NoError(t, err)
 
 		prices := types.Prices{
-			constants.BITCOIN_USD.String(): big.NewFloat(100),
+			btcusdCP.String(): big.NewFloat(100),
 		}
 		agg.SetIndexPrices(prices)
 
-		price, err := agg.GetIndexPrice(constants.BITCOIN_USD)
+		price, err := agg.GetIndexPrice(btcusdCP)
 		require.NoError(t, err)
 		require.Equal(t, big.NewFloat(100), price)
 	})
@@ -125,11 +124,11 @@ func TestGetIndexPrice(t *testing.T) {
 		require.NoError(t, err)
 
 		prices := types.Prices{
-			constants.BITCOIN_USD.String(): nil,
+			btcusdCP.String(): nil,
 		}
 		agg.SetIndexPrices(prices)
 
-		_, err = agg.GetIndexPrice(constants.BITCOIN_USD)
+		_, err = agg.GetIndexPrice(btcusdCP)
 		require.Error(t, err)
 	})
 }

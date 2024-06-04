@@ -23,7 +23,6 @@ import (
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
@@ -342,17 +341,17 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
-	ethusdc := constants.ETHEREUM_USDC
+	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
-		ethusdc,
+		ethusdcCP,
 	}...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
 	defer closeFn()
 
-	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), ethusdc)
+	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), ethusdcCP)
 	s.Require().NoError(err)
 
 	zero := big.NewInt(0)
@@ -412,7 +411,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 		// query for the given currency pair
-		resp, _, err := QueryCurrencyPair(s.chain, ethusdc, height)
+		resp, _, err := QueryCurrencyPair(s.chain, ethusdcCP, height)
 		s.Require().NoError(err)
 		s.Require().Equal(resp.Price.Int64(), int64(110000000))
 	})
@@ -445,10 +444,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height)
 		s.Require().NoError(err)
 
 		// expect update for height
@@ -486,10 +485,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height)
 		s.Require().NoError(err)
 
 		// expect update for height
@@ -523,10 +522,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdcCP, height)
 		s.Require().NoError(err)
 
 		// expect no update for the height
@@ -540,15 +539,15 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	ethusdc := constants.ETHEREUM_USDC
-	ethusdt := constants.ETHEREUM_USDT
-	ethusd := constants.ETHEREUM_USD
+	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
+	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
+	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
 	cps := []slinkytypes.CurrencyPair{
-		ethusdc,
-		ethusdt,
-		ethusd,
+		ethusdcCP,
+		ethusdtCP,
+		ethusdCP,
 	}
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
@@ -559,13 +558,13 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 	// get the currency pair ids
 	ctx := context.Background()
-	id1, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdc)
+	id1, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdcCP)
 	s.Require().NoError(err)
 
-	id2, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdt)
+	id2, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdtCP)
 	s.Require().NoError(err)
 
-	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusd)
+	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdCP)
 	s.Require().NoError(err)
 
 	zero := big.NewInt(0)

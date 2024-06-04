@@ -21,7 +21,7 @@ import (
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -43,7 +43,7 @@ func NewSlinkyCCVIntegrationSuite(
 }
 
 func (s *SlinkyCCVSuite) TestCCVAggregation() {
-	ethusdc := constants.ETHEREUM_USDC
+	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, ethusdc))
 

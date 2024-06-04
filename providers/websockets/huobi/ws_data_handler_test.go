@@ -11,16 +11,19 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 )
 
 var (
-	btcusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	ethusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	logger  = zap.NewExample()
+	btcusdt = types.DefaultProviderTicker{
+		OffChainTicker: "btcusdt",
+	}
+	ethusdt = types.DefaultProviderTicker{
+		OffChainTicker: "ethusdt",
+	}
+	logger = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {
