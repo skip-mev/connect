@@ -5184,7 +5184,8 @@ var (
 			  {
 				"name": "uniswapv3_api-base",
 				"off_chain_ticker": "BRETT/ETH",
-				"metadata_JSON": "{\"address\":\"0xBA3F945812a83471d709BCe9C3CA699A19FB46f7\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
+				"metadata_JSON": "{\"address\":\"0xBA3F945812a83471d709BCe9C3CA699A19FB46f7\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}",
+				"invert": true
 			  }
 			]
 		  }
