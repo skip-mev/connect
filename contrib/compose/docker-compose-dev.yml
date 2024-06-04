@@ -7,6 +7,7 @@ services:
     environment:
       - USE_CORE_MARKETS=${USE_CORE_MARKETS:-true}
       - USE_RAYDIUM_MARKETS=${USE_RAYDIUM_MARKETS:-true}
+      - USE_BASE_MARKETS=${USE_BASE_MARKETS:-true}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.local.Dockerfile

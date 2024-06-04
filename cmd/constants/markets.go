@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -5161,6 +5163,44 @@ var (
 		}
 	}
 	  `
+
+	// BaseMarketMap is used to initialize the Base market map. This only includes
+	// the markets that are supported by Base.
+	BaseMarketMap mmtypes.MarketMap = mmtypes.MarketMap{
+		Markets: map[string]mmtypes.Market{
+			constants.DEGEN_ETH.String(): {
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     constants.DEGEN_ETH,
+					Decimals:         18,
+					MinProviderCount: 1,
+					Enabled:          true,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.BASE),
+						OffChainTicker: constants.DEGEN_ETH.String(),
+						Metadata_JSON: uniswapv3.PoolConfig{
+							// REF: https://app.uniswap.org/explore/pools/base/0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA
+							Address:       "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
+							BaseDecimals:  18,
+							QuoteDecimals: 18,
+							Invert:        false,
+						}.MustToJSON(),
+					},
+					{
+						Name:           fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.BASE),
+						OffChainTicker: constants.BRETT_ETH.String(),
+						Metadata_JSON: uniswapv3.PoolConfig{
+							// REF: https://app.uniswap.org/explore/pools/base/0xBA3F945812a83471d709BCe9C3CA699A19FB46f7
+							Address:       "0xBA3F945812a83471d709BCe9C3CA699A19FB46f7",
+							BaseDecimals:  18,
+							QuoteDecimals: 18,
+							Invert:        false,
+						}.MustToJSON(),
+					},
+				},
+			},
+		}}
 )
 
 func init() {

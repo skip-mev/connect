@@ -19,6 +19,7 @@ COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 USE_CORE_MARKETS ?= true
 USE_RAYDIUM_MARKETS ?= false
+USE_BASE_MARKETS ?= false
 SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
@@ -33,6 +34,7 @@ export GENESIS := $(GENESIS)
 export GENESIS_TMP := $(GENESIS_TMP)
 export USE_CORE_MARKETS := $(USE_CORE_MARKETS)
 export USE_RAYDIUM_MARKETS := $(USE_RAYDIUM_MARKETS)
+export USE_BASE_MARKETS := $(USE_BASE_MARKETS)
 export SCRIPT_DIR := $(SCRIPT_DIR)
 
 BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)

@@ -20,4 +20,6 @@ func TestMarkets(t *testing.T) {
 	var mm2 mmtypes.MarketMap
 	require.NoError(t, json.Unmarshal([]byte(constants.CoreMarketMapJSON), &mm2))
 	require.NoError(t, mm2.ValidateBasic())
+
+	require.NoError(t, constants.BaseMarketMap.ValidateBasic())
 }
