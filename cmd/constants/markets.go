@@ -5164,9 +5164,9 @@ var (
 	}
 	  `
 
-	// BaseMarketMap is used to initialize the Base market map. This only includes
-	// the markets that are supported by Base.
-	BaseMarketMap mmtypes.MarketMap = mmtypes.MarketMap{
+	// UniswapV3BaseMarketMap is used to initialize the Base market map. This only includes
+	// the markets that are supported by uniswapv3 on Base.
+	UniswapV3BaseMarketMap mmtypes.MarketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
 			constants.DEGEN_ETH.String(): {
 				Ticker: mmtypes.Ticker{
@@ -5200,7 +5200,8 @@ var (
 					},
 				},
 			},
-		}}
+		},
+	}
 )
 
 func init() {

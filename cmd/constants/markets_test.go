@@ -21,5 +21,5 @@ func TestMarkets(t *testing.T) {
 	require.NoError(t, json.Unmarshal([]byte(constants.CoreMarketMapJSON), &mm2))
 	require.NoError(t, mm2.ValidateBasic())
 
-	require.NoError(t, constants.BaseMarketMap.ValidateBasic())
+	require.NoError(t, constants.UniswapV3BaseMarketMap.ValidateBasic())
 }
