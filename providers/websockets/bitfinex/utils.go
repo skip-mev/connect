@@ -16,15 +16,12 @@ const (
 
 // DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
 var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       1000,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	Endpoints: []config.Endpoint{
-		{
-			URL: URLProd,
-		},
-	},
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URLProd}},
 	ReadBufferSize:                config.DefaultReadBufferSize,
 	WriteBufferSize:               config.DefaultWriteBufferSize,
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
@@ -32,6 +29,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	ReadTimeout:                   config.DefaultReadTimeout,
 	WriteTimeout:                  config.DefaultWriteTimeout,
 	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 }

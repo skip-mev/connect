@@ -23,15 +23,12 @@ const (
 
 // DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
 var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       1000,
-	ReconnectionTimeout: 10 * time.Second,
-	Endpoints: []config.Endpoint{
-		{
-			URL: URL,
-		},
-	},
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           10 * time.Second,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL}},
 	ReadBufferSize:                config.DefaultReadBufferSize,
 	WriteBufferSize:               config.DefaultWriteBufferSize,
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
@@ -39,6 +36,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	ReadTimeout:                   config.DefaultReadTimeout,
 	WriteTimeout:                  config.DefaultWriteTimeout,
 	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 }

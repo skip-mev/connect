@@ -35,15 +35,12 @@ const (
 
 // DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
 var DefaultWebSocketConfig = config.WebSocketConfig{
-	Enabled:             true,
-	Name:                Name,
-	MaxBufferSize:       config.DefaultMaxBufferSize,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	Endpoints: []config.Endpoint{
-		{
-			URL: URL,
-		},
-	},
+	Enabled:                       true,
+	Name:                          Name,
+	MaxBufferSize:                 config.DefaultMaxBufferSize,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL}},
 	ReadBufferSize:                config.DefaultReadBufferSize,
 	WriteBufferSize:               config.DefaultWriteBufferSize,
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
@@ -51,6 +48,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	WriteTimeout:                  DefaultWriteTimeout,
 	ReadTimeout:                   config.DefaultReadTimeout,
 	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 }
