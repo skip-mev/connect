@@ -224,7 +224,7 @@ func TestPriceApplier(t *testing.T) {
 		va.On("GetPriceForValidator", ca1).Return(
 			expPrices,
 		)
-		valPrices := pa.GetPriceForValidator(ca1)
+		valPrices := pa.GetPricesForValidator(ca1)
 		require.Equal(t, expPrices, valPrices)
 	})
 }

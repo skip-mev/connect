@@ -57,7 +57,7 @@ func NewVoteExtensionHandler(
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
-	priceAppllier aggregator.PriceApplier,
+	priceApplier aggregator.PriceApplier,
 	metrics servicemetrics.Metrics,
 ) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
@@ -67,7 +67,7 @@ func NewVoteExtensionHandler(
 		currencyPairStrategy: strategy,
 		voteExtensionCodec:   codec,
 		metrics:              metrics,
-		priceApplier:         priceAppllier,
+		priceApplier:         priceApplier,
 	}
 }
 

@@ -27,7 +27,7 @@ type PriceApplier interface {
 
 	// GetPriceForValidator gets the prices reported by a given validator. This method depends
 	// on the prices from the latest set of aggregated votes.
-	GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
+	GetPricesForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
 }
 
 // oraclePriceApplier is an implementation of PriceApplier that applies prices to the oracle module.
@@ -143,6 +143,6 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 	return prices, nil
 }
 
-func (opa *oraclePriceApplier) GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
+func (opa *oraclePriceApplier) GetPricesForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
 	return opa.va.GetPriceForValidator(validator)
 }

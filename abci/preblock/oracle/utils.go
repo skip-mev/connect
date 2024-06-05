@@ -34,7 +34,7 @@ func (h *PreBlockHandler) recordValidatorReports(ctx sdk.Context, decidedCommit 
 			nilVote = true
 		}
 		// iterate over each currency-pair, and record whether the validator reported a price for it
-		validatorPrices := h.pa.GetPriceForValidator(validator)
+		validatorPrices := h.pa.GetPricesForValidator(validator)
 		for _, cp := range pricesToReport {
 			// if the validator reported a nil-vote, record that and skip
 			if nilVote {

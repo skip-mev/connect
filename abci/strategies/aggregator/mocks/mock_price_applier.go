@@ -49,12 +49,12 @@ func (_m *PriceApplier) ApplyPricesFromVoteExtensions(ctx types.Context, req *ab
 	return r0, r1
 }
 
-// GetPriceForValidator provides a mock function with given fields: validator
-func (_m *PriceApplier) GetPriceForValidator(validator types.ConsAddress) map[pkgtypes.CurrencyPair]*big.Int {
+// GetPricesForValidator provides a mock function with given fields: validator
+func (_m *PriceApplier) GetPricesForValidator(validator types.ConsAddress) map[pkgtypes.CurrencyPair]*big.Int {
 	ret := _m.Called(validator)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetPriceForValidator")
+		panic("no return value specified for GetPricesForValidator")
 	}
 
 	var r0 map[pkgtypes.CurrencyPair]*big.Int
