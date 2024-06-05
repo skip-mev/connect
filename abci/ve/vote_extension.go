@@ -11,6 +11,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/skip-mev/slinky/abci/strategies/aggregator"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
@@ -42,8 +43,8 @@ type VoteExtensionHandler struct {
 	// voteExtensionCodec is an interface to handle the marshalling / unmarshalling of vote-extensions
 	voteExtensionCodec compression.VoteExtensionCodec
 
-	// preBlocker is utilized to update and retrieve the latest on-chain price information.
-	preBlocker sdk.PreBlocker
+	// PriceApplier is the price applier that is used to decode vote-extensions, aggregate price reports, and write prices to state.
+	priceApplier aggregator.PriceApplier
 
 	// metrics is the service metrics interface that the vote-extension handler will use to report metrics.
 	metrics servicemetrics.Metrics
@@ -56,7 +57,7 @@ func NewVoteExtensionHandler(
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
-	preBlocker sdk.PreBlocker,
+	priceApplier aggregator.PriceApplier,
 	metrics servicemetrics.Metrics,
 ) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
@@ -65,8 +66,8 @@ func NewVoteExtensionHandler(
 		timeout:              timeout,
 		currencyPairStrategy: strategy,
 		voteExtensionCodec:   codec,
-		preBlocker:           preBlocker,
 		metrics:              metrics,
+		priceApplier:         priceApplier,
 	}
 }
 
@@ -120,7 +121,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			Txs:    req.Txs,
 			Height: req.Height,
 		}
-		if _, err = h.preBlocker(ctx, reqFinalizeBlock); err != nil {
+		if _, err = h.priceApplier.ApplyPricesFromVoteExtensions(ctx, reqFinalizeBlock); err != nil {
 			h.logger.Error(
 				"failed to aggregate oracle votes",
 				"height", req.Height,

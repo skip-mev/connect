@@ -10,6 +10,8 @@ replace (
 
 go 1.22.2
 
+toolchain go1.22.4
+
 require (
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.7
