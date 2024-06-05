@@ -200,6 +200,9 @@ type TickerMessageResponse struct {
 		// LastPrice is the last price.
 		LastPrice string `json:"c"`
 		// StatisticsCloseTime is the statistics close time.
+		//
+		// Note: This is unused but is included since json.Unmarshal requires all fields with same character but different casing
+		// to be present.
 		StatisticsCloseTime int64 `json:"C"`
 	} `json:"data"`
 }
@@ -208,27 +211,45 @@ type TickerMessageResponse struct {
 // subscribe each instrument to the aggregate trade and ticker streams.
 func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(instruments) == 0 {
-		return nil, nil
+		return nil, fmt.Errorf("no instruments to subscribe to")
 	}
 
-	params := make([]string, 0)
+	msgs := make([]handlers.WebsocketEncodedMessage, 0)
 	for _, instrument := range instruments {
-		params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(AggregateTradeStream)))
-		params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(TickerStream)))
+		// Generate a random ID.
+		id := h.GenerateID()
+		msg, err := json.Marshal(SubscribeMessageRequest{
+			Method: string(SubscribeMethod),
+			Params: []string{
+				fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(AggregateTradeStream)),
+				fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(TickerStream)),
+			},
+			ID: id,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal subscribe message: %w", err)
+		}
+
+		// Set the IDs
+		h.SetIDForInstruments(id, []string{instrument})
+		msgs = append(msgs, msg)
 	}
 
-	// Generate a random ID.
-	id := rand.Int63() + 1 // Ensure the ID is not 0.
-	msg, err := json.Marshal(SubscribeMessageRequest{
-		Method: string(SubscribeMethod),
-		Params: params,
-		ID:     id,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal subscribe message: %w", err)
-	}
+	return msgs, nil
+}
 
-	// Set the IDs
+// SetIDForInstruments sets the ID for the given instruments. This is used to set the ID for the
+// instruments that are being subscribed to.
+func (h *WebSocketHandler) SetIDForInstruments(id int64, instruments []string) {
 	h.messageIDs[id] = instruments
-	return []handlers.WebsocketEncodedMessage{msg}, nil
+}
+
+// GenerateID generates a random ID for the message.
+func (h *WebSocketHandler) GenerateID() int64 {
+	for {
+		id := rand.Int63() + 1
+		if _, ok := h.messageIDs[id]; !ok {
+			return id
+		}
+	}
 }

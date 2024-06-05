@@ -2,6 +2,7 @@ package binance
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -53,7 +54,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 
 	// Determine if the ticker is valid.
 	tickerMsg := msg.Data
-	ticker, ok := h.cache.FromOffChainTicker(tickerMsg.Ticker)
+	ticker, ok := h.cache.FromOffChainTicker(strings.ToLower(tickerMsg.Ticker))
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("got response for an unsupported market %s", tickerMsg.Ticker)

@@ -2,8 +2,6 @@ package binance
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 var (
@@ -14,7 +12,7 @@ var (
 	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions
 	// per connection. By default, Binance accepts up to 1024 subscriptions per connection.
 	// However, we limit this to 20 to prevent overloading the connection.
-	DefaultMaxSubscriptionsPerConnection = 20
+	DefaultMaxSubscriptionsPerConnection = 100
 )
 
 var (
@@ -24,7 +22,7 @@ var (
 		Enabled:                       true,
 		MaxBufferSize:                 config.DefaultMaxBufferSize,
 		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS,
+		Endpoints:                     []config.Endpoint{{URL: WSS}},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,
@@ -34,19 +32,5 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig is the default market configuration for Binance.
-	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "BTCUSDT",
-		},
-		constants.ETHEREUM_USDT: {
-			OffChainTicker: "ETHUSDT",
-		},
-		constants.USDC_USDT: {
-			OffChainTicker: "USDCUSDT",
-		},
 	}
 )

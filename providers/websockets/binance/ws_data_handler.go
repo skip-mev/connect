@@ -3,6 +3,7 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -82,16 +83,18 @@ func (h *WebSocketHandler) HandleMessage(
 		if msg.Result != nil {
 			// If the result is not nil, this means that the subscription failed to be made. Return
 			// an update message with the same subscription.
-			h.logger.Debug("failed to make subscription", zap.Any("instruments", msg))
-			subscriptionMsg, err := h.NewSubscribeRequestMessage(instruments)
-			return resp, subscriptionMsg, err
+			h.logger.Debug("failed to make subscription; attempting to re-subscribe", zap.Any("instruments", msg))
+			subscriptionMsgs, err := h.NewSubscribeRequestMessage(instruments)
+			return resp, subscriptionMsgs, err
 		}
 
 		// If the result is nil, this means that the subscription was successful. Return an empty
 		// response.
 		h.logger.Debug("successfully subscribed to instruments", zap.Any("instruments", instruments))
 		return resp, nil, nil
-	} else if err := json.Unmarshal(message, &streamMsg); err != nil {
+	}
+
+	if err := json.Unmarshal(message, &streamMsg); err != nil {
 		return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
 	}
 
@@ -131,7 +134,7 @@ func (h *WebSocketHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
-		instruments = append(instruments, ticker.GetOffChainTicker())
+		instruments = append(instruments, strings.ToLower(ticker.GetOffChainTicker()))
 		h.cache.Add(ticker)
 	}
 
