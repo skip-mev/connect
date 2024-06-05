@@ -3,7 +3,6 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -94,6 +93,8 @@ func (h *WebSocketHandler) HandleMessage(
 		return resp, nil, nil
 	}
 
+	// Unmarshal the message as a stream message. If the message fails to be unmarshaled, this means
+	// that we received an unknown message type.
 	if err := json.Unmarshal(message, &streamMsg); err != nil {
 		return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
 	}
@@ -106,8 +107,8 @@ func (h *WebSocketHandler) HandleMessage(
 			return resp, nil, fmt.Errorf("failed to unmarshal ticker message %w", err)
 		}
 
-		h.logger.Debug("received ticker message", zap.Any("ticker", tickerResp.Data.Ticker))
-		resp, err := h.parseTickerMessage(tickerResp)
+		h.logger.Debug("received ticker message", zap.String("ticker", tickerResp.Data.Ticker))
+		resp, err := h.parsePriceUpdateMessage(tickerResp.Data.Ticker, tickerResp.Data.LastPrice)
 		return resp, nil, err
 	case AggregateTradeStream:
 		// Aggregate trade stream is sent when a trade is executed on the Binance exchange.
@@ -116,8 +117,8 @@ func (h *WebSocketHandler) HandleMessage(
 			return resp, nil, fmt.Errorf("failed to unmarshal aggregate trade message %w", err)
 		}
 
-		h.logger.Debug("received aggregate trade message", zap.Any("ticker", aggTradeResp.Data.Ticker))
-		resp, err := h.parseAggregateTradeMessage(aggTradeResp)
+		h.logger.Debug("received aggregate trade message", zap.String("ticker", aggTradeResp.Data.Ticker))
+		resp, err := h.parsePriceUpdateMessage(aggTradeResp.Data.Ticker, aggTradeResp.Data.Price)
 		return resp, nil, err
 	default:
 		return resp, nil, fmt.Errorf("unknown stream type %s", streamMsg.Stream)
@@ -134,7 +135,7 @@ func (h *WebSocketHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
-		instruments = append(instruments, strings.ToLower(ticker.GetOffChainTicker()))
+		instruments = append(instruments, ticker.GetOffChainTicker())
 		h.cache.Add(ticker)
 	}
 

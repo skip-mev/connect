@@ -8,6 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -106,6 +107,80 @@ func TestHandleMessage(t *testing.T) {
 					"stream": "btcusdt@ticker",
 					"data": {
 						"s": "btcusdt",
+						"c": "10000.00000000",
+						"C": 1600000000000
+						}
+				}`
+
+				return []byte(msg)
+			},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{
+					btcusdt: {
+						Value: big.NewFloat(10000.0),
+					},
+				},
+				types.UnResolvedPrices{},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
+		},
+		{
+			name: "ticker stream message with bad price",
+			msg: func() []byte {
+				msg := `
+				{
+					"stream": "btcusdt@ticker",
+					"data": {
+						"s": "btcusdt",
+						"c": "bad_price",
+						"C": 1600000000000
+						}
+				}`
+
+				return []byte(msg)
+			},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					btcusdt: {
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price: strconv.ParseFloat: parsing \"bad_price\": invalid syntax"), providertypes.ErrorFailedToParsePrice),
+					},
+				},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
+		{
+			name: "ticker stream message with unknown instrument",
+			msg: func() []byte {
+				msg := `
+				{
+					"stream": "unknown@ticker",
+					"data": {
+						"s": "mogmeusdt",
+						"c": "10000.00000000",
+						"C": 1600000000000
+						}
+				}`
+
+				return []byte(msg)
+			},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
+		{
+			name: "agg trade stream message with good price",
+			msg: func() []byte {
+				msg := `
+				{
+					"stream": "btcusdt@aggTrade",
+					"data": {
+						"s": "btcusdt",
 						"p": "10000.00000000"
 						}
 				}`
@@ -123,6 +198,52 @@ func TestHandleMessage(t *testing.T) {
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
+		{
+			name: "agg trade stream message with bad price",
+			msg: func() []byte {
+				msg := `
+				{
+					"stream": "btcusdt@aggTrade",
+					"data": {
+						"s": "btcusdt",
+						"p": "bad_price"
+						}
+				}`
+
+				return []byte(msg)
+			},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					btcusdt: {
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price: strconv.ParseFloat: parsing \"bad_price\": invalid syntax"), providertypes.ErrorFailedToParsePrice),
+					},
+				},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
+		{
+			name: "agg trade stream message with unknown instrument",
+			msg: func() []byte {
+				msg := `
+				{
+					"stream": "unknown@aggTrade",
+					"data": {
+						"s": "mogmeusdt",
+						"p": "10000.00000000"
+						}
+				}`
+
+				return []byte(msg)
+			},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
 	}
 
 	for _, tc := range cases {
@@ -139,13 +260,12 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			resp, updateMsgs, err := wsHandler.HandleMessage(tc.msg())
-			fmt.Println(err)
 			if tc.expErr {
 				require.Error(t, err)
 				require.Equal(t, tc.updateMessage(), updateMsgs)
-				return
+			} else {
+				require.NoError(t, err)
 			}
-			require.NoError(t, err)
 
 			require.Len(t, updateMsgs, len(tc.updateMessage()))
 			seenIDs := make(map[int64]struct{})
