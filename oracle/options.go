@@ -76,7 +76,8 @@ func WithPriceAggregator(agg PriceAggregator) Option {
 	}
 }
 
-func WithMarketMapProvider(fn func() mmtypes.MarketMap) Option {
+// WithMarketMapGetter sets a getter function for the latest market map on the Oracle.
+func WithMarketMapGetter(fn func() mmtypes.MarketMap) Option {
 	return func(o *OracleImpl) {
 		o.marketMapGetter = fn
 	}

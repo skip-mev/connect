@@ -292,7 +292,7 @@ func runOracle() error {
 	oracleOpts = append(
 		oracleOpts,
 		oracle.WithProviders(orch.GetPriceProviders()),
-		oracle.WithMarketMapProvider(orch.GetMarketMap),
+		oracle.WithMarketMapGetter(orch.GetMarketMap),
 	)
 	orc, err := oracle.New(oracleOpts...)
 	if err != nil {
