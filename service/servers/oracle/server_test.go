@@ -2,6 +2,7 @@ package oracle_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math/big"
@@ -171,10 +172,45 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 }
 
 func (s *ServerTestSuite) TestOracleMarketMap() {
-	// call from http client
+	dummyMarketMap := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
+		"foo": {
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
+				Decimals:         420,
+				MinProviderCount: 79,
+				Enabled:          true,
+				Metadata_JSON:    "",
+			},
+			ProviderConfigs: []mmtypes.ProviderConfig{
+				{
+					Name:           "FOO",
+					OffChainTicker: "BAR",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "FOO",
+						Quote: "BAR",
+					},
+				},
+			},
+		},
+	}}
+	expectedJSON, err := dummyMarketMap.Marshal()
+	_ = expectedJSON
+	s.Require().NoError(err)
+	s.mockOracle.On("GetMarketMap", mock.Anything).Return(dummyMarketMap)
+
 	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/marketmap", localhost, port))
 	s.Require().NoError(err)
-	fmt.Println(httpResp)
+	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
+
+	defer httpResp.Body.Close()
+	body, err := io.ReadAll(httpResp.Body)
+	s.Require().NoError(err)
+
+	var actualMarketMap mmtypes.MarketMap
+	err = json.Unmarshal(body, &actualMarketMap)
+	s.Require().NoError(err)
+
+	s.Require().Equal(actualMarketMap, dummyMarketMap)
 }
 
 // test that the oracle server closes when expected.

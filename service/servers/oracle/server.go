@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -110,7 +111,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 	router := http.NewServeMux()
 	router.HandleFunc("/", os.routeRequest)
-	router.HandleFunc("/oracle/v1/marketmap", os.HandleGetMarketMap)
+	router.HandleFunc("/slinky/oracle/v1/marketmap", os.HandleGetMarketMap)
 	os.httpSrv.Handler = h2c.NewHandler(router, &http2.Server{})
 
 	eg, ctx := errgroup.WithContext(ctx)
@@ -197,7 +198,7 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 
 func (os *OracleServer) HandleGetMarketMap(w http.ResponseWriter, _ *http.Request) {
 	mm := os.o.GetMarketMap()
-	bz, err := mm.Marshal()
+	bz, err := json.Marshal(mm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		os.logger.Error("HandleGetMarketMap: failed to marshal market map to JSON", zap.Error(err))
