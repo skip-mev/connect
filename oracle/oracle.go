@@ -24,7 +24,7 @@ type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
 	GetPrices() types.Prices
-	GetMarketMap() marketmaptypes.MarketMap
+	GetMarketMap() *marketmaptypes.MarketMap
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -266,11 +266,10 @@ func (o *OracleImpl) GetPrices() types.Prices {
 }
 
 // GetMarketMap returns the current market map configuration.
-//
-// TODO(Tyler): is the empty map ok? maybe? maybe not. lord save us all.
-func (o *OracleImpl) GetMarketMap() marketmaptypes.MarketMap {
+func (o *OracleImpl) GetMarketMap() *marketmaptypes.MarketMap {
 	if o.marketMapGetter != nil {
-		return o.marketMapGetter()
+		mm := o.marketMapGetter()
+		return &mm
 	}
-	return marketmaptypes.MarketMap{}
+	return &marketmaptypes.MarketMap{}
 }

@@ -37,18 +37,20 @@ func (_m *Oracle) GetLastSyncTime() time.Time {
 }
 
 // GetMarketMap provides a mock function with given fields:
-func (_m *Oracle) GetMarketMap() types.MarketMap {
+func (_m *Oracle) GetMarketMap() *types.MarketMap {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetMarketMap")
 	}
 
-	var r0 types.MarketMap
-	if rf, ok := ret.Get(0).(func() types.MarketMap); ok {
+	var r0 *types.MarketMap
+	if rf, ok := ret.Get(0).(func() *types.MarketMap); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(types.MarketMap)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.MarketMap)
+		}
 	}
 
 	return r0

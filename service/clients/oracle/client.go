@@ -197,3 +197,25 @@ func (c *GRPCClient) Prices(
 
 	return c.client.Prices(ctx, req, grpc.WaitForReady(true))
 }
+
+func (c *GRPCClient) MarketMap(ctx context.Context, req *types.QueryMarketMapRequest, _ ...grpc.CallOption) (res *types.QueryMarketMapResponse, err error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	start := time.Now()
+	defer func() {
+		// Observe the duration of the call as well as the error.
+		c.metrics.ObserveOracleResponseLatency(time.Since(start))
+		c.metrics.AddOracleResponse(metrics.StatusFromError(err))
+	}()
+
+	// set deadline on the context
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+
+	if c.client == nil {
+		return nil, fmt.Errorf("oracle client not started")
+	}
+
+	return c.client.MarketMap(ctx, req, grpc.WaitForReady(true))
+}
