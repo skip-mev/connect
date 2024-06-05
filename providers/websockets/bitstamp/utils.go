@@ -33,7 +33,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
 	EnableCompression:             config.DefaultEnableCompression,
 	WriteTimeout:                  config.DefaultWriteTimeout,
-	ReadTimeout:                   config.DefaultReadTimeout * 5,
+	ReadTimeout:                   config.DefaultReadTimeout,
 	PingInterval:                  DefaultPingInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
