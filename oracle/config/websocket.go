@@ -25,7 +25,7 @@ const (
 	DefaultWriteBufferSize = 0
 
 	// DefaultHandshakeTimeout is the default duration for the handshake to complete.
-	DefaultHandshakeTimeout = 45 * time.Second
+	DefaultHandshakeTimeout = 10 * time.Second
 
 	// DefaultEnableCompression is the default value for whether the client should
 	// attempt to negotiate per message compression (RFC 7692).
@@ -33,11 +33,11 @@ const (
 
 	// DefaultReadTimeout is the default read deadline on the underlying network
 	// connection.
-	DefaultReadTimeout = 45 * time.Second
+	DefaultReadTimeout = 5 * time.Second
 
 	// DefaultWriteTimeout is the default write deadline on the underlying network
 	// connection.
-	DefaultWriteTimeout = 45 * time.Second
+	DefaultWriteTimeout = 5 * time.Second
 
 	// DefaultPingInterval is the default interval at which the provider should send
 	// ping messages to the server.
