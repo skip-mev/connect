@@ -14,6 +14,10 @@ const (
 	// to reconnect to the websocket endpoint.
 	DefaultReconnectionTimeout = 10 * time.Second
 
+	// DefaultPostConnectionTimeout is the default timeout for the provider to wait
+	// after a connection is established before sending messages.
+	DefaultPostConnectionTimeout = 1 * time.Second
+
 	// DefaultReadBufferSize is the default I/O read buffer size. If a buffer size of
 	// 0 is specified, then a default buffer size is used i.e. the buffers allocated
 	// by the HTTP server.
@@ -43,6 +47,10 @@ const (
 	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
 
+	// DefaultWriteInterval is the default interval at which the provider should send
+	// write messages to the server.
+	DefaultWriteInterval = 100 * time.Millisecond
+
 	// DefaultMaxReadErrorCount is the default maximum number of read errors that
 	// the provider will tolerate before closing the connection and attempting to
 	// reconnect. This default value utilized by the gorilla/websocket package is
@@ -69,6 +77,10 @@ type WebSocketConfig struct {
 	// ReconnectionTimeout is the timeout for the provider to attempt to reconnect
 	// to the websocket endpoint.
 	ReconnectionTimeout time.Duration `json:"reconnectionTimeout"`
+
+	// PostConnectionTimeout is the timeout for the provider to wait after a connection
+	// is established before sending messages.
+	PostConnectionTimeout time.Duration `json:"postConnectionTimeout"`
 
 	// Endpoints are the websocket endpoints for the provider. At least one endpoint
 	// must be specified.
@@ -109,6 +121,10 @@ type WebSocketConfig struct {
 	// of 0 disables pings.
 	PingInterval time.Duration `json:"pingInterval"`
 
+	// WriteInterval is the interval at which the provider should wait before sending
+	// consecutive write messages to the server.
+	WriteInterval time.Duration `json:"writeInterval"`
+
 	// MaxReadErrorCount is the maximum number of read errors that the provider
 	// will tolerate before closing the connection and attempting to reconnect.
 	MaxReadErrorCount int `json:"maxReadErrorCount"`
@@ -131,6 +147,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.ReconnectionTimeout <= 0 {
 		return fmt.Errorf("websocket reconnection timeout must be greater than 0")
+	}
+
+	if c.PostConnectionTimeout < 0 {
+		return fmt.Errorf("websocket post connection timeout must be greater than 0")
 	}
 
 	if len(c.Endpoints) == 0 {
@@ -169,6 +189,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.PingInterval < 0 {
 		return fmt.Errorf("websocket ping interval cannot be negative")
+	}
+
+	if c.WriteInterval < 0 {
+		return fmt.Errorf("websocket write interval must be greater than 0")
 	}
 
 	if c.MaxReadErrorCount < 0 {

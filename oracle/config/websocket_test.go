@@ -18,10 +18,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "good config with websocket enabled",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -34,6 +35,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -49,9 +51,10 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no max buffer size",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -64,6 +67,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -72,9 +76,10 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no reconnection timeout",
 			config: config.WebSocketConfig{
-				Enabled:       true,
-				MaxBufferSize: 1,
-				Name:          "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -87,6 +92,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -95,9 +101,10 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no name",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -110,6 +117,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -121,6 +129,7 @@ func TestWebSocketConfig(t *testing.T) {
 				Enabled:                       true,
 				MaxBufferSize:                 1,
 				ReconnectionTimeout:           time.Second,
+				PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
 				Name:                          "test",
 				ReadBufferSize:                config.DefaultReadBufferSize,
 				WriteBufferSize:               config.DefaultWriteBufferSize,
@@ -129,6 +138,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -137,10 +147,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with negative read buffer size",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -153,6 +164,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -161,10 +173,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with negative write buffer size",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -177,6 +190,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -185,10 +199,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no handshake timeout",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -200,6 +215,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -209,10 +225,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no read timeout",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -224,6 +241,7 @@ func TestWebSocketConfig(t *testing.T) {
 				EnableCompression:             config.DefaultEnableCompression,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -232,10 +250,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with no write timeout",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: time.Second,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   time.Second,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -247,6 +266,7 @@ func TestWebSocketConfig(t *testing.T) {
 				EnableCompression:             config.DefaultEnableCompression,
 				ReadTimeout:                   config.DefaultReadTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -255,10 +275,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with bad ping interval",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -271,6 +292,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  -1,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
@@ -279,10 +301,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with bad max subscriptions per connection",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -295,6 +318,7 @@ func TestWebSocketConfig(t *testing.T) {
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
 				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: -1,
 			},
@@ -303,10 +327,11 @@ func TestWebSocketConfig(t *testing.T) {
 		{
 			name: "bad config with negative max read error count",
 			config: config.WebSocketConfig{
-				Enabled:             true,
-				MaxBufferSize:       1,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				Name:                "test",
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
 				Endpoints: []config.Endpoint{
 					{
 						URL: "wss://test.com",
@@ -318,7 +343,61 @@ func TestWebSocketConfig(t *testing.T) {
 				EnableCompression:             config.DefaultEnableCompression,
 				ReadTimeout:                   config.DefaultReadTimeout,
 				WriteTimeout:                  config.DefaultWriteTimeout,
+				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
 				MaxReadErrorCount:             -1,
+				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with negative write interval",
+			config: config.WebSocketConfig{
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: config.DefaultPostConnectionTimeout,
+				Name:                  "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "wss://test.com",
+					},
+				},
+				ReadBufferSize:                config.DefaultReadBufferSize,
+				WriteBufferSize:               config.DefaultWriteBufferSize,
+				HandshakeTimeout:              config.DefaultHandshakeTimeout,
+				EnableCompression:             config.DefaultEnableCompression,
+				ReadTimeout:                   config.DefaultReadTimeout,
+				WriteTimeout:                  config.DefaultWriteTimeout,
+				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 -1,
+				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with negative post connection timeout",
+			config: config.WebSocketConfig{
+				Enabled:               true,
+				MaxBufferSize:         1,
+				ReconnectionTimeout:   config.DefaultReconnectionTimeout,
+				PostConnectionTimeout: -1,
+				Name:                  "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "wss://test.com",
+					},
+				},
+				ReadBufferSize:                config.DefaultReadBufferSize,
+				WriteBufferSize:               config.DefaultWriteBufferSize,
+				HandshakeTimeout:              config.DefaultHandshakeTimeout,
+				EnableCompression:             config.DefaultEnableCompression,
+				ReadTimeout:                   config.DefaultReadTimeout,
+				WriteTimeout:                  config.DefaultWriteTimeout,
+				PingInterval:                  config.DefaultPingInterval,
+				WriteInterval:                 config.DefaultWriteInterval,
+				MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 				MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 			},
 			expectedErr: true,
