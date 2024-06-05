@@ -8,8 +8,10 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	types2 "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -74,4 +76,18 @@ func (s *OracleTestSuite) SetupTest() {
 		types.NewProviderTicker("ETH/USD", "{}"),
 		types.NewProviderTicker("ATOM/USD", "{}"),
 	}
+}
+
+func (s *OracleTestSuite) TestGetMarketMap() {
+	dummyMM := types2.MarketMap{Markets: map[string]types2.Market{"foo": {Ticker: types2.Ticker{Metadata_JSON: "FOOBAR"}}}}
+	getter := func() types2.MarketMap {
+		return dummyMM
+	}
+	o, err := oracle.New(
+		oracle.WithMarketMapGetter(getter),
+	)
+	s.Require().NoError(err)
+
+	gotMM := o.GetMarketMap()
+	s.Require().Equal(dummyMM, *gotMM)
 }
