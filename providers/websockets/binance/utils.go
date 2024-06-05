@@ -11,8 +11,10 @@ var (
 	WSS = "wss://stream.binance.com/stream"
 	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions
 	// per connection. By default, Binance accepts up to 1024 subscriptions per connection.
-	// However, we limit this to 20 to prevent overloading the connection.
-	DefaultMaxSubscriptionsPerConnection = 100
+	// However, we limit this to 4 to prevent overloading the connection.
+	//
+	// TODO(david): Update this once we have the write interval configuration changes made.
+	DefaultMaxSubscriptionsPerConnection = 4
 )
 
 // DefaultWebSocketConfig is the default configuration for the Binance exchange WebSocket.

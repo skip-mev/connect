@@ -13,4 +13,4 @@ The WebSocket connection have a limit of 5 incoming messages per second. A messa
 
 A single connection can listen to a maximum of 1024 streams. If a user attempts to listen to more streams, the connection will be disconnected. There is a limit of 300 connections per attempt every 5 minutes per IP.
 
-The specific channels / streams that are subscribed to is the [Aggregate Trade Stream](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#aggregate-trade-streams) and the [Ticker Stream](,i). The Aggregate Trade Streams push trade information that is aggregated for a single taker order in real time. The ticker stream pushes the ticker spot price every second.
+The specific channels / streams that are subscribed to is the [Aggregate Trade Stream](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#aggregate-trade-streams) and the [Ticker Stream](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#aggregate-trade-streams). The Aggregate Trade Streams push trade information that is aggregated for a single taker order in real time. The ticker stream pushes the ticker spot price every second.
