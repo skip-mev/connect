@@ -159,6 +159,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		return errors.ErrDialWithErr(err)
 	}
 
+	// Wait for the connection timeout before sending the initial payload(s).
+	time.Sleep(h.config.PostConnectionTimeout)
+
 	// Create the initial set of events that the channel will subscribe to.
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
 	messages, err := h.dataHandler.CreateMessages(h.ids)
@@ -170,7 +173,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
 	h.logger.Debug("connection created; sending initial payload(s)")
-	for _, message := range messages {
+	for index, message := range messages {
 		h.logger.Debug("sending payload", zap.String("payload", string(message)))
 
 		// Send the initial payload to the data provider.
@@ -180,6 +183,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 			return errors.ErrWriteWithErr(err)
 		}
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+
+		// Wait for the write interval before sending the next message.
+		if index != len(messages)-1 {
+			time.Sleep(h.config.WriteInterval)
+		}
 	}
 
 	h.logger.Debug("initial payload sent; websocket connection successfully started")
