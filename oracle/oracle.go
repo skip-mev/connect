@@ -265,7 +265,7 @@ func (o *OracleImpl) GetPrices() types.Prices {
 	return prices
 }
 
-// GetMarketMap returns the current market map configuration.
+// GetMarketMap returns the current market map configuration from the ProviderOrchestrator.
 func (o *OracleImpl) GetMarketMap() *marketmaptypes.MarketMap {
 	if o.marketMapGetter != nil {
 		mm := o.marketMapGetter()
