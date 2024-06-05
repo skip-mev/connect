@@ -3,7 +3,6 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strings"
 
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -246,10 +245,6 @@ func (h *WebSocketHandler) SetIDForInstruments(id int64, instruments []string) {
 
 // GenerateID generates a random ID for the message.
 func (h *WebSocketHandler) GenerateID() int64 {
-	for {
-		id := rand.Int63() + 1
-		if _, ok := h.messageIDs[id]; !ok {
-			return id
-		}
-	}
+	h.nextID++
+	return h.nextID
 }

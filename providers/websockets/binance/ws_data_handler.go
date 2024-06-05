@@ -3,6 +3,7 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -23,6 +24,8 @@ type WebSocketHandler struct {
 	cache types.ProviderTickers
 	// messageIDs is the current message ID for the Binance websocket API per currency pair(s).
 	messageIDs map[int64][]string
+	// nextID is the next message ID to use for the Binance websocket API.
+	nextID int64
 }
 
 // NewWebSocketDataHandler returns a new Binance PriceWebSocketDataHandler.
@@ -47,6 +50,7 @@ func NewWebSocketDataHandler(
 		ws:         ws,
 		cache:      types.NewProviderTickers(),
 		messageIDs: make(map[int64][]string),
+		nextID:     rand.Int63() + 1,
 	}, nil
 }
 
@@ -157,5 +161,6 @@ func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
 		ws:         h.ws,
 		cache:      types.NewProviderTickers(),
 		messageIDs: make(map[int64][]string),
+		nextID:     rand.Int63() + 1,
 	}
 }

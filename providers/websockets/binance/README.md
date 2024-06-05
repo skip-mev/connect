@@ -4,7 +4,7 @@
 
 The Binance provider is used to fetch the ticker price from the [Binance websocket API](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams). A single connection is only valid for 24 hours; after that, a new connection must be established. The Websocket server will send a ping frame every 3 minutes. If the client does not receive a pong frame within 10 minutes, the connection will be closed. Note that all symbols are in lowercase.
 
-The WebSocket connection have a limit of 5 incoming messages per second. A message is considered:
+The WebSocket connection has a limit of 5 incoming messages per second. A message is considered:
 
 * A Ping frame
 * A Pong frame
