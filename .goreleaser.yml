@@ -1,3 +1,4 @@
+version: 2
 ---
 project_name: slinky
 
@@ -24,10 +25,6 @@ archives:
         format: zip
     name_template: "{{ .Binary }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     files:
-      - ./config/local/market.json
-      - ./config/local/oracle.json
-      - ./config/dydx/market.json
-      - ./config/dydx/oracle.json
       - README.md
 
 snapshot:
