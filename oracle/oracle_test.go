@@ -11,7 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	types2 "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -79,8 +79,8 @@ func (s *OracleTestSuite) SetupTest() {
 }
 
 func (s *OracleTestSuite) TestGetMarketMap() {
-	dummyMM := types2.MarketMap{Markets: map[string]types2.Market{"foo": {Ticker: types2.Ticker{Metadata_JSON: "FOOBAR"}}}}
-	getter := func() types2.MarketMap {
+	dummyMM := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{"foo": {Ticker: mmtypes.Ticker{Metadata_JSON: "FOOBAR"}}}}
+	getter := func() mmtypes.MarketMap {
 		return dummyMM
 	}
 	o, err := oracle.New(
@@ -90,4 +90,10 @@ func (s *OracleTestSuite) TestGetMarketMap() {
 
 	gotMM := o.GetMarketMap()
 	s.Require().Equal(dummyMM, *gotMM)
+
+	// test when no option provided, should just give empty mm
+	o, err = oracle.New()
+	s.Require().NoError(err)
+	gotMM = o.GetMarketMap()
+	s.Require().Equal(*gotMM, mmtypes.MarketMap{})
 }
