@@ -22,13 +22,17 @@ const (
 	// ContractMethod is the contract method to call for the Uniswap V3 API.
 	ContractMethod = "slot0"
 
-	// URL is the URL for the Uniswap V3 API. This uses a free public RPC provider.
-	URL = "https://eth.public-rpc.com/"
+	// ETH_URL is the URL for the Uniswap V3 API. This uses a free public RPC provider on Ethereum Mainnet.
+	ETH_URL = "https://eth.public-rpc.com/"
+
+	// BASE_URL is the URL for the Uniswap V3 API. This uses a free public RPC provider on Base Mainnet.
+	BASE_URL = "https://mainnet.base.org"
 )
 
 // ProviderNames is the set of all supported "dynamic" names mapped by chain.
 var ProviderNames = map[string]string{
 	constants.ETHEREUM: strings.Join([]string{BaseName, constants.ETHEREUM}, NameSeparator),
+	constants.BASE:     strings.Join([]string{BaseName, constants.BASE}, NameSeparator),
 }
 
 // IsValidProviderName returns a bool based on the validity of the passed in name.
@@ -84,15 +88,30 @@ func (pc PoolConfig) MustToJSON() string {
 	return string(b)
 }
 
-// DefaultETHAPIConfig is the default configuration for the Uniswap API. Specifically this is for
-// Ethereum mainnet.
-var DefaultETHAPIConfig = config.APIConfig{
-	Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.ETHEREUM),
-	Atomic:           true,
-	Enabled:          true,
-	Timeout:          1000 * time.Millisecond,
-	Interval:         2000 * time.Millisecond,
-	ReconnectTimeout: 2000 * time.Millisecond,
-	MaxQueries:       1,
-	Endpoints:        []config.Endpoint{{URL: URL}},
-}
+var (
+	// DefaultETHAPIConfig is the default configuration for the Uniswap API. Specifically this is for
+	// Ethereum mainnet.
+	DefaultETHAPIConfig = config.APIConfig{
+		Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.ETHEREUM),
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         2000 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		Endpoints:        []config.Endpoint{{URL: ETH_URL}},
+	}
+
+	// DefaultBaseAPIConfig is the default configuration for the Uniswap API. Specifically this is for
+	// Base mainnet.
+	DefaultBaseAPIConfig = config.APIConfig{
+		Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.BASE),
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         2000 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		Endpoints:        []config.Endpoint{{URL: BASE_URL}},
+	}
+)
