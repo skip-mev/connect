@@ -105,9 +105,10 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 
 	// call from client
 	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
+	s.Require().Error(err)
 
 	// expect oracle not running error
-	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
+	s.Require().Equal(grpcErrPrefix+server.ErrOracleNotRunning.Error(), err.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
@@ -117,9 +118,9 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 
 	// call from client
 	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
-
+	s.Require().Error(err)
 	// expect deadline exceeded error
-	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
+	s.Require().Equal(status.FromContextError(context.DeadlineExceeded).Err().Error(), err.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerPrices() {
