@@ -16,9 +16,9 @@ var (
 	// However, we limit this to 40 to prevent overloading the connection.
 	DefaultMaxSubscriptionsPerConnection = 40
 	// DefaultWriteInterval is the default write interval for the Binance exchange WebSocket.
-	// Binance allows up to 5 messages to be sent per second. We set this to 250ms to
+	// Binance allows up to 5 messages to be sent per second. We set this to 300ms to
 	// prevent overloading the connection.
-	DefaultWriteInterval = 250 * time.Millisecond
+	DefaultWriteInterval = 300 * time.Millisecond
 	// DefaultHandshakeTimeout is the default handshake timeout for the Binance exchange WebSocket.
 	// If we assume that for 20 markets it takes 250ms to write a message, then the handshake
 	// timeout should be at least 5 seconds. We add a buffer of 5 seconds to account for network
