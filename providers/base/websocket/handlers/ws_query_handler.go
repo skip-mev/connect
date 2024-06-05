@@ -129,7 +129,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
-	if err := h.start(); err != nil {
+	if err := h.start(ctx); err != nil {
 		responseCh <- providertypes.NewGetResponseWithErr[K, V](
 			ids,
 			providertypes.NewErrorWithCode(
@@ -150,7 +150,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 }
 
 // start is used to start the connection to the data provider.
-func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
+func (h *WebSocketQueryHandlerImpl[K, V]) start(ctx context.Context) error {
 	// Start the connection.
 	h.logger.Debug("creating connection to data provider")
 	if err := h.connHandler.Dial(); err != nil {
@@ -186,7 +186,13 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 		// Wait for the write interval before sending the next message.
 		if index != len(messages)-1 {
-			time.Sleep(h.config.WriteInterval)
+			select {
+			case <-ctx.Done():
+				h.logger.Debug("context finished; stopping initial payload")
+				return h.close()
+			case <-time.After(h.config.WriteInterval):
+				h.logger.Debug("finished waiting for write interval")
+			}
 		}
 	}
 
