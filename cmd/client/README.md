@@ -2,7 +2,7 @@
 
 ## Overview
 
-The oracle client can be run concurrently with the oracle server. It is meant to be a useful tool for interacting with the oracle server and ensuring the the price feed is working as expected.
+The oracle client can be run concurrently with the oracle server. It is meant to be a useful tool for interacting with the oracle server and ensuring the price feed is working as expected.
 
 ## Usage
 
