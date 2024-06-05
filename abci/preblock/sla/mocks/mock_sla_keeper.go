@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	keeper "github.com/skip-mev/slinky/x/sla/keeper"
 	mock "github.com/stretchr/testify/mock"
+
+	keeper "github.com/skip-mev/slinky/x/sla/keeper"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

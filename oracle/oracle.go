@@ -3,7 +3,6 @@ package oracle
 import (
 	"context"
 	"fmt"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -13,6 +12,7 @@ import (
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ Oracle = (*OracleImpl)(nil)
