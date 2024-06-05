@@ -15,22 +15,20 @@ var (
 	DefaultMaxSubscriptionsPerConnection = 100
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Binance exchange WebSocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		Endpoints:                     []config.Endpoint{{URL: WSS}},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Binance exchange WebSocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 config.DefaultMaxBufferSize,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: WSS}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+}
