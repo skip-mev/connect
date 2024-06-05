@@ -12,19 +12,22 @@ import (
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
+	abciaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmock "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/types"
+	slinkyabcimocks "github.com/skip-mev/slinky/abci/types/mocks"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
-	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
+	voteweightedmocks "github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
@@ -111,7 +114,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	s.ctx = testutils.CreateBaseSDKContextWithKeys(s.T(), s.key, s.transientKey).WithExecMode(sdk.ExecModeFinalize)
 
 	// Use the default aggregation function for testing
-	mockValidatorStore := mocks.NewValidatorStore(s.T())
+	mockValidatorStore := voteweightedmocks.NewValidatorStore(s.T())
 	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
@@ -137,74 +140,227 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	)
 }
 
-func (s *PreBlockTestSuite) TestPreBlockHandler() {}
+func (s *PreBlockTestSuite) TestPreBlocker() {
+	mockValidatorStore := voteweightedmocks.NewValidatorStore(s.T())
+	aggregationFn := voteweighted.MedianFromContext(
+		log.NewTestLogger(s.T()),
+		mockValidatorStore,
+		voteweighted.DefaultPowerThreshold,
+	)
 
-func (s *PreBlockTestSuite) TestWritePrices() {
-	s.Run("no prices", func() {
-		err := s.handler.WritePrices(s.ctx, nil)
-		s.Require().NoError(err)
-	})
+	s.Run("fail on nil requests", func() {
+		s.handler = preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			aggregationFn,
+			&s.oracleKeeper,
+			servicemetrics.NewNopMetrics(),
+			s.cpID,
+			s.veCodec,
+			s.commitCodec,
+		)
 
-	s.Run("single price update", func() {
-		prices := map[slinkytypes.CurrencyPair]*big.Int{
-			s.currencyPairs[0]: big.NewInt(1),
-		}
+		_, err := s.handler.PreBlocker()(s.ctx, nil)
+		s.Require().Error(err)
 
-		err := s.handler.WritePrices(s.ctx, prices)
-		s.Require().NoError(err)
-
-		// Check that the price was written to state.
-		oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0])
-		s.Require().NoError(err)
-		s.Require().Equal(math.NewIntFromBigInt(prices[s.currencyPairs[0]]), oraclePrice.Price)
-	})
-
-	s.Run("multiple price updates", func() {
-		prices := map[slinkytypes.CurrencyPair]*big.Int{
-			s.currencyPairs[0]: big.NewInt(1),
-			s.currencyPairs[1]: big.NewInt(2),
-			s.currencyPairs[2]: maxUint256,
-		}
-
-		err := s.handler.WritePrices(s.ctx, prices)
-		s.Require().NoError(err)
-
-		// Check that the prices were written to state.
-		for _, cp := range s.currencyPairs {
-			oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cp)
+		// require no updates
+		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+		for _, cp := range cps {
+			nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
 			s.Require().NoError(err)
-			s.Require().Equal(math.NewIntFromBigInt(prices[cp]), oraclePrice.Price)
+
+			require.Equal(s.T(), uint64(0), nonce)
 		}
 	})
 
-	s.Run("single price update with a nil price", func() {
-		prices := map[slinkytypes.CurrencyPair]*big.Int{
-			s.currencyPairs[0]: nil,
-		}
+	s.Run("return when ves aren't enabled", func() {
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2).WithBlockHeight(1)
 
-		err := s.handler.WritePrices(s.ctx, prices)
+		s.handler = preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			aggregationFn,
+			&s.oracleKeeper,
+			servicemetrics.NewNopMetrics(),
+			s.cpID,
+			s.veCodec,
+			s.commitCodec,
+		)
+
+		_, err := s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{})
 		s.Require().NoError(err)
 
-		// Check that the price was not written to state.
-		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0])
-		s.Require().Error(err)
+		// require no updates
+		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+		for _, cp := range cps {
+			nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+			s.Require().NoError(err)
+
+			require.Equal(s.T(), uint64(0), nonce)
+		}
 	})
 
-	s.Run("attempting to set price for unsupported currency pair", func() {
-		unsupportedCP := slinkytypes.CurrencyPair{
-			Base:  "cap",
-			Quote: "on-god",
-		}
-		prices := map[slinkytypes.CurrencyPair]*big.Int{
-			unsupportedCP: big.NewInt(1),
-		}
+	// update ctx to enable ves
+	s.ctx = s.ctx.WithBlockHeight(3)
 
-		err := s.handler.WritePrices(s.ctx, prices)
+	s.Run("ignore vote-extensions w/ prices for non-existent pairs", func() {
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2).WithBlockHeight(3)
+		s.handler = preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			aggregationFn,
+			&s.oracleKeeper,
+			servicemetrics.NewNopMetrics(),
+			currencypair.NewDefaultCurrencyPairStrategy(
+				&s.oracleKeeper,
+			),
+			s.veCodec,
+			s.commitCodec,
+		)
+
+		priceBz, err := big.NewInt(1).GobEncode()
 		s.Require().NoError(err)
 
-		// Check that the price was not written to state.
-		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, unsupportedCP)
-		s.Require().Error(err)
+		prices1 := map[uint64][]byte{
+			3: priceBz,
+		}
+		ca1 := sdk.ConsAddress([]byte("ca1"))
+
+		ve1, err := testutils.CreateExtendedVoteInfo(
+			ca1,
+			prices1,
+			s.veCodec,
+		)
+		s.Require().NoError(err)
+
+		prices2 := map[uint64][]byte{
+			3: priceBz,
+		}
+		ca2 := sdk.ConsAddress([]byte("ca2"))
+
+		ve2, err := testutils.CreateExtendedVoteInfo(
+			ca2,
+			prices2,
+			s.veCodec,
+		)
+		s.Require().NoError(err)
+
+		_, extCommitBz, err := testutils.CreateExtendedCommitInfo(
+			[]cometabci.ExtendedVoteInfo{
+				ve1, ve2,
+			},
+			s.commitCodec,
+		)
+		s.Require().NoError(err)
+
+		validator1 := voteweightedmocks.NewValidatorI(s.T())
+		validator1.On("GetBondedTokens").Return(math.NewInt(1))
+
+		validator2 := voteweightedmocks.NewValidatorI(s.T())
+		validator2.On("GetBondedTokens").Return(math.NewInt(1))
+
+		mockValidatorStore.On("ValidatorByConsAddr", s.ctx, ca1).Return(
+			validator1, nil,
+		)
+
+		mockValidatorStore.On("ValidatorByConsAddr", s.ctx, ca2).Return(
+			validator2, nil,
+		)
+
+		mockValidatorStore.On("TotalBondedTokens", s.ctx).Return(math.NewInt(2), nil)
+
+		_, err = s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+			Txs: [][]byte{extCommitBz},
+		})
+		s.Require().NoError(err)
+
+		// require no updates
+		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+		for _, cp := range cps {
+			nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+			s.Require().NoError(err)
+
+			require.Equal(s.T(), uint64(0), nonce)
+		}
+	})
+
+	s.Run("multiple assets to write a price for", func() {
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2).WithBlockHeight(3)
+		s.handler = preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			aggregationFn,
+			&s.oracleKeeper,
+			servicemetrics.NewNopMetrics(),
+			currencypair.NewDefaultCurrencyPairStrategy(
+				&s.oracleKeeper,
+			),
+			s.veCodec,
+			s.commitCodec,
+		)
+
+		price1Bz, err := big.NewInt(1).GobEncode()
+		s.Require().NoError(err)
+		price2Bz, err := big.NewInt(2).GobEncode()
+		s.Require().NoError(err)
+		price3Bz, err := big.NewInt(3).GobEncode()
+		s.Require().NoError(err)
+
+		prices := map[uint64][]byte{
+			0: price1Bz,
+			1: price2Bz,
+			2: price3Bz,
+		}
+		ca1 := sdk.ConsAddress([]byte("ca1"))
+
+		ve1, err := testutils.CreateExtendedVoteInfo(
+			ca1,
+			prices,
+			s.veCodec,
+		)
+		s.Require().NoError(err)
+
+		ca2 := sdk.ConsAddress([]byte("ca2"))
+
+		ve2, err := testutils.CreateExtendedVoteInfo(
+			ca2,
+			prices,
+			s.veCodec,
+		)
+		s.Require().NoError(err)
+
+		_, extCommitBz, err := testutils.CreateExtendedCommitInfo(
+			[]cometabci.ExtendedVoteInfo{
+				ve1, ve2,
+			},
+			s.commitCodec,
+		)
+		s.Require().NoError(err)
+
+		validator1 := voteweightedmocks.NewValidatorI(s.T())
+		validator1.On("GetBondedTokens").Return(math.NewInt(1))
+
+		validator2 := voteweightedmocks.NewValidatorI(s.T())
+		validator2.On("GetBondedTokens").Return(math.NewInt(1))
+
+		mockValidatorStore.On("ValidatorByConsAddr", s.ctx, ca1).Return(
+			validator1, nil,
+		)
+
+		mockValidatorStore.On("ValidatorByConsAddr", s.ctx, ca2).Return(
+			validator2, nil,
+		)
+
+		mockValidatorStore.On("TotalBondedTokens", s.ctx).Return(math.NewInt(2), nil)
+
+		_, err = s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+			Txs: [][]byte{extCommitBz},
+		})
+		s.Require().NoError(err)
+
+		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+		for _, cp := range cps {
+			nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+			s.Require().NoError(err)
+
+			require.Equal(s.T(), uint64(1), nonce)
+		}
 	})
 }
 
@@ -356,7 +512,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 				1: make([]byte, 34),
 			},
 		}, nil)
-		expErr := preblock.PriceAggregationError{
+		expErr := abciaggregator.PriceAggregationError{
 			Err: fmt.Errorf("price bytes are too long: %d", 34),
 		}
 
@@ -441,7 +597,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		val2 := sdk.ConsAddress("val2")
 		val3 := sdk.ConsAddress("val3")
 
-		mockOracleKeeper := preblockmock.NewKeeper(s.T())
+		mockOracleKeeper := slinkyabcimocks.NewOracleKeeper(s.T())
 		currencyPairStrategyMock := currencypairmock.NewCurrencyPairStrategy(s.T())
 
 		btcUsd := slinkytypes.NewCurrencyPair("BTC", "USD")
