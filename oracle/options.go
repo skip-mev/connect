@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"time"
 
 	"go.uber.org/zap"
@@ -9,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // Option is a function that can be used to configure an Oracle.
