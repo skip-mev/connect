@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	useCore    = flag.Bool("use-core", false, "use core markets")
-	useRaydium = flag.Bool("use-raydium", false, "use raydium markets")
-	tempFile   = flag.String("temp-file", "markets.json", "temporary file to store the market map")
+	useCore          = flag.Bool("use-core", false, "use core markets")
+	useRaydium       = flag.Bool("use-raydium", false, "use raydium markets")
+	useUniswapV3Base = flag.Bool("use-uniswapv3-base", false, "use uniswapv3 base markets")
+	tempFile         = flag.String("temp-file", "markets.json", "temporary file to store the market map")
 )
 
 func main() {
@@ -34,6 +35,11 @@ func main() {
 	if *useRaydium {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using raydium markets\n")
 		marketMap = mergeMarketMaps(marketMap, constants.RaydiumMarketMap)
+	}
+
+	if *useUniswapV3Base {
+		fmt.Fprintf(flag.CommandLine.Output(), "Using uniswapv3 base markets\n")
+		marketMap = mergeMarketMaps(marketMap, constants.UniswapV3BaseMarketMap)
 	}
 
 	// Write the market map to the temporary file.

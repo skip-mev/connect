@@ -20,4 +20,9 @@ func TestMarkets(t *testing.T) {
 	var mm2 mmtypes.MarketMap
 	require.NoError(t, json.Unmarshal([]byte(constants.CoreMarketMapJSON), &mm2))
 	require.NoError(t, mm2.ValidateBasic())
+
+	// Unmarshal the UniswapV3BaseMarketMapJSON into UniswapV3BaseMarketMap.
+	var mm3 mmtypes.MarketMap
+	require.NoError(t, json.Unmarshal([]byte(constants.UniswapV3BaseMarketMapJSON), &mm3))
+	require.NoError(t, constants.UniswapV3BaseMarketMap.ValidateBasic())
 }
