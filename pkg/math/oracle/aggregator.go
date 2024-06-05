@@ -52,7 +52,7 @@ func NewIndexPriceAggregator(
 	}
 
 	return &IndexPriceAggregator{
-		logger:         logger,
+		logger:         logger.With(zap.String("process", "index_price_aggregator")),
 		cfg:            cfg,
 		metrics:        metrics,
 		indexPrices:    make(types.Prices),

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -82,5 +83,7 @@ func (t *ProviderTickers) Add(ticker ProviderTicker) {
 	t.mut.Lock()
 	defer t.mut.Unlock()
 
+	t.cache[strings.ToLower(ticker.GetOffChainTicker())] = ticker
 	t.cache[ticker.GetOffChainTicker()] = ticker
+	t.cache[strings.ToUpper(ticker.GetOffChainTicker())] = ticker
 }

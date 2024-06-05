@@ -3,7 +3,6 @@ package cryptodotcom
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"go.uber.org/zap"
 
@@ -105,14 +104,6 @@ func (h *WebSocketHandler) HandleMessage(
 func (h *WebSocketHandler) CreateMessages(
 	tickers []types.ProviderTicker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	// Sleep for a second to ensure the connection is established before sending the subscribe message.
-	// This is the recommended behaviour from the Crypto.com documentation.
-	//
-	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
-	//
-	// TODO(David): Move this into the websocket connection logic + config.
-	time.Sleep(1 * time.Second)
-
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
