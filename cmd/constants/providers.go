@@ -41,6 +41,11 @@ var (
 			API:  uniswapv3.DefaultETHAPIConfig,
 			Type: types.ConfigType,
 		},
+		{
+			Name: uniswapv3.ProviderNames[constants.BASE],
+			API:  uniswapv3.DefaultBaseAPIConfig,
+			Type: types.ConfigType,
+		},
 
 		// Exchange API providers
 		{

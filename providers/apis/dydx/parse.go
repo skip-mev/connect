@@ -48,6 +48,7 @@ var ProviderMapping = map[string]string{
 	"TestVolatileExchange": volatile.Name,
 	"Raydium":              raydium.Name,
 	"UniswapV3-Ethereum":   uniswapv3.ProviderNames[constants.ETHEREUM],
+	"UniswapV3-Base":       uniswapv3.ProviderNames[constants.BASE],
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
