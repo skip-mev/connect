@@ -5170,11 +5170,11 @@ var (
 	UniswapV3BaseMarketMapJSON = `
 	{
 		"markets": {
-		  "BRETT/ETH": {
+		  "BRETT/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "BRETT",
-				"Quote": "ETH"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -5184,13 +5184,65 @@ var (
 			  {
 				"name": "uniswapv3_api-base",
 				"off_chain_ticker": "BRETT/ETH",
-				"metadata_JSON": "{\"address\":\"0xBA3F945812a83471d709BCe9C3CA699A19FB46f7\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}",
-				"invert": true
+				"metadata_JSON": "{\"address\":\"0xBA3F945812a83471d709BCe9C3CA699A19FB46f7\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":true}",
+				"normalize_by_pair": {
+					"Base": "ETH",
+					"Quote": "USD"
+				}
+			  }
+			]
+		  },
+		  "ETH/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "ETH",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "uniswapv3_api-base",
+				"off_chain_ticker": "ETH/USDT",
+				"metadata_JSON": "{\"address\":\"0xd92E0767473D1E3FF11Ac036f2b1DB90aD0aE55F\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}",
+				"normalize_by_pair": {
+					"Base": "USDT",
+					"Quote": "USD"
+				}
+			  }
+			]
+		  },
+		  "USDT/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "USDT",
+				"Quote": "USD"
+			  },
+			  "decimals": 6,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "uniswapv3_api-base",
+				"off_chain_ticker": "USDT/ETH",
+				"metadata_JSON": "{\"address\":\"0xd92E0767473D1E3FF11Ac036f2b1DB90aD0aE55F\",\"base_decimals\":6,\"quote_decimals\":18,\"invert\":true}",
+				"normalize_by_pair": {
+				  "Base": "ETH",
+				  "Quote": "USD"
+				}
+			  },
+			  {
+				"name": "uniswapv3_api-base",
+				"off_chain_ticker": "USDT/USDC",
+				"metadata_JSON": "{\"address\":\"0xD56da2B74bA826f19015E6B7Dd9Dae1903E85DA1\",\"base_decimals\":6,\"quote_decimals\":6,\"invert\":true}"
 			  }
 			]
 		  }
-		}
-	  }
+	    }
+	}
 	`
 )
 
