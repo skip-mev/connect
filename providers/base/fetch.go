@@ -110,6 +110,14 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 
 	for _, subIDs := range subTasks {
 		wg.Go(p.startWebSocket(ctx, subIDs))
+
+		timer := time.NewTimer(p.wsCfg.HandshakeTimeout)
+		select {
+		case <-timer.C:
+			p.logger.Debug("handshake timeout reached")
+		case <-ctx.Done():
+			p.logger.Debug("context done")
+		}
 	}
 
 	// Wait for all the sub handlers to finish.
