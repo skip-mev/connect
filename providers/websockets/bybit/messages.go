@@ -77,7 +77,7 @@ func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncode
 			},
 		)
 		if err != nil {
-			return messages, fmt.Errorf("unable to to marshal message: %w", err)
+			return messages, fmt.Errorf("unable to marshal message: %w", err)
 		}
 
 		messages[i] = bz
