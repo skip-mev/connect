@@ -116,6 +116,7 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 			p.logger.Debug("handshake timeout reached")
 		case <-ctx.Done():
 			p.logger.Debug("context done")
+			return wg.Wait()
 		}
 	}
 
