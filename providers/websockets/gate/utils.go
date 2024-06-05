@@ -14,25 +14,21 @@ const (
 )
 
 // DefaultWebSocketConfig is the default configuration for the Gate.io Websocket.
-var (
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: 10 * time.Second,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL,
-			},
-		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-)
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           10 * time.Second,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}
