@@ -95,7 +95,6 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug("BatchCallContext called with 0 elems")
 		return nil
 	}
-
 	// define a result struct that go routines will populate and append to a slice when they complete their request.
 	type result struct {
 		height  uint64
@@ -112,6 +111,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 	for clientIdx, client := range m.clients {
 		wg.Add(1)
 		go func(i int) {
+			defer wg.Done()
 			url := m.api.Endpoints[i].URL
 
 			// append an eth_blockNumber call to the requests. we do this because we want the greatest height results only.
@@ -132,37 +132,38 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 					zap.Error(req[blockNumReqIndex].Error),
 					zap.String("url", url),
 				)
-			} else { // the batch call succeeded, and the eth_blockNumber call had results.\
-				// try to get the block number.
-				r, ok := req[blockNumReqIndex].Result.(*string)
-				if !ok {
-					errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
-					m.logger.Debug(
-						"result from eth_blockNumber was not a string",
-						zap.String("url", url),
-					)
-				} else {
-					// decode the new height
-					height, err := hexutil.DecodeUint64(*r)
-					if err != nil { // if we can't decode the height, log an error.
-						errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
-						m.logger.Debug(
-							"could not decode hex eth height",
-							zap.String("url", url),
-							zap.Error(err),
-						)
-					} else { // if we _can_ decode the height, append these results.
-						m.logger.Debug(
-							"got height for eth batch request",
-							zap.Uint64("height", height),
-							zap.String("url", url),
-						)
-						// append the results, minus the appended eth_blockNumber request.
-						results[i] = result{height, req[:blockNumReqIndex]}
-					}
-				}
+				return
 			}
-			wg.Done()
+			// the batch call succeeded, and the eth_blockNumber call had results.\
+			// try to get the block number.
+			r, ok := req[blockNumReqIndex].Result.(*string)
+			if !ok {
+				errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
+				m.logger.Debug(
+					"result from eth_blockNumber was not a string",
+					zap.String("url", url),
+				)
+				return
+			}
+
+			// decode the new height
+			height, err := hexutil.DecodeUint64(*r)
+			if err != nil { // if we can't decode the height, log an error.
+				errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
+				m.logger.Debug(
+					"could not decode hex eth height",
+					zap.String("url", url),
+					zap.Error(err),
+				)
+				return
+			}
+			m.logger.Debug(
+				"got height for eth batch request",
+				zap.Uint64("height", height),
+				zap.String("url", url),
+			)
+			// append the results, minus the appended eth_blockNumber request.
+			results[i] = result{height, req[:blockNumReqIndex]}
 		}(clientIdx)
 	}
 	wg.Wait()
