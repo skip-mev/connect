@@ -155,7 +155,7 @@
           "editorMode": "code",
           "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": false,
-          "legendFormat": "Height",
+          "legendFormat": "{{ instance }}",
           "range": true,
           "refId": "A"
         }
@@ -231,7 +231,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m])",
+          "expr": "max(rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m]))",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -309,7 +309,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "1 / (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m]))",
+          "expr": "max(1 / (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m])))",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -377,7 +377,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_num_txs{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_num_txs{job=\"${job}\"})",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -446,7 +446,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(cometbft_consensus_num_txs{job=\"${job}\"}[5m])",
+          "expr": "max(rate(cometbft_consensus_num_txs{job=\"${job}\"}[5m]))",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -528,7 +528,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_validator_power{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_validator_power{job=\"${job}\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Voting Power",
@@ -654,7 +654,7 @@
           "expr": "cometbft_blocksync_syncing{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": true,
           "interval": "",
-          "legendFormat": "__auto",
+          "legendFormat": "{{instance}}",
           "range": false,
           "refId": "A"
         }
@@ -742,7 +742,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(changes(prices_current_market_prices{job=\"${job}\"}[15m]) == 0)",
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[15m]) == 0)",
           "hide": false,
           "instant": false,
           "legendFormat": "15m",
@@ -756,7 +756,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(changes(prices_current_market_prices{job=\"${job}\"}[1h]) == 0)",
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[1h]) == 0)",
           "instant": false,
           "legendFormat": "1h",
           "range": true,
@@ -769,7 +769,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(changes(prices_current_market_prices{job=\"${job}\"}[3h]) == 0)",
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[3h]) == 0)",
           "hide": false,
           "instant": false,
           "legendFormat": "3h",
@@ -783,7 +783,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(changes(prices_current_market_prices{job=\"${job}\"}[6h]) == 0)",
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[6h]) == 0)",
           "hide": false,
           "instant": false,
           "legendFormat": "6h",
@@ -865,7 +865,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(pricefeed_server_valid_prices_count{job=\"${job}\"})",
+          "expr": "sum(pricefeed_server_valid_prices_count{job=\"${job}\",instance=\"${instance}\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -915,7 +915,7 @@
       "options": {
         "colorMode": "background_solid",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -938,7 +938,7 @@
           "editorMode": "code",
           "expr": "rate(app_oracle_responses{job=\"${job}\",chain_id=\"${chain_id}\",status=\"Success\"}[1m])",
           "instant": false,
-          "legendFormat": "Height",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }
@@ -1014,7 +1014,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count (rate(pricefeed_server_update_price_valid_count{job=\"${job}\"}[15m]) == 0)",
+          "expr": "count(rate(pricefeed_server_update_price_valid_count{job=\"${job}\"}[15m]) == 0)",
           "hide": false,
           "instant": false,
           "legendFormat": "{{status}}",
@@ -1083,7 +1083,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_validators_power{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_validators_power{job=\"${job}\"})",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -1165,7 +1165,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[1h]))   ",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[1h]))",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1179,7 +1179,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[24h]))",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[24h]))",
           "instant": false,
           "interval": "",
           "legendFormat": "1 Day",
@@ -1192,7 +1192,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[7d]))   ",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[7d]))",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1312,7 +1312,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "prices_current_market_prices{job=\"${job}\"}",
+          "expr": "prices_current_market_prices{job=\"${job}\",instance=\"${instance}\",market_id=~\"${ticker}\"}",
           "instant": false,
           "legendFormat": "{{market_id}}",
           "range": true,
@@ -1390,7 +1390,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"} - on (job) group_right last_over_time(prices_last_price_update_for_market_block{job=\"${job}\"}[1d])",
+          "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",instance=\"${instance}\"} - on (job) group_right last_over_time(prices_last_price_update_for_market_block{job=\"${job}\",instance=\"${instance}\"}[1d])",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1399,7 +1399,7 @@
           "refId": "A"
         }
       ],
-      "title": "Latest Price Pair Reports",
+      "title": "Latest Price Pair Reports by instance",
       "transformations": [
         {
           "id": "organize",
@@ -1532,7 +1532,7 @@
           "editorMode": "code",
           "expr": "rate(update_market_prices_latency_sum{job=\"${job}\"}[$__rate_interval])",
           "instant": false,
-          "legendFormat": "Price Latency",
+          "legendFormat": "Price Latency - {{ instance }}",
           "range": true,
           "refId": "A"
         }
@@ -1621,14 +1621,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(app_abci_method_latency_bucket{abci_method=\"verify_vote_extension\",job=~\"${job}\",chain_id=\"${chain_id}\"}[$__rate_interval])) by (le)",
+          "expr": "sum(rate(app_abci_method_latency_bucket{abci_method=\"verify_vote_extension\",job=~\"${job}\",chain_id=\"${chain_id}\",instance=\"${instance}\"}[$__rate_interval])) by (le)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Vote Extension Latency (s)",
+      "title": "Vote Extension Latency (s) by instance",
       "type": "heatmap"
     },
     {
@@ -1721,7 +1721,7 @@
           "expr": "rate(app_abci_method_latency_sum{abci_method=\"verify_vote_extension\",job=\"${job}\"}[$__rate_interval])",
           "hide": false,
           "instant": false,
-          "legendFormat": "Vote Extension Latency",
+          "legendFormat": "Vote Extension Latency - {{ instance }}",
           "range": true,
           "refId": "A"
         }
@@ -1853,6 +1853,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Latency between validator node and sidecar",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1928,14 +1929,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\",chain_id=\"${chain_id}\"}[$__rate_interval])) by (le)",
+          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\",chain_id=\"${chain_id}\",instance=\"${instance}\"}[$__rate_interval])) by (le)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Side Car Latency to Blockchain (s)",
+      "title": "Side Car Latency to Blockchain (s) by instance",
       "type": "heatmap"
     },
     {
@@ -2360,7 +2361,7 @@
           "placement": "right",
           "showLegend": true,
           "sortBy": "Last *",
-          "sortDesc": true
+          "sortDesc": false
         },
         "tooltip": {
           "mode": "multi",
@@ -3254,8 +3255,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3483,6 +3483,30 @@
         "type": "query"
       },
       {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(cometbft_consensus_height{job=\"$job\"},instance)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(cometbft_consensus_height{job=\"$job\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
         "datasource": {
           "type": "prometheus",
           "uid": "VZT5-Dv7z"
@@ -3510,6 +3534,6 @@
   "timezone": "",
   "title": "Slinky dYdX Oracle Dashboard",
   "uid": "ddlptcu54ga9se",
-  "version": 13,
+  "version": 24,
   "weekStart": ""
 }
