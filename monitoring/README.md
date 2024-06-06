@@ -4,38 +4,60 @@ A monitoring solution for node runners and validators utilizing docker container
 
 This is intended to be a single-stop solution for monitoring your Slinky Side Car needs.
 
-## TL;DR: Steps
-
-Clone this repository on your Docker host, cd into slinky directory and run compose up:
-
-```bash
-git clone https://github.com/skip-mev/slinky
-cd slinky
-cp .env.sample .env
-export NODE_URL=http://localhost:1317 # Enter your own node url here
-docker run -it --rm --entrypoint sh -v $(pwd)/monitoring/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:latest -c "slinky-config --chain dydx \
---node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
-https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.lavenderfive.com,https://solana-rpc.rhino-apis.com,https://dydx.helius-rpc.com \
---oracle-config-path /slinky/oracle.json"
-sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" monitoring/prometheus/prometheus.yml
-docker-compose up -d
-```
-
 ## Setup Slinky
-### Clone slinky
+### 1. Clone slinky
 
 ```sh
 git clone https://github.com/skip-mev/slinky/
 cd slinky/monitoring
 ```
 
-### Copy .env file
+### 2. Copy .env file
 The `.env` file has very basic settings for logins, etc.
 ```sh
 cp .env.sample .env
 ```
 
-### Generate Slinky oracle.json
+
+### 3. Edit Prometheus.yml
+The following will set your IP address in `prometheus.yml`. **If you are using non-standard daemon prometheus metrics port, `26660`, you will need to modify `prometheus/prometheus.yml`.**
+
+```sh
+cd ~/slinky/monitoring
+sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" prometheus/prometheus.yml
+```
+
+### 4. [OPTIONAL] If running slinky via docker
+Only do the following if you intend to run slinky via docker. 
+If you only intend to use the monitoring aspects, skip to step 5.
+
+#### a. Modify docker-compose.yml
+Uncomment slinky from `docker-compose.yml`
+
+```yml
+  slinky:
+    image: ghcr.io/skip-mev/slinky-sidecar:latest
+    container_name: slinky
+    volumes:
+      - ./monitoring/slinky:/etc/slinky
+    entrypoint: [
+      "slinky", 
+      "--oracle-config-path", "/etc/slinky/oracle.json", 
+      ]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8002:8002"
+    expose:
+      - 8080
+      - 8002
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+```
+
+#### b. Generate Slinky oracle.json
 This command will create the Slinky oracle.json config file under `~/slinky/monitoring/slinky`. Unless you are running this repo
 on the same server as the node, you will want to change the `NODE_URL` from localhost.
 
@@ -48,15 +70,7 @@ https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.l
 --oracle-config-path /slinky/oracle.json"
 ```
 
-### Edit Prometheus.yml
-The following will set your IP address in `prometheus.yml`. **If you are using non-standard daemon prometheus metrics port, `26660`, you will need to modify `prometheus/prometheus.yml`.**
-
-```sh
-cd ~/slinky/monitoring
-sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" prometheus/prometheus.yml
-```
-
-### Add API Keys 
+#### c. Add API Keys 
 Slinky supports the addition of state-RPCs to gather data directly from Solana and EVM chains. The Skip and dYdX team have already set up relationships and pre-paid for API endpoints you can use to get this data.
 
 For each RPC URL, you will need an API key unique to your validator. To get this, go to the dYdX validator slack channel (which you should already be invited to once you make it into the active set), and request API keys from Helius, Polkachu, KingNodes, LavenderFive, and RhinoStake. Each of these are necessary to load into your config so your decentralized providers can work properly.
@@ -112,18 +126,19 @@ More information can be found [here](https://docs.skip.money/slinky/integrations
 }
 ```
 
-## Setup Grafana
+### 5. Run docker
+Run the docker orchestration.
 
-### Grafana  Dashboard
-This monitoring solution comes built in with a Slinky Monitoring dashboard, 
-which works out of the box. Grafana, Prometheus, and Infinity are installed 
-automatically.
+```
+docker compose up -d
+```
 
-![Slinky Dashboard](https://raw.githubusercontent.com/skip-mev/slinky/monitoring/master/screens/slinky_dashboard.png)
+You may now navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***
+to see the status of `Slinky`.
 
 ---
 
-Navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up. The config file can be added directly in grafana part like this
+You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up. The config file can be added directly in grafana part like this
 
 ```yaml
 grafana:

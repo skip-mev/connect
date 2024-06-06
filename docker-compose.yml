@@ -46,26 +46,26 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
-  slinky:
-    image: ghcr.io/skip-mev/slinky-sidecar:latest
-    container_name: slinky
-    volumes:
-      - ./monitoring/slinky:/etc/slinky
-    entrypoint: [
-      "slinky", 
-      "--oracle-config-path", "/etc/slinky/oracle.json", 
-      ]
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:8002:8002"
-    expose:
-      - 8080
-      - 8002
-    networks:
-      - monitor-net
-    labels:
-      org.label-schema.group: "monitoring"
+  # slinky:
+  #   image: ghcr.io/skip-mev/slinky-sidecar:latest
+  #   container_name: slinky
+  #   volumes:
+  #     - ./monitoring/slinky:/etc/slinky
+  #   entrypoint: [
+  #     "slinky", 
+  #     "--oracle-config-path", "/etc/slinky/oracle.json", 
+  #     ]
+  #   restart: unless-stopped
+  #   ports:
+  #     - "127.0.0.1:8080:8080"
+  #     - "127.0.0.1:8002:8002"
+  #   expose:
+  #     - 8080
+  #     - 8002
+  #   networks:
+  #     - monitor-net
+  #   labels:
+  #     org.label-schema.group: "monitoring"
 
   nodeexporter:
     image: prom/node-exporter:v1.3.1
