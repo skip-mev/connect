@@ -2,7 +2,9 @@ package ethmulticlient
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -87,77 +89,103 @@ func NewMultiRPCClientFromEndpoints(
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
 // It returns the first response it sees from a node which has the greatest height. An error is returned
-// only when all clients fail.
+// only when no client was able to successfully provide a height.
 func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.BatchElem) error {
 	if len(batchElems) == 0 {
 		m.logger.Debug("BatchCallContext called with 0 elems")
 		return nil
 	}
 
-	req := make([]rpc.BatchElem, len(batchElems)+1)
-	copy(req, batchElems)
+	// define a result struct that go routines will populate and append to a slice when they complete their request.
+	type result struct {
+		height  uint64
+		results []rpc.BatchElem
+	}
+	results := make([]result, len(m.clients))
+
+	// error slice to capture errors go routines encounter.
+	errs := make([]error, len(m.clients))
+	wg := new(sync.WaitGroup)
+	// this is the index of where we will have an eth_blockNumber call.
 	blockNumReqIndex := len(batchElems)
-	req[blockNumReqIndex] = EthBlockNumberBatchElem()
-	errs := fmt.Errorf("all eth client requests failed")
-
-	// TODO(david): consider parallelizing these requests.
-	var maxHeight uint64
+	// for each client, spin up a go routine that executes a BatchCall.
 	for i, client := range m.clients {
-		url := m.api.Endpoints[i].URL
+		wg.Add(1)
+		go func() {
+			url := m.api.Endpoints[i].URL
 
-		err := client.BatchCallContext(ctx, req)
-		if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
-			errs = fmt.Errorf("%w: endpoint request failed: %w, %w", errs, err, req[blockNumReqIndex].Error)
-			m.logger.Debug(
-				"endpoint request failed",
-				zap.Error(err),
-				zap.Any("result", req[blockNumReqIndex].Result),
-				zap.Error(req[blockNumReqIndex].Error),
-				zap.String("url", url),
-			)
-			continue
-		}
+			// append an eth_blockNumber call to the requests. we do this because we want the greatest height results only.
+			req := make([]rpc.BatchElem, len(batchElems)+1)
+			copy(req, batchElems)
+			req[blockNumReqIndex] = EthBlockNumberBatchElem()
 
-		r, ok := req[blockNumReqIndex].Result.(*string)
-		if !ok {
-			errs = fmt.Errorf("%w: result from eth_blockNumber was not a string", errs)
-			m.logger.Debug(
-				"result from eth_blockNumber was not a string",
-				zap.String("url", url),
-			)
-			continue
-		}
+			err := client.BatchCallContext(ctx, req)
 
-		newHeight, err := hexutil.DecodeUint64(*r)
-		if err != nil {
-			errs = fmt.Errorf("%w: could not decode hex eth height: %w", errs, err)
-			m.logger.Debug(
-				"could not decode hex eth height",
-				zap.String("url", url),
-				zap.Error(err),
-			)
-			continue
-		}
-		m.logger.Debug(
-			"got height for eth batch request",
-			zap.Uint64("height", newHeight),
-			zap.String("url", url),
-		)
+			// if there was an error, or if the block_num request didn't have result / errored
+			// we log the error and append to error slice.
+			if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
+				errs[i] = fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
+				m.logger.Debug(
+					"endpoint request failed",
+					zap.Error(err),
+					zap.Any("result", req[blockNumReqIndex].Result),
+					zap.Error(req[blockNumReqIndex].Error),
+					zap.String("url", url),
+				)
+			} else { // the batch call succeeded, and the eth_blockNumber call had results.\
+				// try to get the block number.
+				r, ok := req[blockNumReqIndex].Result.(*string)
+				if !ok {
+					errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
+					m.logger.Debug(
+						"result from eth_blockNumber was not a string",
+						zap.String("url", url),
+					)
+				} else {
+					// decode the new height
+					height, err := hexutil.DecodeUint64(*r)
+					if err != nil { // if we can't decode the height, log an error.
+						errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
+						m.logger.Debug(
+							"could not decode hex eth height",
+							zap.String("url", url),
+							zap.Error(err),
+						)
+					} else { // if we _can_ decode the height, append these results.
+						m.logger.Debug(
+							"got height for eth batch request",
+							zap.Uint64("height", height),
+							zap.String("url", url),
+						)
+						// append the results, minus the appended eth_blockNumber request.
+						results[i] = result{height, req[:blockNumReqIndex]}
+					}
+				}
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 
-		if newHeight > maxHeight {
-			m.logger.Debug("new max eth height seen",
-				zap.Uint64("prev_height", maxHeight),
-				zap.Uint64("new_height", newHeight),
-				zap.String("url", url),
-			)
-
-			maxHeight = newHeight
-			copy(batchElems, req[:blockNumReqIndex])
+	// see which of the results had the largest height, and store the index of that result.
+	var maxHeight uint64
+	var maxHeightIndex int
+	for i, res := range results {
+		if res.height > maxHeight {
+			maxHeight = res.height
+			maxHeightIndex = i
 		}
 	}
-
+	// maxHeight being 0 means there were no results. something bad happened. return all the errors.
 	if maxHeight == 0 {
-		return errs
+		err := errors.Join(errs...)
+		if err != nil {
+			return err
+		}
+		// this should never happen... but who knows. maybe something terrible happened.
+		return errors.New("no errors were encountered, however no go routine was able to report a height")
 	}
+	// copy the results from the results that had the largest height.
+	copy(batchElems, results[maxHeightIndex].results)
 	return nil
 }
