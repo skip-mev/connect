@@ -47,7 +47,7 @@ services:
       org.label-schema.group: "monitoring"
 
   slinky:
-    image: ghcr.io/skip-mev/slinky-sidecar:v0.4.1
+    image: ghcr.io/skip-mev/slinky-sidecar:latest
     container_name: slinky
     volumes:
       - ./monitoring/slinky:/etc/slinky
