@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -16,6 +15,21 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+)
+
+var (
+	coinbasebtcusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "BTCUSD",
+	}
+	coinbaseethusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "ETHUSD",
+	}
+	okxbtcusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "BTC-USD",
+	}
+	okxethusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "ETH-USD",
+	}
 )
 
 func TestInit(t *testing.T) {
@@ -68,8 +82,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
-				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+				coinbasebtcusd,
+				coinbaseethusd,
 			},
 			coinbase.Name,
 			providertypes.API,
@@ -82,8 +96,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				okx.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
-				okx.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+				okxbtcusd,
+				okxethusd,
 			},
 			okx.Name,
 			providertypes.WebSockets,
@@ -130,8 +144,9 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when a provider is not supported by the api query handler factory", func(t *testing.T) {
-		cfg := oracleCfg
-		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
+		cfg := copyConfig(oracleCfg)
+
+		cfg.Providers["unsupported"] = config.ProviderConfig{
 			Name: "unsupported",
 			API: config.APIConfig{
 				Enabled:          true,
@@ -139,11 +154,11 @@ func TestInit(t *testing.T) {
 				Interval:         5,
 				MaxQueries:       5,
 				ReconnectTimeout: 5 * time.Second,
-				URL:              "https://example.com",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 				Name:             "unsupported",
 			},
 			Type: oracletypes.ConfigType,
-		})
+		}
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
@@ -158,15 +173,15 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
-		cfg := oracleCfg
+		cfg := copyConfig(oracleCfg)
 
 		okxCfg := okx.DefaultWebSocketConfig
 		okxCfg.Name = "unsupported"
-		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
+		cfg.Providers["unsupported"] = config.ProviderConfig{
 			Name:      "unsupported",
 			WebSocket: okxCfg,
 			Type:      oracletypes.ConfigType,
-		})
+		}
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,

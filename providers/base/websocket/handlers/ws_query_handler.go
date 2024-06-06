@@ -129,7 +129,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
-	if err := h.start(); err != nil {
+	if err := h.start(ctx); err != nil {
 		responseCh <- providertypes.NewGetResponseWithErr[K, V](
 			ids,
 			providertypes.NewErrorWithCode(
@@ -150,7 +150,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 }
 
 // start is used to start the connection to the data provider.
-func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
+func (h *WebSocketQueryHandlerImpl[K, V]) start(ctx context.Context) error {
 	// Start the connection.
 	h.logger.Debug("creating connection to data provider")
 	if err := h.connHandler.Dial(); err != nil {
@@ -158,6 +158,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
 		return errors.ErrDialWithErr(err)
 	}
+
+	// Wait for the connection timeout before sending the initial payload(s).
+	time.Sleep(h.config.PostConnectionTimeout)
 
 	// Create the initial set of events that the channel will subscribe to.
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
@@ -169,8 +172,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	}
 
 	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
-	for _, message := range messages {
-		h.logger.Debug("connection created; sending initial payload", zap.String("payload", string(message)))
+	h.logger.Debug("connection created; sending initial payload(s)")
+	for index, message := range messages {
+		h.logger.Debug("sending payload", zap.String("payload", string(message)))
 
 		// Send the initial payload to the data provider.
 		if err := h.connHandler.Write(message); err != nil {
@@ -179,6 +183,17 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 			return errors.ErrWriteWithErr(err)
 		}
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+
+		// Wait for the write interval before sending the next message.
+		if index != len(messages)-1 {
+			select {
+			case <-ctx.Done():
+				h.logger.Debug("context finished; stopping initial payload")
+				return h.close()
+			case <-time.After(h.config.WriteInterval):
+				h.logger.Debug("finished waiting for write interval")
+			}
+		}
 	}
 
 	h.logger.Debug("initial payload sent; websocket connection successfully started")

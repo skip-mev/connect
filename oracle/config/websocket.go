@@ -14,6 +14,10 @@ const (
 	// to reconnect to the websocket endpoint.
 	DefaultReconnectionTimeout = 10 * time.Second
 
+	// DefaultPostConnectionTimeout is the default timeout for the provider to wait
+	// after a connection is established before sending messages.
+	DefaultPostConnectionTimeout = 1 * time.Second
+
 	// DefaultReadBufferSize is the default I/O read buffer size. If a buffer size of
 	// 0 is specified, then a default buffer size is used i.e. the buffers allocated
 	// by the HTTP server.
@@ -25,7 +29,7 @@ const (
 	DefaultWriteBufferSize = 0
 
 	// DefaultHandshakeTimeout is the default duration for the handshake to complete.
-	DefaultHandshakeTimeout = 45 * time.Second
+	DefaultHandshakeTimeout = 10 * time.Second
 
 	// DefaultEnableCompression is the default value for whether the client should
 	// attempt to negotiate per message compression (RFC 7692).
@@ -33,15 +37,19 @@ const (
 
 	// DefaultReadTimeout is the default read deadline on the underlying network
 	// connection.
-	DefaultReadTimeout = 45 * time.Second
+	DefaultReadTimeout = 5 * time.Second
 
 	// DefaultWriteTimeout is the default write deadline on the underlying network
 	// connection.
-	DefaultWriteTimeout = 45 * time.Second
+	DefaultWriteTimeout = 5 * time.Second
 
 	// DefaultPingInterval is the default interval at which the provider should send
 	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
+
+	// DefaultWriteInterval is the default interval at which the provider should send
+	// write messages to the server.
+	DefaultWriteInterval = 100 * time.Millisecond
 
 	// DefaultMaxReadErrorCount is the default maximum number of read errors that
 	// the provider will tolerate before closing the connection and attempting to
@@ -70,8 +78,13 @@ type WebSocketConfig struct {
 	// to the websocket endpoint.
 	ReconnectionTimeout time.Duration `json:"reconnectionTimeout"`
 
-	// WSS is the websocket endpoint for the provider.
-	WSS string `json:"wss"`
+	// PostConnectionTimeout is the timeout for the provider to wait after a connection
+	// is established before sending messages.
+	PostConnectionTimeout time.Duration `json:"postConnectionTimeout"`
+
+	// Endpoints are the websocket endpoints for the provider. At least one endpoint
+	// must be specified.
+	Endpoints []Endpoint `json:"endpoints"`
 
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
@@ -108,6 +121,10 @@ type WebSocketConfig struct {
 	// of 0 disables pings.
 	PingInterval time.Duration `json:"pingInterval"`
 
+	// WriteInterval is the interval at which the provider should wait before sending
+	// consecutive write messages to the server.
+	WriteInterval time.Duration `json:"writeInterval"`
+
 	// MaxReadErrorCount is the maximum number of read errors that the provider
 	// will tolerate before closing the connection and attempting to reconnect.
 	MaxReadErrorCount int `json:"maxReadErrorCount"`
@@ -132,8 +149,18 @@ func (c *WebSocketConfig) ValidateBasic() error {
 		return fmt.Errorf("websocket reconnection timeout must be greater than 0")
 	}
 
-	if len(c.WSS) == 0 {
-		return fmt.Errorf("websocket endpoint cannot be empty")
+	if c.PostConnectionTimeout < 0 {
+		return fmt.Errorf("websocket post connection timeout must be greater than 0")
+	}
+
+	if len(c.Endpoints) == 0 {
+		return fmt.Errorf("websocket endpoints cannot be empty")
+	}
+
+	for i, e := range c.Endpoints {
+		if err := e.ValidateBasic(); err != nil {
+			return fmt.Errorf("endpoint %d: %w", i, err)
+		}
 	}
 
 	if len(c.Name) == 0 {
@@ -162,6 +189,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.PingInterval < 0 {
 		return fmt.Errorf("websocket ping interval cannot be negative")
+	}
+
+	if c.WriteInterval < 0 {
+		return fmt.Errorf("websocket write interval must be greater than 0")
 	}
 
 	if c.MaxReadErrorCount < 0 {

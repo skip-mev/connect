@@ -2,7 +2,6 @@
 
 > This readme overviews how to configure the oracle side-car as well as how to hook it up to your application. To see an example of a properly configured oracle-side car, visit the [local config](./../../config/local) files - `oracle.json` and `market.json`. To see an example of a properly configured application, please visit the test application's [app.toml](./../../tests/simapp/slinkyd/testappd/root.go) generation code. Otherwise, read on to learn how to configure the oracle side-car and application.
 >
-> To generate custom side-car configs, use the `slinky-config` binary after running `make build`. Run `./build/slinky-config --help` to determine the relevant fields that can be set.
 > 
 > Validators running on a network that support's Slinky **must** run the oracle side-car and configure it into their application. Non-validators can configure their oracle config's to be disabled, and the oracle side-car will not be run.
 >

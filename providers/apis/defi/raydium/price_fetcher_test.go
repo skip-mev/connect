@@ -143,7 +143,7 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			URL:              "https://api.raydium.io",
+			Endpoints:        []oracleconfig.Endpoint{{URL: "https://raydium.io"}},
 			Name:             raydium.Name + "a",
 		}
 
@@ -363,7 +363,7 @@ func TestProviderFetch(t *testing.T) {
 
 		require.True(t, strings.Contains(resp.UnResolved[tickers[0]].Error(), "solana json-rpc error"))
 		result := resp.Resolved[tickers[1]]
-		require.Equal(t, result.Value.SetPrec(30), big.NewFloat(3e-12).SetPrec(30))
+		require.Equal(t, result.Value.SetPrec(30), big.NewFloat(3).SetPrec(30))
 	})
 
 	t.Run("incorrectly encoded accounts are handled gracefully", func(t *testing.T) {
@@ -415,7 +415,7 @@ func newPriceFetcher(client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetche
 		Timeout:          2 * time.Second,
 		ReconnectTimeout: 2 * time.Second,
 		Name:             raydium.Name,
-		URL:              "https://raydium.io",
+		Endpoints:        []oracleconfig.Endpoint{{URL: "https://raydium.io"}},
 	}
 
 	return raydium.NewAPIPriceFetcherWithClient(

@@ -2,8 +2,6 @@ package huobi
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -20,104 +18,22 @@ const (
 	URLAws = "wss://api-aws.huobi.pro/ws"
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URL,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.ARBITRUM_USDT: {
-			OffChainTicker: "arbusdt",
-		},
-		constants.ATOM_USDT: {
-			OffChainTicker: "atomusdt",
-		},
-		constants.AVAX_USDT: {
-			OffChainTicker: "avaxusdt",
-		},
-		constants.APTOS_USDT: {
-			OffChainTicker: "aptusdt",
-		},
-		constants.BCH_USDT: {
-			OffChainTicker: "bchusdt",
-		},
-		constants.BITCOIN_USDC: {
-			OffChainTicker: "btcusdc",
-		},
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "btcusdt",
-		},
-		constants.CARDANO_USDT: {
-			OffChainTicker: "adausdt",
-		},
-		constants.CELESTIA_USDT: {
-			OffChainTicker: "tiausdt",
-		},
-		constants.DOGE_USDT: {
-			OffChainTicker: "dogeusdt",
-		},
-		constants.DYDX_USDT: {
-			OffChainTicker: "dydxusdt",
-		},
-		constants.ETC_USDT: {
-			OffChainTicker: "etcusdt",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ethbtc",
-		},
-		constants.ETHEREUM_USDC: {
-			OffChainTicker: "ethusdc",
-		},
-		constants.ETHEREUM_USDT: {
-			OffChainTicker: "ethusdt",
-		},
-		constants.FILECOIN_USDT: {
-			OffChainTicker: "filusdt",
-		},
-		constants.LITECOIN_USDT: {
-			OffChainTicker: "ltcusdt",
-		},
-		constants.NEAR_USDT: {
-			OffChainTicker: "nearusdt",
-		},
-		constants.POLYGON_USDT: {
-			OffChainTicker: "maticusdt",
-		},
-		constants.RIPPLE_USDT: {
-			OffChainTicker: "xrpusdt",
-		},
-		constants.SEI_USDT: {
-			OffChainTicker: "seiusdt",
-		},
-		constants.SOLANA_USDT: {
-			OffChainTicker: "solusdt",
-		},
-		constants.SUI_USDT: {
-			OffChainTicker: "suiusdt",
-		},
-		constants.TRON_USDT: {
-			OffChainTicker: "trxusdt",
-		},
-		constants.USDC_USDT: {
-			OffChainTicker: "usdcusdt",
-		},
-		constants.WORLD_USDT: {
-			OffChainTicker: "wldusdt",
-		},
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

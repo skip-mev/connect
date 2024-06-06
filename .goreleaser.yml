@@ -16,12 +16,6 @@ builds:
     id: 'slinky'
     ldflags:
       - "-X github.com/skip-mev/slinky/cmd/build.Build={{.Version}}"
-  - main: 'cmd/slinky-config/main.go'
-    goos:
-    - 'linux'
-    - 'darwin'
-    binary: 'slinky-config'
-    id: 'slinky-config'
 archives:
   - format: tar.gz
     wrap_in_directory: true
@@ -30,10 +24,6 @@ archives:
         format: zip
     name_template: "{{ .Binary }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     files:
-      - ./config/local/market.json
-      - ./config/local/oracle.json
-      - ./config/dydx/market.json
-      - ./config/dydx/oracle.json
       - README.md
 
 snapshot:

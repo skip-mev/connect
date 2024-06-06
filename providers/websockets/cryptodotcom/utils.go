@@ -1,9 +1,9 @@
 package cryptodotcom
 
 import (
+	"time"
+
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -20,79 +20,36 @@ const (
 	// URL_SANDBOX is the URL used to connect to the Crypto.com sandbox websocket API. This will
 	// return static prices.
 	URL_SANDBOX = "wss://uat-stream.3ona.co/exchange/v1/market"
+
+	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions per connection.
+	// Crypto.com has a limit of 400 but we set it to 200 to be safe.
+	//
+	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
+	DefaultMaxSubscriptionsPerConnection = 200
+
+	// DefaultPostConnectionTimeout is the default timeout for post connection. This is the recommended behaviour
+	// from the Crypto.com documentation.
+	//
+	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
+	DefaultPostConnectionTimeout = 1 * time.Second
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URL_PROD,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig is the default market configuration for Crypto.com.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.ATOM_USD: {
-			OffChainTicker: "ATOMUSD-PERP",
-		},
-		constants.ATOM_USDT: {
-			OffChainTicker: "ATOM_USDT",
-		},
-		constants.AVAX_USD: {
-			OffChainTicker: "AVAXUSD-PERP",
-		},
-		constants.AVAX_USDT: {
-			OffChainTicker: "AVAX_USDT",
-		},
-		constants.BITCOIN_USD: {
-			OffChainTicker: "BTCUSD-PERP",
-		},
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "BTC_USDT",
-		},
-		constants.CELESTIA_USD: {
-			OffChainTicker: "TIAUSD-PERP",
-		},
-		constants.CELESTIA_USDT: {
-			OffChainTicker: "TIA_USDT",
-		},
-		constants.DYDX_USD: {
-			OffChainTicker: "DYDXUSD-PERP",
-		},
-		constants.DYDX_USDT: {
-			OffChainTicker: "DYDX_USDT",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ETH_BTC",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ETHUSD-PERP",
-		},
-		constants.ETHEREUM_USDT: {
-			OffChainTicker: "ETH_USDT",
-		},
-		constants.OSMOSIS_USD: {
-			OffChainTicker: "OSMO_USD",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "SOLUSD-PERP",
-		},
-		constants.SOLANA_USDT: {
-			OffChainTicker: "SOL_USDT",
-		},
-		constants.USDT_USD: {
-			OffChainTicker: "USDT_USD",
-		},
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 config.DefaultMaxBufferSize,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URL_PROD}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+}

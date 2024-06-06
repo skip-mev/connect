@@ -33,8 +33,12 @@ var (
 	heartbeat   = []byte("heartbeat")
 
 	cfg = config.WebSocketConfig{
-		Name:                "sirmoggintonwebsocket",
-		WSS:                 "ws://localhost:8080",
+		Name: "sirmoggintonwebsocket",
+		Endpoints: []config.Endpoint{
+			{
+				URL: "ws://localhost:8080",
+			},
+		},
 		Enabled:             true,
 		MaxBufferSize:       1024,
 		ReconnectionTimeout: 5 * time.Second,
@@ -49,8 +53,12 @@ var (
 	}
 
 	heartbeatCfg = config.WebSocketConfig{
-		Name:                "sirmoggintonwebsocket",
-		WSS:                 "ws://localhost:8080",
+		Name: "sirmoggintonwebsocket",
+		Endpoints: []config.Endpoint{
+			{
+				URL: "ws://localhost:8080",
+			},
+		},
 		Enabled:             true,
 		MaxBufferSize:       1024,
 		ReconnectionTimeout: 5 * time.Second,

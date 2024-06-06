@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -19,53 +17,22 @@ const (
 	DefaultPingInterval = 10 * time.Second
 )
 
-var (
-	// DefaultWebSocketConfig returns the default websocket config for bitstamp.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:                       true,
-		Name:                          Name,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		ReadTimeout:                   config.DefaultReadTimeout * 5,
-		PingInterval:                  DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.AVAX_USD: {
-			OffChainTicker: "avaxusd",
-		},
-		constants.BITCOIN_USD: {
-			OffChainTicker: "btcusd",
-		},
-		constants.BITCOIN_USDC: {
-			OffChainTicker: "btcusdc",
-		},
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "btcusdt",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ethbtc",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ethusd",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "solusd",
-		},
-		constants.USDC_USDT: {
-			OffChainTicker: "usdcusdt",
-		},
-		constants.USDT_USD: {
-			OffChainTicker: "usdtusd",
-		},
-	}
-)
+// DefaultWebSocketConfig returns the default websocket config for bitstamp.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Enabled:                       true,
+	Name:                          Name,
+	MaxBufferSize:                 config.DefaultMaxBufferSize,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: WSS}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	PingInterval:                  DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

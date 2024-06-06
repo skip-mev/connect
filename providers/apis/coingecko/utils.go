@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
@@ -39,47 +38,17 @@ const (
 	TickerSeparator = "/"
 )
 
-var (
-	// DefaultAPIConfig is the default configuration for the CoinGecko API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         15 * time.Second, // Coingecko has a very low rate limit.
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		URL:              URL,
-	}
-
-	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.ATOM_USD: {
-			OffChainTicker: "cosmos/usd",
-		},
-		constants.BITCOIN_USD: {
-			OffChainTicker: "bitcoin/usd",
-		},
-		constants.CELESTIA_USD: {
-			OffChainTicker: "celestia/usd",
-		},
-		constants.DYDX_USD: {
-			OffChainTicker: "dydx-chain/usd",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ethereum/btc",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ethereum/usd",
-		},
-		constants.OSMOSIS_USD: {
-			OffChainTicker: "osmosis/usd",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "solana/usd",
-		},
-	}
-)
+// DefaultAPIConfig is the default configuration for the CoinGecko API.
+var DefaultAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          500 * time.Millisecond,
+	Interval:         15 * time.Second, // Coingecko has a very low rate limit.
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}
 
 type (
 	// CoinGeckoResponse is the response returned by the CoinGecko API. The response

@@ -5,7 +5,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - "v0.**" # Push events to matching v0.*, i.e. v0.0.0, v0.0.0-alpha.0, etc.
+      - "v*.**" # Push events to matching v*.*, i.e. v0.0.0, v0.0.0-alpha.0, etc.
 
 permissions:
   contents: read
@@ -20,12 +20,13 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22.3
+          go-version: 1.22.4
       - name: Unshallow
         run: git fetch --prune --unshallow
       - name: Create release
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           args: release --clean
+          version: "~> v1"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

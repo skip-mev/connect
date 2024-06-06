@@ -1,28 +1,31 @@
 package integration
 
 import (
-	"github.com/skip-mev/slinky/oracle/constants"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/skip-mev/slinky/providers/static"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"time"
 	"context"
-	"math/big"
-	"github.com/skip-mev/slinky/oracle/types"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"fmt"
-	"cosmossdk.io/math"
-	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"strings"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"math/big"
+	"strings"
+	"time"
+
+	"cosmossdk.io/math"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/static"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // Type SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
@@ -40,7 +43,7 @@ func NewSlinkyCCVIntegrationSuite(
 }
 
 func (s *SlinkyCCVSuite) TestCCVAggregation() {
-	ethusdc := constants.ETHEREUM_USDC
+	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, ethusdc))
 
@@ -60,7 +63,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
+		oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
 				Enabled:          true,
@@ -68,12 +71,16 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				URL:              "http://un-used-url.com",
-				Atomic:           true,
-				Name:             static.Name,
+				Endpoints: []oracleconfig.Endpoint{
+					{
+						URL: "http://un-used-url.com",
+					},
+				},
+				Atomic: true,
+				Name:   static.Name,
 			},
 			Type: types.ConfigType,
-		})
+		}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
@@ -136,7 +143,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 		// expect stake to have doubled for validator
 		updatedValidator, err := provider.StakingQueryValidator(ctx, validator.OperatorAddress)
 		s.Require().NoError(err)
-	
+
 		s.Require().Equal(tokens.Mul(math.NewInt(2)), updatedValidator.Tokens)
 
 		// flush packets

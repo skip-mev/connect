@@ -2,8 +2,6 @@ package bitfinex
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -16,41 +14,22 @@ const (
 	MaxSubscriptionsPerConnection = 30
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URLProd,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.BITCOIN_USD: {
-			OffChainTicker: "BTCUSD",
-		},
-		constants.CELESTIA_USD: {
-			OffChainTicker: "TIAUSD",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ETHBTC",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ETHUSD",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "SOLUSD",
-		},
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                          Name,
+	Enabled:                       true,
+	MaxBufferSize:                 1000,
+	ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+	PostConnectionTimeout:         config.DefaultPostConnectionTimeout,
+	Endpoints:                     []config.Endpoint{{URL: URLProd}},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	WriteInterval:                 config.DefaultWriteInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

@@ -110,6 +110,14 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 
 	for _, subIDs := range subTasks {
 		wg.Go(p.startWebSocket(ctx, subIDs))
+
+		select {
+		case <-time.After(p.wsCfg.HandshakeTimeout):
+			p.logger.Debug("handshake timeout reached")
+		case <-ctx.Done():
+			p.logger.Debug("context done")
+			return wg.Wait()
+		}
 	}
 
 	// Wait for all the sub handlers to finish.
@@ -218,10 +226,26 @@ func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]
 		return
 	}
 
-	p.logger.Debug(
-		"updating base provider data",
-		zap.String("id", fmt.Sprint(id)),
-		zap.String("result", result.String()),
-	)
-	p.data[id] = result
+	switch result.ResponseCode {
+	case providertypes.ResponseCodeUnchanged:
+		// Update the timestamp on the current result to reflect that the
+		// data is still valid.
+		p.logger.Debug(
+			"result is unchanged",
+			zap.String("id", fmt.Sprint(id)),
+			zap.String("result", result.String()),
+			zap.String("updated_timestamp", result.Timestamp.String()),
+		)
+
+		current.Timestamp = result.Timestamp
+		p.data[id] = current
+	default:
+		// Otherwise, update the data.
+		p.logger.Debug(
+			"updating base provider data",
+			zap.String("id", fmt.Sprint(id)),
+			zap.String("result", result.String()),
+		)
+		p.data[id] = result
+	}
 }

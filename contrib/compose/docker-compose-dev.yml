@@ -5,12 +5,12 @@ networks:
 services:
   blockchain:
     environment:
-      - ORACLE_GROUP=${ORACLE_GROUP:-core}
+      - USE_CORE_MARKETS=${USE_CORE_MARKETS:-true}
+      - USE_RAYDIUM_MARKETS=${USE_RAYDIUM_MARKETS:-true}
+      - USE_UNISWAPV3_BASE_MARKETS=${USE_UNISWAPV3_BASE_MARKETS:-true}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.local.Dockerfile
-    volumes:
-      - ../../config/${ORACLE_GROUP}/market.json:/oracle/market.json
     ports:
       - "26656:26656"
       - "26657:26657"
@@ -23,17 +23,11 @@ services:
       - oracle_network
 
   oracle:
-    environment:
-      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
-    volumes:
-      - ../../config/${ORACLE_GROUP}/oracle.json:/oracle/oracle.json
-      - ../../config/${ORACLE_GROUP}/market.json:/oracle/market.json
     entrypoint: [
       "slinky",
-      "--oracle-config-path", "/oracle/oracle.json",
       "--update-market-config-path", "/oracle/market.json",
       "--market-map-endpoint", "blockchain:9090",
       "--pprof-port", "6060",
@@ -45,6 +39,7 @@ services:
       - "8002:8002" # metrics port
     networks:
       - oracle_network
+  
   prometheus:
     image: prom/prometheus
     ports:

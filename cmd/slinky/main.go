@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 
@@ -24,6 +25,7 @@ import (
 	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
+	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -50,6 +52,7 @@ var (
 
 	oracleCfgPath       string
 	marketCfgPath       string
+	marketMapProvider   string
 	updateMarketCfgPath string
 	runPprof            bool
 	profilePort         string
@@ -64,12 +67,23 @@ var (
 	disableRotatingLogs bool
 )
 
+const (
+	DefaultLegacyConfigPath = "./oracle.json"
+)
+
 func init() {
 	rootCmd.Flags().StringVarP(
-		&oracleCfgPath,
-		"oracle-config-path",
+		&marketMapProvider,
+		"marketmap-provider",
 		"",
-		"oracle.json",
+		marketmap.Name,
+		"MarketMap provider to use (marketmap_api, dydx_api).",
+	)
+	rootCmd.Flags().StringVarP(
+		&oracleCfgPath,
+		"oracle-config",
+		"",
+		"",
 		"Path to the oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
@@ -185,9 +199,27 @@ func runOracle() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
+	// Set up logging.
+	logCfg := log.NewDefaultConfig()
+	logCfg.StdOutLogLevel = logLevel
+	logCfg.FileOutLogLevel = fileLogLevel
+	logCfg.DisableRotating = disableRotatingLogs
+	logCfg.WriteTo = writeLogsTo
+	logCfg.MaxSize = maxLogSize
+	logCfg.MaxBackups = maxBackups
+	logCfg.MaxAge = maxAge
+	logCfg.Compress = !disableCompressLogs
+
+	// Build logger.
+	logger := log.NewLogger(logCfg)
+	defer logger.Sync()
+
+	var cfg config.OracleConfig
+	var err error
+
+	cfg, err = cmdconfig.ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
 	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %w", err)
+		return fmt.Errorf("failed to get oracle config: %w", err)
 	}
 
 	// overwrite endpoint
@@ -205,21 +237,6 @@ func runOracle() error {
 			return fmt.Errorf("failed to read market config file: %w", err)
 		}
 	}
-
-	// Set up logging.
-	logCfg := log.NewDefaultConfig()
-	logCfg.StdOutLogLevel = logLevel
-	logCfg.FileOutLogLevel = fileLogLevel
-	logCfg.DisableRotating = disableRotatingLogs
-	logCfg.WriteTo = writeLogsTo
-	logCfg.MaxSize = maxLogSize
-	logCfg.MaxBackups = maxBackups
-	logCfg.MaxAge = maxAge
-	logCfg.Compress = !disableCompressLogs
-
-	// Build logger.
-	logger := log.NewLogger(logCfg)
-	defer logger.Sync()
 
 	logger.Info(
 		"successfully read in configs",
@@ -324,10 +341,14 @@ func runOracle() error {
 }
 
 func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
-	for i, provider := range cfg.Providers {
-		if provider.Name == marketmap.Name {
-			provider.API.URL = overwrite
-			cfg.Providers[i] = provider
+	for providerName, provider := range cfg.Providers {
+		if provider.Type == mmservicetypes.ConfigType {
+			provider.API.Endpoints = []config.Endpoint{
+				{
+					URL: overwrite,
+				},
+			}
+			cfg.Providers[providerName] = provider
 			return cfg, cfg.ValidateBasic()
 		}
 	}

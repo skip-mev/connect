@@ -22,7 +22,7 @@ const (
 // updateMetaDataCache unmarshals the metadata JSON for each ticker and adds it to the
 // metadata map.
 func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (TickerMetadata, error) {
-	if metadata, ok := pf.metaDataPerTicker[ticker.GetJSON()]; ok {
+	if metadata, ok := pf.metaDataPerTicker[ticker.String()]; ok {
 		return metadata, nil
 	}
 
@@ -33,7 +33,7 @@ func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (Tic
 	if err := metadata.ValidateBasic(); err != nil {
 		return TickerMetadata{}, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
 	}
-	pf.metaDataPerTicker[ticker.GetJSON()] = metadata
+	pf.metaDataPerTicker[ticker.String()] = metadata
 
 	return metadata, nil
 }
@@ -105,4 +105,9 @@ var DefaultAPIConfig = config.APIConfig{
 	MaxQueries:       10,
 	Atomic:           false,
 	BatchSize:        50, // maximal # of accounts in getMultipleAccounts query is 100
+	Endpoints: []config.Endpoint{
+		{
+			URL: "https://api.mainnet-beta.solana.com",
+		},
+	},
 }

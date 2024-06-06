@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/providers/apis/binance"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
@@ -100,7 +100,7 @@ func TestCreateURLResearchHandler(t *testing.T) {
 
 		url, err := ah.CreateURL(chains)
 		require.NoError(t, err)
-		require.Equal(t, dydx.DefaultResearchAPIConfig.Endpoints[0].URL, url)
+		require.Equal(t, dydx.DefaultResearchAPIConfig.Endpoints[1].URL, url)
 	})
 }
 

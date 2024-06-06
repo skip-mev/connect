@@ -36,5 +36,6 @@ run.go
 .vscode/*
 **/.DS_Store
 
-# monitoring
 .env
+*.log*
+oracle.json

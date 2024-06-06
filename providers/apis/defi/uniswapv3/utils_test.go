@@ -26,7 +26,7 @@ func TestPoolConfig(t *testing.T) {
 	t.Run("invalid base decimals", func(t *testing.T) {
 		cfg := uniswapv3.PoolConfig{
 			Address:      "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
-			BaseDecimals: 0,
+			BaseDecimals: -1,
 		}
 		require.Error(t, cfg.ValidateBasic())
 	})
@@ -35,7 +35,7 @@ func TestPoolConfig(t *testing.T) {
 		cfg := uniswapv3.PoolConfig{
 			Address:       "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
 			BaseDecimals:  18,
-			QuoteDecimals: 0,
+			QuoteDecimals: -1,
 		}
 		require.Error(t, cfg.ValidateBasic())
 	})
@@ -73,8 +73,13 @@ func TestIsValidProviderName(t *testing.T) {
 			valid:        false,
 		},
 		{
-			testName:     "valid provider",
+			testName:     "valid provider eth",
 			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.ETHEREUM),
+			valid:        true,
+		},
+		{
+			testName:     "valid provider base",
+			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.BASE),
 			valid:        true,
 		},
 	}
