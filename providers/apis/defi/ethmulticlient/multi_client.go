@@ -88,7 +88,7 @@ func NewMultiRPCClientFromEndpoints(
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
-// It returns the first response it sees from a node which has the greatest height. An error is returned
+// It returns the response that has the greatest height from the eth_blockNumber call. An error is returned
 // only when no client was able to successfully provide a height or errored when sending the BatchCall.
 func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.BatchElem) error {
 	if len(batchElems) == 0 {
