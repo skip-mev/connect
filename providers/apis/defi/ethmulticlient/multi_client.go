@@ -170,8 +170,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 
 	// see which of the results had the largest height, and store the index of that result.
 	var (
-	    maxHeight uint64
-	    maxHeightIndex int
+		maxHeight      uint64
+		maxHeightIndex int
 	)
 	for i, res := range results {
 		if res.height > maxHeight {
