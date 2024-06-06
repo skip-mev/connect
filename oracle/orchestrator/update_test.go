@@ -28,7 +28,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
 
-		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
+		err = o.UpdateMarketMap(mmtypes.MarketMap{
 			Markets: map[string]mmtypes.Market{
 				"bad": {},
 			},
@@ -52,7 +52,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
-		require.NoError(t, o.UpdateWithMarketMap(marketMap))
+		require.NoError(t, o.UpdateMarketMap(marketMap))
 
 		providers = o.GetProviderState()
 
@@ -114,7 +114,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
-		require.NoError(t, o.UpdateWithMarketMap(marketMap))
+		require.NoError(t, o.UpdateMarketMap(marketMap))
 
 		time.Sleep(2000 * time.Millisecond)
 
@@ -192,7 +192,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
-		require.NoError(t, o.UpdateWithMarketMap(mmtypes.MarketMap{}))
+		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
 		providers = o.GetProviderState()
 
@@ -234,7 +234,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
-		require.NoError(t, o.UpdateWithMarketMap(mmtypes.MarketMap{}))
+		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
 		time.Sleep(2000 * time.Millisecond)
 

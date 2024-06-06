@@ -49,7 +49,7 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 			}
 
 			o.logger.Info("updating orchestrator with new market map")
-			if err := o.UpdateWithMarketMap(updated); err != nil {
+			if err := o.UpdateMarketMap(updated); err != nil {
 				o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
 				continue
 			}
