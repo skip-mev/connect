@@ -109,9 +109,9 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 	// this is the index of where we will have an eth_blockNumber call.
 	blockNumReqIndex := len(batchElems)
 	// for each client, spin up a go routine that executes a BatchCall.
-	for i, client := range m.clients {
+	for clientIdx, client := range m.clients {
 		wg.Add(1)
-		go func() {
+		go func(i int) {
 			url := m.api.Endpoints[i].URL
 
 			// append an eth_blockNumber call to the requests. we do this because we want the greatest height results only.
@@ -163,7 +163,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				}
 			}
 			wg.Done()
-		}()
+		}(clientIdx)
 	}
 	wg.Wait()
 
