@@ -46,3 +46,11 @@ func (NoOpClient) Prices(
 ) (*types.QueryPricesResponse, error) {
 	return nil, nil
 }
+
+func (c NoOpClient) MarketMap(
+	_ context.Context,
+	_ *types.QueryMarketMapRequest,
+	_ ...grpc.CallOption,
+) (*types.QueryMarketMapResponse, error) {
+	return nil, nil
+}
