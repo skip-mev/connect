@@ -146,6 +146,31 @@ func TestMultiClient(t *testing.T) {
 			expectedResults: []interface{}{"value2"},
 			err:             nil,
 		},
+		{
+			name: "worst case scenario where no errors were returned but both clients returned height 0",
+			client: ethmulticlient.NewMultiRPCClient(
+				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}, {URL: "http://localhost:8546"}},
+				},
+				[]ethmulticlient.EVMClient{
+					createEVMClientWithResponse(
+						t,
+						nil,
+						[]string{"value1", "0x0"},
+						[]error{nil, nil},
+					),
+					createEVMClientWithResponse(
+						t,
+						nil,
+						[]string{"value2", "0x0"},
+						[]error{nil, nil},
+					),
+				},
+			),
+			args: []rpc.BatchElem{{}},
+			err:  fmt.Errorf("no errors were encountered, however no go routine was able to report a height"),
+		},
 	}
 
 	for _, tc := range testcases {
