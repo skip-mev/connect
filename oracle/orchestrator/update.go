@@ -37,6 +37,7 @@ func (o *ProviderOrchestrator) UpdateMarketMap(marketMap mmtypes.MarketMap) erro
 			return err
 		}
 
+		// TODO(Tyler): why doesn't this happen in UpdateProviderState? seems.. weird.
 		o.providers[name] = updatedState
 	}
 
@@ -50,6 +51,8 @@ func (o *ProviderOrchestrator) UpdateMarketMap(marketMap mmtypes.MarketMap) erro
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
 // this will update the provider's query handler and the provider's market map.
+//
+// TODO(Tyler): this is named confusingly imo
 func (o *ProviderOrchestrator) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 
