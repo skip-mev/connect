@@ -10,9 +10,10 @@ import (
 )
 
 // listenForMarketMapUpdates is a goroutine that listens for market map updates and
-// updates the orchestrated providers with the new market map.
+// updates the orchestrated providers with the new market map. This method assumes a market map provider is present,
+// so callers of this method must nil check the provider first.
 func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
-	mmProvider := o.GetMarketMapProvider()
+	mmProvider := o.mmProvider
 	ids := mmProvider.GetIDs()
 	if len(ids) != 1 {
 		o.logger.Error("market map provider can only be responsible for one chain", zap.Any("ids", ids))

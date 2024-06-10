@@ -4,7 +4,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -74,16 +73,5 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 func WithWriteTo(filePath string) Option {
 	return func(m *OracleImpl) {
 		m.writeTo = filePath
-	}
-}
-
-// WithAggregator sets the aggregator for the provider orchestrator.
-func WithAggregator(agg *oracle.IndexPriceAggregator) Option {
-	return func(m *OracleImpl) {
-		if agg == nil {
-			panic("aggregator cannot be nil")
-		}
-
-		m.aggregator = agg
 	}
 }

@@ -88,8 +88,8 @@ func (o *OracleImpl) fetchAllPrices() {
 	o.aggregator.Reset()
 
 	// Retrieve the latest prices from each provider.
-	for _, priceProvider := range o.providers {
-		o.fetchPrices(priceProvider.Provider)
+	for _, provider := range o.providers {
+		o.fetchPrices(provider.Provider)
 	}
 
 	o.logger.Debug("oracle fetched prices from providers")

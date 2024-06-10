@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
@@ -63,7 +62,7 @@ type OracleImpl struct {
 	// for making requests for the latest market map data.
 	mmProvider *mmclienttypes.MarketMapProvider
 	// aggregator is the price aggregator.
-	aggregator *oracle.IndexPriceAggregator
+	aggregator PriceAggregator
 	// lastPriceSync is the last time the oracle successfully updated its prices.
 	lastPriceSync time.Time
 
@@ -111,6 +110,7 @@ type ProviderState struct {
 // New returns a new Oracle.
 func New(
 	cfg config.OracleConfig,
+	aggregator PriceAggregator,
 	opts ...Option,
 ) (Oracle, error) {
 	if err := cfg.ValidateBasic(); err != nil {
@@ -119,12 +119,14 @@ func New(
 
 	orc := &OracleImpl{
 		cfg:             cfg,
+		aggregator:      aggregator,
 		closer:          ssync.NewCloser(),
-		providers:       make(map[string]ProviderState),
+		providers:       make(map[string]ProviderState), // this will be initialized via the Init method.
 		logger:          zap.NewNop(),
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
 		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
 		providerMetrics: providermetrics.NewProviderMetricsFromConfig(cfg.Metrics),
+		metrics:         oraclemetrics.NewMetricsFromConfig(cfg.Metrics),
 	}
 
 	for _, opt := range opts {
@@ -134,33 +136,13 @@ func New(
 	return orc, nil
 }
 
-// GetProviderState returns all providers and their state.
+// GetProviderState returns all providers and their state. This method is used for testing purposes only.
+// TODO(tyler): revisit the method and see if its really needed. do tests need _all_ providers? or just price ones? just market map provider?
 func (o *OracleImpl) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
 	return o.providers
-}
-
-// GetPriceProviders returns all price providers.
-func (o *OracleImpl) GetPriceProviders() []*types.PriceProvider {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
-	providers := make([]*types.PriceProvider, 0, len(o.providers))
-	for _, state := range o.providers {
-		providers = append(providers, state.Provider)
-	}
-
-	return providers
-}
-
-// GetMarketMapProvider returns the market map provider.
-func (o *OracleImpl) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
-	return o.mmProvider
 }
 
 // GetMarketMap returns the market map.
