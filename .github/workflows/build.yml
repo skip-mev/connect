@@ -1,15 +1,13 @@
 name: Build Slinky docker images
 on:
-  create:
-    tags:
-      - "v.*"
   push:
     branches:
       - main
     tags:
-      - "v.*"
+      - "v*"
   pull_request:
   workflow_dispatch:
+
 jobs:
   build:
     strategy:
