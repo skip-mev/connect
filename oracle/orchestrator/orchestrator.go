@@ -3,12 +3,16 @@ package orchestrator
 import (
 	"context"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
+	ssync "github.com/skip-mev/slinky/pkg/sync"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -21,8 +25,10 @@ import (
 // creating the provider specific market map, and enabling/disabling the providers based
 // on the oracle configuration and market map.
 type ProviderOrchestrator struct {
-	mut    sync.Mutex
-	logger *zap.Logger
+	mut     sync.Mutex
+	logger  *zap.Logger
+	closer  *ssync.Closer
+	running atomic.Bool
 
 	// -------------------Lifecycle Fields-------------------//
 	//
@@ -42,6 +48,8 @@ type ProviderOrchestrator struct {
 	mmProvider *mmclienttypes.MarketMapProvider
 	// aggregator is the price aggregator.
 	aggregator *oracle.IndexPriceAggregator
+	// lastPriceSync is the last time the oracle successfully updated its prices.
+	lastPriceSync time.Time
 
 	// -------------------Oracle Configuration Fields-------------------//
 	//
@@ -69,6 +77,8 @@ type ProviderOrchestrator struct {
 	apiMetrics apimetrics.APIMetrics
 	// providerMetrics is the provider metrics.
 	providerMetrics providermetrics.ProviderMetrics
+	// metrics are the base metrics of the oracle.
+	metrics oraclemetrics.Metrics
 }
 
 // ProviderState is the state of a provider. This includes the provider implementation,
@@ -93,6 +103,7 @@ func NewProviderOrchestrator(
 
 	orchestrator := &ProviderOrchestrator{
 		cfg:             cfg,
+		closer:          ssync.NewCloser(),
 		providers:       make(map[string]ProviderState),
 		logger:          zap.NewNop(),
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
@@ -142,4 +153,12 @@ func (o *ProviderOrchestrator) GetMarketMap() mmtypes.MarketMap {
 	defer o.mut.Unlock()
 
 	return o.marketMap
+}
+
+func (o *ProviderOrchestrator) GetLastSyncTime() time.Time {
+	return o.lastPriceSync
+}
+
+func (o *ProviderOrchestrator) GetPrices() types.Prices {
+	return o.aggregator.GetPrices()
 }

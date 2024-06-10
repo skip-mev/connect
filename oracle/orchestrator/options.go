@@ -77,13 +77,13 @@ func WithWriteTo(filePath string) Option {
 	}
 }
 
-// WithAggregator sets the aggregation function for the provider orchestrator.
-func WithAggregator(fn *oracle.IndexPriceAggregator) Option {
+// WithAggregator sets the aggregator for the provider orchestrator.
+func WithAggregator(agg *oracle.IndexPriceAggregator) Option {
 	return func(m *ProviderOrchestrator) {
-		if fn == nil {
-			panic("aggregation function cannot be nil")
+		if agg == nil {
+			panic("aggregator cannot be nil")
 		}
 
-		m.aggregator = fn
+		m.aggregator = agg
 	}
 }

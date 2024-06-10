@@ -3,6 +3,7 @@ package orchestrator
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -17,10 +18,13 @@ type generalProvider interface {
 	Name() string
 }
 
-// Start starts the provider orchestrator. This will initialize the provider orchestrator
+// Start starts the (blocking) provider orchestrator. This will initialize the provider orchestrator
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
+	o.running.Store(true)
+	defer o.running.Store(false)
+
 	if err := o.Init(ctx); err != nil {
 		o.logger.Error("failed to initialize provider orchestrator", zap.Error(err))
 		return err
@@ -62,7 +66,26 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 		}()
 	}
 
-	return nil
+	// Start price fetch loop.
+	ticker := time.NewTicker(o.cfg.UpdateInterval)
+	defer ticker.Stop()
+	o.metrics.SetSlinkyBuildInfo()
+
+	for {
+		select {
+		case <-ctx.Done():
+			o.Stop()
+			o.logger.Info("orchestrator stopped via context")
+			return ctx.Err()
+
+		case <-o.closer.Done():
+			o.logger.Info("orchestrator stopped via closer")
+			return nil
+
+		case <-ticker.C:
+			o.fetchAllPrices()
+		}
+	}
 }
 
 // Stop stops the provider orchestrator. This is a synchronous operation that will
@@ -75,7 +98,11 @@ func (o *ProviderOrchestrator) Stop() {
 
 	o.wg.Wait()
 	o.logger.Info("provider orchestrator exited successfully")
+	o.closer.Close()
+	<-o.closer.Done()
 }
+
+func (o *ProviderOrchestrator) IsRunning() bool { return o.running.Load() }
 
 // execProviderFn starts a provider and recovers from any panics that occur.
 func (o *ProviderOrchestrator) execProviderFn(

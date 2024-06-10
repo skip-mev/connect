@@ -1,7 +1,9 @@
 package orchestrator
 
 import (
+	"fmt"
 	"math/big"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -73,4 +75,112 @@ func (o *ProviderOrchestrator) UpdateProviderState(providerTickers []types.Provi
 	// Update the provider's state.
 	o.logger.Info("updated provider state", zap.String("provider_state", provider.Name()))
 	return state, nil
+}
+
+func (o *ProviderOrchestrator) fetchAllPrices() {
+	o.logger.Debug("starting price fetch loop")
+	defer func() {
+		if r := recover(); r != nil {
+			o.logger.Error("fetchAllPrices tick panicked", zap.Error(fmt.Errorf("%v", r)))
+		}
+	}()
+
+	o.aggregator.Reset()
+
+	// Retrieve the latest prices from each provider.
+	for _, priceProvider := range o.providers {
+		o.fetchPrices(priceProvider.Provider)
+	}
+
+	o.logger.Debug("oracle fetched prices from providers")
+
+	// Compute aggregated prices and update the oracle.
+	o.aggregator.AggregatePrices()
+	o.setLastSyncTime(time.Now().UTC())
+
+	// update the last sync time
+	o.metrics.AddTick()
+
+	o.logger.Info("oracle updated prices", zap.Time("last_sync", o.lastPriceSync), zap.Int("num_prices", len(o.aggregator.GetPrices())))
+}
+
+func (o *ProviderOrchestrator) fetchPrices(provider *types.PriceProvider) {
+	defer func() {
+		if r := recover(); r != nil {
+			o.logger.Error(
+				"provider panicked",
+				zap.String("provider_name", provider.Name()),
+				zap.Error(fmt.Errorf("%v", r)),
+			)
+		}
+	}()
+
+	if !provider.IsRunning() {
+		o.logger.Debug(
+			"provider is not running",
+			zap.String("provider", provider.Name()),
+		)
+
+		return
+	}
+
+	o.logger.Debug(
+		"retrieving prices",
+		zap.String("provider", provider.Name()),
+		zap.String("data handler type",
+			string(provider.Type())),
+	)
+
+	// Fetch and set prices from the provider.
+	prices := provider.GetData()
+	if prices == nil {
+		o.logger.Debug(
+			"provider returned nil prices",
+			zap.String("provider", provider.Name()),
+			zap.String("data handler type", string(provider.Type())),
+		)
+
+		return
+	}
+
+	timeFilteredPrices := make(types.Prices)
+	for pair, result := range prices {
+		// If the price is older than the maxCacheAge, skip it.
+		diff := time.Now().UTC().Sub(result.Timestamp)
+		if diff > o.cfg.MaxPriceAge {
+			o.logger.Debug(
+				"skipping price",
+				zap.String("provider", provider.Name()),
+				zap.String("data handler type", string(provider.Type())),
+				zap.String("pair", pair.String()),
+				zap.Duration("diff", diff),
+			)
+
+			continue
+		}
+
+		o.logger.Debug(
+			"adding price",
+			zap.String("provider", provider.Name()),
+			zap.String("data handler type", string(provider.Type())),
+			zap.String("pair", pair.String()),
+			zap.String("price", result.Value.String()),
+			zap.Duration("diff", diff),
+		)
+		timeFilteredPrices[pair.GetOffChainTicker()] = result.Value
+	}
+
+	o.logger.Debug("provider returned prices",
+		zap.String("provider", provider.Name()),
+		zap.String("data handler type", string(provider.Type())),
+		zap.Int("prices", len(prices)),
+	)
+	o.aggregator.SetProviderPrices(provider.Name(), timeFilteredPrices)
+}
+
+func (o *ProviderOrchestrator) setLastSyncTime(t time.Time) {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	o.lastPriceSync = t
 }

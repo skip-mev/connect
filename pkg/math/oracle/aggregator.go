@@ -19,7 +19,7 @@ var _ oracle.PriceAggregator = &IndexPriceAggregator{}
 // IndexPriceAggregator is an aggregator that calculates the median price for each ticker,
 // resolved from a predefined set of conversion markets. A conversion market is a set of
 // markets that can be used to convert the prices of a set of tickers to a common ticker.
-// These are defined in the market map configuration.
+// These are defined in the market map configuration. Methods on IndexPriceAggregator are safe for concurrent use.
 type IndexPriceAggregator struct {
 	mtx     sync.Mutex
 	logger  *zap.Logger
@@ -137,6 +137,8 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 func (m *IndexPriceAggregator) CalculateConvertedPrices(
 	market mmtypes.Market,
 ) []*big.Float {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 	m.logger.Debug("calculating converted prices", zap.String("ticker", market.Ticker.String()))
 	if len(market.ProviderConfigs) == 0 {
 		m.logger.Error(
@@ -192,6 +194,8 @@ func (m *IndexPriceAggregator) CalculateConvertedPrices(
 func (m *IndexPriceAggregator) CalculateAdjustedPrice(
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 	price, err := m.GetProviderPrice(cfg)
 	if err != nil {
 		return nil, err
