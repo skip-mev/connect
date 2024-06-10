@@ -170,6 +170,38 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.String(), cp2.String()))
 }
 
+func (s *ServerTestSuite) TestOracleMarketMap() {
+	dummyMarketMap := &mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
+		"foo": {
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
+				Decimals:         420,
+				MinProviderCount: 79,
+				Enabled:          true,
+				Metadata_JSON:    "",
+			},
+			ProviderConfigs: []mmtypes.ProviderConfig{
+				{
+					Name:           "FOO",
+					OffChainTicker: "BAR",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "FOO",
+						Quote: "BAR",
+					},
+				},
+			},
+		},
+	}}
+	expectedJSON, err := dummyMarketMap.Marshal()
+	_ = expectedJSON
+	s.Require().NoError(err)
+	s.mockOracle.On("GetMarketMap", mock.Anything).Return(dummyMarketMap).Once()
+
+	res, err := s.client.MarketMap(context.Background(), &stypes.QueryMarketMapRequest{})
+	s.Require().NoError(err)
+	s.Require().Equal(res.GetMarketMap(), dummyMarketMap)
+}
+
 // test that the oracle server closes when expected.
 func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
