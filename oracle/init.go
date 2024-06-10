@@ -100,7 +100,7 @@ func (o *OracleImpl) createPriceProvider(ctx context.Context, cfg config.Provide
 	}
 
 	// Add the provider to the orchestrator.
-	o.providers[provider.Name()] = state
+	o.priceProviders[provider.Name()] = state
 
 	o.logger.Info(
 		"created price provider state",

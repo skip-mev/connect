@@ -34,7 +34,7 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	ctx, _ = o.setMainCtx(ctx)
 
 	// Start all price providers which have tickers.
-	for name, state := range o.providers {
+	for name, state := range o.priceProviders {
 		providerTickers, err := types.ProviderTickersFromMarketMap(name, o.marketMap)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))

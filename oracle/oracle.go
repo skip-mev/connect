@@ -56,8 +56,8 @@ type OracleImpl struct {
 
 	// -------------------Stateful Fields-------------------//
 	//
-	// providers is a map of all providers that the oracle is using.
-	providers map[string]ProviderState
+	// priceProviders is a map of all price providers that the oracle is using.
+	priceProviders map[string]ProviderState
 	// mmProvider is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
 	mmProvider *mmclienttypes.MarketMapProvider
@@ -121,7 +121,7 @@ func New(
 		cfg:             cfg,
 		aggregator:      aggregator,
 		closer:          ssync.NewCloser(),
-		providers:       make(map[string]ProviderState), // this will be initialized via the Init method.
+		priceProviders:  make(map[string]ProviderState), // this will be initialized via the Init method.
 		logger:          zap.NewNop(),
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
 		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
@@ -142,7 +142,7 @@ func (o *OracleImpl) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	return o.providers
+	return o.priceProviders
 }
 
 // GetMarketMap returns the market map.

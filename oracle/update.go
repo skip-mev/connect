@@ -24,8 +24,8 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 		return err
 	}
 
-	// Iterate over all existing providers and update their market maps.
-	for name, state := range o.providers {
+	// Iterate over all existing price providers and update their market maps.
+	for name, state := range o.priceProviders {
 		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
@@ -40,7 +40,7 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 		}
 
 		// TODO(Tyler): why doesn't this happen in UpdateProviderState? seems.. weird.
-		o.providers[name] = updatedState
+		o.priceProviders[name] = updatedState
 	}
 
 	o.marketMap = marketMap
@@ -88,7 +88,7 @@ func (o *OracleImpl) fetchAllPrices() {
 	o.aggregator.Reset()
 
 	// Retrieve the latest prices from each provider.
-	for _, provider := range o.providers {
+	for _, provider := range o.priceProviders {
 		o.fetchPrices(provider.Provider)
 	}
 
