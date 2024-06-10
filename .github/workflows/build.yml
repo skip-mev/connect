@@ -20,8 +20,14 @@ jobs:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
       repo_name: skip-mev/${{ matrix.image.name }}
     steps:
+      - name: Check out the PR commit head
+        uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Check out the repo
         uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
@@ -47,6 +53,8 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
+        env:
+          DOCKER_METADATA_PR_HEAD_SHA: true
         with:
           # list of Docker images to use as base name for tags
           images: |
