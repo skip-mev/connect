@@ -1,4 +1,4 @@
-package orchestrator
+package oracle
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 // listenForMarketMapUpdates is a goroutine that listens for market map updates and
 // updates the orchestrated providers with the new market map.
-func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
+func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 	mmProvider := o.GetMarketMapProvider()
 	ids := mmProvider.GetIDs()
 	if len(ids) != 1 {
@@ -65,7 +65,7 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 }
 
 // WriteMarketMap writes the orchestrator's market map to the configured path.
-func (o *ProviderOrchestrator) WriteMarketMap() error {
+func (o *OracleImpl) WriteMarketMap() error {
 	if len(o.writeTo) == 0 {
 		return nil
 	}

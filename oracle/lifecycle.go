@@ -1,4 +1,4 @@
-package orchestrator
+package oracle
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type generalProvider interface {
 
 // Start starts the (blocking) provider orchestrator. This will initialize the provider orchestrator
 // with the relevant price and market mapper providers, and then start all of them.
-func (o *ProviderOrchestrator) Start(ctx context.Context) error {
+func (o *OracleImpl) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
 	o.running.Store(true)
 	defer o.running.Store(false)
@@ -90,7 +90,7 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 
 // Stop stops the provider orchestrator. This is a synchronous operation that will
 // wait for all providers to exit.
-func (o *ProviderOrchestrator) Stop() {
+func (o *OracleImpl) Stop() {
 	o.logger.Info("stopping provider orchestrator")
 	if _, cancel := o.getMainCtx(); cancel != nil {
 		cancel()
@@ -102,10 +102,10 @@ func (o *ProviderOrchestrator) Stop() {
 	<-o.closer.Done()
 }
 
-func (o *ProviderOrchestrator) IsRunning() bool { return o.running.Load() }
+func (o *OracleImpl) IsRunning() bool { return o.running.Load() }
 
 // execProviderFn starts a provider and recovers from any panics that occur.
-func (o *ProviderOrchestrator) execProviderFn(
+func (o *OracleImpl) execProviderFn(
 	ctx context.Context,
 	p generalProvider,
 ) {
@@ -125,7 +125,7 @@ func (o *ProviderOrchestrator) execProviderFn(
 }
 
 // setMainCtx sets the main context for the provider orchestrator.
-func (o *ProviderOrchestrator) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
+func (o *OracleImpl) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
@@ -134,7 +134,7 @@ func (o *ProviderOrchestrator) setMainCtx(ctx context.Context) (context.Context,
 }
 
 // getMainCtx returns the main context for the provider orchestrator.
-func (o *ProviderOrchestrator) getMainCtx() (context.Context, context.CancelFunc) {
+func (o *OracleImpl) getMainCtx() (context.Context, context.CancelFunc) {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 

@@ -1,4 +1,4 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -21,10 +21,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler, factory := marketMapperFactory(t, nil)
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("no ids")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -51,10 +51,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler, factory := marketMapperFactory(t, []mmclienttypes.Chain{{ChainID: "eth"}, {ChainID: "bsc"}})
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("too many")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -80,10 +80,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler, factory := marketMapperFactory(t, []mmclienttypes.Chain{{ChainID: "dYdX"}})
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("failed to create url")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -117,11 +117,11 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 
@@ -155,10 +155,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 
@@ -192,12 +192,12 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -232,13 +232,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
 		path := "test.json"
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithWriteTo(path),
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithWriteTo(path),
 		)
 		require.NoError(t, err)
 

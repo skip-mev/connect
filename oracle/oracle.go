@@ -6,12 +6,18 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/orchestrator"
-
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/oracle"
+	ssync "github.com/skip-mev/slinky/pkg/sync"
+	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
+	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ Oracle = (*OracleImpl)(nil)
@@ -23,71 +29,152 @@ type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
 	GetPrices() types.Prices
+	GetMarketMap() mmtypes.MarketMap
 	Start(ctx context.Context) error
 	Stop()
 }
 
-// OracleImpl implements the core component responsible for fetching exchange rates
-// for a given set of currency pairs and determining exchange rates.
-type OracleImpl struct { //nolint
-	// --------------------- General Config --------------------- //
-	mtx    sync.RWMutex
-	logger *zap.Logger
-
-	// --------------------- Provider Config --------------------- //
-	orc *orchestrator.ProviderOrchestrator
-
-	// running is the current status of the main oracle process (running or not).
+// OracleImpl is a stateful orchestrator that is responsible for maintaining
+// all providers that the oracle is using. This includes initializing the providers,
+// creating the provider specific market map, and enabling/disabling the providers based
+// on the oracle configuration and market map.
+//
+// TODO(tyler): rewrite this comment.
+type OracleImpl struct {
+	mut     sync.Mutex
+	logger  *zap.Logger
+	closer  *ssync.Closer
 	running atomic.Bool
 
-	// metrics is the set of metrics that the oracle will expose.
+	// -------------------Lifecycle Fields-------------------//
+	//
+	// mainCtx is the main context for the provider orchestrator.
+	mainCtx context.Context
+	// mainCancel is the main context cancel function.
+	mainCancel context.CancelFunc
+	// wg is the wait group for the provider orchestrator.
+	wg sync.WaitGroup
+
+	// -------------------Stateful Fields-------------------//
+	//
+	// providers is a map of all providers that the oracle is using.
+	providers map[string]ProviderState
+	// mmProvider is the market map provider. Specifically this provider is responsible
+	// for making requests for the latest market map data.
+	mmProvider *mmclienttypes.MarketMapProvider
+	// aggregator is the price aggregator.
+	aggregator *oracle.IndexPriceAggregator
+	// lastPriceSync is the last time the oracle successfully updated its prices.
+	lastPriceSync time.Time
+
+	// -------------------Oracle Configuration Fields-------------------//
+	//
+	// cfg is the oracle configuration.
+	cfg config.OracleConfig
+	// marketMap is the market map that the oracle is using.
+	marketMap mmtypes.MarketMap
+	// writeTo is a path to write the market map to.
+	writeTo string
+
+	// -------------------Provider Constructor Fields-------------------//
+	//
+	// priceAPIFactory factory is a factory function that creates price API query handlers.
+	priceAPIFactory types.PriceAPIQueryHandlerFactory
+	// priceWSFactory is a factory function that creates price websocket query handlers.
+	priceWSFactory types.PriceWebSocketQueryHandlerFactory
+	// marketMapperFactory is a factory function that creates market map providers.
+	marketMapperFactory mmclienttypes.MarketMapFactory
+
+	// -------------------Metrics Fields-------------------//
+	//
+	// wsMetrics is the web socket metrics.
+	wsMetrics wsmetrics.WebSocketMetrics
+	// apiMetrics is the API metrics.
+	apiMetrics apimetrics.APIMetrics
+	// providerMetrics is the provider metrics.
+	providerMetrics providermetrics.ProviderMetrics
+	// metrics are the base metrics of the oracle.
 	metrics oraclemetrics.Metrics
 }
 
-// New returns a new instance of an Oracle. The oracle inputs providers that are
-// responsible for fetching prices for a given set of currency pairs (base, quote). The oracle
-// will fetch new prices concurrently every oracleTicker interval. In the case where
-// the oracle fails to fetch prices from a given provider, it will continue to fetch prices
-// from the remaining providers. The oracle currently assumes that each provider aggregates prices
-// using TWAPs, TVWAPs, etc. When determining final prices, the oracle will utilize the aggregateFn
-// to compute the final price for each currency pair. By default, the oracle will compute the median
-// price across all providers.
-func New(orc *orchestrator.ProviderOrchestrator, opts ...Option) (*OracleImpl, error) {
-	o := &OracleImpl{
-		logger:  zap.NewNop(),
-		metrics: oraclemetrics.NewNopMetrics(),
-		orc:     orc,
+// ProviderState is the state of a provider. This includes the provider implementation,
+// the provider specific market map, and whether the provider is enabled.
+type ProviderState struct {
+	// Provider is the price provider implementation.
+	Provider *types.PriceProvider
+	// Cfg is the provider configuration.
+	//
+	// TODO: Deprecate this once we have synchronous configuration updates.
+	Cfg config.ProviderConfig
+}
+
+// New returns a new Oracle.
+func New(
+	cfg config.OracleConfig,
+	opts ...Option,
+) (Oracle, error) {
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	orc := &OracleImpl{
+		cfg:             cfg,
+		closer:          ssync.NewCloser(),
+		providers:       make(map[string]ProviderState),
+		logger:          zap.NewNop(),
+		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
+		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
+		providerMetrics: providermetrics.NewProviderMetricsFromConfig(cfg.Metrics),
 	}
 
 	for _, opt := range opts {
-		opt(o)
+		opt(orc)
 	}
 
-	return o, nil
+	return orc, nil
 }
 
-// IsRunning returns true if the oracle is running.
-func (o *OracleImpl) IsRunning() bool {
-	return o.running.Load()
+// GetProviderState returns all providers and their state.
+func (o *OracleImpl) GetProviderState() map[string]ProviderState {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.providers
 }
 
-// Start starts the (blocking) oracle process. It will return when the context
-// is cancelled or the oracle is stopped. The oracle will fetch prices from each
-// provider concurrently every oracleTicker interval.
-func (o *OracleImpl) Start(ctx context.Context) error {
-	return o.orc.Start(ctx)
+// GetPriceProviders returns all price providers.
+func (o *OracleImpl) GetPriceProviders() []*types.PriceProvider {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	providers := make([]*types.PriceProvider, 0, len(o.providers))
+	for _, state := range o.providers {
+		providers = append(providers, state.Provider)
+	}
+
+	return providers
 }
 
-// Stop stops the oracle process and waits for it to gracefully exit.
-func (o *OracleImpl) Stop() {
-	o.logger.Info("stopping oracle")
-	o.orc.Stop()
+// GetMarketMapProvider returns the market map provider.
+func (o *OracleImpl) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.mmProvider
+}
+
+// GetMarketMap returns the market map.
+func (o *OracleImpl) GetMarketMap() mmtypes.MarketMap {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.marketMap
 }
 
 func (o *OracleImpl) GetLastSyncTime() time.Time {
-	return o.orc.GetLastSyncTime()
+	return o.lastPriceSync
 }
 
 func (o *OracleImpl) GetPrices() types.Prices {
-	return o.orc.GetPrices()
+	return o.aggregator.GetPrices()
 }

@@ -1,4 +1,4 @@
-package orchestrator
+package oracle
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 // UpdateMarketMap updates the orchestrator's market map and updates the providers'
 // market maps. Specifically, it determines if the provider's market map has a diff,
 // and if so, updates the provider's state.
-func (o *ProviderOrchestrator) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
+func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
@@ -55,7 +55,7 @@ func (o *ProviderOrchestrator) UpdateMarketMap(marketMap mmtypes.MarketMap) erro
 // this will update the provider's query handler and the provider's market map.
 //
 // TODO(Tyler): this is named confusingly imo
-func (o *ProviderOrchestrator) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
+func (o *OracleImpl) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 
 	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
@@ -77,7 +77,7 @@ func (o *ProviderOrchestrator) UpdateProviderState(providerTickers []types.Provi
 	return state, nil
 }
 
-func (o *ProviderOrchestrator) fetchAllPrices() {
+func (o *OracleImpl) fetchAllPrices() {
 	o.logger.Debug("starting price fetch loop")
 	defer func() {
 		if r := recover(); r != nil {
@@ -104,7 +104,7 @@ func (o *ProviderOrchestrator) fetchAllPrices() {
 	o.logger.Info("oracle updated prices", zap.Time("last_sync", o.lastPriceSync), zap.Int("num_prices", len(o.aggregator.GetPrices())))
 }
 
-func (o *ProviderOrchestrator) fetchPrices(provider *types.PriceProvider) {
+func (o *OracleImpl) fetchPrices(provider *types.PriceProvider) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error(
@@ -178,7 +178,7 @@ func (o *ProviderOrchestrator) fetchPrices(provider *types.PriceProvider) {
 	o.aggregator.SetProviderPrices(provider.Name(), timeFilteredPrices)
 }
 
-func (o *ProviderOrchestrator) setLastSyncTime(t time.Time) {
+func (o *OracleImpl) setLastSyncTime(t time.Time) {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 

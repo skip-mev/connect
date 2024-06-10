@@ -1,4 +1,4 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 )
 
 func TestStart(t *testing.T) {
 	t.Run("errors when init fails", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
+			oracle.WithLogger(logger),
 		)
 		require.NoError(t, err)
 
@@ -26,11 +26,11 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("price providers with no market map", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -49,12 +49,12 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("price providers with market map", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 
@@ -73,12 +73,12 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("price providers with market map provider but price providers have no ids to fetch", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
 		)
 		require.NoError(t, err)
 

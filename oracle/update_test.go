@@ -1,4 +1,4 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -19,11 +19,11 @@ import (
 
 func TestUpdateWithMarketMap(t *testing.T) {
 	t.Run("bad market map is rejected", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -39,11 +39,11 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -93,11 +93,11 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with running providers", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -179,11 +179,11 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -213,12 +213,12 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 
@@ -261,11 +261,11 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 func TestUpdateProviderState(t *testing.T) {
 	t.Run("can update a single api provider state with no configuration and non-running", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -290,11 +290,11 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state with no configuration and running", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -340,12 +340,12 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a non-running provider", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -374,12 +374,12 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a running provider", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 
@@ -423,11 +423,11 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state with no configuration and non-running", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -462,11 +462,11 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state with no configuration and running", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -511,12 +511,12 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state removing all tickers on a non-running provider", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init(context.TODO()))
@@ -552,12 +552,12 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state removing all tickers on a running provider", func(t *testing.T) {
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfg,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMap(marketMap),
+			oracle.WithLogger(logger),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 

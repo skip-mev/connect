@@ -21,7 +21,6 @@ import (
 
 	"github.com/skip-mev/slinky/cmd/build"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -255,16 +254,16 @@ func runOracle() error {
 	}
 
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
-	orchestratorOpts := []orchestrator.Option{
-		orchestrator.WithLogger(logger),
-		orchestrator.WithMarketMap(marketCfg),
-		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
-		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
-		orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
-		orchestrator.WithAggregator(aggregator),
+	orchestratorOpts := []oracle.Option{
+		oracle.WithLogger(logger),
+		oracle.WithMarketMap(marketCfg),
+		oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
+		oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
+		oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+		oracle.WithAggregator(aggregator),
 	}
 	if updateMarketCfgPath != "" {
-		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(updateMarketCfgPath))
+		orchestratorOpts = append(orchestratorOpts, oracle.WithWriteTo(updateMarketCfgPath))
 	}
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
@@ -275,7 +274,7 @@ func runOracle() error {
 	}
 
 	// Create the orchestrator and start the orchestrator.
-	orch, err := orchestrator.NewProviderOrchestrator(
+	orch, err := oracle.New(
 		cfg,
 		orchestratorOpts...,
 	)

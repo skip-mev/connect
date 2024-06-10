@@ -1,4 +1,4 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"testing"
@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -203,7 +203,7 @@ func checkProviderState(
 	expectedName string,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
-	state orchestrator.ProviderState,
+	state oracle.ProviderState,
 ) {
 	t.Helper()
 
