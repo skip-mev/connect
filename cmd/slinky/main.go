@@ -289,7 +289,11 @@ func runOracle() error {
 	defer orch.Stop()
 
 	// Create the oracle and start the oracle server.
-	oracleOpts = append(oracleOpts, oracle.WithProviders(orch.GetPriceProviders()))
+	oracleOpts = append(
+		oracleOpts,
+		oracle.WithProviders(orch.GetPriceProviders()),
+		oracle.WithMarketMapGetter(orch.GetMarketMap),
+	)
 	orc, err := oracle.New(oracleOpts...)
 	if err != nil {
 		return fmt.Errorf("failed to create oracle: %w", err)
