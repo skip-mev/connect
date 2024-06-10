@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // Option is a function that can be used to configure an Oracle.
@@ -72,6 +73,13 @@ func WithPriceAggregator(agg PriceAggregator) Option {
 		}
 
 		o.priceAggregator = agg
+	}
+}
+
+// WithMarketMapGetter sets a getter function for the latest market map on the Oracle.
+func WithMarketMapGetter(fn func() mmtypes.MarketMap) Option {
+	return func(o *OracleImpl) {
+		o.marketMapGetter = fn
 	}
 }
 

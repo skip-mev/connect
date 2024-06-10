@@ -11,6 +11,7 @@ import (
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
 	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	types "github.com/skip-mev/slinky/x/marketmap/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -125,41 +126,132 @@ func (m *QueryPricesResponse) GetTimestamp() time.Time {
 	return time.Time{}
 }
 
+// QueryMarketMapRequest defines the request type for the MarketMap method.
+type QueryMarketMapRequest struct {
+}
+
+func (m *QueryMarketMapRequest) Reset()         { *m = QueryMarketMapRequest{} }
+func (m *QueryMarketMapRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketMapRequest) ProtoMessage()    {}
+func (*QueryMarketMapRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e88883d464f0f25b, []int{2}
+}
+func (m *QueryMarketMapRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketMapRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketMapRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketMapRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketMapRequest.Merge(m, src)
+}
+func (m *QueryMarketMapRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketMapRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketMapRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketMapRequest proto.InternalMessageInfo
+
+// QueryMarketMapResponse defines the response type for the MarketMap method.
+type QueryMarketMapResponse struct {
+	// market_map defines the current market map configuration.
+	MarketMap *types.MarketMap `protobuf:"bytes,1,opt,name=market_map,json=marketMap,proto3" json:"market_map,omitempty"`
+}
+
+func (m *QueryMarketMapResponse) Reset()         { *m = QueryMarketMapResponse{} }
+func (m *QueryMarketMapResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketMapResponse) ProtoMessage()    {}
+func (*QueryMarketMapResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e88883d464f0f25b, []int{3}
+}
+func (m *QueryMarketMapResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketMapResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketMapResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketMapResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketMapResponse.Merge(m, src)
+}
+func (m *QueryMarketMapResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketMapResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketMapResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketMapResponse proto.InternalMessageInfo
+
+func (m *QueryMarketMapResponse) GetMarketMap() *types.MarketMap {
+	if m != nil {
+		return m.MarketMap
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryPricesRequest)(nil), "slinky.service.v1.QueryPricesRequest")
 	proto.RegisterType((*QueryPricesResponse)(nil), "slinky.service.v1.QueryPricesResponse")
 	proto.RegisterMapType((map[string]string)(nil), "slinky.service.v1.QueryPricesResponse.PricesEntry")
+	proto.RegisterType((*QueryMarketMapRequest)(nil), "slinky.service.v1.QueryMarketMapRequest")
+	proto.RegisterType((*QueryMarketMapResponse)(nil), "slinky.service.v1.QueryMarketMapResponse")
 }
 
 func init() { proto.RegisterFile("slinky/service/v1/oracle.proto", fileDescriptor_e88883d464f0f25b) }
 
 var fileDescriptor_e88883d464f0f25b = []byte{
-	// 394 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x4d, 0x6f, 0xa3, 0x30,
-	0x14, 0xc4, 0xc9, 0x2e, 0xda, 0x38, 0x97, 0x5d, 0x6f, 0x0e, 0x2c, 0x5a, 0x11, 0x14, 0x69, 0x57,
-	0xb9, 0xac, 0xad, 0xb0, 0x87, 0x7e, 0x1c, 0x91, 0x7a, 0x6e, 0x82, 0x7a, 0xea, 0xa5, 0x22, 0xc8,
-	0xa5, 0x56, 0x00, 0x53, 0x6c, 0x90, 0xb8, 0xb6, 0x7f, 0x20, 0x52, 0xff, 0x54, 0x8e, 0x91, 0x7a,
-	0xe9, 0xa9, 0xad, 0x92, 0xaa, 0xbf, 0xa3, 0x02, 0x93, 0x7e, 0x4b, 0xed, 0x09, 0x8f, 0xe7, 0xbd,
-	0x79, 0xcc, 0xf3, 0x40, 0x4b, 0x44, 0x2c, 0x99, 0x95, 0x44, 0xd0, 0xac, 0x60, 0x01, 0x25, 0xc5,
-	0x88, 0xf0, 0xcc, 0x0f, 0x22, 0x8a, 0xd3, 0x8c, 0x4b, 0x8e, 0x7e, 0x28, 0x1e, 0x37, 0x3c, 0x2e,
-	0x46, 0x66, 0x2f, 0xe4, 0x21, 0xaf, 0x59, 0x52, 0x9d, 0x54, 0xa1, 0xf9, 0x3b, 0xe4, 0x3c, 0x8c,
-	0x28, 0xf1, 0x53, 0x46, 0xfc, 0x24, 0xe1, 0xd2, 0x97, 0x8c, 0x27, 0xa2, 0x61, 0xfb, 0x0d, 0x5b,
-	0xa3, 0x69, 0x7e, 0x4c, 0x24, 0x8b, 0xa9, 0x90, 0x7e, 0x9c, 0x36, 0x05, 0xbf, 0x02, 0x2e, 0x62,
-	0x2e, 0x8e, 0x94, 0xae, 0x02, 0x8a, 0x1a, 0xf4, 0x20, 0x9a, 0xe4, 0x34, 0x2b, 0xc7, 0x19, 0x0b,
-	0xa8, 0xf0, 0xe8, 0x69, 0x4e, 0x85, 0x1c, 0xdc, 0x03, 0xf8, 0xf3, 0xc5, 0xb5, 0x48, 0x79, 0x22,
-	0x28, 0x1a, 0x43, 0x3d, 0xad, 0x6f, 0x0c, 0x60, 0xb7, 0x87, 0x5d, 0xc7, 0xc1, 0x6f, 0x1c, 0xe0,
-	0x77, 0xfa, 0xb0, 0x82, 0x7b, 0x89, 0xcc, 0x4a, 0xf7, 0xcb, 0xe2, 0xba, 0xaf, 0x79, 0x8d, 0x0e,
-	0x72, 0x61, 0xe7, 0xf1, 0x6f, 0x8d, 0x96, 0x0d, 0x86, 0x5d, 0xc7, 0xc4, 0xca, 0x0f, 0xde, 0xf8,
-	0xc1, 0x07, 0x9b, 0x0a, 0xf7, 0x5b, 0xd5, 0x3c, 0xbf, 0xe9, 0x03, 0xef, 0xa9, 0xcd, 0xdc, 0x81,
-	0xdd, 0x67, 0x03, 0xd0, 0x77, 0xd8, 0x9e, 0xd1, 0xd2, 0x00, 0x36, 0x18, 0x76, 0xbc, 0xea, 0x88,
-	0x7a, 0xf0, 0x6b, 0xe1, 0x47, 0x39, 0xad, 0x07, 0x74, 0x3c, 0x05, 0x76, 0x5b, 0xdb, 0xc0, 0x39,
-	0x07, 0x50, 0xdf, 0xaf, 0x9f, 0x04, 0x95, 0x50, 0x57, 0x2a, 0xe8, 0xcf, 0x47, 0xae, 0xea, 0x25,
-	0x99, 0x7f, 0x3f, 0x67, 0x7e, 0x60, 0x9f, 0x5d, 0xde, 0x5d, 0xb4, 0x4c, 0x64, 0x90, 0x26, 0x0e,
-	0x2a, 0x03, 0x55, 0x1a, 0xd4, 0x12, 0xdc, 0xc9, 0x62, 0x65, 0x81, 0xe5, 0xca, 0x02, 0xb7, 0x2b,
-	0x0b, 0xcc, 0xd7, 0x96, 0xb6, 0x5c, 0x5b, 0xda, 0xd5, 0xda, 0xd2, 0x0e, 0xb7, 0x42, 0x26, 0x4f,
-	0xf2, 0x29, 0x0e, 0x78, 0x4c, 0xc4, 0x8c, 0xa5, 0xff, 0x62, 0x5a, 0x90, 0x57, 0xa9, 0xaa, 0xbe,
-	0x34, 0x13, 0x1b, 0x59, 0x59, 0xa6, 0x54, 0x4c, 0xf5, 0x7a, 0x79, 0xff, 0x1f, 0x02, 0x00, 0x00,
-	0xff, 0xff, 0x0e, 0xe7, 0x89, 0x62, 0x83, 0x02, 0x00, 0x00,
+	// 485 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xbf, 0x8f, 0xd3, 0x30,
+	0x14, 0xc7, 0xeb, 0x1e, 0x54, 0xc4, 0x5d, 0xc0, 0x14, 0x28, 0x01, 0xd2, 0xa8, 0x08, 0x54, 0x06,
+	0x6c, 0x5d, 0x18, 0xf8, 0x21, 0xb1, 0x54, 0x62, 0x3c, 0x71, 0x17, 0x21, 0x21, 0xb1, 0x9c, 0xdc,
+	0xc8, 0x84, 0xa8, 0x75, 0x6c, 0x62, 0x27, 0x52, 0x56, 0x24, 0x26, 0x96, 0x93, 0xf8, 0xa7, 0x6e,
+	0x3c, 0x89, 0x85, 0x09, 0x50, 0x8b, 0xf8, 0x3b, 0x50, 0x6c, 0xa7, 0x07, 0x3d, 0xd0, 0x75, 0x8a,
+	0x9f, 0xbf, 0xef, 0x3d, 0x7f, 0xdf, 0xc7, 0x0e, 0x0c, 0xd4, 0x22, 0xcb, 0xe7, 0x35, 0x51, 0xac,
+	0xa8, 0xb2, 0x84, 0x91, 0x6a, 0x97, 0x88, 0x82, 0x26, 0x0b, 0x86, 0x65, 0x21, 0xb4, 0x40, 0x57,
+	0xac, 0x8e, 0x9d, 0x8e, 0xab, 0x5d, 0x7f, 0x90, 0x8a, 0x54, 0x18, 0x95, 0x34, 0x2b, 0x9b, 0xe8,
+	0xdf, 0x4e, 0x85, 0x48, 0x17, 0x8c, 0x50, 0x99, 0x11, 0x9a, 0xe7, 0x42, 0x53, 0x9d, 0x89, 0x5c,
+	0x39, 0x75, 0xe4, 0x54, 0x13, 0xcd, 0xca, 0xb7, 0x44, 0x67, 0x9c, 0x29, 0x4d, 0xb9, 0x74, 0x09,
+	0x37, 0x13, 0xa1, 0xb8, 0x50, 0x87, 0xb6, 0xaf, 0x0d, 0x9c, 0x14, 0x3a, 0x8b, 0x9c, 0x16, 0x73,
+	0xa6, 0x39, 0x95, 0x8d, 0x49, 0x1b, 0xd8, 0x8c, 0xf1, 0x00, 0xa2, 0x83, 0x92, 0x15, 0xf5, 0x7e,
+	0x91, 0x25, 0x4c, 0xc5, 0xec, 0x7d, 0xc9, 0x94, 0x1e, 0xff, 0x02, 0xf0, 0xea, 0x5f, 0xdb, 0x4a,
+	0x8a, 0x5c, 0x31, 0xb4, 0x0f, 0x7b, 0xd2, 0xec, 0x0c, 0x41, 0xb8, 0x33, 0xe9, 0x47, 0x11, 0x3e,
+	0x33, 0x23, 0xfe, 0x47, 0x1d, 0xb6, 0xe1, 0x8b, 0x5c, 0x17, 0xf5, 0xf4, 0xc2, 0xf1, 0xb7, 0x51,
+	0x27, 0x76, 0x7d, 0xd0, 0x14, 0x7a, 0xeb, 0x79, 0x86, 0xdd, 0x10, 0x4c, 0xfa, 0x91, 0x8f, 0xed,
+	0xc4, 0xb8, 0x9d, 0x18, 0xbf, 0x6a, 0x33, 0xa6, 0x97, 0x9a, 0xe2, 0xa3, 0xef, 0x23, 0x10, 0x9f,
+	0x96, 0xf9, 0x4f, 0x61, 0xff, 0x8f, 0x03, 0xd0, 0x65, 0xb8, 0x33, 0x67, 0xf5, 0x10, 0x84, 0x60,
+	0xe2, 0xc5, 0xcd, 0x12, 0x0d, 0xe0, 0xc5, 0x8a, 0x2e, 0x4a, 0x66, 0x0e, 0xf0, 0x62, 0x1b, 0x3c,
+	0xeb, 0x3e, 0x01, 0xe3, 0x1b, 0xf0, 0x9a, 0xf1, 0xbb, 0x67, 0x98, 0xec, 0x51, 0xd9, 0x12, 0x78,
+	0x0d, 0xaf, 0x6f, 0x0a, 0x8e, 0xc1, 0x73, 0x08, 0x2d, 0xc1, 0x43, 0x4e, 0xa5, 0x39, 0xa5, 0x1f,
+	0x05, 0x2d, 0x87, 0x35, 0xe8, 0x86, 0xc4, 0x69, 0xad, 0xc7, 0xdb, 0x65, 0xf4, 0xa9, 0x0b, 0x7b,
+	0x2f, 0xcd, 0x33, 0x41, 0x35, 0xec, 0x59, 0xdf, 0xe8, 0xde, 0x79, 0x1c, 0x8d, 0x29, 0xff, 0xfe,
+	0x76, 0xb8, 0xc7, 0xe1, 0x87, 0x2f, 0x3f, 0x3f, 0x77, 0x7d, 0x34, 0x24, 0xee, 0xfe, 0xed, 0xbb,
+	0x6c, 0x2e, 0xdf, 0x61, 0xff, 0x08, 0xa0, 0xb7, 0xb6, 0x87, 0x26, 0xff, 0xeb, 0xbb, 0x89, 0xc5,
+	0x7f, 0xb0, 0x45, 0xa6, 0x33, 0x71, 0xd7, 0x98, 0xb8, 0x83, 0x6e, 0x9d, 0x35, 0xb1, 0xa6, 0x34,
+	0x3d, 0x38, 0x5e, 0x06, 0xe0, 0x64, 0x19, 0x80, 0x1f, 0xcb, 0x00, 0x1c, 0xad, 0x82, 0xce, 0xc9,
+	0x2a, 0xe8, 0x7c, 0x5d, 0x05, 0x9d, 0x37, 0x8f, 0xd3, 0x4c, 0xbf, 0x2b, 0x67, 0x38, 0x11, 0x9c,
+	0xa8, 0x79, 0x26, 0x1f, 0x72, 0x56, 0x91, 0x8d, 0x3f, 0xae, 0xf9, 0xb2, 0x42, 0xb5, 0x9d, 0x75,
+	0x2d, 0x99, 0x9a, 0xf5, 0xcc, 0xb3, 0x79, 0xf4, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x54, 0x12, 0xd7,
+	0x59, 0x9f, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -176,6 +268,9 @@ const _ = grpc.SupportPackageIsVersion4
 type OracleClient interface {
 	// Prices defines a method for fetching the latest prices.
 	Prices(ctx context.Context, in *QueryPricesRequest, opts ...grpc.CallOption) (*QueryPricesResponse, error)
+	// MarketMap defines a method for fetching the latest market map
+	// configuration.
+	MarketMap(ctx context.Context, in *QueryMarketMapRequest, opts ...grpc.CallOption) (*QueryMarketMapResponse, error)
 }
 
 type oracleClient struct {
@@ -195,10 +290,22 @@ func (c *oracleClient) Prices(ctx context.Context, in *QueryPricesRequest, opts 
 	return out, nil
 }
 
+func (c *oracleClient) MarketMap(ctx context.Context, in *QueryMarketMapRequest, opts ...grpc.CallOption) (*QueryMarketMapResponse, error) {
+	out := new(QueryMarketMapResponse)
+	err := c.cc.Invoke(ctx, "/slinky.service.v1.Oracle/MarketMap", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OracleServer is the server API for Oracle service.
 type OracleServer interface {
 	// Prices defines a method for fetching the latest prices.
 	Prices(context.Context, *QueryPricesRequest) (*QueryPricesResponse, error)
+	// MarketMap defines a method for fetching the latest market map
+	// configuration.
+	MarketMap(context.Context, *QueryMarketMapRequest) (*QueryMarketMapResponse, error)
 }
 
 // UnimplementedOracleServer can be embedded to have forward compatible implementations.
@@ -207,6 +314,9 @@ type UnimplementedOracleServer struct {
 
 func (*UnimplementedOracleServer) Prices(ctx context.Context, req *QueryPricesRequest) (*QueryPricesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Prices not implemented")
+}
+func (*UnimplementedOracleServer) MarketMap(ctx context.Context, req *QueryMarketMapRequest) (*QueryMarketMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketMap not implemented")
 }
 
 func RegisterOracleServer(s grpc1.Server, srv OracleServer) {
@@ -231,6 +341,24 @@ func _Oracle_Prices_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Oracle_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMarketMapRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleServer).MarketMap(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.service.v1.Oracle/MarketMap",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleServer).MarketMap(ctx, req.(*QueryMarketMapRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Oracle_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "slinky.service.v1.Oracle",
 	HandlerType: (*OracleServer)(nil),
@@ -238,6 +366,10 @@ var _Oracle_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Prices",
 			Handler:    _Oracle_Prices_Handler,
+		},
+		{
+			MethodName: "MarketMap",
+			Handler:    _Oracle_MarketMap_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -317,6 +449,64 @@ func (m *QueryPricesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryMarketMapRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketMapRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketMapRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryMarketMapResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketMapResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MarketMap != nil {
+		{
+			size, err := m.MarketMap.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintOracle(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintOracle(dAtA []byte, offset int, v uint64) int {
 	offset -= sovOracle(v)
 	base := offset
@@ -353,6 +543,28 @@ func (m *QueryPricesResponse) Size() (n int) {
 	}
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovOracle(uint64(l))
+	return n
+}
+
+func (m *QueryMarketMapRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryMarketMapResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.MarketMap != nil {
+		l = m.MarketMap.Size()
+		n += 1 + l + sovOracle(uint64(l))
+	}
 	return n
 }
 
@@ -598,6 +810,142 @@ func (m *QueryPricesResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOracle(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketMapRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOracle
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketMapRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketMapRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOracle(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketMapResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOracle
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketMapResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketMapResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MarketMap", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.MarketMap == nil {
+				m.MarketMap = &types.MarketMap{}
+			}
+			if err := m.MarketMap.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
