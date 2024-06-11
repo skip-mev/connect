@@ -1,6 +1,5 @@
 package oracle_test
 
-/*
 import (
 	"context"
 	"testing"
@@ -20,14 +19,16 @@ import (
 
 func TestUpdateWithMarketMap(t *testing.T) {
 	t.Run("bad market map is rejected", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init(context.TODO()))
+		o := orc.(*oracle.OracleImpl)
+		require.NoError(t, o.Init(context.Background()))
 
 		err = o.UpdateMarketMap(mmtypes.MarketMap{
 			Markets: map[string]mmtypes.Market{
@@ -40,13 +41,15 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
@@ -94,19 +97,22 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with running providers", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		// Start the providers.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			require.ErrorIs(t, err, context.Canceled)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -180,14 +186,16 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init(context.TODO()))
+		o := orc.(*oracle.OracleImpl)
+		require.NoError(t, o.Init(context.Background()))
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -214,20 +222,22 @@ func TestUpdateWithMarketMap(t *testing.T) {
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		// Start the providers.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -262,13 +272,15 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 func TestUpdateProviderState(t *testing.T) {
 	t.Run("can update a single api provider state with no configuration and non-running", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.TODO()))
 
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
@@ -291,20 +303,22 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state with no configuration and running", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(500 * time.Millisecond)
@@ -341,14 +355,16 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a non-running provider", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
@@ -375,21 +391,23 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a running provider", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -424,14 +442,16 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state with no configuration and non-running", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init(context.TODO()))
+		o := orc.(*oracle.OracleImpl)
+		require.NoError(t, o.Init(context.Background()))
 
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
@@ -463,20 +483,22 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state with no configuration and running", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(3 * time.Millisecond)
@@ -512,14 +534,17 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state removing all tickers on a non-running provider", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
+
 		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
@@ -553,21 +578,23 @@ func TestUpdateProviderState(t *testing.T) {
 	})
 
 	t.Run("can update a single websocket provider state removing all tickers on a running provider", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -601,4 +628,3 @@ func TestUpdateProviderState(t *testing.T) {
 		)
 	})
 }
-*/

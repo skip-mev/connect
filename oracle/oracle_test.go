@@ -61,6 +61,8 @@ type OracleTestSuite struct {
 
 	// Oracle config
 	currencyPairs []types.ProviderTicker
+
+	marketmap mmtypes.MarketMap
 }
 
 func TestOracleSuite(t *testing.T) {
@@ -76,18 +78,38 @@ func (s *OracleTestSuite) SetupTest() {
 		types.NewProviderTicker("ETH/USD", "{}"),
 		types.NewProviderTicker("ATOM/USD", "{}"),
 	}
+	s.marketmap = mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
+		btcusdtCP.String(): {
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     btcusdtCP,
+				MinProviderCount: 1,
+				Decimals:         8,
+				Enabled:          true,
+			},
+			ProviderConfigs: []mmtypes.ProviderConfig{
+				{
+					Name:           providerCfg1.Name,
+					OffChainTicker: coinbasebtcusd.GetOffChainTicker(),
+				},
+				{
+					Name:           providerCfg2.Name,
+					OffChainTicker: coinbasebtcusd.GetOffChainTicker(),
+				},
+			},
+		},
+	}}
 }
 
 func (s *OracleTestSuite) TestGetMarketMap() {
-	dummyMM := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{"foo": {Ticker: mmtypes.Ticker{Metadata_JSON: "FOOBAR"}}}}
-	o, err := oracle.New(config.OracleConfig{}, nil, oracle.WithMarketMap(dummyMM))
+	dummyMM := marketMap
+	o, err := oracle.New(oracleCfg, noOpPriceAggregator{}, oracle.WithMarketMap(dummyMM))
 	s.Require().NoError(err)
 
 	gotMM := o.GetMarketMap()
 	s.Require().Equal(dummyMM, gotMM)
 
 	// test when no option provided, should just give empty mm
-	o, err = oracle.New(config.OracleConfig{}, nil)
+	o, err = oracle.New(oracleCfg, noOpPriceAggregator{})
 	s.Require().NoError(err)
 	gotMM = o.GetMarketMap()
 	s.Require().Equal(gotMM, mmtypes.MarketMap{})

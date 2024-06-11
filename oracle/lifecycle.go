@@ -21,18 +21,18 @@ type generalProvider interface {
 // Start starts the (blocking) provider orchestrator. This will initialize the provider orchestrator
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *OracleImpl) Start(ctx context.Context) error {
+	// Set the main context for the oracle.
+	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
+	ctx = o.mainCtx
+
 	o.logger.Info("starting provider orchestrator")
 	o.running.Store(true)
 	defer o.running.Store(false)
 
 	if err := o.Init(ctx); err != nil {
-		o.logger.Error("failed to initialize provider orchestrator", zap.Error(err))
+		o.logger.Error("failed to initialize oracle", zap.Error(err))
 		return err
 	}
-
-	// Set the main context for the oracle.
-	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
-	ctx = o.mainCtx
 
 	// Start all price providers which have tickers.
 	for name, state := range o.priceProviders {

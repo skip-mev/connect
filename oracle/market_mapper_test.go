@@ -1,8 +1,8 @@
 package oracle_test
 
-/*
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -24,6 +24,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 		)
@@ -34,7 +35,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -54,6 +58,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 		)
@@ -63,7 +68,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -83,6 +91,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 		)
@@ -92,7 +101,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -120,6 +132,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 			oracle.WithMarketMap(marketMap),
@@ -130,7 +143,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -158,6 +174,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 		)
@@ -167,7 +184,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -195,6 +215,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 
 		o, err := oracle.New(
 			oracleCfgWithMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -206,7 +227,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -235,6 +259,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		path := "test.json"
 		o, err := oracle.New(
 			oracleCfgWithMockMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMapperFactory(factory),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -247,7 +272,10 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		// Wait for the orchestrator to start.
@@ -269,4 +297,3 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		require.NoError(t, os.Remove(path))
 	})
 }
-*/
