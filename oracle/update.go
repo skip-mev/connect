@@ -12,7 +12,7 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// UpdateMarketMap updates the orchestrator's market map and updates the providers'
+// UpdateMarketMap updates the oracle's market map and updates the providers'
 // market maps. Specifically, it determines if the provider's market map has a diff,
 // and if so, updates the provider's state.
 func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {

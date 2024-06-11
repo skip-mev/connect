@@ -40,11 +40,11 @@ type OracleImpl struct { //nolint:revive
 
 	// -------------------Lifecycle Fields-------------------//
 	//
-	// mainCtx is the main context for the provider orchestrator.
+	// mainCtx is the main context for the oracle.
 	mainCtx context.Context
 	// mainCancel is the main context cancel function.
 	mainCancel context.CancelFunc
-	// wg is the wait group for the provider orchestrator.
+	// wg is the wait group for the oracle.
 	wg sync.WaitGroup
 
 	// -------------------Stateful Fields-------------------//

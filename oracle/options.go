@@ -12,7 +12,7 @@ import (
 // Option is a functional option for the market map state.
 type Option func(impl *OracleImpl)
 
-// WithLogger sets the logger for the provider orchestrator.
+// WithLogger sets the logger for the oracle.
 func WithLogger(logger *zap.Logger) Option {
 	return func(m *OracleImpl) {
 		if logger == nil {
@@ -23,7 +23,7 @@ func WithLogger(logger *zap.Logger) Option {
 	}
 }
 
-// WithMarketMap sets the market map for the provider orchestrator.
+// WithMarketMap sets the market map for the oracle.
 func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 	return func(m *OracleImpl) {
 		if err := marketMap.ValidateBasic(); err != nil {
@@ -34,7 +34,7 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 	}
 }
 
-// WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the provider orchestrator.
+// WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the oracle.
 // Specifically, this is what is utilized to construct price providers that are API based.
 func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
 	return func(m *OracleImpl) {
@@ -46,7 +46,7 @@ func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) 
 	}
 }
 
-// WithPriceWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
+// WithPriceWebSocketQueryHandlerFactory sets the websocket query handler factory for the oracle.
 // Specifically, this is what is utilized to construct price providers that are websocket based.
 func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
 	return func(m *OracleImpl) {
@@ -58,7 +58,7 @@ func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHand
 	}
 }
 
-// WithMarketMapperFactory sets the market map factory for the provider orchestrator.
+// WithMarketMapperFactory sets the market map factory for the oracle.
 // Specifically, this is what is utilized to construct market map providers.
 func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 	return func(m *OracleImpl) {

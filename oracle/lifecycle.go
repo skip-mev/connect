@@ -18,14 +18,14 @@ type generalProvider interface {
 	Name() string
 }
 
-// Start starts the (blocking) provider orchestrator. This will initialize the provider orchestrator
+// Start starts the (blocking) oracle. This will initialize the oracle
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *OracleImpl) Start(ctx context.Context) error {
 	// Set the main context for the oracle.
 	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
 	ctx = o.mainCtx
 
-	o.logger.Info("starting provider orchestrator")
+	o.logger.Info("starting oracle")
 	o.running.Store(true)
 	defer o.running.Store(false)
 
@@ -84,7 +84,7 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	}
 }
 
-// Stop stops the provider orchestrator. This is a synchronous operation that will
+// Stop stops the oracle. This is a synchronous operation that will
 // wait for all providers to exit.
 func (o *OracleImpl) Stop() {
 	o.logger.Info("stopping oracle")
@@ -122,7 +122,7 @@ func (o *OracleImpl) execProviderFn(
 	o.logger.Error("provider exited", zap.String("provider", p.Name()), zap.Error(err))
 }
 
-// getMainCtx returns the main context for the provider orchestrator.
+// getMainCtx returns the main context for the oracle.
 func (o *OracleImpl) getMainCtx() (context.Context, context.CancelFunc) {
 	o.mut.Lock()
 	defer o.mut.Unlock()

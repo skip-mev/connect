@@ -18,7 +18,7 @@ import (
 )
 
 func TestListenForMarketMapUpdates(t *testing.T) {
-	t.Run("mapper has no chain IDs to fetch should not update the orchestrator", func(t *testing.T) {
+	t.Run("mapper has no chain IDs to fetch should not update the oracle", func(t *testing.T) {
 		handler, factory := marketMapperFactory(t, nil)
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("no ids")).Maybe()
 
@@ -41,13 +41,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(1000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -74,13 +74,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(1000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -107,13 +107,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -149,13 +149,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -190,13 +190,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -233,13 +233,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(5000 * time.Millisecond)
 
-		// The orchestrator should have been updated.
+		// The oracle should have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -278,13 +278,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(5000 * time.Millisecond)
 
-		// The orchestrator should have been updated.
+		// The oracle should have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 

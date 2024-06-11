@@ -42,16 +42,16 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			// Update the orchestrator with the latest market map iff the market map has changed.
+			// Update the oracle with the latest market map iff the market map has changed.
 			updated := result.Value.MarketMap
 			if o.marketMap.Equal(updated) {
 				o.logger.Debug("market map has not changed")
 				continue
 			}
 
-			o.logger.Info("updating orchestrator with new market map")
+			o.logger.Info("updating oracle with new market map")
 			if err := o.UpdateMarketMap(updated); err != nil {
-				o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
+				o.logger.Error("failed to update oracle with new market map", zap.Error(err))
 				continue
 			}
 
@@ -60,12 +60,12 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
 
-			o.logger.Info("updated orchestrator with new market map", zap.Any("market_map", updated))
+			o.logger.Info("updated oracle with new market map", zap.Any("market_map", updated))
 		}
 	}
 }
 
-// WriteMarketMap writes the orchestrator's market map to the configured path.
+// WriteMarketMap writes the oracle's market map to the configured path.
 func (o *OracleImpl) WriteMarketMap() error {
 	if len(o.writeTo) == 0 {
 		return nil

@@ -40,7 +40,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o.Stop()
 	})
 
-	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
+	t.Run("can update the oracle's market map and update the providers' market maps with no running providers", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -55,7 +55,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
 
-		// Update the orchestrator's market map.
+		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(marketMap))
 
 		providers = o.GetProviderState()
@@ -96,7 +96,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o.Stop()
 	})
 
-	t.Run("can update the orchestrator's market map and update the providers' market maps with running providers", func(t *testing.T) {
+	t.Run("can update the oracle's market map and update the providers' market maps with running providers", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -111,8 +111,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		go func() {
-			err := o.Start(ctx)
-			require.ErrorIs(t, err, context.Canceled)
+			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -120,7 +119,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
 
-		// Update the orchestrator's market map.
+		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(marketMap))
 
 		time.Sleep(2000 * time.Millisecond)
@@ -185,7 +184,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		}
 	})
 
-	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers", func(t *testing.T) {
+	t.Run("can update the oracle's market map and update the providers' market maps with no tickers", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -200,7 +199,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
 
-		// Update the orchestrator's market map.
+		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
 		providers = o.GetProviderState()
@@ -221,7 +220,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o.Stop()
 	})
 
-	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
+	t.Run("can update the oracle's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -244,7 +243,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
 
-		// Update the orchestrator's market map.
+		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
 		time.Sleep(2000 * time.Millisecond)
