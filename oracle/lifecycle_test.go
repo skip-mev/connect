@@ -1,13 +1,12 @@
 package oracle_test
 
 import (
+	"context"
 	"errors"
+	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
-
-	"context"
-	"testing"
 
 	"github.com/skip-mev/slinky/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"

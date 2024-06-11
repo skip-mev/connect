@@ -33,7 +33,7 @@ type Oracle interface {
 }
 
 // OracleImpl maintains providers and the state provided by them. This includes pricing data and market map updates.
-type OracleImpl struct {
+type OracleImpl struct { //nolint:revive
 	mut     sync.Mutex
 	logger  *zap.Logger
 	running atomic.Bool

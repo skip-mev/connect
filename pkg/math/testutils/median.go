@@ -39,10 +39,7 @@ func (m *MedianAggregator) SetProviderPrices(provider string, data types.Prices)
 	m.providerPrices[provider] = data
 }
 
-// TODO(Tyler): does this need to be updated?
-func (m *MedianAggregator) UpdateMarketMap(_ mmtypes.MarketMap) {
-	return
-}
+func (m *MedianAggregator) UpdateMarketMap(_ mmtypes.MarketMap) {}
 
 // AggregatePrices inputs the aggregated prices from all providers and computes
 // the median price for each asset.
