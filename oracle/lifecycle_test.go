@@ -40,7 +40,10 @@ func TestStart(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 
 		go func() {
-			require.NoError(t, o.Start(context.Background()))
+			err := o.Start(context.Background())
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		time.Sleep(5 * time.Second)
