@@ -18,9 +18,9 @@ Each provider is instantiated using the `PriceAPIQueryHandlerFactory`, `PriceWeb
 
 ## Lifecycle
 
-The orchestrator can be initialized with an option of `WithMarketMap` which allows each provider to be instantiated with a predetermined set of markets. If this option is not provided, the orchestrator will fetch the markets from the market map provider. **Both options can be set.**
+The oracle can be initialized with an option of `WithMarketMap` which allows each provider to be instantiated with a predetermined set of markets. If this option is not provided, the oracle will fetch the markets from the market map provider. **Both options can be set.**
 
-The orchestrator will then start each provider in a separate goroutine. Additionally, if the orchestrator has a market map provider, it will start a goroutine that will periodically fetch the markets from the market map provider and update the providers accordingly.
+The oracle will then start each provider in a separate goroutine. Additionally, if the oracle has a market map provider, it will start a goroutine that will periodically fetch the markets from the market map provider and update the providers accordingly.
 
-All providers are running concurrently and will do so until the main context is canceled (what is passed into `Start`). If the orchestrator is canceled, it will cancel all providers and wait for them to finish before returning.
+All providers are running concurrently and will do so until the main context is canceled (what is passed into `Start`). If the oracle is canceled, it will cancel all providers and wait for them to finish before returning.
 
