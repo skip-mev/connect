@@ -137,8 +137,6 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 func (m *IndexPriceAggregator) CalculateConvertedPrices(
 	market mmtypes.Market,
 ) []*big.Float {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	m.logger.Debug("calculating converted prices", zap.String("ticker", market.Ticker.String()))
 	if len(market.ProviderConfigs) == 0 {
 		m.logger.Error(
@@ -194,8 +192,6 @@ func (m *IndexPriceAggregator) CalculateConvertedPrices(
 func (m *IndexPriceAggregator) CalculateAdjustedPrice(
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	price, err := m.GetProviderPrice(cfg)
 	if err != nil {
 		return nil, err

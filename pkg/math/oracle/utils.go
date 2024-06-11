@@ -15,8 +15,6 @@ import (
 func (m *IndexPriceAggregator) GetProviderPrice(
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	cache, ok := m.providerPrices[cfg.Name]
 	if !ok {
 		return nil, fmt.Errorf("missing provider prices for provider: %s", cfg.Name)
