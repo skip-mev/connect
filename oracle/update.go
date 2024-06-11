@@ -39,7 +39,6 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 			return err
 		}
 
-		// TODO(Tyler): why doesn't this happen in UpdateProviderState? seems.. weird.
 		o.priceProviders[name] = updatedState
 	}
 
@@ -53,8 +52,6 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
 // this will update the provider's query handler and the provider's market map.
-//
-// TODO(Tyler): this is named confusingly imo
 func (o *OracleImpl) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 

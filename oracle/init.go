@@ -100,7 +100,6 @@ func (o *OracleImpl) createPriceProvider(ctx context.Context, cfg config.Provide
 	}
 
 	// Add the provider to the orchestrator.
-	// TODO(Tyler): do we want to check if this provider was already set? or just overwrite?
 	o.priceProviders[provider.Name()] = state
 
 	o.logger.Info(
@@ -139,10 +138,6 @@ func (o *OracleImpl) createWebSocketQueryHandler(
 func (o *OracleImpl) createMarketMapProvider(cfg config.ProviderConfig) error {
 	if o.marketMapperFactory == nil {
 		return fmt.Errorf("cannot create market map provider; market map factory is not set")
-	}
-	// TODO(Tyler): is this guard needed?
-	if o.mmProvider != nil {
-		return fmt.Errorf("market map provider already initialized")
 	}
 
 	mapper, err := o.marketMapperFactory(

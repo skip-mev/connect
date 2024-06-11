@@ -196,6 +196,25 @@ var (
 		},
 	}
 )
+var _ oracle.PriceAggregator = &noOpPriceAggregator{}
+
+type noOpPriceAggregator struct{}
+
+func (n noOpPriceAggregator) SetProviderPrices(_ string, _ oracletypes.Prices) {
+}
+
+func (n noOpPriceAggregator) UpdateMarketMap(_ mmtypes.MarketMap) {
+}
+
+func (n noOpPriceAggregator) AggregatePrices() {
+}
+
+func (n noOpPriceAggregator) GetPrices() oracletypes.Prices {
+	return oracletypes.Prices{}
+}
+
+func (n noOpPriceAggregator) Reset() {
+}
 
 func checkProviderState(
 	t *testing.T,

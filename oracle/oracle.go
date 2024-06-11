@@ -32,12 +32,7 @@ type Oracle interface {
 	Stop()
 }
 
-// OracleImpl is a stateful orchestrator that is responsible for maintaining
-// all providers that the oracle is using. This includes initializing the providers,
-// creating the provider specific market map, and enabling/disabling the providers based
-// on the oracle configuration and market map.
-//
-// TODO(tyler): rewrite this comment.
+// OracleImpl maintains providers and the state provided by them. This includes pricing data and market map updates.
 type OracleImpl struct {
 	mut     sync.Mutex
 	logger  *zap.Logger
@@ -134,7 +129,6 @@ func New(
 }
 
 // GetProviderState returns all providers and their state. This method is used for testing purposes only.
-// TODO(tyler): revisit the method and see if its really needed. do tests need _all_ providers? or just price ones? just market map provider?
 func (o *OracleImpl) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
