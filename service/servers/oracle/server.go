@@ -196,7 +196,8 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 
 // MarketMap returns the current market map from the ProviderOrchestrator.
 func (os *OracleServer) MarketMap(_ context.Context, _ *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error) {
-	return &types.QueryMarketMapResponse{MarketMap: os.o.GetMarketMap()}, nil
+	mm := os.o.GetMarketMap()
+	return &types.QueryMarketMapResponse{MarketMap: &mm}, nil
 }
 
 // Close closes the underlying oracle server, and blocks until all open requests have been satisfied.

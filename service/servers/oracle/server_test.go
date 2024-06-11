@@ -171,7 +171,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 }
 
 func (s *ServerTestSuite) TestOracleMarketMap() {
-	dummyMarketMap := &mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
+	dummyMarketMap := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
 		"foo": {
 			Ticker: mmtypes.Ticker{
 				CurrencyPair:     slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
@@ -199,7 +199,7 @@ func (s *ServerTestSuite) TestOracleMarketMap() {
 
 	res, err := s.client.MarketMap(context.Background(), &stypes.QueryMarketMapRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(res.GetMarketMap(), dummyMarketMap)
+	s.Require().Equal(*res.GetMarketMap(), dummyMarketMap)
 }
 
 // test that the oracle server closes when expected.
