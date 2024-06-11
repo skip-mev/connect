@@ -30,8 +30,9 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 		return err
 	}
 
-	// Set the main context for the provider orchestrator.
+	// Set the main context for the oracle.
 	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
+	ctx = o.mainCtx
 
 	// Start all price providers which have tickers.
 	for name, state := range o.priceProviders {
