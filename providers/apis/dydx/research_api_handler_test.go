@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/skip-mev/slinky/providers/apis/binance"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
