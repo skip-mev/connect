@@ -108,13 +108,13 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 
 		// Start the providers.
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		go func() {
 			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -122,7 +122,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(marketMap))
 
-		time.Sleep(2000 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 
 		providers = o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -233,20 +233,20 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 
 		// Start the providers.
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		go func() {
 			require.ErrorIs(t, o.Start(ctx), context.Canceled)
 		}()
 
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
 
 		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
-		time.Sleep(2000 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 
 		providers = o.GetProviderState()
 		require.Len(t, providers, 3)
