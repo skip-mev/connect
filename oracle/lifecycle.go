@@ -31,7 +31,7 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	}
 
 	// Set the main context for the provider orchestrator.
-	ctx, _ = o.setMainCtx(ctx)
+	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
 
 	// Start all price providers which have tickers.
 	for name, state := range o.priceProviders {
@@ -75,13 +75,8 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			o.Stop()
-			o.logger.Info("orchestrator stopped via context")
+			o.logger.Info("oracle stopped via context")
 			return ctx.Err()
-
-		case <-o.closer.Done():
-			o.logger.Info("orchestrator stopped via closer")
-			return nil
-
 		case <-ticker.C:
 			o.fetchAllPrices()
 		}
@@ -91,15 +86,17 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 // Stop stops the provider orchestrator. This is a synchronous operation that will
 // wait for all providers to exit.
 func (o *OracleImpl) Stop() {
-	o.logger.Info("stopping provider orchestrator")
+	o.logger.Info("stopping oracle")
 	if _, cancel := o.getMainCtx(); cancel != nil {
+		o.logger.Info("cancelling context")
 		cancel()
+	} else {
+		o.logger.Info("no cancel function available")
 	}
 
+	o.logger.Info("waiting for routines to stop")
 	o.wg.Wait()
-	o.logger.Info("provider orchestrator exited successfully")
-	o.closer.Close()
-	<-o.closer.Done()
+	o.logger.Info("oracle exited successfully")
 }
 
 func (o *OracleImpl) IsRunning() bool { return o.running.Load() }
@@ -122,15 +119,6 @@ func (o *OracleImpl) execProviderFn(
 
 	err := p.Start(ctx)
 	o.logger.Error("provider exited", zap.String("provider", p.Name()), zap.Error(err))
-}
-
-// setMainCtx sets the main context for the provider orchestrator.
-func (o *OracleImpl) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
-	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
-	return o.mainCtx, o.mainCancel
 }
 
 // getMainCtx returns the main context for the provider orchestrator.

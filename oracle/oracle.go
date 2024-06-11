@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	ssync "github.com/skip-mev/slinky/pkg/sync"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -42,7 +41,6 @@ type Oracle interface {
 type OracleImpl struct {
 	mut     sync.Mutex
 	logger  *zap.Logger
-	closer  *ssync.Closer
 	running atomic.Bool
 
 	// -------------------Lifecycle Fields-------------------//
@@ -120,7 +118,6 @@ func New(
 	orc := &OracleImpl{
 		cfg:             cfg,
 		aggregator:      aggregator,
-		closer:          ssync.NewCloser(),
 		priceProviders:  make(map[string]ProviderState), // this will be initialized via the Init method.
 		logger:          zap.NewNop(),
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
@@ -151,6 +148,10 @@ func (o *OracleImpl) GetMarketMap() mmtypes.MarketMap {
 	defer o.mut.Unlock()
 
 	return o.marketMap
+}
+
+func (o *OracleImpl) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
+	return o.mmProvider
 }
 
 func (o *OracleImpl) GetLastSyncTime() time.Time {

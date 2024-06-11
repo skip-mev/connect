@@ -3,6 +3,7 @@ package oracle
 import (
 	"go.uber.org/zap"
 
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -18,7 +19,7 @@ func WithLogger(logger *zap.Logger) Option {
 			panic("logger cannot be nil")
 		}
 
-		m.logger = logger.With(zap.String("process", "provider_orchestrator"))
+		m.logger = logger.With(zap.String("process", "oracle"))
 	}
 }
 
@@ -73,5 +74,25 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 func WithWriteTo(filePath string) Option {
 	return func(m *OracleImpl) {
 		m.writeTo = filePath
+	}
+}
+
+func WithPriceProviders(pps ...*types.PriceProvider) Option {
+	return func(m *OracleImpl) {
+		for _, pp := range pps {
+			m.priceProviders[pp.Name()] = ProviderState{Provider: pp}
+		}
+	}
+}
+
+func WithMetrics(met oraclemetrics.Metrics) Option {
+	return func(m *OracleImpl) {
+		m.metrics = met
+	}
+}
+
+func WithMarketMapProvider(mmp *mmclienttypes.MarketMapProvider) Option {
+	return func(impl *OracleImpl) {
+		impl.mmProvider = mmp
 	}
 }

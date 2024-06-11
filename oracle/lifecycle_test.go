@@ -1,11 +1,13 @@
 package oracle_test
 
 import (
-	"context"
-	"testing"
+	"errors"
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"context"
+	"testing"
 
 	"github.com/skip-mev/slinky/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -15,6 +17,7 @@ func TestStart(t *testing.T) {
 	t.Run("errors when init fails", func(t *testing.T) {
 		o, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 		)
 		require.NoError(t, err)
@@ -26,66 +29,76 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("price providers with no market map", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			require.NoError(t, o.Start(context.Background()))
 		}()
 
 		time.Sleep(5 * time.Second)
 		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
-		// Stop the provider orchestrator.
+		// Stop the oracle.
 		o.Stop()
 	})
 
 	t.Run("price providers with market map", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfg,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		time.Sleep(5 * time.Second)
 		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
-		// Stop the provider orchestrator.
+		// Stop the oracle.
 		o.Stop()
 	})
 
 	t.Run("price providers with market map provider but price providers have no ids to fetch", func(t *testing.T) {
-		o, err := oracle.New(
+		orc, err := oracle.New(
 			oracleCfgWithMapper,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
 		)
 		require.NoError(t, err)
+		o := orc.(*oracle.OracleImpl)
 
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
 		time.Sleep(5 * time.Second)
@@ -95,7 +108,7 @@ func TestStart(t *testing.T) {
 		mapper := o.GetMarketMapProvider()
 		require.NotNil(t, mapper)
 
-		// Stop the provider orchestrator.
+		// Stop the oracle.
 		o.Stop()
 	})
 }

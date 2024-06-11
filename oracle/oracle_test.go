@@ -80,20 +80,15 @@ func (s *OracleTestSuite) SetupTest() {
 
 func (s *OracleTestSuite) TestGetMarketMap() {
 	dummyMM := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{"foo": {Ticker: mmtypes.Ticker{Metadata_JSON: "FOOBAR"}}}}
-	getter := func() mmtypes.MarketMap {
-		return dummyMM
-	}
-	o, err := oracle.New(
-		oracle.WithMarketMapGetter(getter),
-	)
+	o, err := oracle.New(config.OracleConfig{}, nil, oracle.WithMarketMap(dummyMM))
 	s.Require().NoError(err)
 
 	gotMM := o.GetMarketMap()
-	s.Require().Equal(dummyMM, *gotMM)
+	s.Require().Equal(dummyMM, gotMM)
 
 	// test when no option provided, should just give empty mm
-	o, err = oracle.New()
+	o, err = oracle.New(config.OracleConfig{}, nil)
 	s.Require().NoError(err)
 	gotMM = o.GetMarketMap()
-	s.Require().Equal(*gotMM, mmtypes.MarketMap{})
+	s.Require().Equal(gotMM, mmtypes.MarketMap{})
 }
