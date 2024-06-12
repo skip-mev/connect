@@ -118,7 +118,7 @@ func New(
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
 		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
 		providerMetrics: providermetrics.NewProviderMetricsFromConfig(cfg.Metrics),
-		metrics:         oraclemetrics.NewMetricsFromConfig(cfg.Metrics),
+		metrics:         oraclemetrics.NewNopMetrics(),
 	}
 
 	for _, opt := range opts {

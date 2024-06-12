@@ -21,18 +21,16 @@ type generalProvider interface {
 // Start starts the (blocking) oracle. This will initialize the oracle
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *OracleImpl) Start(ctx context.Context) error {
-	// Set the main context for the oracle.
-	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
-	ctx = o.mainCtx
-
 	o.logger.Info("starting oracle")
 	o.running.Store(true)
 	defer o.running.Store(false)
-
 	if err := o.Init(ctx); err != nil {
 		o.logger.Error("failed to initialize oracle", zap.Error(err))
 		return err
 	}
+
+	// Set the main context for the oracle.
+	ctx, _ = o.setMainCtx(ctx)
 
 	// Start all price providers which have tickers.
 	for name, state := range o.priceProviders {
@@ -91,8 +89,6 @@ func (o *OracleImpl) Stop() {
 	if _, cancel := o.getMainCtx(); cancel != nil {
 		o.logger.Info("cancelling context")
 		cancel()
-	} else {
-		o.logger.Info("no cancel function available")
 	}
 
 	o.logger.Info("waiting for routines to stop")
@@ -127,5 +123,13 @@ func (o *OracleImpl) getMainCtx() (context.Context, context.CancelFunc) {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
+	return o.mainCtx, o.mainCancel
+}
+
+func (o *OracleImpl) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	o.mainCtx, o.mainCancel = context.WithCancel(ctx)
 	return o.mainCtx, o.mainCancel
 }

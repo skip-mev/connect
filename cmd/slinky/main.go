@@ -253,31 +253,33 @@ func runOracle() error {
 		return fmt.Errorf("failed to create data aggregator: %w", err)
 	}
 
-	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
+	// Define the oracle options. These determine how the oracle are created & executed.
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
 		oracle.WithMarketMap(marketCfg),
 		oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
 		oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+		oracle.WithMetrics(metrics),
 	}
 	if updateMarketCfgPath != "" {
 		oracleOpts = append(oracleOpts, oracle.WithWriteTo(updateMarketCfgPath))
 	}
 
-	// Create the orchestrator and start the orchestrator.
+	// Create the oracle and start the oracle.
 	orc, err := oracle.New(
 		cfg,
 		aggregator,
 		oracleOpts...,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create provider orchestrator: %w", err)
+		return fmt.Errorf("failed to create oracle: %w", err)
 	}
-
-	if err := orc.Start(ctx); err != nil {
-		return fmt.Errorf("failed to start provider orchestrator: %w", err)
-	}
+	go func() {
+		if err := orc.Start(ctx); err != nil {
+			logger.Fatal("failed to start oracle", zap.Error(err))
+		}
+	}()
 	defer orc.Stop()
 
 	srv := oracleserver.NewOracleServer(orc, logger)
@@ -319,7 +321,7 @@ func runOracle() error {
 		}()
 	}
 
-	// start oracle + server, and wait for either to finish
+	// start server (blocks).
 	if err := srv.StartServer(ctx, cfg.Host, cfg.Port); err != nil {
 		logger.Error("stopping server", zap.Error(err))
 	}
