@@ -26,7 +26,7 @@ const (
 	APIURL = "https://pro-api.coingecko.com/api/v3"
 
 	// APIKeyHeader is the header used to pass the API key to the CoinGecko API.
-	APIKeyHeader = "x-cg-pro-api-key"
+	APIKeyHeader = "x-cg-pro-api-key" //nolint
 
 	// PairPriceEndpoint is the URL used to fetch the price of a list of currency
 	// pairs. The ids are the base currencies and the vs_currencies are the quote
