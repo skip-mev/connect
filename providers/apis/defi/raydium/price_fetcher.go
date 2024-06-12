@@ -45,7 +45,7 @@ type APIPriceFetcher struct {
 	client SolanaJSONRPCClient
 
 	// metaDataPerTicker is a map of ticker.String() -> TickerMetadata
-	metaDataPerTicker map[string]TickerMetadata
+	metaDataPerTicker *metadataCache
 
 	// logger
 	logger *zap.Logger
@@ -141,7 +141,7 @@ func NewAPIPriceFetcherWithClient(
 	pf := &APIPriceFetcher{
 		api:               api,
 		client:            client,
-		metaDataPerTicker: make(map[string]TickerMetadata),
+		metaDataPerTicker: newMetadataCache(),
 		logger:            logger.With(zap.String("fetcher", Name)),
 	}
 
@@ -162,7 +162,7 @@ func (pf *APIPriceFetcher) Fetch(
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
 	for i, ticker := range tickers {
-		metadata, err := pf.updateMetaDataCache(ticker)
+		metadata, err := pf.metaDataPerTicker.updateMetaDataCache(ticker)
 		if err != nil {
 			return oracletypes.NewPriceResponseWithErr(
 				tickers,
@@ -246,7 +246,7 @@ func (pf *APIPriceFetcher) Fetch(
 			continue
 		}
 
-		metadata, ok := pf.metaDataPerTicker[ticker.String()]
+		metadata, ok := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
 		if !ok {
 			pf.logger.Error("metadata not found for ticker", zap.String("ticker", ticker.String()))
 			unresolved[ticker] = providertypes.UnresolvedResult{

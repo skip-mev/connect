@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"sync"
 )
 
 const (
@@ -19,10 +20,25 @@ const (
 	NormalizedTokenAmountExponent = 18
 )
 
-// updateMetaDataCache unmarshals the metadata JSON for each ticker and adds it to the
-// metadata map.
-func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (TickerMetadata, error) {
-	if metadata, ok := pf.metaDataPerTicker[ticker.String()]; ok {
+// metadataCache is a synchronous data-structure that holds the metadata for each ticker.
+type metadataCache struct {
+	// metaDataPerTicker is a map from ticker to metadata.
+	metaDataPerTicker map[string]TickerMetadata
+
+	// RWMutex is used to synchronize access to the metadata cache.
+	mtx sync.RWMutex
+}
+
+func newMetadataCache() *metadataCache {
+	return &metadataCache{
+		metaDataPerTicker: make(map[string]TickerMetadata),
+	}
+}
+
+func (mc *metadataCache) updateMetaDataCache(ticker types.ProviderTicker) (TickerMetadata, error) {
+	mc.mtx.Lock()
+	defer mc.mtx.Unlock()
+	if metadata, ok := mc.metaDataPerTicker[ticker.String()]; ok {
 		return metadata, nil
 	}
 
@@ -33,9 +49,18 @@ func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (Tic
 	if err := metadata.ValidateBasic(); err != nil {
 		return TickerMetadata{}, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
 	}
-	pf.metaDataPerTicker[ticker.String()] = metadata
+	mc.metaDataPerTicker[ticker.String()] = metadata
 
 	return metadata, nil
+}
+
+// getMetadataPerTicker returns the metadata for the given ticker.
+func (mc *metadataCache) getMetadataPerTicker(ticker types.ProviderTicker) (TickerMetadata, bool) {
+	mc.mtx.RLock()
+	defer mc.mtx.RUnlock()
+
+	metaData, ok := mc.metaDataPerTicker[ticker.String()]
+	return metaData, ok
 }
 
 // TickerMetadata represents the metadata associated with a ticker's corresponding
@@ -119,7 +144,7 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       10,
 	Atomic:           false,
-	BatchSize:        50, // maximal # of accounts in getMultipleAccounts query is 100
+	BatchSize:        25, // maximal # of accounts in getMultipleAccounts query is 100
 	Endpoints: []config.Endpoint{
 		{
 			URL: "https://api.mainnet-beta.solana.com",
