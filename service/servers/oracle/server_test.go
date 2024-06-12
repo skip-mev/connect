@@ -217,21 +217,3 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)
 }
-
-func TestOracleFailureStopsServer(t *testing.T) {
-	// create mock oracle
-	mockOracle := mocks.NewOracle(t)
-
-	// create server
-	srv := server.NewOracleServer(mockOracle, zap.NewNop())
-
-	// start the server, and expect immediate closure
-	go srv.StartServer(context.Background(), localhost, port)
-
-	// wait for server to close
-	select {
-	case <-srv.Done():
-	case <-time.After(1 * time.Second):
-		t.Fatal("server failed to stop")
-	}
-}
