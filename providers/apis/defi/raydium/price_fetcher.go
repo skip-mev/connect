@@ -12,13 +12,13 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 	"go.uber.org/zap"
 
+	"github.com/gagliardetto/solana-go/programs/serum"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
-	"github.com/gagliardetto/solana-go/programs/serum"
 )
 
 var _ oracletypes.PriceAPIFetcher = (*APIPriceFetcher)(nil)

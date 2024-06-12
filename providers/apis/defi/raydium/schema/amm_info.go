@@ -478,7 +478,6 @@ func (obj *AmmInfo) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error)
 	return nil
 }
 
-
 type OutPutData struct {
 	NeedTakePnlCoin     uint64
 	NeedTakePnlPc       uint64
