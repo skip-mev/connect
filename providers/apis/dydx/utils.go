@@ -114,7 +114,7 @@ func UniswapV3MetadataFromTicker(ticker string, invert bool) (string, error) {
 
 // RaydiumMetadataFromTicker extracts json-metadata from a ticker for Raydium.
 // All raydium tickers on dydx will be formatted as follows
-// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS).
+// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS-OPEN_ORDERS_ADDRESS-AMM_INFO_ADDRESS).
 func RaydiumMetadataFromTicker(ticker string) (string, error) {
 	// split fields by separator and expect there to be at least 6 values
 	fields := strings.Split(ticker, RaydiumTickerSeparator)
@@ -144,6 +144,16 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
 	}
 
+	// expect the open-orders address to be valid
+	if _, err := solana.PublicKeyFromBase58(fields[6]); err != nil {
+		return "", fmt.Errorf("failed to parse open orders address: %w", err)
+	}
+
+	// expect the amm id address to be valid
+	if _, err := solana.PublicKeyFromBase58(fields[7]); err != nil {
+		return "", fmt.Errorf("failed to parse amm id address: %w", err)
+	}
+
 	// create the Raydium metadata
 	parsedConfig := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
@@ -154,6 +164,8 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 			TokenVaultAddress: quoteTokenVault,
 			TokenDecimals:     quoteDecimals,
 		},
+		OpenOrdersAddress: fields[6],
+		AMMInfoAddress: 	fields[7],
 	}
 	// convert the metadata to json
 	cfgBytes, err := json.Marshal(parsedConfig)
