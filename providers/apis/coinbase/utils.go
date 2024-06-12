@@ -25,7 +25,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Atomic:           false,
 	Enabled:          true,
 	Timeout:          3000 * time.Millisecond,
-	Interval:         300 * time.Millisecond,
+	Interval:         100 * time.Millisecond,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	Endpoints:        []config.Endpoint{{URL: URL}},
