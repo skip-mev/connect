@@ -5895,7 +5895,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "link/usd"
+				"off_chain_ticker": "chainlink/usd"
 			  }
 			]
 		  },
@@ -6099,7 +6099,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "rune/usd"
+				"off_chain_ticker": "thorchain/usd"
 			  }
 			]
 		  },
