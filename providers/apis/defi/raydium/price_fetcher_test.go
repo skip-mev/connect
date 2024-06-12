@@ -18,20 +18,28 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/gagliardetto/solana-go/programs/serum"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 const (
-	USDCVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh6"
-	BTCVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh5"
-	ETHVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh4"
-	USDTVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh3"
-	MOGVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh2"
-	SOLVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
+	USDCVaultAddress         = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh6"
+	BTCVaultAddress          = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh5"
+	USDCBTCAMMIDAddress      = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh7"
+	USDCBTCOpenOrdersAddress = "9BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
+	ETHVaultAddress          = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh4"
+	USDTVaultAddress         = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh3"
+	ETHUSDTAMMIDAddress      = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh8"
+	ETHUSDTOpenOrdersAddress = "9BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh2"
+	MOGVaultAddress          = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh2"
+	SOLVaultAddress          = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
+	MOGSOLAMMIDAddress       = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh9"
+	MOGSOLOpenOrdersAddress  = "9BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh3"
 )
 
 func TestTickerMetadataValidateBasic(t *testing.T) {
@@ -69,6 +77,35 @@ func TestTickerMetadataValidateBasic(t *testing.T) {
 			expFail: true,
 		},
 		{
+			name: "invalid amm info address",
+			TickerMetadata: raydium.TickerMetadata{
+				BaseTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals:     6,
+				},
+				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals:     6,
+				},
+			},
+			expFail: true,
+		},
+		{
+			name: "invalid open orders address",
+			TickerMetadata: raydium.TickerMetadata{
+				BaseTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals:     6,
+				},
+				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals:     6,
+				},
+				AMMInfoAddress: USDCBTCAMMIDAddress,
+			},
+			expFail: true,
+		},
+		{
 			name: "valid",
 			TickerMetadata: raydium.TickerMetadata{
 				BaseTokenVault: raydium.AMMTokenVaultMetadata{
@@ -79,6 +116,8 @@ func TestTickerMetadataValidateBasic(t *testing.T) {
 					TokenVaultAddress: USDCVaultAddress,
 					TokenDecimals:     6,
 				},
+				AMMInfoAddress:    USDCBTCAMMIDAddress,
+				OpenOrdersAddress: USDCBTCOpenOrdersAddress,
 			},
 			expFail: false,
 		},
@@ -185,6 +224,8 @@ func TestProviderFetch(t *testing.T) {
 			TokenVaultAddress: USDCVaultAddress,
 			TokenDecimals:     6,
 		},
+		AMMInfoAddress:    USDCBTCAMMIDAddress,
+		OpenOrdersAddress: USDCBTCOpenOrdersAddress,
 	}
 	ethUSDTMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
@@ -195,6 +236,8 @@ func TestProviderFetch(t *testing.T) {
 			TokenVaultAddress: USDTVaultAddress,
 			TokenDecimals:     6,
 		},
+		AMMInfoAddress:    ETHUSDTAMMIDAddress,
+		OpenOrdersAddress: ETHUSDTOpenOrdersAddress,
 	}
 	mogSOLMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
@@ -205,6 +248,8 @@ func TestProviderFetch(t *testing.T) {
 			TokenVaultAddress: SOLVaultAddress,
 			TokenDecimals:     9,
 		},
+		AMMInfoAddress:    MOGSOLAMMIDAddress,
+		OpenOrdersAddress: MOGSOLOpenOrdersAddress,
 	}
 
 	tickers := []types.DefaultProviderTicker{
@@ -228,12 +273,20 @@ func TestProviderFetch(t *testing.T) {
 
 	t.Run("accounts resp returns len(tickers) * 2 accounts", func(t *testing.T) {
 		ctx := context.Background()
+
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		usdcBtcAMMIDPk := solana.MustPublicKeyFromBase58(USDCBTCAMMIDAddress)
+		usdcBtcOpenOrdersPk := solana.MustPublicKeyFromBase58(USDCBTCOpenOrdersAddress)
+
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
+		ethUsdtAMMIDPk := solana.MustPublicKeyFromBase58(ETHUSDTAMMIDAddress)
+		ETHUSDTOpenOrdersPk := solana.MustPublicKeyFromBase58(ETHUSDTOpenOrdersAddress)
+
 		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
+			btcVaultPk, usdcVaultPk, usdcBtcAMMIDPk, usdcBtcOpenOrdersPk,
+			ethVaultPk, usdtVaultPk, ethUsdtAMMIDPk, ETHUSDTOpenOrdersPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
@@ -247,19 +300,27 @@ func TestProviderFetch(t *testing.T) {
 		require.Equal(t, len(resp.UnResolved), 2)
 
 		for _, result := range resp.UnResolved {
-			require.True(t, strings.Contains(result.Error(), "expected 4 accounts, got 0"))
+			require.True(t, strings.Contains(result.Error(), "expected 8 accounts, got 0"))
 		}
 	})
 
 	t.Run("failing accounts query", func(t *testing.T) {
 		ctx := context.Background()
 		err := fmt.Errorf("error")
+
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		usdcBtcAMMIDPk := solana.MustPublicKeyFromBase58(USDCBTCAMMIDAddress)
+		usdcBtcOpenOrdersPk := solana.MustPublicKeyFromBase58(USDCBTCOpenOrdersAddress)
+
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
+		ethUsdtAMMIDPk := solana.MustPublicKeyFromBase58(ETHUSDTAMMIDAddress)
+		ETHUSDTOpenOrdersPk := solana.MustPublicKeyFromBase58(ETHUSDTOpenOrdersAddress)
+
 		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
+			btcVaultPk, usdcVaultPk, usdcBtcAMMIDPk, usdcBtcOpenOrdersPk,
+			ethVaultPk, usdtVaultPk, ethUsdtAMMIDPk, ETHUSDTOpenOrdersPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
@@ -299,12 +360,21 @@ func TestProviderFetch(t *testing.T) {
 
 	t.Run("nil accounts are handled gracefully (skipped + added to unresolved)", func(t *testing.T) {
 		ctx := context.Background()
+
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		usdcBtcAMMIDPk := solana.MustPublicKeyFromBase58(USDCBTCAMMIDAddress)
+		usdcBtcOpenOrdersPk := solana.MustPublicKeyFromBase58(USDCBTCOpenOrdersAddress)
+
 		mogVaultPk := solana.MustPublicKeyFromBase58(MOGVaultAddress)
 		solVaultPk := solana.MustPublicKeyFromBase58(SOLVaultAddress)
+		mogSolAMMIDPk := solana.MustPublicKeyFromBase58(MOGSOLAMMIDAddress)
+		MOGSOLOpenOrdersPk := solana.MustPublicKeyFromBase58(MOGSOLOpenOrdersAddress)
+
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
+		ethUsdtAMMIDPk := solana.MustPublicKeyFromBase58(ETHUSDTAMMIDAddress)
+		ETHUSDTOpenOrdersPk := solana.MustPublicKeyFromBase58(ETHUSDTOpenOrdersAddress)
 
 		ethVaultBz := new(bytes.Buffer)
 		ethEnc := bin.NewBinEncoder(ethVaultBz)
@@ -320,6 +390,24 @@ func TestProviderFetch(t *testing.T) {
 		}
 		usdtTokenVaultMetadata.MarshalWithEncoder(usdcEnc)
 
+		ethUsdtAMMIDBz := new(bytes.Buffer)
+		ethUsdtAMMIDEnc := bin.NewBinEncoder(ethUsdtAMMIDBz)
+		ethUsdtAMMIDMetadata := schema.AmmInfo{
+			OutPut: schema.OutPutData{
+				NeedTakePnlCoin: uint64(6e17),
+				NeedTakePnlPc:   uint64(16e5),
+			},
+		}
+		ethUsdtAMMIDEnc.Encode(&ethUsdtAMMIDMetadata)
+
+		ethUsdtOpenOrdersBz := new(bytes.Buffer)
+		ethUsdtOpenOrdersEnc := bin.NewBinEncoder(ethUsdtOpenOrdersBz)
+		ethUsdtOpenOrdersMetadata := serum.OpenOrders{
+			NativeBaseTokenTotal:  bin.Uint64(1e17),
+			NativeQuoteTokenTotal: bin.Uint64(0.1e6),
+		}
+		ethUsdtOpenOrdersEnc.Encode(&ethUsdtOpenOrdersMetadata)
+
 		solVaultBz := new(bytes.Buffer)
 		solEnc := bin.NewBinEncoder(solVaultBz)
 		solTokenVaultMetadata := token.Account{
@@ -328,7 +416,9 @@ func TestProviderFetch(t *testing.T) {
 		solTokenVaultMetadata.MarshalWithEncoder(solEnc)
 
 		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk, mogVaultPk, solVaultPk,
+			btcVaultPk, usdcVaultPk, usdcBtcAMMIDPk, usdcBtcOpenOrdersPk,
+			ethVaultPk, usdtVaultPk, ethUsdtAMMIDPk, ETHUSDTOpenOrdersPk,
+			mogVaultPk, solVaultPk, mogSolAMMIDPk, MOGSOLOpenOrdersPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
@@ -341,14 +431,28 @@ func TestProviderFetch(t *testing.T) {
 						Data: nil,
 					},
 					{
+						Data: nil,
+					},
+					{
+						Data: nil,
+					},
+					{
 						Data: rpc.DataBytesOrJSONFromBytes(ethVaultBz.Bytes()),
 					},
 					{
 						Data: rpc.DataBytesOrJSONFromBytes(usdtVaultBz.Bytes()),
 					},
 					{
+						Data: rpc.DataBytesOrJSONFromBytes(ethUsdtAMMIDBz.Bytes()),
+					},
+					{
+						Data: rpc.DataBytesOrJSONFromBytes(ethUsdtOpenOrdersBz.Bytes()),
+					},
+					{
 						Data: rpc.DataBytesOrJSONFromBytes(solVaultBz.Bytes()),
 					},
+					nil,
+					nil,
 					nil,
 				},
 			}, nil,
@@ -368,11 +472,14 @@ func TestProviderFetch(t *testing.T) {
 
 	t.Run("incorrectly encoded accounts are handled gracefully", func(t *testing.T) {
 		ctx := context.Background()
+
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		usdcBtcAMMIDPk := solana.MustPublicKeyFromBase58(USDCBTCAMMIDAddress)
+		usdcBtcOpenOrdersPk := solana.MustPublicKeyFromBase58(USDCBTCOpenOrdersAddress)
 
 		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk,
+			btcVaultPk, usdcVaultPk, usdcBtcAMMIDPk, usdcBtcOpenOrdersPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(

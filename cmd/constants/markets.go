@@ -17,6 +17,24 @@ var (
 	RaydiumMarketMapJSON = `
 	{
 		"markets": {
+		  "MOTHER/SOL": {
+			"ticker": {
+				"currency_pair": {
+					"Base": "MOTHER",
+					"Quote": "SOL"
+				},
+				"decimals": 18,
+				"min_provider_count": 1,
+				"enabled": true
+			},
+			"provider_configs": [
+				{
+					"name": "raydium_api",
+					"off_chain_ticker": "MOTHER/SOL",
+					"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8ZcrNqaDbqy1H4R2DtmGnuZnJ6TKGSsaGmyRGQQeELLv\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"8uQwXPi1sWwUTVbDBnjznmf4mV44CETiNAh3UENvHejV\",\"token_decimals\":9}}"
+				}
+			]
+		  },
 		  "$RETIRE/SOL": {
 			"ticker": {
 			  "currency_pair": {

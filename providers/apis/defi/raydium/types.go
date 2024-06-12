@@ -46,6 +46,12 @@ type TickerMetadata struct {
 
 	// QuoteTokenVault is the metadata associated with the quote token's token vault
 	QuoteTokenVault AMMTokenVaultMetadata `json:"quote_token_vault"`
+
+	// AMMInfoAddress is the address of the AMMInfo account for this raydium pool
+	AMMInfoAddress string `json:"amm_info_address"`
+
+	// OpenOrdersAddress is the address of the open orders account for this raydium pool
+	OpenOrdersAddress string `json:"open_orders_address"`
 }
 
 // ValidateBasic checks that the solana token vault addresses are valid.
@@ -55,6 +61,14 @@ func (metadata TickerMetadata) ValidateBasic() error {
 	}
 
 	if _, err := solana.PublicKeyFromBase58(metadata.QuoteTokenVault.TokenVaultAddress); err != nil {
+		return err
+	}
+
+	if _, err := solana.PublicKeyFromBase58(metadata.AMMInfoAddress); err != nil {
+		return err
+	}
+
+	if _, err := solana.PublicKeyFromBase58(metadata.OpenOrdersAddress); err != nil {
 		return err
 	}
 
@@ -96,6 +110,7 @@ func SolanaJSONRPCError(err error) error {
 	return fmt.Errorf("solana json-rpc error: %s", err.Error())
 }
 
+// DefaultAPIPriceFetcherConfig is the default configuration for the Raydium API price fetcher.
 var DefaultAPIConfig = config.APIConfig{
 	Enabled:          true,
 	Name:             Name,
@@ -111,3 +126,4 @@ var DefaultAPIConfig = config.APIConfig{
 		},
 	},
 }
+
