@@ -5474,6 +5474,23 @@ var (
 			  }
 			]
 		  },
+		  "BAZINGA/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BAZINGA",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "bazinga-2/usd"
+			  }
+			]
+		  },
 		  "BCH/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -5488,6 +5505,23 @@ var (
 			  {
 				"name": "coingecko_api",
 				"off_chain_ticker": "bitcoin-cash/usd"
+			  }
+			]
+		  },
+		  "BENDOG/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BENDOG",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "ben-the-dog/usd"
 			  }
 			]
 		  },
@@ -5559,6 +5593,108 @@ var (
 			  }
 			]
 		  },
+		  "BUBBA/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BUBBA",
+				"Quote": "USD"
+			  },
+			  "decimals": 12,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "bubba/usd"
+			  }
+			]
+		  },
+		  "CATGPT/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CATGPT",
+				"Quote": "USD"
+			  },
+			  "decimals": 12,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "catgpt/usd"
+			  }
+			]
+		  },
+		  "CHEESE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CHEESE",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "cheese-2/usd"
+			  }
+			]
+		  },
+		  "CHUD/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CHUD",
+				"Quote": "USD"
+			  },
+			  "decimals": 12,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "chudjak/usd"
+			  }
+			]
+		  },
+		  "COK/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "COK",
+				"Quote": "USD"
+			  },
+			  "decimals": 14,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "catownkimono/usd"
+			  }
+			]
+		  },
+		  "COST/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "COST",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "costco-hot-dog/usd"
+			  }
+			]
+		  },
 		  "COMP/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -5627,6 +5763,40 @@ var (
 			  }
 			]
 		  },
+		  "DEVIN/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "DEVIN",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "devin-on-solana/usd"
+			  }
+			]
+		  },
+		  "DUKO/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "DUKO",
+				"Quote": "USD"
+			  },
+			  "decimals": 12,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "duko/usd"
+			  }
+			]
+		  },
 		  "DYDX/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -5658,6 +5828,380 @@ var (
 			  {
 				"name": "coingecko_api",
 				"off_chain_ticker": "dymension/usd"
+			  }
+			]
+		  },
+		  "EGG/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "EGG",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "eggdog/usd"
+			  }
+			]
+		  },
+		  "FALX/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "FALX",
+				"Quote": "USD"
+			  },
+			  "decimals": 12,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "falx/usd"
+			  }
+			]
+		  },
+		  "GOL/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "GOL",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "golazo-world/usd"
+			  }
+			]
+		  },
+		  "GUMMY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "GUMMY",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "gummy/usd"
+			  }
+			]
+		  },
+		  "HABIBI/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "HABIBI",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "habibi-sol/usd"
+			  }
+			]
+		  },
+		  "HAMMY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "HAMMY",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "sad-hamster/usd"
+			  }
+			]
+		  },
+		  "HARAMBE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "HARAMBE",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "harambe-2/usd"
+			  }
+			]
+		  },
+		  "KITTY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "KITTY",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "kitty-coin-solana/usd"
+			  }
+			]
+		  },
+		  "MANEKI/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "MANEKI",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "maneki/usd"
+			  }
+			]
+		  },
+		  "MUMU/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "MUMU",
+				"Quote": "USD"
+			  },
+			  "decimals": 14,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "mumu-the-bull-3/usd"
+			  }
+			]
+		  },
+		  "NUB/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "NUB",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "sillynubcat/usd"
+			  }
+			]
+		  },
+		  "PAJAMAS/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "PAJAMAS",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "pajamas-cat/usd"
+			  }
+			]
+		  },
+		  "PENG/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "PENG",
+				"Quote": "USD"
+			  },
+			  "decimals": 10,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "peng/usd"
+			  }
+			]
+		  },
+		  "PUNDU/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "PUNDU",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "pundu/usd"
+			  }
+			]
+		  },
+		  "RETARDIO/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "RETARDIO",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "retardio/usd"
+			  }
+			]
+		  },
+		  "SELFIE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SELFIE",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "selfiedogcoin/usd"
+			  }
+			]
+		  },
+		  "SLOTH/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SLOTH",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "slothana/usd"
+			  }
+			]
+		  },
+		  "SPEED/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SPEED",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "real-fast/usd"
+			  }
+			]
+		  },
+		  "SPIKE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SPIKE",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "spike/usd"
+			  }
+			]
+		  },
+		  "STACKS/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "STACKS",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "slap-city/usd"
+			  }
+			]
+		  },
+		  "TREMP/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "TREMP",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "donald-tremp/usd"
+			  }
+			]
+		  },
+		  "MOTHER/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "MOTHER",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "mother-iggy/usd"
 			  }
 			]
 		  },
