@@ -21,6 +21,13 @@ const (
 	// an API key but may be rate limited.
 	URL = "https://api.coingecko.com/api/v3"
 
+	// APIURL is the base URL for the CoinGecko API. This URL requires an API
+	// key and is not rate limited.
+	APIURL = "https://pro-api.coingecko.com/api/v3"
+
+	// APIKeyHeader is the header used to pass the API key to the CoinGecko API.
+	APIKeyHeader = "x-cg-pro-api-key" //nolint
+
 	// PairPriceEndpoint is the URL used to fetch the price of a list of currency
 	// pairs. The ids are the base currencies and the vs_currencies are the quote
 	// currencies. Note that the IDs and vs_currencies are comma separated but are
@@ -43,8 +50,8 @@ var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
 	Atomic:           true,
 	Enabled:          true,
-	Timeout:          500 * time.Millisecond,
-	Interval:         15 * time.Second, // Coingecko has a very low rate limit.
+	Timeout:          3000 * time.Millisecond,
+	Interval:         20 * time.Second, // Coingecko has a very low rate limit.
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	Endpoints:        []config.Endpoint{{URL: URL}},
