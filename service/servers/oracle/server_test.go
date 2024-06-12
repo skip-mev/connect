@@ -71,9 +71,6 @@ func (s *ServerTestSuite) SetupTest() {
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
-	// expect oracle to start
-	s.mockOracle.On("Start", mock.Anything).Return(nil)
-
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
 
@@ -224,7 +221,6 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 func TestOracleFailureStopsServer(t *testing.T) {
 	// create mock oracle
 	mockOracle := mocks.NewOracle(t)
-	mockOracle.On("Start", mock.Anything).Return(fmt.Errorf("failed to start oracle"))
 
 	// create server
 	srv := server.NewOracleServer(mockOracle, zap.NewNop())
