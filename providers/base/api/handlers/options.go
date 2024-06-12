@@ -9,3 +9,10 @@ func WithHTTPMethod(method string) Option {
 		r.method = method
 	}
 }
+
+// WithHTTPHeaders is an option that is used to set the HTTP headers used to make requests.
+func WithHTTPHeaders(headers map[string]string) Option {
+	return func(r *RequestHandlerImpl) {
+		r.headers = headers
+	}
+}
