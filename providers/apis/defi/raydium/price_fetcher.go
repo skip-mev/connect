@@ -259,11 +259,6 @@ func (pf *APIPriceFetcher) Fetch(
 		}
 
 		// parse the token balances
-		pf.logger.Info(
-			"pnl to take from base",
-			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlCoin),
-			zap.Uint64("openOrders", uint64(openOrders.NativeBaseTokenTotal)),
-		)
 		baseTokenBalance, err := getScaledTokenBalance(baseAccount, ammInfo.OutPut.NeedTakePnlCoin, openOrders.NativeBaseTokenTotal)
 		if err != nil {
 			pf.logger.Debug("error getting base token balance", zap.Error(err))
@@ -275,13 +270,14 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
-
 		pf.logger.Info(
-			"pnl to take from quote",
-			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlPc),
-			zap.Uint64("openOrders", uint64(openOrders.NativeQuoteTokenTotal)),
+			"pnl to take from base",
+			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlCoin),
+			zap.Uint64("openOrders", uint64(openOrders.NativeBaseTokenTotal)),
+			zap.String("baseTokenBalance", baseTokenBalance.String()),
 		)
 
+		
 		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount, ammInfo.OutPut.NeedTakePnlPc, openOrders.NativeQuoteTokenTotal)
 		if err != nil {
 			pf.logger.Debug("error getting quote token balance", zap.Error(err))
@@ -293,7 +289,13 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
-
+		pf.logger.Info(
+			"pnl to take from quote",
+			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlPc),
+			zap.Uint64("openOrders", uint64(openOrders.NativeQuoteTokenTotal)),
+			zap.String("quoteTokenBalance", quoteTokenBalance.String()),
+		)
+		
 		pf.logger.Debug(
 			"unscaled balances",
 			zap.String("base", baseTokenBalance.String()),
@@ -380,6 +382,11 @@ func getScaledTokenBalance(account *rpc.Account, pnlToTake uint64, openOrders bi
 
 	// add value of open orders
 	balance.Add(balance, new(big.Int).SetUint64(uint64(openOrders)))
+
+	// fail if the balance is negative (this should never happen)
+	if balance.Sign() == -1 {
+		return nil, fmt.Errorf("negative balance")
+	}
 
 	return balance, nil
 }

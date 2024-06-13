@@ -17,6 +17,27 @@ var (
 	RaydiumMarketMapJSON = `
 	{
 		"markets": {
+			"SOL/USD": {
+				"ticker": {
+				  "currency_pair": {
+					"Base": "SOL",
+					"Quote": "USD"
+				  },
+				  "decimals": 8,
+				  "min_provider_count": 2,
+				  "enabled": true
+				},
+				"provider_configs": [
+				  {
+					"name": "coinbase_ws",
+					"off_chain_ticker": "SOL-USD"
+				  },
+				  {
+					"name": "kraken_api",
+					"off_chain_ticker": "SOLUSD"
+				  }
+				]
+			  },
 		  "MOTHER/SOL": {
 			"ticker": {
 			  "currency_pair": {
@@ -28,19 +49,23 @@ var (
 			  "enabled": true
 			},
 			"provider_configs": [
-				{
-					"name": "raydium_api",
-					"off_chain_ticker": "SOL/MOTHER",
-					"invert": true,
-					"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8uQwXPi1sWwUTVbDBnjznmf4mV44CETiNAh3UENvHejV\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"8ZcrNqaDbqy1H4R2DtmGnuZnJ6TKGSsaGmyRGQQeELLv\",\"token_decimals\":6},\"amm_info_address\":\"HcPgh6B2yHNvT6JsEmkrHYT8pVHu9Xiaoxm4Mmn2ibWw\",\"open_orders_address\":\"1z3rLR6AwR8gjVZ8ArqHp9kdaPrNwPvCdrZ6jGy6wwF\"}"
-				}
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/MOTHER",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8uQwXPi1sWwUTVbDBnjznmf4mV44CETiNAh3UENvHejV\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"8ZcrNqaDbqy1H4R2DtmGnuZnJ6TKGSsaGmyRGQQeELLv\",\"token_decimals\":6},\"amm_info_address\":\"HcPgh6B2yHNvT6JsEmkrHYT8pVHu9Xiaoxm4Mmn2ibWw\",\"open_orders_address\":\"1z3rLR6AwR8gjVZ8ArqHp9kdaPrNwPvCdrZ6jGy6wwF\"}"
+			  }
 			]
 		  },
-		  "$RETIRE/SOL": {
+		  "$RETIRE/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "$RETIRE",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -50,15 +75,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "$RETIRE/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2NJXbbLxfygPGusgTyxbFngLaodRRRCpXxeo1pv7M5XQ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"8PcfqMPandh18bYZJKEvjuQRH5bcH4Y6TZzGUSWEPeYG\",\"token_decimals\":9},\"amm_info_address\":\"CQQDXt2M6Cx1J8N3cYsSmPiD7fcLdU5RpVtRbs9WaCXZ\",\"open_orders_address\":\"7uUa9ELGG1NQymmbNiUwYmkbrzhDzAdb1u9yHPNfnuZk\"}"
 			  }
 			]
 		  },
-		  "$WIF/SOL": {
+		  "$WIF/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "$WIF",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -68,15 +97,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "$WIF/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7UYZ4vX13mmGiopayLZAduo8aie77yZ3o8FMzTeAX8uJ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"7e9ExBAvDvuJP3GE6eKL5aSMi4RfXv3LkQaiNZBPmffR\",\"token_decimals\":9},\"amm_info_address\":\"D5MzuR2BVKhhLe5S2LiWHeLUv4QVr1mc2MC2PWdHZWtU\",\"open_orders_address\":\"CF3TGZTcBBv1ysxqTfRD2sP4Pu4TH6at62HU7Uc8mS3f\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7UYZ4vX13mmGiopayLZAduo8aie77yZ3o8FMzTeAX8uJ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"7e9ExBAvDvuJP3GE6eKL5aSMi4RfXv3LkQaiNZBPmffR\",\"token_decimals\":9},\"amm_info_address\":\"EP2ib6dYdEeqD8MfE2ezHCxX3kP3K2eLKkirfPm5eyMx\",\"open_orders_address\":\"6jeayPbLeJq9o6zXbCtLsEJuPyPFyojWoH55xrksfsoL\"}"
 			  }
 			]
 		  },
-		  "ANDY/SOL": {
+		  "ANDY/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "ANDY",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -86,15 +119,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "ANDY/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"pVCniSexvGFdDTjYuzoSKXDkoTqFjRhqJpmzzYMs7tY\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"2tt4w3C9hKjtzVgPqqa9Apbxz5qEKEAWodJEbbmfpwEm\",\"token_decimals\":9},\"amm_info_address\":\"72SvYQkXFwEUPtvRhhAEd7piardNzjzcSymHKrm9LPXA\",\"open_orders_address\":\"DW5dvuqw78jrmY8dgcPAtp7qJGEga9UgTm31Vea3q2oU\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"pVCniSexvGFdDTjYuzoSKXDkoTqFjRhqJpmzzYMs7tY\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"2tt4w3C9hKjtzVgPqqa9Apbxz5qEKEAWodJEbbmfpwEm\",\"token_decimals\":9},\"amm_info_address\":\"7KqUHWB67F1qpqRn5sHLtpdZaXkb8pWdKcqWb6zwKoQY\",\"open_orders_address\":\"A4wdbaSW9LgBkyj1kvzmbcXuJQ8tbcet3u4ny6UUGepN\"}"
 			  }
 			]
 		  },
-		  "ANSEM/SOL": {
+		  "ANSEM/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "ANSEM",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -104,7 +141,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "ANSEM/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5cM8YfCvkALkout2h9WxmYrc5e61YmvLgLLWsrZgumgK\",\"token_decimals\":1},\"quote_token_vault\":{\"token_vault_address\":\"B86KHBLhVVQQnsgbn6SDJR43NSKbqmpxZsrTai45yrMy\",\"token_decimals\":9},\"amm_info_address\":\"ArPbh31DT78N9Y1rQeABmcx5KYrUmVUcY9SrpfNjxUCB\",\"open_orders_address\":\"2gKn8iQ37nJXmQNU59Yb7WQiqjWGKECscGPRx1mCEK51\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5cM8YfCvkALkout2h9WxmYrc5e61YmvLgLLWsrZgumgK\",\"token_decimals\":1},\"quote_token_vault\":{\"token_vault_address\":\"B86KHBLhVVQQnsgbn6SDJR43NSKbqmpxZsrTai45yrMy\",\"token_decimals\":9},\"amm_info_address\":\"7xGQkpvqrqCNKwangJaj6h8KFqMu3RC9PRGYkAXhw2kw\",\"open_orders_address\":\"Dt51heAAxkx8hVok4zhotDC1J7pnpFrRr5ALgnwRhUY8\"}"
 			  }
 			]
 		  },
@@ -126,11 +167,11 @@ var (
 			  }
 			]
 		  },
-		  "BAG/SOL": {
+		  "BAG/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "BAG",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -140,15 +181,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "BAG/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7eLwyCqfhxKLsKeFwcN4JdfspKK22rSC4uQHNy3zWNPB\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Cr7Yo8Uf5f8pzMsY3ZwgDFNx85nb3UDvPfQxuWG4acxc\",\"token_decimals\":9},\"amm_info_address\":\"84n2mVWbHW2Gj4rkqQyhggEU548tdu4KtRmoB12eRqZp\",\"open_orders_address\":\"EupqWnZaYnYAACxVyf5yJ4dtwD6qJwLAsztaddN8RD5s\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7eLwyCqfhxKLsKeFwcN4JdfspKK22rSC4uQHNy3zWNPB\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Cr7Yo8Uf5f8pzMsY3ZwgDFNx85nb3UDvPfQxuWG4acxc\",\"token_decimals\":9},\"amm_info_address\":\"Bv7mM5TwLxsukrRrwzEc6TFAj22GAdVCcH5ViAZFNZC\",\"open_orders_address\":\"Du6ZaABu8cxmCAvwoGMixZgZuw57cCQc8xE8yRenaxL4\"}"
 			  }
 			]
 		  },
-		  "BODEN/SOL": {
+		  "BODEN/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "BODEN",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -158,15 +203,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "BODEN/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"54zedUwxuSnmHHYg9oY1AfykeBDaCF6ZFZDW3ym2Nea4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"DzpiXKsTUCacKyahLBUC5sfjj2fiWbwCpiCPEgyS3zDC\",\"token_decimals\":9},\"amm_info_address\":\"CiNw2KeeLT7oxj9e5H7eNmE9kQo74DasYUzuroNSY61i\",\"open_orders_address\":\"2vavMuz2sFMYwTKQ3U6EkC2uqAozwat9Bo7spisWky6H\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"54zedUwxuSnmHHYg9oY1AfykeBDaCF6ZFZDW3ym2Nea4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"DzpiXKsTUCacKyahLBUC5sfjj2fiWbwCpiCPEgyS3zDC\",\"token_decimals\":9},\"amm_info_address\":\"6UYbX1x8YUcFj8YstPYiZByG7uQzAq2s46ZWphUMkjg5\",\"open_orders_address\":\"9ndGwmmTcFLut1TNjWFA8pDvcrxgmqPEJTZ2Y3jTipva\"}"
 			  }
 			]
 		  },
-		  "BOME/SOL": {
+		  "BOME/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "BOME",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -176,15 +225,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "BOME/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FBba2XsQVhkoQDMfbNLVmo7dsvssdT39BMzVc2eFfE21\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"GuXKCb9ibwSeRSdSYqaCL3dcxBZ7jJcj6Y7rDwzmUBu9\",\"token_decimals\":9},\"amm_info_address\":\"AeBk8x4GVyWzLxmjWXA1WYkxkXaEsr8swFB3fExFy48n\",\"open_orders_address\":\"DyJKSuSFg6ZnNsmWUFWuCHswbF9muAVQRdKz3BkgSL5c\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FBba2XsQVhkoQDMfbNLVmo7dsvssdT39BMzVc2eFfE21\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"GuXKCb9ibwSeRSdSYqaCL3dcxBZ7jJcj6Y7rDwzmUBu9\",\"token_decimals\":9},\"amm_info_address\":\"DSUvc5qf5LJHHV5e2tD184ixotSnCnwj7i4jJa4Xsrmt\",\"open_orders_address\":\"38p42yoKFWgxw2LCbB96wAKa2LwAxiBArY3fc3eA9yWv\"}"
 			  }
 			]
 		  },
-		  "CHAT/SOL": {
+		  "CHAT/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "CHAT",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -194,7 +247,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "CHAT/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FKCCPsYDgEoVpEhyE2XMFAXq5zWFrWHgpQjVEKQk1C54\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9APPnbdEXbJpktfKSGbbdgYvj6K3ZFRDFwQUabFw6CHP\",\"token_decimals\":9},\"amm_info_address\":\"99tA8f5avoNLdNzWvMrKhTiXVSFsuCGMvw3btALS65fu\",\"open_orders_address\":\"BB95rL8vh9m922fMcVjBUCtHcWHUX3Jt9QmygNG4Naw5\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FKCCPsYDgEoVpEhyE2XMFAXq5zWFrWHgpQjVEKQk1C54\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9APPnbdEXbJpktfKSGbbdgYvj6K3ZFRDFwQUabFw6CHP\",\"token_decimals\":9},\"amm_info_address\":\"9kLGUEFwEuFzn9txDfGJ3FimGp9LjMtNPp4GvMLfkZSY\",\"open_orders_address\":\"G9fse9D2feKdSjy4eLDQfuuBfxQDqektwNMG9smVBJr9\"}"
 			  }
 			]
 		  },
@@ -212,15 +269,15 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "CHEEMS/USDC",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HRi4eJ8xWFG4hsv7FA9L7YnPLSxhQR4U7CCXKyZvcLXe\",\"token_decimals\":4},\"quote_token_vault\":{\"token_vault_address\":\"4gnEBvHQEx4nLcf9qWk1Wsxh9V1GFFDf4MfwEYmFo8hm\",\"token_decimals\":6},\"amm_info_address\":\"D9jaRQePbEXSDU17EDwcHuCfBUipqLRhQE1E9juYn2FY\",\"open_orders_address\":\"5G7co99pudpfd1Mp3xiGezJFTDvwMBhByaoZY4ttmtME\"}"
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HRi4eJ8xWFG4hsv7FA9L7YnPLSxhQR4U7CCXKyZvcLXe\",\"token_decimals\":4},\"quote_token_vault\":{\"token_vault_address\":\"4gnEBvHQEx4nLcf9qWk1Wsxh9V1GFFDf4MfwEYmFo8hm\",\"token_decimals\":6},\"amm_info_address\":\"3FRFbRMvUjjufZBAjbdGcb1PYYyH9MJAyRQ7WuHuXTXe\",\"open_orders_address\":\"FZ6NVUWGcok9vGTBiHs4BMcvqTqEH1YCzpd3WPRqSpp7\"}"
 			  }
 			]
 		  },
-		  "CHONKY/SOL": {
+		  "CHONKY/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "CHONKY",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -230,15 +287,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "CHONKY/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9rJqiGuRG971HCpapVNJtN4ho2fKMhkPiZRhQCAohonU\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"6Fbs4sCBH5jZp1v2Rr6zVdU44Fn4Vv9iPhY6eihjfdbz\",\"token_decimals\":9},\"amm_info_address\":\"E61pEDMEwf8iUHFhmGn3Wcj5P32DPjKDgo1UNjjaNrg1\",\"open_orders_address\":\"2PP6pkjc3QcQcB5qr6xg6gD4AWtjzDZzBDNebMQYFJqP\"}"
 			  }
 			]
 		  },
-		  "DUKO/SOL": {
+		  "DUKO/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "DUKO",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -248,15 +309,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "DUKO/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HD7aZ6YrqAxVbGNAMEKxozcW1ZDU7pbKfd7XMmZtxyzk\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"A9J2mXPXfRZ7Sh2ymUgCJM4p9iUjZBcyAfrz49PoBBN4\",\"token_decimals\":9},\"amm_info_address\":\"BGS69Ju7DRRVxw9b2B5TnrMLzVdJcscV8UtKywqNsgwx\",\"open_orders_address\":\"FoBQDGey332Ppv1KiTow8z9oZP8n6mEPLyhedPdG1nUG\"}"
 			  }
 			]
 		  },
-		  "FKETH/SOL": {
+		  "FKETH/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "FKETH",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -266,15 +331,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "FKETH/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"DNh9pRMiRX6zwWuzsXtmxmXLdbAGNuYg4dmmnzrpL871\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"47fCbQKnJYaMbPaPSyUrPXPUahizhYwAbwXnEcKN1vwD\",\"token_decimals\":9},\"amm_info_address\":\"HvAUaYpykFbUmzyGUCPbLR2nKA43cXspfxYNyYT2mw7j\",\"open_orders_address\":\"5VEfGLutckRLb3sFj9US8Dz4sFQ29xNMigpdxpTFj1bj\"}"
 			  }
 			]
 		  },
-		  "GMEOW/SOL": {
+		  "GMEOW/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "GMEOW",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -284,15 +353,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "GMEOW/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9crtLiYfxYVYQ9sCfWix9vAMPJyBXCcMzCPXZ5isPFxB\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"ANLamVN6Df4HqC6YevQskovddsjhkqBqHsyLzhDibFEj\",\"token_decimals\":9},\"amm_info_address\":\"oykaqRr4gp6XRWxEraugTadtoMj2o1VMyvQCczf2GnQ\",\"open_orders_address\":\"9QWVztwM86spnAjAqGfVCCW8gycM69PMQ1hnq35Z2isR\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9crtLiYfxYVYQ9sCfWix9vAMPJyBXCcMzCPXZ5isPFxB\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"ANLamVN6Df4HqC6YevQskovddsjhkqBqHsyLzhDibFEj\",\"token_decimals\":9},\"amm_info_address\":\"BbbuEcbX1JhxDTjnDXvi5CuQFR77FW7AbqnuyvZEmAFK\",\"open_orders_address\":\"8LdXZ1TUMBmZ59WJXt3YPCcifjRmvTdMcRvzpBBoUgyQ\"}"
 			  }
 			]
 		  },
-		  "HARAMBE/SOL": {
+		  "HARAMBE/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "HARAMBE",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -302,15 +375,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "HARAMBE/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5f9Fgcp2C9vdrp75GspNKBjzdaxq5uiqpLVkgtWKpDZZ\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Apgp3SzNB5VpVWbK5q2ucBvCJEsf1gqXL4iUAqvD9pgB\",\"token_decimals\":9},\"amm_info_address\":\"FT4S3M9MUPX7HKCGerTKN65rnHvwQpCrfpXFjS22Xbzd\",\"open_orders_address\":\"7ubVsaxLyMGyRQPmvHQ7uoj58jXmWFfpXgwPg7414eb3\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5f9Fgcp2C9vdrp75GspNKBjzdaxq5uiqpLVkgtWKpDZZ\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Apgp3SzNB5VpVWbK5q2ucBvCJEsf1gqXL4iUAqvD9pgB\",\"token_decimals\":9},\"amm_info_address\":\"2BJKy9pnzTDvMPdHJhv8qbWejKiLzebD7i2taTyJxAze\",\"open_orders_address\":\"BPv68DZUMxpqvfRye2JoeK1GRkkGs5PEUycmx5b448x2\"}"
 			  }
 			]
 		  },
-		  "KHAI/SOL": {
+		  "KHAI/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "KHAI",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -320,15 +397,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "KHAI/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6g4rhxVTrN6SrtNvimq4QiU8yA5XScvwL6wxaMkegrtJ\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"7p2PrGMyeetNRqTKFraL7eYo2TbU3apWz6vfqrZFiPcG\",\"token_decimals\":9},\"amm_info_address\":\"ECbK6PSMZ5yQaUYBocsXaVrax2fWADw2ijTqLGPtt9sC\",\"open_orders_address\":\"2DaRg4UycKL9GSVfARBDrcensb89WD5PyyFX9NrMunLc\"}"
 			  }
 			]
 		  },
-		  "LIGMA/SOL": {
+		  "LIGMA/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "LIGMA",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -338,7 +419,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "LIGMA/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6aefaP7C6eKbW2taLqmyHinYH4ZMyY2G6MdqNu6PvfbL\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"G3kKDmmxwpjt4NVdQgdvgiuFxFsAsC1hSv4PVg63cKwM\",\"token_decimals\":9},\"amm_info_address\":\"GRz7v1v8AqpC1fyyjgAgnLk1PqjPcJ94gZC9Jur3f1fY\",\"open_orders_address\":\"E794XDGGZbnzrtCpU6RRUowknfUL619Q6SNi1oY24vST\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6aefaP7C6eKbW2taLqmyHinYH4ZMyY2G6MdqNu6PvfbL\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"G3kKDmmxwpjt4NVdQgdvgiuFxFsAsC1hSv4PVg63cKwM\",\"token_decimals\":9},\"amm_info_address\":\"2AvbJNsiDD99yYYgk7eGKXuKU4PRVibQYFv6xfNA5Fce\",\"open_orders_address\":\"2RvH4R5h7r3f6BJfZpPqzcFqUC46RziUko5HFh2KYqff\"}"
 			  }
 			]
 		  },
@@ -360,11 +445,11 @@ var (
 			  }
 			]
 		  },
-		  "MARVIN/SOL": {
+		  "MARVIN/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MARVIN",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -374,15 +459,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "MARVIN/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"3vLTpZneGAzceAXKu2HuesT4rt6ksRJ3Q9WvjUmwksqA\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"3rWa7PstXZk4ZaEhLamfoqMVozwq7hfXEDqyNbHcL4uK\",\"token_decimals\":9},\"amm_info_address\":\"GR93XuWCWTqYpLCjqdJex8VdiSNyBhqKykNCjqfKdh3Q\",\"open_orders_address\":\"AMJqMphxaUXKsqy2Ymv2vamE4sByTfuNdBknDo1PRseq\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"3vLTpZneGAzceAXKu2HuesT4rt6ksRJ3Q9WvjUmwksqA\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"3rWa7PstXZk4ZaEhLamfoqMVozwq7hfXEDqyNbHcL4uK\",\"token_decimals\":9},\"amm_info_address\":\"CtR5r6zp6NhXfR2iVSRmSir5TwYnj6fcYJNuehDBbDyF\",\"open_orders_address\":\"AqVCnWScTmiKbvpmaDrAGLZbTCypHg4s37UAokKRCgVH\"}"
 			  }
 			]
 		  },
-		  "MEW/SOL": {
+		  "MEW/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MEW",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -392,15 +481,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "MEW/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4HqAjFKuQX7tnXEkxsjGQha3G4bcgER8qPXRahn9gj8F\",\"token_decimals\":5},\"quote_token_vault\":{\"token_vault_address\":\"BhNdEGJef9jSqT1iCEkFZ2bYZCdpC1vuiWtqDt87vBVp\",\"token_decimals\":9},\"amm_info_address\":\"7QQmXMuMDsrntXtzCc62twLLjDBmuQKKj9mUQVjiJ7te\",\"open_orders_address\":\"EGo9sULUczjtUKigCoykSZ3GqBQKL7d8hVAwur32VHq1\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4HqAjFKuQX7tnXEkxsjGQha3G4bcgER8qPXRahn9gj8F\",\"token_decimals\":5},\"quote_token_vault\":{\"token_vault_address\":\"BhNdEGJef9jSqT1iCEkFZ2bYZCdpC1vuiWtqDt87vBVp\",\"token_decimals\":9},\"amm_info_address\":\"879F697iuDJGMevRkRcnW21fcXiAeLJK1ffsw2ATebce\",\"open_orders_address\":\"CV3Gq5M2R7KRU5ey4LpnZYRR7r7vzKoV9Bt4mZ8P6bSB\"}"
 			  }
 			]
 		  },
-		  "MONK/SOL": {
+		  "MONK/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MONK",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -410,15 +503,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "MONK/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"CeLZLhC2nScSpsKqRL1eRr3L3LLfjDzakZLCUKcUHW1m\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Be6DM12uTWtxHMSRJeah3J5PRP4CumR28Yy2qpLQFTE7\",\"token_decimals\":9},\"amm_info_address\":\"5mYCuaXmqW1McUe18Ry6gbWUQhtk1f4GxJ9j7vRj34HJ\",\"open_orders_address\":\"F1KFumMDuNonPprwUxarH6bbip9TR5wfsCZzRuKM8XBM\"}"
 			  }
 			]
 		  },
-		  "MOUTAI/SOL": {
+		  "MOUTAI/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MOUTAI",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -428,7 +525,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "MOUTAI/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4VkmzH14ETcNhSQLTK6AtL1ZP8UmvWpbNCgokDVfiCcD\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HSQPdDCxtGo4fTHeZuBGWtQUqHgRsgdz4BVhTCCAtsTv\",\"token_decimals\":9},\"amm_info_address\":\"6AKb3QfbWTX57swhg39h71YjKb31LGLy3jFyQYNHDaCC\",\"open_orders_address\":\"HTDePdRKDZMASEZ1PYj6QBNKeBK4buAw7v5VVaGzmj7V\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4VkmzH14ETcNhSQLTK6AtL1ZP8UmvWpbNCgokDVfiCcD\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HSQPdDCxtGo4fTHeZuBGWtQUqHgRsgdz4BVhTCCAtsTv\",\"token_decimals\":9},\"amm_info_address\":\"578CbhKnpAW5NjbmYku6qSaesZZLy3xwFQ8UkDANzd91\",\"open_orders_address\":\"FCQvrj9mrWN5XsPHDSfKf17i8xbzLxW3Esor7nw42nsp\"}"
 			  }
 			]
 		  },
@@ -450,11 +551,11 @@ var (
 			  }
 			]
 		  },
-		  "MUMU/SOL": {
+		  "MUMU/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MUMU",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -464,15 +565,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "MUMU/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2Re1H89emr8hNacyDTrm1NU8VEhuwaJX7JwcdDqy5Q6g\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"4VPXFMpndqZhME27vMqtkuGtBo7hVTA9kEvo87zbjXsA\",\"token_decimals\":9},\"amm_info_address\":\"9LhsF1JbMamXTaky4dzG1tiPFJ15nMtFXKPuRF87pqUR\",\"open_orders_address\":\"J4nb5Fj1EwB3q5uGNbJcb1bWxBhpN5QZbyP6num5VTYT\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2Re1H89emr8hNacyDTrm1NU8VEhuwaJX7JwcdDqy5Q6g\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"4VPXFMpndqZhME27vMqtkuGtBo7hVTA9kEvo87zbjXsA\",\"token_decimals\":9},\"amm_info_address\":\"FvMZrD1qC66Zw8VPrW15xN1N5owUPqpQgNQ5oH18mR4E\",\"open_orders_address\":\"BjWyTUxXSNXN1GNzwR7iRhqmdc3XukYpWFfqy1o94DF2\"}"
 			  }
 			]
 		  },
-		  "NICK/SOL": {
+		  "NICK/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "NICK",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -482,15 +587,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "NICK/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FDvQiwbJVHdSZE3ngZ6WCkJfciFTdg958W7bxyKU2PJ9\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"z6ZCZESyof3ZgCJ23hY31f1SSD33gQgyVRfMB8wP9iM\",\"token_decimals\":9},\"amm_info_address\":\"HrYiUQjzsZHF2t6ytm8rjUARZ3suCGi2Do2goZdJaL8Z\",\"open_orders_address\":\"4vj51zF3atwEr5PhWrT5zhU6jxqUapsusTk1HTTYSk3k\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FDvQiwbJVHdSZE3ngZ6WCkJfciFTdg958W7bxyKU2PJ9\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"z6ZCZESyof3ZgCJ23hY31f1SSD33gQgyVRfMB8wP9iM\",\"token_decimals\":9},\"amm_info_address\":\"2FAZebHiPTxoTskLcV4EFJiqpXgourmP4qa9rt9qiU1o\",\"open_orders_address\":\"34SvJTo8VDcQQGcoAVpc3rJrCdPooLFWj83nUQYadzeF\"}"
 			  }
 			]
 		  },
-		  "NINJA/SOL": {
+		  "NINJA/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "NINJA",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -500,7 +609,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "NINJA/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5Mmie9Drh6RGMy8X8UQ3egyBi4Hvva1TR778bf77ViCV\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"HxVbv76N8EoRGEPJsKdtWCu3mz7ZXJi8dbZy8kM3QL3i\",\"token_decimals\":9},\"amm_info_address\":\"5oAhuuZMK4bCT8AGxxDQH7oHmLHGa9byDauHB3mvq6ie\",\"open_orders_address\":\"5TAZMKorJdh6ycqNTURsJaPWjeYNrWzNGkDPFAnnTRiM\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5Mmie9Drh6RGMy8X8UQ3egyBi4Hvva1TR778bf77ViCV\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"HxVbv76N8EoRGEPJsKdtWCu3mz7ZXJi8dbZy8kM3QL3i\",\"token_decimals\":9},\"amm_info_address\":\"B8sv1wiDf9VydktLmBDHUn4W5UFkFAcbgu7igK6Fn2sW\",\"open_orders_address\":\"6DMN41zTWap2S2e2fzz5bKKD8DToxRiandvZ74h7FC6s\"}"
 			  }
 			]
 		  },
@@ -522,11 +635,11 @@ var (
 			  }
 			]
 		  },
-		  "NUB/SOL": {
+		  "NUB/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "NUB",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -536,15 +649,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "NUB/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9uNqUwneLXbQ6YKndciL5aBXTLJhwpyDXkZmaBbWfwWz\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"75DrZt3zmGSFfKaYDm7yHLKMrr35Wy8ffBNN1143PWbj\",\"token_decimals\":9},\"amm_info_address\":\"v4DyhFrb18Cjg8K8PoDR6Dr49A4Fu382KrTwKeYKXwX\",\"open_orders_address\":\"7nz62HHmxe7tmC32GJZPTCZDnG3Hui2fYd2qdUDyvRrk\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9uNqUwneLXbQ6YKndciL5aBXTLJhwpyDXkZmaBbWfwWz\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"75DrZt3zmGSFfKaYDm7yHLKMrr35Wy8ffBNN1143PWbj\",\"token_decimals\":9},\"amm_info_address\":\"83G6VzJzLRCnHBsLATj94VCpRimyyqwuN6ZfL11McADL\",\"open_orders_address\":\"CLXBUkh3hMKNDRUZFFKS721Q1NJb11oHrYvV66QMBcVv\"}"
 			  }
 			]
 		  },
-		  "PENG/SOL": {
+		  "PENG/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "PENG",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -554,15 +671,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "PENG/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2g5q7fBGKZm2CXix8JjK4ZFdBTHQ1LerxkseBTqWuDdD\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"GmLJXUzjQAAU86a91hKesg5P9pKb6p9AZaGBEZLaDySD\",\"token_decimals\":9},\"amm_info_address\":\"AxBDdiMK9hRPLMPM7k6nCPC1gRARgXQHNejfP2LvNGr6\",\"open_orders_address\":\"9E5VWkY1UsbhkXW4Lk1YovkVouWMG57CuCNXUmecrGpC\"}"
 			  }
 			]
 		  },
-		  "PONKE/SOL": {
+		  "PONKE/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "PONKE",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -572,15 +693,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "PONKE/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"D7rw7fyEzo9EQcozjqAHJwbdbywGcSLw1at5MioZtMZ4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"8DcvfWidQ53a3SCBrWxBWL2UU5zEBAKEypApiiCCFu2Y\",\"token_decimals\":9},\"amm_info_address\":\"6iNTc3N5f9FkDmchV89fizATcKcqP1UWukeREv1CcvPD\",\"open_orders_address\":\"2ohiiPwvoeZakCQ4gZ9dMYyGc84ZbGqMhbkgam7tCoxL\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"D7rw7fyEzo9EQcozjqAHJwbdbywGcSLw1at5MioZtMZ4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"8DcvfWidQ53a3SCBrWxBWL2UU5zEBAKEypApiiCCFu2Y\",\"token_decimals\":9},\"amm_info_address\":\"5uTwG3y3F5cx4YkodgTjWEHDrX5HDKZ5bZZ72x8eQ6zE\",\"open_orders_address\":\"ECoptgCPMxXXWtxv3Zg2V3E7SpWp6SGqKqj32AcdWRQK\"}"
 			  }
 			]
 		  },
-		  "POPCAT/SOL": {
+		  "POPCAT/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "POPCAT",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -590,7 +715,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "POPCAT/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4Vc6N76UBu26c3jJDKBAbvSD7zPLuQWStBk7QgVEoeoS\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"n6CwMY77wdEftf2VF6uPvbusYoraYUci3nYBPqH1DJ5\",\"token_decimals\":9},\"amm_info_address\":\"4qZaCqY3cq7t17Nabnx9aYjE45C7M4ZCKo9DYgXa4RPe\",\"open_orders_address\":\"EN95xVYrG6zHJFsHD2j19HCAD3JN8EvKCpcS6TqanUbn\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4Vc6N76UBu26c3jJDKBAbvSD7zPLuQWStBk7QgVEoeoS\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"n6CwMY77wdEftf2VF6uPvbusYoraYUci3nYBPqH1DJ5\",\"token_decimals\":9},\"amm_info_address\":\"FRhB8L7Y9Qq41qZXYLtC2nw8An1RJfLLxRF2x9RwLLMo\",\"open_orders_address\":\"4ShRqC2n3PURN7EiqmB8X4WLR81pQPvGLTPjL9X8SNQp\"}"
 			  }
 			]
 		  },
@@ -612,11 +741,11 @@ var (
 			  }
 			]
 		  },
-		  "RAY/SOL": {
+		  "RAY/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "RAY",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -626,7 +755,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "RAY/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Em6rHi68trYgBFyJ5261A2nhwuQWfLcirgzZZYoRcrkX\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"3mEFzHsJyu2Cpjrz6zPmTzP7uoLFj9SbbecGVzzkL1mJ\",\"token_decimals\":9},\"amm_info_address\":\"E64ER3SCFZwqB2BWJFa6QvutLwAk35JfK2wFwZir46vz\",\"open_orders_address\":\"Bsdx1n9o449F45xnnGw9cu3w9E3WwRPGfHCHJ9KJ8iV2\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Em6rHi68trYgBFyJ5261A2nhwuQWfLcirgzZZYoRcrkX\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"3mEFzHsJyu2Cpjrz6zPmTzP7uoLFj9SbbecGVzzkL1mJ\",\"token_decimals\":9},\"amm_info_address\":\"AVs9TA4nWDzfPJE9gGVNJMVhcQy3V9PGazuz33BfG2RA\",\"open_orders_address\":\"6Su6Ea97dBxecd5W92KcVvv6SzCurE2BXGgFe9LNGMpE\"}"
 			  }
 			]
 		  },
@@ -644,7 +777,7 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "RAY/USDC",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FdmKUE4UMiJYFK5ogCngHzShuVKrFXBamPWcewDr31th\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Eqrhxd7bDUCH3MepKmdVkgwazXRzY6iHhEoBpY7yAohk\",\"token_decimals\":6},\"amm_info_address\":\"EVzLJhqMtdC1nPmz8rNd6xGfVjDPxpLZgq7XJuNfMZ6\",\"open_orders_address\":\"3PJpMTYq82xmnUUERgsPsPKGk3jLEZS8wgNEHq91Yfhw\"}"
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FdmKUE4UMiJYFK5ogCngHzShuVKrFXBamPWcewDr31th\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Eqrhxd7bDUCH3MepKmdVkgwazXRzY6iHhEoBpY7yAohk\",\"token_decimals\":6},\"amm_info_address\":\"6UmmUiYoBjSrhakAobJw8BvkmJtDVxaeBtbt7rxWo1mg\",\"open_orders_address\":\"CSCS9J8eVQ4vnWfWCx59Dz8oLGtcdQ5R53ea4V9o2eUp\"}"
 			  }
 			]
 		  },
@@ -666,11 +799,11 @@ var (
 			  }
 			]
 		  },
-		  "RETARDIO/SOL": {
+		  "RETARDIO/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "RETARDIO",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -680,15 +813,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "RETARDIO/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HXzTvbuKKPyNMmLKJb8vaSUaRZsVS2J2AAsDuDm36rNC\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HNcAAdLKHSRnwdmmWCYnP5Zcd11sfGpAoCuWFtugt2ma\",\"token_decimals\":9},\"amm_info_address\":\"3BWnpmiRG5nmzmsyVKNPcLeGKPMFWfuKLNMgSsLcLhnJ\",\"open_orders_address\":\"7LKjTUqBaYJ5qfaPEqn4ZDkoh39BPPUosBGaoeJkPXWq\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HXzTvbuKKPyNMmLKJb8vaSUaRZsVS2J2AAsDuDm36rNC\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HNcAAdLKHSRnwdmmWCYnP5Zcd11sfGpAoCuWFtugt2ma\",\"token_decimals\":9},\"amm_info_address\":\"5eLRsN6qDQTQSBF8KdW4B8mVpeeAzHCCwaDptzMyszxH\",\"open_orders_address\":\"5TcDuBbtU8Q6LagcM8wfw1Ux2MWgCC6Q1FY22FVDZnXX\"}"
 			  }
 			]
 		  },
-		  "SLERF/SOL": {
+		  "SLERF/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "SLERF",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -698,15 +835,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "SLERF/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9A2ZsPz5Zg6jKN4o4KRMjTVPmkH51wYWFLmt4KBRy1Rq\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"5Zumc1SYPmQ89nqwXqzogeuhdJ85iEMpSk35A4P87pmD\",\"token_decimals\":9},\"amm_info_address\":\"AgFnRLUScRD2E4nWQxW73hdbSN7eKEUb2jHX7tx9YTYc\",\"open_orders_address\":\"FT5Ptk37g5r6D9BKt3hne8ovHZ1g56oJBvuZRwn3zS3j\"}"
 			  }
 			]
 		  },
-		  "SMOLE/SOL": {
+		  "SMOLE/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "SMOLE",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -716,7 +857,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "SMOLE/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9},\"amm_info_address\":\"J48ZPSiZ6G6TrZcC2PEMf3d2cYVoYRADMeUY3CTdsFqQ\",\"open_orders_address\":\"DURtPB9126j1TsTyv67o1Rd32E2HvZF4fYXNg1u5yE9P\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9},\"amm_info_address\":\"5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1\",\"open_orders_address\":\"FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F\"}"
 			  }
 			]
 		  },
@@ -774,11 +919,11 @@ var (
 			  }
 			]
 		  },
-		  "TOOKER/SOL": {
+		  "TOOKER/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "TOOKER",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -788,15 +933,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "TOOKER/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Cki9WdL3sCoNY3cLmfG4iqSbvB8g1Fr9tw8qa5tP1m3Y\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2vTTh5pGbzc6guAJmt78XnTcXVBEZEWmGBkXkSNZwN59\",\"token_decimals\":9},\"amm_info_address\":\"F2JctNnqLJyf7mpUNadgZNpVLazX9GxjVeQT2FHv1QpM\",\"open_orders_address\":\"Gg4cXYqn6guMbWfuNdgfqM3AKeW3z5ZfV9NdxEwA7rYU\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Cki9WdL3sCoNY3cLmfG4iqSbvB8g1Fr9tw8qa5tP1m3Y\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2vTTh5pGbzc6guAJmt78XnTcXVBEZEWmGBkXkSNZwN59\",\"token_decimals\":9},\"amm_info_address\":\"3vGHsKVKNapB4hSapzKNwtiJ6DA8Ytd9SsMFSoAk154B\",\"open_orders_address\":\"5dzcxMHjuNU5LZyEXBhoWWKuxw51Z3626TTf2FTfLJjb\"}"
 			  }
 			]
 		  },
-		  "TREMP/SOL": {
+		  "TREMP/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "TREMP",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -806,15 +955,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "TREMP/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"G2XNC6Rt2G7JZQWhqpJriYwZyxd2L52KSDbDNBCYCpvx\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9DfnSR9h3hrmgy5pjqBP3SrVQRWPfjSqZZBrNNYGoyaN\",\"token_decimals\":9},\"amm_info_address\":\"EgF5PqgH3Y5dRnwQQ4eZhJ5JqktrYqNWSuJfjYpThkLb\",\"open_orders_address\":\"2XxdNxjjCyFsQSHSdoQUoSRhic9N4ppdgJpHk8JM2mYC\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"G2XNC6Rt2G7JZQWhqpJriYwZyxd2L52KSDbDNBCYCpvx\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9DfnSR9h3hrmgy5pjqBP3SrVQRWPfjSqZZBrNNYGoyaN\",\"token_decimals\":9},\"amm_info_address\":\"5o9kGvozArYNWfbYTZD1WDRkPkkDr6LdpQbUUqM57nFJ\",\"open_orders_address\":\"kTgLvRcrvhxJy9KZFureP8fU5L11BzFrRvUEUa1joai\"}"
 			  }
 			]
 		  },
-		  "TRUMP/SOL": {
+		  "TRUMP/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "TRUMP",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -824,7 +977,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "TRUMP/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"GwUn3JYQ5PC6P9cB9HsatJN7y7aw3BXrNqHPpoHtWyKF\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"5DNPt6WYgj3x7EmU4Fyqe3jDYPk2HMAB21H5N4Ggbev9\",\"token_decimals\":9},\"amm_info_address\":\"CyZZM9ytS7ZREPqBXY2bTLUN95WXSyzVDqBzatgRzVyT\",\"open_orders_address\":\"5mUgTJLVhQ8McD7rpm4cvcjjgMqQUb3dJxkiVCn5xXMC\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"GwUn3JYQ5PC6P9cB9HsatJN7y7aw3BXrNqHPpoHtWyKF\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"5DNPt6WYgj3x7EmU4Fyqe3jDYPk2HMAB21H5N4Ggbev9\",\"token_decimals\":9},\"amm_info_address\":\"7Lco4QdQLaW6M4sxVhWe8BHjrykyzjcjGTo4a6qYGABK\",\"open_orders_address\":\"FAWLdBB8kmWZQ74KpYAYN3YaEW31Si8qrwuQPauFSoma\"}"
 			  }
 			]
 		  },
@@ -846,11 +1003,11 @@ var (
 			  }
 			]
 		  },
-		  "VCAT/SOL": {
+		  "VCAT/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "VCAT",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -860,15 +1017,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "VCAT/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8gNjWm2wGubUiAXT9cXBeoY2NqAFkrnvKkh9J3gHZ7Wn\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"7G9HpLoYVhcBsg7ZEy928iUuzetJFK4AWBcfaCQTMp72\",\"token_decimals\":9},\"amm_info_address\":\"m9uiXqNMAxP7BNmtRf4NwkeKExjT5Hc6ftyjtNJB6E5\",\"open_orders_address\":\"9qnrgiBExCuugfUrK4Hgb3treG1YbBsNRqyk4cGDPzMF\"}"
 			  }
 			]
 		  },
-		  "VONSPEED/SOL": {
+		  "VONSPEED/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "VONSPEED",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -878,15 +1039,19 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "VONSPEED/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
 				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"89CwpgTSsCc9u187kKvQQo6VAL5gKZViVub4eaNXfrtu\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"2fEchHP5r5wks9PPN1C2S39wPCe6Ni4247oMMTausc2a\",\"token_decimals\":9},\"amm_info_address\":\"34yiYY6kZmnVfmdQGtv2HugiNB5g1DcMDuc2VdckidB7\",\"open_orders_address\":\"CzfQYWMuLpnxCNMmQbwezkkivLD8Mn7W26MDNLgPtdS7\"}"
 			  }
 			]
 		  },
-		  "WHALES/SOL": {
+		  "WHALES/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "WHALES",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -896,7 +1061,11 @@ var (
 			  {
 				"name": "raydium_api",
 				"off_chain_ticker": "WHALES/SOL",
-				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"P9uSMnNEGHDP7Dhu7fKWfRViAGGHjEMv6urC8c2qG4k\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"CktEbT37HFRtwXVjwPEVfXHdcTAnqnmCvkgAw9SEN7zf\",\"token_decimals\":9},\"amm_info_address\":\"3dQ92wmjEnJEnZzxM9C3uSsd1MFAByrM5LbEDW2DCcxM\",\"open_orders_address\":\"B1FAXAPa7ZTUscypEYY5Xsb9AZyCGF8LDQHc7xC8K8Rn\"}"
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"P9uSMnNEGHDP7Dhu7fKWfRViAGGHjEMv6urC8c2qG4k\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"CktEbT37HFRtwXVjwPEVfXHdcTAnqnmCvkgAw9SEN7zf\",\"token_decimals\":9},\"amm_info_address\":\"DczmyvnV8hR7d8zvy6bAoc2itZbFvLAx9iG2D7gyyt9e\",\"open_orders_address\":\"5JAwqabcp6KnfUe88RiaMgdpE3nw6CQu4NyAfbGmNEz2\"}"
 			  }
 			]
 		  }
