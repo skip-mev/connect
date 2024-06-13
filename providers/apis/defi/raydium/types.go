@@ -3,13 +3,13 @@ package raydium
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/gagliardetto/solana-go"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"sync"
 )
 
 const (

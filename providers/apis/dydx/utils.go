@@ -165,7 +165,7 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 			TokenDecimals:     quoteDecimals,
 		},
 		OpenOrdersAddress: fields[6],
-		AMMInfoAddress: 	fields[7],
+		AMMInfoAddress:    fields[7],
 	}
 	// convert the metadata to json
 	cfgBytes, err := json.Marshal(parsedConfig)

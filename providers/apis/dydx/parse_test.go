@@ -477,7 +477,7 @@ func TestExtractMetadata(t *testing.T) {
 			name:         "raydium provider w/ incorrect ammId account",
 			providerName: raydium.Name,
 			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9-FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F-a"},
-			expectedErr:  true,	
+			expectedErr:  true,
 		},
 		{
 			name:             "raydium provider w/ correct metadata",

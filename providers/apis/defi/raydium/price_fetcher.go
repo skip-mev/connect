@@ -270,14 +270,13 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
-		pf.logger.Info(
+		pf.logger.Debug(
 			"pnl to take from base",
 			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlCoin),
 			zap.Uint64("openOrders", uint64(openOrders.NativeBaseTokenTotal)),
 			zap.String("baseTokenBalance", baseTokenBalance.String()),
 		)
 
-		
 		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount, ammInfo.OutPut.NeedTakePnlPc, openOrders.NativeQuoteTokenTotal)
 		if err != nil {
 			pf.logger.Debug("error getting quote token balance", zap.Error(err))
@@ -289,13 +288,13 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
-		pf.logger.Info(
+		pf.logger.Debug(
 			"pnl to take from quote",
 			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlPc),
 			zap.Uint64("openOrders", uint64(openOrders.NativeQuoteTokenTotal)),
 			zap.String("quoteTokenBalance", quoteTokenBalance.String()),
 		)
-		
+
 		pf.logger.Debug(
 			"unscaled balances",
 			zap.String("base", baseTokenBalance.String()),
@@ -308,7 +307,7 @@ func (pf *APIPriceFetcher) Fetch(
 			metadata.BaseTokenVault.TokenDecimals, metadata.QuoteTokenVault.TokenDecimals,
 		)
 
-		pf.logger.Info(
+		pf.logger.Debug(
 			"scaled price",
 			zap.String("ticker", ticker.String()),
 			zap.String("price", price.String()),
