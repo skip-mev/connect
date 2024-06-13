@@ -77,6 +77,8 @@ func WithWriteTo(filePath string) Option {
 	}
 }
 
+// WithPriceProviders allows pre-instantiated price providers to be used in the Oracle's price fetching loop.
+// This option is mainly used for testing, but can be useful for programmatically setting customized providers.
 func WithPriceProviders(pps ...*types.PriceProvider) Option {
 	return func(m *OracleImpl) {
 		for _, pp := range pps {
@@ -85,6 +87,7 @@ func WithPriceProviders(pps ...*types.PriceProvider) Option {
 	}
 }
 
+// WithMetrics sets the metrics service the Oracle will use to emit metrics.
 func WithMetrics(met oraclemetrics.Metrics) Option {
 	return func(m *OracleImpl) {
 		m.metrics = met
