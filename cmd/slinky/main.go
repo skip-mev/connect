@@ -253,7 +253,7 @@ func runOracle() error {
 		return fmt.Errorf("failed to create data aggregator: %w", err)
 	}
 
-	// Define the oracle options. These determine how the oracle are created & executed.
+	// Define the oracle options. These determine how the oracle is created & executed.
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
 		oracle.WithMarketMap(marketCfg),
