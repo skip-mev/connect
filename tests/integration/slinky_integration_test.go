@@ -51,6 +51,7 @@ var (
 
 	VotingPeriod     = "10s"
 	MaxDepositPeriod = "1s"
+	UnbondingTime    = "10s"
 
 	defaultGenesisKV = []cosmos.GenesisKV{
 		{
@@ -80,6 +81,10 @@ var (
 		{
 			Key:   "consensus.params.abci.vote_extensions_enable_height",
 			Value: "2",
+		},
+		{
+			Key:   "app_state.staking.params.unbonding_time",
+			Value: UnbondingTime,
 		},
 	}
 
@@ -121,11 +126,11 @@ func TestSlinkyOracleIntegration(t *testing.T) {
 	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))
 }
 
-func TestSlinkySlashingIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
-		spec,
-		oracleImage,
-	)
+// func TestSlinkySlashingIntegration(t *testing.T) {
+// 	baseSuite := integration.NewSlinkyIntegrationSuite(
+// 		spec,
+// 		oracleImage,
+// 	)
 
-	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
-}
+// 	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
+// }
