@@ -72,9 +72,10 @@ func NewOracleServer(o oracle.Oracle, logger *zap.Logger) *OracleServer {
 func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
 	if r.ProtoMajor == 2 && strings.HasPrefix(
 		r.Header.Get("Content-Type"), "application/grpc") {
-
+		fmt.Println("grpcSrv ServeHTTP")
 		os.grpcSrv.ServeHTTP(w, r)
 	} else {
+		fmt.Println("gatewayMux ServeHTTP")
 		os.gatewayMux.ServeHTTP(w, r)
 	}
 }
