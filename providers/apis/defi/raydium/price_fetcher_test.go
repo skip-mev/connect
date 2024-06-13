@@ -424,18 +424,14 @@ func TestProviderFetch(t *testing.T) {
 		}).Return(
 			&rpc.GetMultipleAccountsResult{
 				Value: []*rpc.Account{
-					{
-						Data: nil, // btc/usdc shld be unresolved
-					},
+					nil,
 					{
 						Data: nil,
 					},
 					{
 						Data: nil,
 					},
-					{
-						Data: nil,
-					},
+					nil,
 					{
 						Data: rpc.DataBytesOrJSONFromBytes(ethVaultBz.Bytes()),
 					},
