@@ -118,6 +118,7 @@ func (o *OracleImpl) getMainCtx() (context.Context, context.CancelFunc) {
 	return o.mainCtx, o.mainCancel
 }
 
+// getMainCtx returns the main context for the oracle.
 func (o *OracleImpl) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
 	o.mut.Lock()
 	defer o.mut.Unlock()
