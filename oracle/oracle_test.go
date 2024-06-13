@@ -114,3 +114,8 @@ func (s *OracleTestSuite) TestGetMarketMap() {
 	gotMM = o.GetMarketMap()
 	s.Require().Equal(gotMM, mmtypes.MarketMap{})
 }
+
+func (s *OracleTestSuite) TestErrorsWhenNoAggregator() {
+	_, err := oracle.New(oracleCfg, nil)
+	s.Require().ErrorContains(err, "aggregator is required")
+}

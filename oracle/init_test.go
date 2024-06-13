@@ -36,7 +36,7 @@ func TestInit(t *testing.T) {
 	t.Run("creates all providers without a marketmap", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
@@ -66,7 +66,7 @@ func TestInit(t *testing.T) {
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMap(marketMap),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -125,7 +125,7 @@ func TestInit(t *testing.T) {
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMap(marketMap),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
@@ -140,7 +140,7 @@ func TestInit(t *testing.T) {
 	t.Run("errors when the WebSocket query handler factory is not set", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMap(marketMap),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -170,7 +170,7 @@ func TestInit(t *testing.T) {
 
 		orc, err := oracle.New(
 			cfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMap(marketMap),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -195,7 +195,7 @@ func TestInit(t *testing.T) {
 
 		orc, err := oracle.New(
 			cfg,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithMarketMap(marketMap),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -210,7 +210,7 @@ func TestInit(t *testing.T) {
 	t.Run("creates a marketmap provider with price providers", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfgWithMapper,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
@@ -229,7 +229,7 @@ func TestInit(t *testing.T) {
 	t.Run("errors when the market map factory is not set", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfgWithMapper,
-			nil,
+			noOpPriceAggregator{},
 			oracle.WithLogger(logger),
 			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
