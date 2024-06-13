@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -22,7 +23,7 @@ var _ Oracle = (*OracleImpl)(nil)
 
 // OracleImpl maintains providers and the state provided by them. This includes pricing data and market map updates.
 type OracleImpl struct { //nolint:revive
-	mut     sync.Mutex
+	mut     sync.RWMutex
 	logger  *zap.Logger
 	running atomic.Bool
 
@@ -97,6 +98,9 @@ func New(
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
 	}
+	if aggregator == nil {
+		return nil, errors.New("aggregator is required")
+	}
 
 	orc := &OracleImpl{
 		cfg:             cfg,
@@ -137,6 +141,8 @@ func (o *OracleImpl) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
 }
 
 func (o *OracleImpl) GetLastSyncTime() time.Time {
+	o.mut.RLock()
+	defer o.mut.RUnlock()
 	return o.lastPriceSync
 }
 
