@@ -4,9 +4,10 @@ on:
     branches:
       - main
     tags:
-      - "v.*"
+      - "v*"
   pull_request:
   workflow_dispatch:
+
 jobs:
   build:
     strategy:

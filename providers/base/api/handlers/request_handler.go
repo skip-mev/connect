@@ -26,6 +26,8 @@ type RequestHandlerImpl struct {
 
 	// method is the HTTP method to use when sending requests.
 	method string
+	// headers is the HTTP headers to use when sending requests.
+	headers map[string]string
 }
 
 // NewRequestHandlerImpl creates a new RequestHandlerImpl. It manages making HTTP requests.
@@ -52,6 +54,10 @@ func (r *RequestHandlerImpl) Do(ctx context.Context, url string) (*http.Response
 	req, err := http.NewRequestWithContext(ctx, r.method, url, nil)
 	if err != nil {
 		return nil, err
+	}
+
+	for key, value := range r.headers {
+		req.Header.Set(key, value)
 	}
 
 	return r.client.Do(req)
