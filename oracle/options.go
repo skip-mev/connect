@@ -90,9 +90,3 @@ func WithMetrics(met oraclemetrics.Metrics) Option {
 		m.metrics = met
 	}
 }
-
-func WithMarketMapProvider(mmp *mmclienttypes.MarketMapProvider) Option {
-	return func(impl *OracleImpl) {
-		impl.mmProvider = mmp
-	}
-}
