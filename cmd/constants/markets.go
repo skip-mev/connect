@@ -17,32 +17,567 @@ var (
 	RaydiumMarketMapJSON = `
 	{
 		"markets": {
-			"SOL/USD": {
-				"ticker": {
-				  "currency_pair": {
-					"Base": "SOL",
-					"Quote": "USD"
-				  },
-				  "decimals": 8,
-				  "min_provider_count": 2,
-				  "enabled": true
-				},
-				"provider_configs": [
-				  {
-					"name": "coinbase_ws",
-					"off_chain_ticker": "SOL-USD"
-				  },
-				  {
-					"name": "kraken_api",
-					"off_chain_ticker": "SOLUSD"
-				  }
-				]
+		  "SOL/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SOL",
+				"Quote": "USD"
 			  },
-		  "MOTHER/SOL": {
+			  "decimals": 8,
+			  "min_provider_count": 2,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coinbase_ws",
+				"off_chain_ticker": "SOL-USD"
+			  },
+			  {
+				"name": "kraken_api",
+				"off_chain_ticker": "SOLUSD"
+			  }
+			]
+		  },
+		  "BAZINGA/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BAZINGA",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/BAZINGA",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"GHVSjfv2kEpiMSTXsxP1S9KZKNzqa4rG8u3qVGVvNiEU\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"GKpbD62S56ZFtTBR5C1tJE4ZgaPesu5jhuLhkY3BXXKb\",\"token_decimals\":6},\"amm_info_address\":\"BhQgvhYpYVccRt5wJnxi13waXNaC3dJVcX6TjTNY9kee\",\"open_orders_address\":\"DbK9zkkFDh9aHfV3TVbbDjrXtFtdecSbsGwfofW4KzvC\"}"
+			  }
+			]
+		  },
+		  "BENDOG/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BENDOG",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "BENDOG/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2Pza1YUczgc4RWLhAgdXSJh4oYUspvhhAiSecFDd7ZJ3\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2BFpMzi33JtpY4CGUjY7x5JPApy6f2AdkuLZsd1QGqRv\",\"token_decimals\":9},\"amm_info_address\":\"47857wX96Tb4Ud3M3ka949iVRFmUqS33KLBxoVsqgfLK\",\"open_orders_address\":\"H1FPc9WQpA3GPnXMmzSjtt6gMuYuyDqYndBscaHNyCbv\"}"
+			  }
+			]
+		  },
+		  "BUBBA/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "BUBBA",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "BUBBA/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9sDmGRF3AmwrwAh75vne5dx7aVt7aKyHFeqLNP4ecXwh\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"J4Tisz2Ca8baDwvnrG5zNJBmE7U9DP47hgw1BdVUj7M1\",\"token_decimals\":9},\"amm_info_address\":\"8xtsif8mhNfpiHg3QNk24NW6X6wosoWWbCAhRTiUGW2n\",\"open_orders_address\":\"Dxjq2KVoJsrsHPViZyZWT89BDQexqQuC5uaEXd4ugqRG\"}"
+			  }
+			]
+		  },
+		  "CATGPT/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CATGPT",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "CATGPT/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"AYAmCRPotwZprbNpPQ1hVGSEpbgWUgWHUbjnjt4bfLo1\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"ok2NPhxx2q3tn8XL289m5irCyGntURLQNhtisLowQ7y\",\"token_decimals\":9},\"amm_info_address\":\"92NvJRnTxkaiHcfRd72B8h1SHyj5ZGtMoeFAQvCdB3vB\",\"open_orders_address\":\"DXA5jH1r5c9QeAZxAYQb6emFGY2eBb3ZgMjSDuTNFZ6n\"}"
+			  }
+			]
+		  },
+		  "CHEESE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CHEESE",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/CHEESE",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"ELVeWgH6XnWtkLZHWWTPV2RRLCTHbVR6hCu4XMWbtS9M\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"5HmRek4a2d43r3Hot18AfTTjkRwgHwWQf6qvSDgWwSju\",\"token_decimals\":6},\"amm_info_address\":\"C4ZHt1fPtb6CLcUkivhnnNtxBfxYoJq6x8HEZpUexQvR\",\"open_orders_address\":\"7uBMeaAWzhfdHFnd9QVNS274wMmfmZYxmjtTnGWUf32A\"}"
+			  }
+			]
+		  },
+		  "CHUD/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "CHUD",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/CHUD",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4ESAztYfBqzZzqqLzKxzB7RDuQMi5Ho2Vrfjb1AdHwiG\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"BvcAm78ro36qESWkQorH1qnnJP21DJR2yaKwbsTNnMqx\",\"token_decimals\":6},\"amm_info_address\":\"3Cv7Z8KN21M6Ur6nTeKiKEPcjTuEAg87Ciu6cC3gRnw6\",\"open_orders_address\":\"3xr3BZ5EDnFiA2B2PGEo87nC9gDDUBERZPzVHHqQDPRw\"}"
+			  }
+			]
+		  },
+		  "COK/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "COK",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "COK/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"C4hk6k49gotrWP1b9j2ejPcPo4Lq59jVmfGwB2YYYGds\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"6mk1jhhWr6yeYxQkcrkia2wLHFyuy1LW6Xmj2MmwJ2x5\",\"token_decimals\":9},\"amm_info_address\":\"1D5GHSzrcaSXLtUYxSCg4vWHdKGd7hFnasYPiPFYFGX\",\"open_orders_address\":\"F8F7FGDKfqVEC4qpnVjigZHB8kijTx8qqpmc1fX8s1dY\"}"
+			  }
+			]
+		  },
+		  "COST/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "COST",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "COST/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FgQifwxmQfjhHvh2ggVxQwb9qwRwHrxwwxxQXASLAnVH\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9dDGmEfXJXgjcMAp516c5eUd1eBRW3ZgKg6diyBmd1xh\",\"token_decimals\":9},\"amm_info_address\":\"GQdUPA8cUV8WsqEdCfDQtphvztocNCoSBGo1wARtaAXK\",\"open_orders_address\":\"4MQHW9GXiypDCGgjgEGKYB6pLiPPF7v38ki9VpaiUvni\"}"
+			  }
+			]
+		  },
+		  "DEVIN/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "DEVIN",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/DEVIN",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"G8Uvd8VWWiVvPCdpAikiNryRfoNfSpL6EUcZAdcrb68D\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"4atVfrWD9J6jwksaJLaTFRiwkxS4DyZ9MnFTK1vh9Hih\",\"token_decimals\":6},\"amm_info_address\":\"2cZQ71uDTBwFZT456koEwfZDLSV736hT688A18sD3n4M\",\"open_orders_address\":\"AqYvf3WyRQAjHyiM6HtsTUqwfzNQjsvghYynjbsjetR6\"}"
+			  }
+			]
+		  },
+		  "EGG/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "EGG",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "EGG/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"AgzrwnLSRntNBMaQNXF8kmRy3Zg3VC6thq2KA4zNrFop\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"BzoTmVRmsi1Ukw4wT9SuhtXjBmwFvgQK6t7LNX5b1uE8\",\"token_decimals\":9},\"amm_info_address\":\"BUPTMMrUnfeE5mk6L6ZUgrHtZo2qyeR44s9L6UGg1oQB\",\"open_orders_address\":\"A8Vq3pY7s43KsJFxe6UQpS6RVZCGVLyHUdqc4Q2HuLeo\"}"
+			  }
+			]
+		  },
+		  "FALX/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "FALX",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "FALX/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6TtniYJPdHJ764d3rUvk8SokmzyZMYCgqUjSgUAnjma2\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2eH2DVXQvs5qWwDQjgiSPsdZ19KQsj84RKRfCeorsGem\",\"token_decimals\":9},\"amm_info_address\":\"2hPp2aKd6T6HZmMQW2LkqH7R1wLZDjzZ1bZjhj5nrhrV\",\"open_orders_address\":\"3jf9f9VJdUXQQha6nHJkZVxqBTW5oJUNHYuKLyfDDuMM\"}"
+			  }
+			]
+		  },
+		  "GOL/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "GOL",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "GOL/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"ACuv7Frh33MqLZtv5aKjz4uh2ZZFauFQfm2t23Wk2Gkr\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"GDY1yj4VyCi4Wa57PFVVvEY7pDVwtjwMTmpgda3NQC8h\",\"token_decimals\":9},\"amm_info_address\":\"E3E5grXmLfETytkBKVBHCLt7FcRAfQLLXftJqSYF1noJ\",\"open_orders_address\":\"8GwoCLwbYKWXyqcJeo3TzcVGoWdRFuz7Qqn9ByZQ4d9s\"}"
+			  }
+			]
+		  },
+		  "GUMMY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "GUMMY",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "GUMMY/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"33AQRrPaZTckDJQd5DZstiwi11tcMVryu63V8rAHFF7N\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"4DHoHzkMHYqJeNDpkdeL6AGDymLFjJnS4SRsJHoT52Bm\",\"token_decimals\":9},\"amm_info_address\":\"FMiecMsYhPdBf94zZKa7i6inK1GX7aypLf7QewNz1i6w\",\"open_orders_address\":\"FSv96pMp3x5XwFdYgqXUY47o7nSKhA6tvCHX1UZZPWnv\"}"
+			  }
+			]
+		  },
+		  "HABIBI/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "HABIBI",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "HABIBI/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"AseQmyRFtmH2KGcBtsnDmVGiH68WP32KEak7VshLddr5\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"6Vj4gTxdkkhS2DFgyLuoAv1c1iTWZuYnZpw7bhK8oeQj\",\"token_decimals\":9},\"amm_info_address\":\"2ukgjDC99Nk34RfRjWjCoHAuQLtLnz8TLcBrDQk3f2ay\",\"open_orders_address\":\"Ap3oiBWsLbDFwcigjktNvt2WjPQnLReRd28wtqJE1yDF\"}"
+			  }
+			]
+		  },
+		  "HAMMY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "HAMMY",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "HAMMY/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"324NgHgEDyU9d7TE9dkAkB2GNtqxdEU4PsYRTDL68qoR\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"4kPJL1LmempALPjjwMWSo6JRBjmKQY7HX3edozqmJBPe\",\"token_decimals\":9},\"amm_info_address\":\"X131b3frGn4b8ue51EyvrnzWuTuBGoM93uRYrNteEFy\",\"open_orders_address\":\"9WZDqKjvpyoAShnp3Dg1725uyo2aQtgp8z7GG9XdB5NM\"}"
+			  }
+			]
+		  },
+		  "KITTY/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "KITTY",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "KITTY/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"E1hKKYHebq4naKVxG191vL19Lm6afCP6sXneBdskSqcc\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Ac2VgEf8eSXxECL2a8wH4z13TbDw8sk5zhoTnXSe3Zbh\",\"token_decimals\":9},\"amm_info_address\":\"StJ9GP9KKVsbvtEtBDSjWNL9jpgybCjyHAwYyTe4SpW\",\"open_orders_address\":\"9sDic5pic3Q4HYRtu2cv8W2WB7Kt5EUGsdmvghvPobPv\"}"
+			  }
+			]
+		  },
+		  "MANEKI/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "MANEKI",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "MANEKI/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5FeTzLNqwrvSzexFujeV62a2v4kmQUrBnCQjJANStMXj\",\"token_decimals\":5},\"quote_token_vault\":{\"token_vault_address\":\"2kjCeDKKK9pCiDqfsbS72q81RZiUnSwoaruuwz1avUWn\",\"token_decimals\":9},\"amm_info_address\":\"2aPsSVxFw6dGRqWWUKfwujN6WVoyxuhjJaPzYaJvGDDR\",\"open_orders_address\":\"9pd9FFJfVjY1aG9dh96ArJB5F2HAyfj2XryjVTHbJhc9\"}"
+			  }
+			]
+		  },
+		  "PAJAMAS/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "PAJAMAS",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "PAJAMAS/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2amsF7CaXcxBDU39e8H8Cm4EFJWJqhWhJ4TBgFFvkbMQ\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"F7vbaUrc9z1CMWDqVtpQCpSQ8m5k5s3WkAf7NVAHdemD\",\"token_decimals\":9},\"amm_info_address\":\"BqricZnjjtFg8wuTbckV6NZcTstuR7BZtKJtzH8oV3eK\",\"open_orders_address\":\"8eSiN9JD5WYJVznfu4EWwPnEDMSvwfSx12NyXdhhkUJ9\"}"
+			  }
+			]
+		  },
+		  "PUNDU/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "PUNDU",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "PUNDU/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FQoagUqLxpNq69dpqFLrKm1gySC92NLKMkVgtdHWMKtt\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"GpnU5CAFUyyodrtXTBfvWK7ewsmcJGNksr4Fe49AvpM5\",\"token_decimals\":9},\"amm_info_address\":\"7yEXWTjLyXwBEjMhNwP9dWVJp8G68JvY9KXGT83sDCaM\",\"open_orders_address\":\"CmQ1XbjSeg5opqnJ1nnVf3TBzXUA2KbeWgysCVwKaCSN\"}"
+			  }
+			]
+		  },
+		  "SELFIE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SELFIE",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/SELFIE",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HGDoCdba9yPpKvyYptWv747mG2ti8oVr8Cz88gV9TMdW\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"HmEomvDg2BjV8bvdb1DWH52WEju6KDTpG5CZBBqW2Zgb\",\"token_decimals\":6},\"amm_info_address\":\"Dfk133hHxjAA1yPryNkoPERGJ5DMpUtm79YeY1p1Wiyh\",\"open_orders_address\":\"7xGGsWHaXoPw4mJaJKoUatrQbUSVyy3TjvniWVxTBfbc\"}"
+			  }
+			]
+		  },
+		  "SLOTH/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SLOTH",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SLOTH/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Bs7VsZxQYHndLFnfDRRmJ4D44gCoTv7vNoDF2s5s11cV\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"5xQzJAvJ7Ut4qoTwiKECnaMDUhZFivx96EFomcBbUShq\",\"token_decimals\":9},\"amm_info_address\":\"7mtJbVNEtejYmCLRriwQhymZdzn4wGRFTvTZ5721b4BD\",\"open_orders_address\":\"A7k1mZQNNNKCakhHZN9bQqLzowDmApHTb4564uw5tAVU\"}"
+			  }
+			]
+		  },
+		  "SPEED/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SPEED",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/SPEED",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"H1Lj6xGsMnbPKZcGAtJbnNWf8W72XEY3FCb9JMyWH9jq\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Eiwa11wqf1T8nEgiH1DadeNJ56hXw7iobFExVYerBi9V\",\"token_decimals\":6},\"amm_info_address\":\"81E14MT778WvYKYpavCWoaqzSiT87VhboZqXmYgbABan\",\"open_orders_address\":\"6FAtx1SHxfdpWEvTH6zsDT8vb93cRno95ELBE1sUYmDP\"}"
+			  }
+			]
+		  },
+		  "SPIKE/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "SPIKE",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "SOL/SPIKE",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"invert": true,
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"12ZLC7u75vJr9nAuzuJ6yFECq3JAgFKFWRcEhjEwvrF8\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"EqGTncTywZiYeA74Zog9hgEtY7DapEuKd7QVDX38yP3k\",\"token_decimals\":6},\"amm_info_address\":\"Gk4uCFPHUMriPVGNaAFr6v2YB491ViZtdMpGNsJAWfTe\",\"open_orders_address\":\"4BYG6KxdExgvEd8Mp8rB2iH3VDQis3GkaHqHhPojx7QM\"}"
+			  }
+			]
+		  },
+		  "STACKS/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "STACKS",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "STACKS/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"AoKWNc3zKu3hfprVR4ZH9jPod4NyUZ2nzkU3gYGpwpfZ\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"4TBThQTWQ15sXNQJfRjp2gxQ8BKarn7u4FmEy1D5guCL\",\"token_decimals\":9},\"amm_info_address\":\"HdVFDQRgQiHBfBjz4oGuFLZy7m7qacLMQCiMC2y6QQAt\",\"open_orders_address\":\"9s6zTUAXti5r4k8AcpFszujdfqyPRJNpcPUQiT2rTsFp\"}"
+			  }
+			]
+		  },
+		  "MOTHER/USD": {
 			"ticker": {
 			  "currency_pair": {
 				"Base": "MOTHER",
-				"Quote": "SOL"
+				"Quote": "USD"
 			  },
 			  "decimals": 18,
 			  "min_provider_count": 1,
@@ -6032,7 +6567,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "eggdog/usd"
+				"off_chain_ticker": "justanegg-2/usd"
 			  }
 			]
 		  },
