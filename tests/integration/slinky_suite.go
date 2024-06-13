@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -363,42 +362,37 @@ func (s *SlinkyOracleIntegrationSuite) TestValidatorExit() {
 		s.Require().NoError(RestartOracle(node))
 	}
 
+	// wait for the oracle to start
+	s.T().Log("Waiting for oracle to start...")
+	time.Sleep(45 * time.Second)
+	s.T().Log("Done waiting for oracle to start")
+
 	// Unbond the first validator
-	nodes := s.chain.Nodes()
-	s.Require().True(len(nodes) > 0)
-
-	node := nodes[0]
-	numNodes := len(nodes)
-	valAddr, err := node.AccountKeyBech32(ctx, validatorKey)
-	s.Require().NoError(err)
-
-	accAddress := sdk.MustAccAddressFromBech32(valAddr)
-	valAddress := sdk.ValAddress(accAddress.Bytes())
-
 	vals, err := s.chain.StakingQueryValidators(ctx, stakingtypes.Bonded.String())
 	s.Require().NoError(err)
+	val := vals[0].OperatorAddress
 
-	s.T().Logf("Validators: %d", len(vals))
-	s.T().Logf("Node that will unbond: %s", valAddress.String())
+	wasErr := true
+	s.Require().NoError(err)
+	for _, node := range s.chain.Validators {
+		height, err := s.chain.Height(ctx)
+		s.Require().NoError(err)
 
-	found := false
-	for _, val := range vals {
-		s.T().Logf("Validator %s with stake %s", val.OperatorAddress, val.Tokens.String())
-		if val.OperatorAddress == valAddress.String() {
-			// unbond the validator
-			s.T().Logf("Unbonding validator %s with stake %s", valAddress.String(), val.Tokens.String())
-			err := node.StakingUnbond(ctx, validatorKey, valAddress.String(), fmt.Sprintf("%sstake", val.Tokens.String()))
-			s.Require().NoError(err)
-			found = true
+		s.T().Logf("attempting to unboud at height: %d", height)
+		err = node.StakingUnbond(ctx, validatorKey, val, vals[0].BondedTokens().String()+s.denom)
+		if err == nil {
+			wasErr = false
 			break
 		}
 	}
-
-	s.Require().True(found, "validator not found")
+	s.Require().False(wasErr)
+	height, err := s.chain.Height(ctx)
+	s.Require().NoError(err)
+	s.T().Logf("unbond successful after height: %d", height)
 
 	// Ensure that the network produces a few blocks after the unbonding.
 	currentHeight, err := s.chain.Height(ctx)
-	s.T().Logf("Current height: %d", currentHeight)
+	s.T().Logf("Current heigh before checking blocks being produced: %d", currentHeight)
 	numBlockDiff := int64(5)
 	s.Require().NoError(err)
 
@@ -422,7 +416,7 @@ func (s *SlinkyOracleIntegrationSuite) TestValidatorExit() {
 			s.Require().NoError(err)
 
 			s.T().Logf("Validators: %d after delegation", len(vals))
-			return len(vals) < numNodes
+			return len(vals) < 4
 		},
 		30*time.Second,
 		1*time.Second,

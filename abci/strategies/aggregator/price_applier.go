@@ -78,6 +78,12 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 		return nil, err
 	}
 
+	opa.logger.Info(
+		"got oracle votes",
+		"height", req.Height,
+		"num_votes", len(votes),
+	)
+
 	// Aggregate all oracle vote extensions into a single set of prices.
 	prices, err := opa.va.AggregateOracleVotes(ctx, votes)
 	if err != nil {

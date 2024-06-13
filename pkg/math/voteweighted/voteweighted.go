@@ -145,6 +145,7 @@ func Median(
 					"percent_submitted", percentSubmitted.String(),
 					"threshold", threshold.String(),
 					"final_price", prices[currencyPair].String(),
+					"num_validators", len(info.Prices),
 				)
 			} else {
 				logger.Info(
@@ -152,6 +153,7 @@ func Median(
 					"currency_pair", currencyPair.String(),
 					"threshold", threshold.String(),
 					"percent_submitted", percentSubmitted.String(),
+					"num_validators", len(info.Prices),
 				)
 			}
 		}
