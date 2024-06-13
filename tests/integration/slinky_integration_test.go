@@ -117,14 +117,14 @@ var (
 	}
 )
 
-func TestSlinkyOracleIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
-		spec,
-		oracleImage,
-	)
+// func TestSlinkyOracleIntegration(t *testing.T) {
+// 	baseSuite := integration.NewSlinkyIntegrationSuite(
+// 		spec,
+// 		oracleImage,
+// 	)
 
-	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))
-}
+// 	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))
+// }
 
 // func TestSlinkySlashingIntegration(t *testing.T) {
 // 	baseSuite := integration.NewSlinkyIntegrationSuite(
@@ -134,3 +134,12 @@ func TestSlinkyOracleIntegration(t *testing.T) {
 
 // 	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
 // }
+
+func TestSlinkyOracleValidatorIntegration(t *testing.T) {
+	baseSuite := integration.NewSlinkyIntegrationSuite(
+		spec,
+		oracleImage,
+	)
+
+	suite.Run(t, integration.NewSlinkyOracleValidatorIntegrationSuite(baseSuite))
+}

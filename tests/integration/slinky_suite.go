@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/static"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,7 +22,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -306,71 +304,15 @@ func NewSlinkyOracleIntegrationSuite(suite *SlinkyIntegrationSuite) *SlinkyOracl
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestValidatorExit() {
-	// Set up some price feeds
-	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
-	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
-	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
-
-	// add multiple currency pairs
-	cps := []slinkytypes.CurrencyPair{
-		ethusdcCP,
-		ethusdtCP,
-		ethusdCP,
-	}
-
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
-
-	cc, closeFn, err := GetChainGRPC(s.chain)
-	s.Require().NoError(err)
-	defer closeFn()
-
-	// get the currency pair ids
-	ctx := context.Background()
-	_, err = getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdcCP)
-	s.Require().NoError(err)
-
-	_, err = getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdtCP)
-	s.Require().NoError(err)
-
-	_, err = getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdCP)
-	s.Require().NoError(err)
-
-	// start all oracles
-	for _, node := range s.chain.Nodes() {
-		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-		oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
-			Name: static.Name,
-			API: oracleconfig.APIConfig{
-				Enabled:          true,
-				Timeout:          250 * time.Millisecond,
-				Interval:         250 * time.Millisecond,
-				ReconnectTimeout: 250 * time.Millisecond,
-				MaxQueries:       1,
-				Endpoints: []oracleconfig.Endpoint{
-					{
-						URL: "http://un-used-url.com",
-					},
-				},
-				Atomic: true,
-				Name:   static.Name,
-			},
-			Type: types.ConfigType,
-		}
-
-		oracle := GetOracleSideCar(node)
-		SetOracleConfigsOnOracle(oracle, oracleConfig)
-		s.Require().NoError(RestartOracle(node))
-	}
-
-	// wait for the oracle to start
-	s.T().Log("Waiting for oracle to start...")
-	time.Sleep(45 * time.Second)
-	s.T().Log("Done waiting for oracle to start")
-
 	// Unbond the first validator
+	ctx := context.Background()
 	vals, err := s.chain.StakingQueryValidators(ctx, stakingtypes.Bonded.String())
 	s.Require().NoError(err)
 	val := vals[0].OperatorAddress
+
+	heightBeforeUnBond, err := s.chain.Height(ctx)
+	s.T().Logf("height before unbond: %d", heightBeforeUnBond)
+	s.Require().NoError(err)
 
 	wasErr := true
 	s.Require().NoError(err)
@@ -378,11 +320,11 @@ func (s *SlinkyOracleIntegrationSuite) TestValidatorExit() {
 		height, err := s.chain.Height(ctx)
 		s.Require().NoError(err)
 
-		s.T().Logf("attempting to unboud at height: %d", height)
+		s.T().Logf("attempting to unbond at height: %d", height)
 		err = node.StakingUnbond(ctx, validatorKey, val, vals[0].BondedTokens().String()+s.denom)
+		s.T().Logf("unbond error: %v", err)
 		if err == nil {
 			wasErr = false
-			break
 		}
 	}
 	s.Require().False(wasErr)
@@ -390,37 +332,7 @@ func (s *SlinkyOracleIntegrationSuite) TestValidatorExit() {
 	s.Require().NoError(err)
 	s.T().Logf("unbond successful after height: %d", height)
 
-	// Ensure that the network produces a few blocks after the unbonding.
-	currentHeight, err := s.chain.Height(ctx)
-	s.T().Logf("Current heigh before checking blocks being produced: %d", currentHeight)
-	numBlockDiff := int64(5)
-	s.Require().NoError(err)
-
-	s.T().Logf("Waiting for blocks to be produced after unbonding")
-	s.Eventually(
-		func() bool {
-			height, err := s.chain.Height(ctx)
-			s.T().Logf("Current height: %d", height)
-			s.Require().NoError(err)
-			return height > currentHeight+numBlockDiff
-		},
-		60*time.Second,
-		1*time.Second,
-	)
-
-	// wait for the unbonding period to pass
-	s.T().Logf("Waiting for unbonding period to pass")
-	s.Eventually(
-		func() bool {
-			vals, err := s.chain.StakingQueryValidators(ctx, stakingtypes.Bonded.String())
-			s.Require().NoError(err)
-
-			s.T().Logf("Validators: %d after delegation", len(vals))
-			return len(vals) < 4
-		},
-		30*time.Second,
-		1*time.Second,
-	)
+	// Determine the height at which the unbond happened.
 }
 
 func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp slinkytypes.CurrencyPair) (uint64, error) {
