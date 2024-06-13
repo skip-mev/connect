@@ -20,18 +20,6 @@ import (
 
 var _ Oracle = (*OracleImpl)(nil)
 
-// Oracle defines the expected interface for an oracle. It is consumed by the oracle server.
-//
-//go:generate mockery --name Oracle --filename mock_oracle.go
-type Oracle interface {
-	IsRunning() bool
-	GetLastSyncTime() time.Time
-	GetPrices() types.Prices
-	GetMarketMap() mmtypes.MarketMap
-	Start(ctx context.Context) error
-	Stop()
-}
-
 // OracleImpl maintains providers and the state provided by them. This includes pricing data and market map updates.
 type OracleImpl struct { //nolint:revive
 	mut     sync.Mutex

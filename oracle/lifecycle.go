@@ -10,14 +10,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-// generalProvider is an interface for a provider that implements the base provider.
-type generalProvider interface {
-	// Start starts the provider.
-	Start(ctx context.Context) error
-	// Name is the provider's name.
-	Name() string
-}
-
 // Start starts the (blocking) oracle. This will initialize the oracle
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *OracleImpl) Start(ctx context.Context) error {
