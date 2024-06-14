@@ -90,10 +90,29 @@ func (s *SlinkyOracleValidatorIntegrationSuite) TestUnbonding() {
 
 	wasErr := true
 	for _, node := range s.chain.Validators {
+		height, err := s.chain.Height(ctx)
+		s.Require().NoError(err)
+
+		s.T().Logf("attempting to unbond at height: %d", height)
 		err = node.StakingUnbond(ctx, validatorKey, val, vals[0].BondedTokens().String()+s.denom)
 		if err == nil {
 			wasErr = false
 		}
 	}
 	s.Require().False(wasErr)
+
+	height, err := s.chain.Height(ctx)
+	s.Require().NoError(err)
+	s.T().Logf("unbond successful after height: %d", height)
+
+	s.Eventually(
+		func() bool {
+			next, err := s.chain.Height(ctx)
+			s.Require().NoError(err)
+			s.T().Logf("current height: %d", next)
+			return next > height+5
+		},
+		5*time.Minute,
+		5*time.Second,
+	)
 }
