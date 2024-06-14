@@ -78,7 +78,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 		return nil, err
 	}
 
-	opa.logger.Info(
+	opa.logger.Debug(
 		"got oracle vote extensions",
 		"height", req.Height,
 		"num_votes", len(votes),
