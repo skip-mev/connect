@@ -37,7 +37,7 @@ const (
 	UniswapV3TickerSeparator = Delimiter
 
 	// RaydiumTickerFields is the minimum number of fields to expect the raydium exchange ticker to have.
-	RaydiumTickerFields = 6
+	RaydiumTickerFields = 8
 
 	// RaydiumTickerSeparator is the separator for fields contained within a ticker for the raydium provider.
 	RaydiumTickerSeparator = Delimiter
@@ -70,7 +70,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 		},
 		{
 			// TODO: Update once the PR is merged.
-			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/yujin/add_isolated_markets/public/configs/otherMarketData.json",
+			URL: "https://raw.githubusercontent.com/nivasan1/v4-web/nv/adjust-raydium-markets-other-market-data-json/public/configs/otherMarketData.json",
 		},
 	},
 }
@@ -119,7 +119,7 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 	// split fields by separator and expect there to be at least 6 values
 	fields := strings.Split(ticker, RaydiumTickerSeparator)
 	if len(fields) < RaydiumTickerFields {
-		return "", fmt.Errorf("expected at least 6 fields, got %d", len(fields))
+		return "", fmt.Errorf("expected at least 6 fields, got %d for ticker: %s", len(fields), ticker)
 	}
 
 	// check that vault addresses are valid solana addresses
