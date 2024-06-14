@@ -12,6 +12,8 @@
 
 A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.money/slinky/overview) page for more information!
 
+Slinky uses Vote Extensions to create an hyperperformant, extremely secure mechanism for aggregating off-chain data into a blockchain.
+
 ## Install
 
 ```shell
