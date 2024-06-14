@@ -37,7 +37,7 @@ const (
 	UniswapV3TickerSeparator = Delimiter
 
 	// RaydiumTickerFields is the minimum number of fields to expect the raydium exchange ticker to have.
-	RaydiumTickerFields = 6
+	RaydiumTickerFields = 8
 
 	// RaydiumTickerSeparator is the separator for fields contained within a ticker for the raydium provider.
 	RaydiumTickerSeparator = Delimiter
@@ -70,7 +70,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 		},
 		{
 			// TODO: Update once the PR is merged.
-			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/yujin/add_isolated_markets/public/configs/otherMarketData.json",
+			URL: "https://raw.githubusercontent.com/nivasan1/v4-web/nv/adjust-raydium-markets-other-market-data-json/public/configs/otherMarketData.json",
 		},
 	},
 }
@@ -114,12 +114,12 @@ func UniswapV3MetadataFromTicker(ticker string, invert bool) (string, error) {
 
 // RaydiumMetadataFromTicker extracts json-metadata from a ticker for Raydium.
 // All raydium tickers on dydx will be formatted as follows
-// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS).
+// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS-OPEN_ORDERS_ADDRESS-AMM_INFO_ADDRESS).
 func RaydiumMetadataFromTicker(ticker string) (string, error) {
 	// split fields by separator and expect there to be at least 6 values
 	fields := strings.Split(ticker, RaydiumTickerSeparator)
 	if len(fields) < RaydiumTickerFields {
-		return "", fmt.Errorf("expected at least 6 fields, got %d", len(fields))
+		return "", fmt.Errorf("expected at least 6 fields, got %d for ticker: %s", len(fields), ticker)
 	}
 
 	// check that vault addresses are valid solana addresses
@@ -144,6 +144,16 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
 	}
 
+	// expect the open-orders address to be valid
+	if _, err := solana.PublicKeyFromBase58(fields[6]); err != nil {
+		return "", fmt.Errorf("failed to parse open orders address: %w", err)
+	}
+
+	// expect the amm id address to be valid
+	if _, err := solana.PublicKeyFromBase58(fields[7]); err != nil {
+		return "", fmt.Errorf("failed to parse amm id address: %w", err)
+	}
+
 	// create the Raydium metadata
 	parsedConfig := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
@@ -154,6 +164,8 @@ func RaydiumMetadataFromTicker(ticker string) (string, error) {
 			TokenVaultAddress: quoteTokenVault,
 			TokenDecimals:     quoteDecimals,
 		},
+		OpenOrdersAddress: fields[6],
+		AMMInfoAddress:    fields[7],
 	}
 	// convert the metadata to json
 	cfgBytes, err := json.Marshal(parsedConfig)
