@@ -391,4 +391,5 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
 
-retract [v0.4.0, v0.4.4] // raydium provider is broken for these releases
+retract [v0.4.0, v1.0.0] // raydium provider is broken for these releases
+
