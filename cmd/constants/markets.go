@@ -6686,7 +6686,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "kitty-coin-solana/usd"
+				"off_chain_ticker": "roaring-kitty-solana/usd"
 			  }
 			]
 		  },
