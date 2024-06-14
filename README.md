@@ -10,7 +10,7 @@
 [![License: Apache-2.0](https://img.shields.io/github/license/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/slinky/blob/main/LICENSE)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/slinky?style=flat-square)](https://github.com/skip-mev/slinky)
 
-A general purpose price oracle leveraging ABCI++.
+A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.money/slinky/overview) page for more information!
 
 ## Install
 
