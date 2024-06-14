@@ -2,6 +2,7 @@ package ve_test
 
 import (
 	"bytes"
+	"fmt"
 	"sort"
 	"testing"
 
@@ -80,11 +81,6 @@ func NewABCIUtilsTestSuite(t *testing.T) *ABCIUtilsTestSuite {
 	valStore := mock.NewMockValidatorStore(ctrl)
 	s.valStore = valStore
 
-	// set up mock
-	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[0].consAddr.Bytes()).Return(s.vals[0].tmPk, nil).AnyTimes()
-	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[1].consAddr.Bytes()).Return(s.vals[1].tmPk, nil).AnyTimes()
-	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[2].consAddr.Bytes()).Return(s.vals[2].tmPk, nil).AnyTimes()
-
 	// create context
 	s.ctx = sdk.Context{}.WithConsensusParams(cmtproto.ConsensusParams{
 		Abci: &cmtproto.ABCIParams{
@@ -102,6 +98,11 @@ func TestABCIUtilsTestSuite(t *testing.T) {
 
 // check ValidateVoteExtensions works when all nodes have CommitBlockID votes.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsHappyPath() {
+	// set up mock
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[0].consAddr.Bytes()).Return(s.vals[0].tmPk, nil).Times(1)
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[1].consAddr.Bytes()).Return(s.vals[1].tmPk, nil).Times(1)
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[2].consAddr.Bytes()).Return(s.vals[2].tmPk, nil).Times(1)
+
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
 		Extension: ext,
@@ -158,6 +159,10 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsHappyPath() {
 
 // check ValidateVoteExtensions works when a single node has submitted a BlockID_Absent.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteAbsent() {
+	// set up mock
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[0].consAddr.Bytes()).Return(s.vals[0].tmPk, nil).Times(1)
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[2].consAddr.Bytes()).Return(s.vals[2].tmPk, nil).Times(1)
+
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
 		Extension: ext,
@@ -255,6 +260,10 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsDuplicateVotes() {
 
 // check ValidateVoteExtensions works when a single node has submitted a BlockID_Nil.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteNil() {
+	// set up mock
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[0].consAddr.Bytes()).Return(s.vals[0].tmPk, nil).Times(1)
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[2].consAddr.Bytes()).Return(s.vals[2].tmPk, nil).Times(1)
+
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
 		Extension: ext,
@@ -350,7 +359,8 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsTwoVotesNilAbsent() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
+	err = ve.ValidateVoteExtensions(s.ctx, s.valStore, llc)
+	s.Require().Error(err)
 }
 
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectVotingPower() {
@@ -452,6 +462,71 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectOrder() {
 
 	// expect-pass (votes of height 2 are included in next block)
 	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
+}
+
+func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsPrunedValidator() {
+	// set up mock
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[0].consAddr.Bytes()).Return(s.vals[0].tmPk, nil).Times(1)
+	// validator 1 is pruned.
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[1].consAddr).Return(
+		cmtprotocrypto.PublicKey{},
+		fmt.Errorf("validator not found"),
+	).Times(1)
+	s.valStore.EXPECT().GetPubKeyByConsAddr(gomock.Any(), s.vals[2].consAddr.Bytes()).Return(s.vals[2].tmPk, nil).Times(1)
+
+	ext := []byte("vote-extension")
+	cve := cmtproto.CanonicalVoteExtension{
+		Extension: ext,
+		Height:    2,
+		Round:     int64(0),
+		ChainId:   chainID,
+	}
+
+	bz, err := marshalDelimitedFn(&cve)
+	s.Require().NoError(err)
+
+	extSig0, err := s.vals[0].privKey.Sign(bz)
+	s.Require().NoError(err)
+
+	extSig1, err := s.vals[1].privKey.Sign(bz)
+	s.Require().NoError(err)
+
+	extSig2, err := s.vals[2].privKey.Sign(bz)
+	s.Require().NoError(err)
+
+	s.ctx = s.ctx.WithBlockHeight(3).WithHeaderInfo(header.Info{Height: 3, ChainID: chainID}) // enable vote-extensions
+
+	llc := abci.ExtendedCommitInfo{
+		Round: 0,
+		Votes: []abci.ExtendedVoteInfo{
+			{
+				Validator:          s.vals[0].toValidator(333),
+				VoteExtension:      ext,
+				ExtensionSignature: extSig0,
+				BlockIdFlag:        cmtproto.BlockIDFlagCommit,
+			},
+			{
+				Validator:          s.vals[1].toValidator(333),
+				VoteExtension:      ext,
+				ExtensionSignature: extSig1,
+				BlockIdFlag:        cmtproto.BlockIDFlagCommit,
+			},
+			{
+				Validator:          s.vals[2].toValidator(334),
+				VoteExtension:      ext,
+				ExtensionSignature: extSig2,
+				BlockIdFlag:        cmtproto.BlockIDFlagCommit,
+			},
+		},
+	}
+
+	// order + convert to last commit
+	llc, info := extendedCommitToLastCommit(llc)
+	s.ctx = s.ctx.WithCometInfo(info)
+
+	// expect-pass (votes of height 2 are included in next block)
+	err = ve.ValidateVoteExtensions(s.ctx, s.valStore, llc)
+	s.Require().NoError(err)
 }
 
 func marshalDelimitedFn(msg proto.Message) ([]byte, error) {

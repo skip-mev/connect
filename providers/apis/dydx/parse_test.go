@@ -359,7 +359,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
 						ExchangeName: "Raydium",
-						Ticker:       "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9",
+						Ticker:       "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9-FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F-5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1",
 					},
 				},
 			},
@@ -367,7 +367,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 				{
 					Name:           raydium.Name,
 					OffChainTicker: "SMOLE/SOL",
-					Metadata_JSON:  "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+					Metadata_JSON:  "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9},\"amm_info_address\":\"5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1\",\"open_orders_address\":\"FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F\"}",
 				},
 			},
 			expectedErr: false,
@@ -468,10 +468,22 @@ func TestExtractMetadata(t *testing.T) {
 			expectedErr:  true,
 		},
 		{
+			name:         "raydium provider w/ incorrect open-orders account",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9-a-5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1"},
+			expectedErr:  true,
+		},
+		{
+			name:         "raydium provider w/ incorrect ammId account",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9-FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F-a"},
+			expectedErr:  true,
+		},
+		{
 			name:             "raydium provider w/ correct metadata",
 			providerName:     raydium.Name,
-			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9"},
-			expectedMetadata: "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9-FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F-5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1"},
+			expectedMetadata: "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9},\"amm_info_address\":\"5EgCcjkuE42YyTZY4QG8qTioUwNh6agTvJuNRyEqcqV1\",\"open_orders_address\":\"FeKBjZ5rBvHPyppHf11qjYxwaQuiympppCTQ5pC6om3F\"}",
 			expectedErr:      false,
 		},
 		{
