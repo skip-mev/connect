@@ -83,7 +83,7 @@ $ make stop-all-dev
 ### Oracle Service Metrics
 
 We have an extensive suite of metrics available to validators and chain operators.
- Please contact us / join our discord if you want help setting them up!
+ Please [join our discord](https://discord.gg/PeBGE9jrbu) if you want help setting them up!
 
 * metrics relevant to the oracle service's health + operation are [here](./metrics.md)
 
