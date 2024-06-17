@@ -1663,7 +1663,7 @@ var (
 				}
 			  },
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "AAVEUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -1696,7 +1696,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ADAUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -1781,7 +1781,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "AEVOUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -1834,7 +1834,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "AGIXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -1895,7 +1895,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ALGOUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -1956,7 +1956,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "APEUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2021,7 +2021,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "APTUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2102,7 +2102,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ARBUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2179,7 +2179,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ARKMUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2232,7 +2232,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ASTRUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2289,7 +2289,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ATOMUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2362,7 +2362,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "AVAXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2435,7 +2435,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "AXLUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2480,7 +2480,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "BCHUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2642,7 +2642,7 @@ var (
 				}
 			  },
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "BNBUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2679,7 +2679,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "BONKUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2740,7 +2740,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "BTCUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2813,7 +2813,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "COMPUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2866,7 +2866,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "CRVUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -2927,7 +2927,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "DOGEUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3008,7 +3008,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "DOTUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3085,7 +3085,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "DYDXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3146,7 +3146,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "DYMUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3199,7 +3199,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "EOSUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3268,7 +3268,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ETCUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3333,7 +3333,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ETHUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3406,7 +3406,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "FETUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3463,7 +3463,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "FILUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3524,7 +3524,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "GRTUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3601,7 +3601,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "HBARUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3666,7 +3666,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ICPUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3731,7 +3731,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "IMXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3784,7 +3784,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "INJUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3853,7 +3853,7 @@ var (
 				"off_chain_ticker": "JTO-USD"
 			  },
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "JTOUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3922,7 +3922,7 @@ var (
 				}
 			  },
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "JUPUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -3975,7 +3975,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "LDOUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4036,7 +4036,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "LINKUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4101,7 +4101,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "LTCUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4174,7 +4174,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "MANAUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4235,7 +4235,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "MATICUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4316,7 +4316,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "MKRUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4369,7 +4369,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "NEARUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4442,7 +4442,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "NTRNUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4487,7 +4487,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "OPUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4552,7 +4552,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "ORDIUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4621,7 +4621,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "PEPEUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4690,7 +4690,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "PYTHUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4751,7 +4751,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "RNDRUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4812,7 +4812,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "RUNEUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4861,7 +4861,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "SEIUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4926,7 +4926,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "SHIBUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -4999,7 +4999,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "SNXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5052,7 +5052,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "SOLUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5129,7 +5129,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "STRKUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5186,7 +5186,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "STXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5263,7 +5263,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "SUIUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5340,7 +5340,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "TIAUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5413,7 +5413,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "TRXUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5486,7 +5486,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "UNIUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5555,7 +5555,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "USDCUSDT",
 				"invert": true
 			  },
@@ -5613,7 +5613,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "WLDUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5690,7 +5690,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "WOOUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5743,7 +5743,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "XLMUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
@@ -5812,7 +5812,7 @@ var (
 			},
 			"provider_configs": [
 			  {
-				"name": "binance_api",
+				"name": "binance_ws",
 				"off_chain_ticker": "XRPUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
