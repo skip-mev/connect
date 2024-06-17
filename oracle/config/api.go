@@ -50,7 +50,7 @@ type Endpoint struct {
 
 	// Authentication holds all data necessary for an API provider to authenticate with
 	// an endpoint.
-	Authentication Authentication `json:"authentication"`
+	Authentication Authentication `json:"authentication"` 
 }
 
 // ValidateBasic performs basic validation of the API endpoint.

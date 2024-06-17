@@ -52,13 +52,13 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.TODO()))
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(marketMap))
 
-		providers = o.GetProviderState()
+		providers = o.GetPriceProvidersState()
 
 		cbTickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
@@ -116,7 +116,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		time.Sleep(2 * time.Second)
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		// Update the oracle's market map.
@@ -124,7 +124,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		time.Sleep(2 * time.Second)
 
-		providers = o.GetProviderState()
+		providers = o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		cbTickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
@@ -196,13 +196,13 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.Background()))
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		// Update the oracle's market map.
 		require.NoError(t, o.UpdateMarketMap(mmtypes.MarketMap{}))
 
-		providers = o.GetProviderState()
+		providers = o.GetPriceProvidersState()
 
 		// Check the state after the update.
 		coinbaseState, ok := providers[coinbase.Name]
@@ -240,7 +240,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		}()
 
 		time.Sleep(2 * time.Second)
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		// Update the oracle's market map.
@@ -248,7 +248,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		time.Sleep(2 * time.Second)
 
-		providers = o.GetProviderState()
+		providers = o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		// Check the state after the update.
@@ -285,7 +285,7 @@ func TestUpdateProviderState(t *testing.T) {
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[coinbase.Name]
@@ -325,7 +325,7 @@ func TestUpdateProviderState(t *testing.T) {
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[coinbase.Name]
@@ -366,7 +366,7 @@ func TestUpdateProviderState(t *testing.T) {
 		o := orc.(*oracle.OracleImpl)
 		require.NoError(t, o.Init(context.TODO()))
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[coinbase.Name]
@@ -410,7 +410,7 @@ func TestUpdateProviderState(t *testing.T) {
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[coinbase.Name]
@@ -455,7 +455,7 @@ func TestUpdateProviderState(t *testing.T) {
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[okx.Name]
@@ -504,7 +504,7 @@ func TestUpdateProviderState(t *testing.T) {
 		tickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
 		require.NoError(t, err)
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[okx.Name]
@@ -546,7 +546,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		require.NoError(t, o.Init(context.TODO()))
 
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[okx.Name]
@@ -597,7 +597,7 @@ func TestUpdateProviderState(t *testing.T) {
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
-		providers := o.GetProviderState()
+		providers := o.GetPriceProvidersState()
 		require.Len(t, providers, 3)
 
 		providerState, ok := providers[okx.Name]

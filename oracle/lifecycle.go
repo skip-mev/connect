@@ -40,15 +40,20 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 		}
 	}
 
-	// Start the market map provider.
-	if o.mmProvider != nil {
-		o.logger.Info("starting marketmap provider")
+	// Start the market map provider(s).
+	for name, state := range o.mmProviders {
+		o.logger.Info("starting marketmap provider", zap.String("provider", name))
 
 		o.wg.Add(1)
 		go func() {
 			defer o.wg.Done()
-			o.execProviderFn(ctx, o.mmProvider)
+			o.execProviderFn(ctx, state.Provider)
 		}()
+	}
+
+	// Start listening for new market maps.
+	if len(o.mmProviders) > 0 {
+		o.logger.Info("starting market map update listener")
 
 		o.wg.Add(1)
 		go func() {

@@ -24,6 +24,13 @@ type Chain struct {
 	ChainID string
 }
 
+// NewChain returns a new market map key.
+func NewChain(chainID string) Chain {
+	return Chain{
+		ChainID: chainID,
+	}
+}
+
 // String returns the string representation of the Chain schema.
 func (mms Chain) String() string {
 	return fmt.Sprintf("ChainID: %s", mms.ChainID)

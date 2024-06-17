@@ -82,7 +82,7 @@ func WithWriteTo(filePath string) Option {
 func WithPriceProviders(pps ...*types.PriceProvider) Option {
 	return func(m *OracleImpl) {
 		for _, pp := range pps {
-			m.priceProviders[pp.Name()] = ProviderState{Provider: pp}
+			m.priceProviders[pp.Name()] = &PriceProviderState{Provider: pp}
 		}
 	}
 }

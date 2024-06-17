@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // Init initializes the all providers that are configured via the oracle config.
@@ -94,13 +95,11 @@ func (o *OracleImpl) createPriceProvider(ctx context.Context, cfg config.Provide
 		return fmt.Errorf("provider %s has no enabled query handlers", cfg.Name)
 	}
 
-	state := ProviderState{
-		Provider: provider,
-		Cfg:      cfg,
-	}
-
 	// Add the provider to the oracle.
-	o.priceProviders[provider.Name()] = state
+	o.priceProviders[provider.Name()] = &PriceProviderState{
+		Provider: provider,
+		Tickers:  types.NewProviderTickers(),
+	}
 
 	o.logger.Info(
 		"created price provider state",
@@ -140,7 +139,7 @@ func (o *OracleImpl) createMarketMapProvider(cfg config.ProviderConfig) error {
 		return fmt.Errorf("cannot create market map provider; market map factory is not set")
 	}
 
-	mapper, err := o.marketMapperFactory(
+	provider, err := o.marketMapperFactory(
 		o.logger,
 		o.providerMetrics,
 		o.apiMetrics,
@@ -150,10 +149,14 @@ func (o *OracleImpl) createMarketMapProvider(cfg config.ProviderConfig) error {
 		return fmt.Errorf("failed to create market map provider (%s): %w", cfg.Name, err)
 	}
 
-	o.mmProvider = mapper
+	o.mmProviders[provider.Name()] = &MarketMapProviderState{
+		Provider:  provider,
+		MarketMap: mmtypes.MarketMap{},
+	}
+
 	o.logger.Info(
 		"created market map provider",
-		zap.String("provider", mapper.Name()),
+		zap.String("provider", provider.Name()),
 	)
 	return nil
 }

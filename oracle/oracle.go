@@ -39,10 +39,9 @@ type OracleImpl struct { //nolint:revive
 	// -------------------Stateful Fields-------------------//
 	//
 	// priceProviders is a map of all price providers that the oracle is using.
-	priceProviders map[string]ProviderState
-	// mmProvider is the market map provider. Specifically this provider is responsible
-	// for making requests for the latest market map data.
-	mmProvider *mmclienttypes.MarketMapProvider
+	priceProviders map[string]*PriceProviderState
+	// mmProviders is a map of all market map providers that the oracle is using.
+	mmProviders map[string]*MarketMapProviderState
 	// aggregator is the price aggregator.
 	aggregator PriceAggregator
 	// lastPriceSync is the last time the oracle successfully updated its prices.
@@ -78,15 +77,21 @@ type OracleImpl struct { //nolint:revive
 	metrics oraclemetrics.Metrics
 }
 
-// ProviderState is the state of a provider. This includes the provider implementation,
-// the provider specific market map, and whether the provider is enabled.
-type ProviderState struct {
+// PriceProviderState is the state of a provider. This includes the provider implementation,
+// and the provider specific market map.
+type PriceProviderState struct {
 	// Provider is the price provider implementation.
 	Provider *types.PriceProvider
-	// Cfg is the provider configuration.
-	//
-	// TODO: Deprecate this once we have synchronous configuration updates.
-	Cfg config.ProviderConfig
+	// Tickers are the provider's tickers.
+	Tickers types.ProviderTickers
+}
+
+// MarketMapProviderState is the state of the market map provider.
+type MarketMapProviderState struct {
+	// Provider is the market map provider implementation.
+	Provider *mmclienttypes.MarketMapProvider
+	// MarketMap is the provider's market map.
+	MarketMap mmtypes.MarketMap
 }
 
 // New returns a new Oracle.
@@ -105,7 +110,7 @@ func New(
 	orc := &OracleImpl{
 		cfg:             cfg,
 		aggregator:      aggregator,
-		priceProviders:  make(map[string]ProviderState), // this will be initialized via the Init method.
+		priceProviders:  make(map[string]*PriceProviderState), // this will be initialized via the Init method.
 		logger:          zap.NewNop(),
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
 		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
@@ -120,8 +125,8 @@ func New(
 	return orc, nil
 }
 
-// GetProviderState returns all providers and their state. This method is used for testing purposes only.
-func (o *OracleImpl) GetProviderState() map[string]ProviderState {
+// GetPriceProvidersState returns all providers and their state. This method is used for testing purposes only.
+func (o *OracleImpl) GetPriceProvidersState() map[string]*PriceProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
@@ -136,16 +141,23 @@ func (o *OracleImpl) GetMarketMap() mmtypes.MarketMap {
 	return o.marketMap
 }
 
-func (o *OracleImpl) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
-	return o.mmProvider
+// GetMarketMapProvider returns the market map provider.
+func (o *OracleImpl) GetMarketMapProvidersState() map[string]*MarketMapProviderState {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.mmProviders
 }
 
+// GetLastSyncTime returns the last time the oracle successfully updated its prices.
 func (o *OracleImpl) GetLastSyncTime() time.Time {
 	o.mut.RLock()
 	defer o.mut.RUnlock()
+
 	return o.lastPriceSync
 }
 
+// GetPrices returns the current prices.
 func (o *OracleImpl) GetPrices() types.Prices {
 	return o.aggregator.GetPrices()
 }

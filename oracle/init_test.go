@@ -47,7 +47,7 @@ func TestInit(t *testing.T) {
 		err = o.Init(context.TODO())
 		require.NoError(t, err)
 
-		state := o.GetProviderState()
+		state := o.GetPriceProvidersState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		coinbaseState, ok := state[coinbase.Name]
@@ -78,7 +78,7 @@ func TestInit(t *testing.T) {
 		err = o.Init(context.TODO())
 		require.NoError(t, err)
 
-		state := o.GetProviderState()
+		state := o.GetPriceProvidersState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		coinbaseState, ok := state[coinbase.Name]

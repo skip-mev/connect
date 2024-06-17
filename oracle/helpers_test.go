@@ -222,7 +222,7 @@ func checkProviderState(
 	expectedName string,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
-	state oracle.ProviderState,
+	state *oracle.PriceProviderState,
 ) {
 	t.Helper()
 

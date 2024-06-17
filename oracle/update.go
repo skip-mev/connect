@@ -19,11 +19,6 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	if err := marketMap.ValidateBasic(); err != nil {
-		o.logger.Error("failed to validate market map", zap.Error(err))
-		return err
-	}
-
 	// Iterate over all existing price providers and update their market maps.
 	for name, state := range o.priceProviders {
 		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
@@ -52,7 +47,7 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
 // this will update the provider's query handler and the provider's market map.
-func (o *OracleImpl) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
+func (o *OracleImpl) UpdateProviderState(providerTickers []types.ProviderTicker, state *PriceProviderState) (*PriceProviderState, error) {
 	provider := state.Provider
 
 	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))

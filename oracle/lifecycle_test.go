@@ -46,7 +46,7 @@ func TestStart(t *testing.T) {
 		}()
 
 		time.Sleep(5 * time.Second)
-		state := o.GetProviderState()
+		state := o.GetPriceProvidersState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		// Stop the oracle.
@@ -75,7 +75,7 @@ func TestStart(t *testing.T) {
 		}()
 
 		time.Sleep(5 * time.Second)
-		state := o.GetProviderState()
+		state := o.GetPriceProvidersState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		// Stop the oracle.
@@ -104,7 +104,7 @@ func TestStart(t *testing.T) {
 		}()
 
 		time.Sleep(5 * time.Second)
-		state := o.GetProviderState()
+		state := o.GetPriceProvidersState()
 		require.Equal(t, len(state), len(oracleCfgWithMapper.Providers)-1)
 
 		mapper := o.GetMarketMapProvider()
