@@ -1,4 +1,4 @@
-package orchestrator
+package oracle
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 )
 
 // Init initializes the all providers that are configured via the oracle config.
-func (o *ProviderOrchestrator) Init(ctx context.Context) error {
+func (o *OracleImpl) Init(ctx context.Context) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
@@ -45,7 +45,7 @@ func (o *ProviderOrchestrator) Init(ctx context.Context) error {
 }
 
 // createPriceProvider creates a new price provider for the given provider configuration.
-func (o *ProviderOrchestrator) createPriceProvider(ctx context.Context, cfg config.ProviderConfig) error {
+func (o *OracleImpl) createPriceProvider(ctx context.Context, cfg config.ProviderConfig) error {
 	// Create the provider market map. This creates the tickers the provider is configured to
 	// support.
 	tickers, err := types.ProviderTickersFromMarketMap(cfg.Name, o.marketMap)
@@ -99,8 +99,8 @@ func (o *ProviderOrchestrator) createPriceProvider(ctx context.Context, cfg conf
 		Cfg:      cfg,
 	}
 
-	// Add the provider to the orchestrator.
-	o.providers[provider.Name()] = state
+	// Add the provider to the oracle.
+	o.priceProviders[provider.Name()] = state
 
 	o.logger.Info(
 		"created price provider state",
@@ -111,7 +111,7 @@ func (o *ProviderOrchestrator) createPriceProvider(ctx context.Context, cfg conf
 }
 
 // createAPIQueryHandler creates a new API query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createAPIQueryHandler(
+func (o *OracleImpl) createAPIQueryHandler(
 	ctx context.Context,
 	cfg config.ProviderConfig,
 ) (types.PriceAPIQueryHandler, error) {
@@ -123,7 +123,7 @@ func (o *ProviderOrchestrator) createAPIQueryHandler(
 }
 
 // createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createWebSocketQueryHandler(
+func (o *OracleImpl) createWebSocketQueryHandler(
 	ctx context.Context,
 	cfg config.ProviderConfig,
 ) (types.PriceWebSocketQueryHandler, error) {
@@ -135,7 +135,7 @@ func (o *ProviderOrchestrator) createWebSocketQueryHandler(
 }
 
 // createMarketMapProvider creates a new market map provider for the given provider configuration.
-func (o *ProviderOrchestrator) createMarketMapProvider(cfg config.ProviderConfig) error {
+func (o *OracleImpl) createMarketMapProvider(cfg config.ProviderConfig) error {
 	if o.marketMapperFactory == nil {
 		return fmt.Errorf("cannot create market map provider; market map factory is not set")
 	}

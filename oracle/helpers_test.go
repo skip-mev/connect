@@ -1,4 +1,4 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"testing"
@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -196,6 +196,25 @@ var (
 		},
 	}
 )
+var _ oracle.PriceAggregator = &noOpPriceAggregator{}
+
+type noOpPriceAggregator struct{}
+
+func (n noOpPriceAggregator) SetProviderPrices(_ string, _ oracletypes.Prices) {
+}
+
+func (n noOpPriceAggregator) UpdateMarketMap(_ mmtypes.MarketMap) {
+}
+
+func (n noOpPriceAggregator) AggregatePrices() {
+}
+
+func (n noOpPriceAggregator) GetPrices() oracletypes.Prices {
+	return oracletypes.Prices{}
+}
+
+func (n noOpPriceAggregator) Reset() {
+}
 
 func checkProviderState(
 	t *testing.T,
@@ -203,7 +222,7 @@ func checkProviderState(
 	expectedName string,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
-	state orchestrator.ProviderState,
+	state oracle.ProviderState,
 ) {
 	t.Helper()
 
