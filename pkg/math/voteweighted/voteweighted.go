@@ -149,7 +149,7 @@ func Median(
 				)
 			} else {
 				logger.Info(
-					"not enough voting power to compute stake-weighted median price price for currency pair",
+					"not enough voting power to compute stake-weighted median price for currency pair",
 					"currency_pair", currencyPair.String(),
 					"threshold", threshold.String(),
 					"percent_submitted", percentSubmitted.String(),

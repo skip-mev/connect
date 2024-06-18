@@ -13,7 +13,7 @@ var (
 	// the markets that are supported by Raydium.
 	RaydiumMarketMap mmtypes.MarketMap
 	// RaydiumMarketMapJSON is the JSON representation of the Raydium MarketMap that can be used
-	// to initialize for a genesis state or used by the sidecar as as static market map.
+	// to initialize for a genesis state or used by the sidecar as static market map.
 	RaydiumMarketMapJSON = `
 	{
 		"markets": {
@@ -1611,7 +1611,7 @@ var (
 	// CoreMarketMap is used to initialize the Core market map.
 	CoreMarketMap mmtypes.MarketMap
 	// CoreMarketMapJSON is the JSON representation of the Core MarketMap that can be used
-	// to initialize for a genesis state or used by the sidecar as as static market map.
+	// to initialize for a genesis state or used by the sidecar as static market map.
 	CoreMarketMapJSON = `
 	{
 		"markets": {

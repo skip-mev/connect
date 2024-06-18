@@ -35,7 +35,7 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryPricesRequest defines the request type for the the Prices method.
+// QueryPricesRequest defines the request type for the Prices method.
 type QueryPricesRequest struct {
 }
 

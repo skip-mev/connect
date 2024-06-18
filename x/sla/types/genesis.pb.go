@@ -137,7 +137,7 @@ func (m *Params) GetEnabled() bool {
 	return false
 }
 
-// PriceFeedSLA defines the the desired SLA for a given set of price feeds. A
+// PriceFeedSLA defines the desired SLA for a given set of price feeds. A
 // price feed is defined to be a set of price prices for the same (currency
 // pair, validator).
 type PriceFeedSLA struct {

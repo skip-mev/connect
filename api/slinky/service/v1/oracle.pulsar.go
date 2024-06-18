@@ -1125,7 +1125,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// QueryPricesRequest defines the request type for the the Prices method.
+// QueryPricesRequest defines the request type for the Prices method.
 type QueryPricesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

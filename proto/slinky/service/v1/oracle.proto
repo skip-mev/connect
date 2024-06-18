@@ -23,7 +23,7 @@ service Oracle {
   }
 }
 
-// QueryPricesRequest defines the request type for the the Prices method.
+// QueryPricesRequest defines the request type for the Prices method.
 message QueryPricesRequest {}
 
 // QueryPricesResponse defines the response type for the Prices method.

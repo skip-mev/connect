@@ -83,7 +83,7 @@ func CmdQueryMarketMap() *cobra.Command {
 func CmdQueryMarket() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "market [base] [quote]",
-		Short: "Query the a market using the given currency pair",
+		Short: "Query the market using the given currency pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
