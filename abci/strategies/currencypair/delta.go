@@ -46,7 +46,7 @@ func (s *DeltaCurrencyPairStrategy) GetEncodedPrice(
 
 	deltaPrice := new(big.Int).Sub(price, onChainPrice)
 
-	ctx.Logger().Info(
+	ctx.Logger().Debug(
 		"encoded oracle price",
 		"currency_pair", cp.String(),
 		"price", deltaPrice.String(),

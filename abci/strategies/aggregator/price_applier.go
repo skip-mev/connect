@@ -103,7 +103,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 	for _, cp := range currencyPairs {
 		price, ok := prices[cp]
 		if !ok || price == nil {
-			opa.logger.Info(
+			opa.logger.Debug(
 				"no price for currency pair",
 				"currency_pair", cp.String(),
 			)
@@ -139,7 +139,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 			return nil, err
 		}
 
-		opa.logger.Info(
+		opa.logger.Debug(
 			"set price for currency pair",
 			"currency_pair", cp.String(),
 			"quote_price", quotePrice.Price.String(),
