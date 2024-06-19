@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/log"
 	"google.golang.org/grpc"
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -120,7 +121,7 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 	)
 	go func() {
 		defer close(done)
-		conn, err = grpc.NewClient(c.addr, opts...)
+		conn, err = slinkygrpc.NewClient(c.addr, opts...)
 
 		// attempt to connect + wait for change in connection state
 		if c.blockingDial {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
@@ -31,7 +32,7 @@ var (
 
 			// Set up a connection to the server.
 			url := fmt.Sprintf("%s:%s", host, port)
-			conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := slinkygrpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)
 			}
