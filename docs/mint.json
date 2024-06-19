@@ -77,28 +77,6 @@
           ]
         }
       ]
-    },
-    {
-      "group": "🧊 Block SDK",
-      "pages": [
-        "blocksdk/integrate-the-sdk",
-        "blocksdk/how-it-works",
-        "blocksdk/searcher-docs",
-        {
-          "group": "🌈 Lane App Store",
-          "pages": [
-            {
-              "group": "🎁 Choose Your Lanes",
-              "pages": [
-                "blocksdk/lanes/existing-lanes/mev",
-                "blocksdk/lanes/existing-lanes/free",
-                "blocksdk/lanes/existing-lanes/fee-market"
-              ]
-            },
-            "blocksdk/lanes/build-your-own-lane"
-          ]
-        }
-      ]
     }
   ],
   "footerSocials": {
