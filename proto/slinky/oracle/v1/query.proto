@@ -83,7 +83,8 @@ message GetCurrencyPairMappingRequest {}
 
 // GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
 message GetCurrencyPairMappingResponse {
-  // currency_pair_mapping is a mapping of the id representing the currency pair to the currency pair itself.
+  // currency_pair_mapping is a mapping of the id representing the currency pair
+  // to the currency pair itself.
   map<uint64, slinky.types.v1.CurrencyPair> currency_pair_mapping = 1
-  [ (gogoproto.nullable) = false ];
+      [ (gogoproto.nullable) = false ];
 }

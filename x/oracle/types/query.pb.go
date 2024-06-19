@@ -367,7 +367,8 @@ var xxx_messageInfo_GetCurrencyPairMappingRequest proto.InternalMessageInfo
 
 // GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
 type GetCurrencyPairMappingResponse struct {
-	// currency_pair_mapping is a mapping of the id representing the currency pair to the currency pair itself.
+	// currency_pair_mapping is a mapping of the id representing the currency pair
+	// to the currency pair itself.
 	CurrencyPairMapping map[uint64]types.CurrencyPair `protobuf:"bytes,1,rep,name=currency_pair_mapping,json=currencyPairMapping,proto3" json:"currency_pair_mapping" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
