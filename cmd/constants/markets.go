@@ -6074,7 +6074,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "ape/usd"
+				"off_chain_ticker": "apecoin/usd"
 			  }
 			]
 		  },
