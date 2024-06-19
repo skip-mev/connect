@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -45,7 +46,7 @@ func NewGRPCClient(
 	}
 
 	// TODO: Do we want to ignore proxy settings?
-	conn, err := grpc.NewClient(
+	conn, err := slinkygrpc.NewClient(
 		api.Endpoints[0].URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithNoProxy(),

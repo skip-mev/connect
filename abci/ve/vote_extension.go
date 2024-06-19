@@ -93,7 +93,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 			// measure latency
 			latency := time.Since(start)
-			h.logger.Info(
+			h.logger.Debug(
 				"extend vote handler",
 				"duration (seconds)", latency.Seconds(),
 				"err", err,
@@ -198,7 +198,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"extending vote with oracle prices",
 			"req_height", req.Height,
 		)
@@ -218,7 +218,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 		// measure latencies from invocation to return
 		defer func() {
 			latency := time.Since(start)
-			h.logger.Info(
+			h.logger.Debug(
 				"verify vote extension handler",
 				"duration (seconds)", latency.Seconds(),
 			)
@@ -272,7 +272,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"validated vote extension",
 			"height", req.Height,
 			"size (bytes)", len(req.VoteExtension),
