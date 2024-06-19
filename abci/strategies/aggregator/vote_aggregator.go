@@ -137,7 +137,7 @@ func (dva *DefaultVoteAggregator) AggregateOracleVotes(ctx sdk.Context, votes []
 	dva.priceAggregator.AggregateDataFromContext(ctx)
 	prices := dva.priceAggregator.GetAggregatedData()
 
-	dva.logger.Info(
+	dva.logger.Debug(
 		"aggregated oracle data",
 		"num_prices", len(prices),
 	)

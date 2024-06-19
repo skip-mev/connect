@@ -107,7 +107,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		// report the slinky specific PrepareProposal latency
 		defer func() {
 			totalLatency := time.Since(startTime)
-			h.logger.Info(
+			h.logger.Debug(
 				"recording handle time metrics of prepare-proposal (seconds)",
 				"total latency", totalLatency.Seconds(),
 				"wrapped prepare proposal latency", wrappedPrepareProposalLatency.Seconds(),
@@ -130,7 +130,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		// for the current block.
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 		if voteExtensionsEnabled {
-			h.logger.Info(
+			h.logger.Debug(
 				"injecting oracle data into proposal",
 				"height", req.Height,
 				"vote_extensions_enabled", voteExtensionsEnabled,
@@ -200,12 +200,12 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
-		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
+		h.logger.Debug("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
 
 		// Inject our VE Tx ( if extInfoBz is non-empty), and resize our response Txs to respect req.MaxTxBytes
 		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
-		h.logger.Info(
+		h.logger.Debug(
 			"prepared proposal",
 			"txs", len(resp.Txs),
 			"vote_extensions_enabled", voteExtensionsEnabled,
@@ -261,7 +261,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		defer func() {
 			// record latency
 			totalLatency := time.Since(start)
-			h.logger.Info(
+			h.logger.Debug(
 				"recording handle time metrics of process-proposal (seconds)",
 				"total latency", totalLatency.Seconds(),
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
@@ -281,7 +281,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
-		h.logger.Info(
+		h.logger.Debug(
 			"processing proposal",
 			"height", req.Height,
 			"num_txs", len(req.Txs),
