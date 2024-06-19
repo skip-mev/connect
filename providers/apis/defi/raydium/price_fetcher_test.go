@@ -19,6 +19,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gagliardetto/solana-go/programs/serum"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"

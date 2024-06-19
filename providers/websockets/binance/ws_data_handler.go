@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"math/rand"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	"go.uber.org/zap"
 )
 
 var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
