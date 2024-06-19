@@ -35,11 +35,6 @@ service Query {
   }
 }
 
-message GetCurrencyPairFromIDResponse {
-  slinky.types.v1.CurrencyPair currency_pairs = 1
-      [ (gogoproto.nullable) = false ];
-}
-
 message GetAllCurrencyPairsRequest {}
 
 // GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
