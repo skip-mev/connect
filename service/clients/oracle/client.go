@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
-	"google.golang.org/grpc"
 	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 

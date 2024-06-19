@@ -1,15 +1,16 @@
 package grpc
 
 import (
-	grpc "google.golang.org/grpc"
 	"strings"
+
+	grpc "google.golang.org/grpc"
 )
 
 // NewClient is a wrapper around the `grpc.NewClient` function. Which strips the
 // (`http` / `https`) schemes from the URL, and returns a new client using a
 // plain url (<address>:<host>) as the target.
 func NewClient(
-	target string, 
+	target string,
 	opts ...grpc.DialOption,
 ) (conn *grpc.ClientConn, err error) {
 	// strip the scheme from the target

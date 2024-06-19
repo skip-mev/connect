@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"google.golang.org/grpc"
 	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/oracle/config"
