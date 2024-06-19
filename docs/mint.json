@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Skip",
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0E0E0E",
+    "light": "#FAFAFA",
+    "dark": "#0E0E0E",
+    "background": {
+      "dark": "#151617"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Products",
+      "url": "https://skip.money/products"
+    },
+    {
+      "name": "Contact",
+      "url": "https://skip.money/contact"
+    },
+    {
+      "name": "Research",
+      "url": "https://ideas.skip.money"
+    },
+    {
+      "name": "Jobs",
+      "url": "https://jobs.skip.money"
+    }
+  ],
+  "modeToggle": {
+    "default": "dark"
+  },
+  "navigation": [
+    {
+      "group": "✨ About",
+      "pages": [
+        "about/intro",
+        "about/faq"
+      ]
+    },
+    {
+      "group": "🔮 Slinky",
+      "pages": [
+        "slinky/overview",
+        "slinky/security-properties",
+        "slinky/slashing",
+        {
+          "group": "👾 Validator Docs",
+          "pages": [
+            "slinky/validator/quickstart",
+            "slinky/validator/validator-app-config",
+            "slinky/validator/validator-slinky-config",
+            "slinky/validator/troubleshooting",
+            "slinky/validator/rpc-providers",
+            "slinky/validator/flags-guide",
+            "slinky/validator/migration-guide"
+          ]
+        },
+        "slinky/upcoming-work",
+        {
+          "group": "🛠️ Using Slinky",
+          "pages": [
+            "slinky/using-slinky/high-level",
+            "slinky/using-slinky/neutron-sdk"
+          ]
+        },
+        {
+          "group": "⛓ Chain Integrations",
+          "pages": [
+            "slinky/integrations/dydx",
+            "slinky/integrations/neutron"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "🧊 Block SDK",
+      "pages": [
+        "blocksdk/integrate-the-sdk",
+        "blocksdk/how-it-works",
+        "blocksdk/searcher-docs",
+        {
+          "group": "🌈 Lane App Store",
+          "pages": [
+            {
+              "group": "🎁 Choose Your Lanes",
+              "pages": [
+                "blocksdk/lanes/existing-lanes/mev",
+                "blocksdk/lanes/existing-lanes/free",
+                "blocksdk/lanes/existing-lanes/fee-market"
+              ]
+            },
+            "blocksdk/lanes/build-your-own-lane"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/skipprotocol",
+    "discord": "https://discord.com/invite/hFeHVAE26P"
+  }
+}

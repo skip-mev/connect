@@ -1,0 +1,199 @@
+---
+description: Migration Paths between Slinky Versions
+title: 🚀 Migration Guide
+---
+
+### v0.x.x -> v1.x.x
+
+#### Deprecations
+
+- The `slinky-config` command will be deprecated starting in `v1.x.x`, see [**`slinky-config` Migration Guide**](#slinky-config-migration-guide) for details
+
+- The `--oracle-config-path` flag will be deprecated starting in `v1.x.x`, see [**`--oracle-config-path` Migration Guide**](#oracle-config-path-migration-guide) for details
+
+- Any configs previously located [here](https://github.com/skip-mev/slinky/blob/v0.4.6/config) will be removed, see [**Migrating from Static Configs**](#migrating-from-static-configs) for details
+
+#### Migrating from Static Configs
+
+Previously, it was possible to run `slinky` with a set of default provided configurations. This will no longer be possible. Instead the configuration process has become much easier!
+
+Specifically, your `market.json` will be ingested via reading chain state, and your `oracle.json` file will be generated automatically by `slinky` on startup (see [**`slinky-config` Migration Guide**](#slinky-config-migration-guide) for specifics on this behavior). To configure this you'll need to specify two fields: which `marketmap-provider` you'd like to use, and an endpoint pointing to the node that your oracle's `marketmap-provider` will be reading state from.
+
+1. Determining which `marketmap-provider` you'll have to use
+
+   - If your sidecar is serving prices for a `dydx` network, run your sidecar with the following argument
+
+     ```bash
+     slinky --marketmap-provider dydx_api
+     ```
+
+     otherwise, you should be using the `marketmap_api` (which is the default `slinky` is using), hence
+
+     ```bash
+     slinky
+     ```
+
+     will work!!
+
+2. Pointing your `marketmap-provider` at the correct node
+
+   **`dydx_api` marketmap provider**:`slinky` will need to be pointed at your dydx node's REST LCD, by default it looks at `http://localhost:1317`.
+
+   **`marketmap_api` marketmap provider**: `slinky` will need to be pointed to your node's app GRPC endpoint, by default it looks at `localhost:9090`.
+
+   > If you need to change where `slinky`'s marketmap-provider is looking for a chain, see [**Important defaults to change**](#important-defaults-to-change)
+
+#### `--oracle-config-path` Migration Guide`
+
+Previously, it was possible to point `slinky` at a custom `oracle.json` config via `--oracle-config-path`. If you depended upon this behavior two things have changed:
+
+1. The JSON schema of the `oracle.json` file is changed, specifically, the `providers` field moved from an array, to a `provider.Name` indexed map.
+
+2. The `--oracle-config-path` flag is now deprecated, in favor of `--oracle-config`.
+
+If you are currently running `slinky --oracle-config-path <path to oracle.json>`, you'll need to adjust to the above two changes, i.e
+
+1. Changing the structure of your `oracle.json` file in accordance with 1, specifically,
+
+   ```json
+   {
+       ...
+       "providers": [
+           {
+               name: "raydium_api",
+               ...
+           },
+           ...
+       ]
+       ...
+   }
+   ```
+
+   must change to
+
+   ```json
+   {
+       ...
+       "providers": {
+           ...
+           "raydium_api": {
+               "name": "raydium_api",
+               ...
+           }
+           ...
+       }
+       ...
+   }
+   ```
+
+   It's important to note, that this new config structure allows for the config to be sparsely defined, specifically, **you don't need to provide a value for all fields in `oracle.json`, only the fields you want to change from default**, see **Important defaults to change** for more details
+
+2. Changing from
+   ```bash
+   slinky --oracle-config-path <path to oracle.json> ...
+   ```
+   to
+   ```bash
+   slinky --oracle-config <path to modified oracle.json> ...
+   ```
+
+#### `slinky-config` Migration Guide
+
+Previously, it was possible to generate both a `market.json` file (market-map), and an `oracle.json` file (oracle configuration), via `slinky-config`. Now an `oracle.json` is being automatically generated when running `slinky`.
+
+As for your `marketmap`, that will be generated via ingesting chain-state, see [here](#migrating-from-static-configs) for more details on configuring this process.
+
+The oracle-config generated will work in almost all cases, however, it is possible to change default values as follows
+
+#### Important defaults to change
+
+> Each node's slinky sidecar will need access to that node's GRPC server. By default, slinky is configured to look at `0.0.0.0:9090` for this server. If you'd like slinky to look elsewhere, you'll need to update the `marketmap_api` (or `dydx_api`) provider's configuration, **see below for directions**.
+
+There are three ways of updating slinky's config:
+
+1.  Specifying the expected node grpc-server address in the entrypoint
+
+2.  Specifying the values to override in environment variables
+
+3.  Specifying the values to override via an `oracle.json` file
+
+#### Specifying the expected node grpc-server address in the entrypoint
+
+> Notice, this method only allows you to override the grpc-server address, other config overrides must follow approaches 2/3
+
+```bash
+slinky --market-map-endpoint <node-ip>:<grpc-server-port>
+```
+
+**It's important to note that slinky currently only supports dialing the server over HTTP, and that the http:// prefix must be removed from the URL**
+
+#### Overrides via `oracle.json`
+
+To override the `marketmap_api` provider's node server address, create a file `oracle.json` (the oracle's configuration file) with the following
+
+```json
+{
+  "providers": {
+    "marketmap_api": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "<node-server-ip>:<node-server-port>"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+This `oracle.json` file may also contain other overrides, for example, the below config changes the port over which the oracle is serving prices (by default the oracle serves over `8080`) + changes the port over which metrics are served (by default metrics are served over `8002`).
+
+```json
+{
+  "port": 8081,
+  "metrics": {
+    "prometheusServerAddress": "0.0.0.0:8003"
+  },
+  "providers": {
+    "marketmap_api": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "<node-server-ip>:<node-server-port>"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+To run `slinky` with this config
+
+```bash
+slinky --oracle-config <path to oracle.json file>
+```
+
+For more details on the names of oracle config fields, see an example config [here](https://github.com/skip-mev/slinky/blob/main/config/core/oracle.json), for docs on what the config fields mean, see [here](https://github.com/skip-mev/slinky/tree/main/oracle/config). Any fields in the `OracleConfig` data-structure that are missing (unspecified) in the `oracle.json` file will be filled with defaults defined [here](/docs/slinky/validator/2-validator-slinky-config.md)
+
+#### Overrides via environment variables
+
+You may override slinky defaults via environment variables as well. Slinky looks for environment variables prefixed with `SLINKY_CONFIG`. To specify an override for a specific `OracleConfig` field append the index (in json-query notation) into the `oracle.json` object to the `SLINKY_CONFIG` prefix, see below for examples
+
+```bash
+SLINKY_CONFIG_PROVIDERS_MARKETMAP_API_API_ENDPOINTS_0_URL=<node-server-ip>:<node-server-port>
+```
+
+The above environment variable would override the `marketmap_api` provider's node-server location. The environment variables below would update the port over which the oracle serves prices + metrics
+
+```bash
+SLINKY_CONFIG_PORT=8081
+SLINKY_CONFIG_METRICS_PROMETHEUSSERVERADDRESS=0.0.0.0:8003
+```
+
+You may run slinky as normal with these overrides, i.e
+
+```bash
+slinky
+```
