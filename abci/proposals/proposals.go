@@ -170,14 +170,14 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			}
 			// Adjust req.MaxTxBytes to account for extInfoBzSize so that the wrapped-proposal handler does not reap too many txs from the mempool
 			extInfoBzSize := int64(len(extInfoBz))
-			if extInfoBzSize < req.MaxTxBytes {
+			if extInfoBzSize <= req.MaxTxBytes {
 				// Reserve bytes for our VE Tx
 				req.MaxTxBytes -= extInfoBzSize
 			} else {
-				h.logger.Error("VE size consumes entire block",
+				h.logger.Error("VE size consumes greater than entire block",
 					"extInfoBzSize", extInfoBzSize,
 					"MaxTxBytes", req.MaxTxBytes)
-				err := fmt.Errorf("VE size consumes entire block: extInfoBzSize = %d: MaxTxBytes = %d", extInfoBzSize, req.MaxTxBytes)
+				err := fmt.Errorf("VE size consumes greater than entire block: extInfoBzSize = %d: MaxTxBytes = %d", extInfoBzSize, req.MaxTxBytes)
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
 
