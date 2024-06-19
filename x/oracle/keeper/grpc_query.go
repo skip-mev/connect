@@ -29,12 +29,6 @@ var _ types.QueryServer = queryServer{}
 func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCurrencyPairsRequest) (*types.GetAllCurrencyPairsResponse, error) {
 	// get all currency pairs from state
 	cps := q.k.GetAllCurrencyPairs(sdk.UnwrapSDKContext(ctx))
-
-	// if no currency pairs exist in the module, return an error to indicate to caller
-	if len(cps) == 0 {
-		return &types.GetAllCurrencyPairsResponse{}, nil
-	}
-
 	return &types.GetAllCurrencyPairsResponse{
 		CurrencyPairs: cps,
 	}, nil
@@ -128,4 +122,10 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 	return &types.GetPricesResponse{
 		Prices: prices,
 	}, nil
+}
+
+func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCurrencyPairMappingRequest) (*types.GetCurrencyPairMappingResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	pairs := q.k.GetCurrencyPairMapping(sdkCtx)
+	return &types.GetCurrencyPairMappingResponse{CurrencyPairMapping: pairs}, nil
 }

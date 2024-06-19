@@ -286,6 +286,17 @@ func (k *Keeper) GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
 	return cps
 }
 
+// GetCurrencyPairMapping returns a CurrencyPair mapping by ID that have currently been stored to state.
+func (k *Keeper) GetCurrencyPairMapping(ctx sdk.Context) map[uint64]slinkytypes.CurrencyPair {
+	pairs := make(map[uint64]slinkytypes.CurrencyPair)
+	// aggregate CurrencyPairs stored under KeyPrefixNonce
+	k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, cps types.CurrencyPairState) {
+		pairs[cps.GetId()] = cp
+	})
+
+	return pairs
+}
+
 // IterateCurrencyPairs iterates over all CurrencyPairs in the store, and executes a callback for each CurrencyPair.
 func (k *Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp slinkytypes.CurrencyPair, cps types.CurrencyPairState)) error {
 	it, err := k.currencyPairs.Iterate(ctx, nil)
