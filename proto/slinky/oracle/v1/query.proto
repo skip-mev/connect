@@ -35,14 +35,6 @@ service Query {
   }
 }
 
-// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
-message GetCurrencyPairMappingRequest {}
-
-message GetCurrencyPairMappingResponse {
-  map<uint64, slinky.types.v1.CurrencyPair> currency_pair_mapping = 1
-      [ (gogoproto.nullable) = false ];
-}
-
 message GetCurrencyPairFromIDResponse {
   slinky.types.v1.CurrencyPair currency_pairs = 1
       [ (gogoproto.nullable) = false ];
@@ -89,4 +81,14 @@ message GetPricesRequest { repeated string currency_pair_ids = 1; }
 // the x/oracle query service.
 message GetPricesResponse {
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
+}
+
+// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
+message GetCurrencyPairMappingRequest {}
+
+// GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
+message GetCurrencyPairMappingResponse {
+  // currency_pair_mapping is a mapping of the id representing the currency pair to the currency pair itself.
+  map<uint64, slinky.types.v1.CurrencyPair> currency_pair_mapping = 1
+  [ (gogoproto.nullable) = false ];
 }
