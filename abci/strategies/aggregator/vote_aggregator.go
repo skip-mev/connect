@@ -158,7 +158,12 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 	prices := make(map[slinkytypes.CurrencyPair]*big.Int, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
 		if len(priceBz) > slinkyabci.MaximumPriceSize {
-			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
+			dva.logger.Debug(
+				"failed to store price, bytes are too long",
+				"currency_pair_id", cpID,
+				"num_bytes", len(priceBz),
+			)
+			continue
 		}
 
 		// Convert the asset into a currency pair.
@@ -171,8 +176,6 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 			)
 
 			// If the currency pair is not supported, continue.
-			//
-			// TODO: Should we return an error here instead?
 			continue
 		}
 
@@ -185,8 +188,6 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 			)
 
 			// If the price cannot be decoded, continue.
-			//
-			// TODO: Should we return an error here instead?
 			continue
 		}
 
