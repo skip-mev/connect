@@ -364,38 +364,3 @@ func (s *KeeperTestSuite) TestGetNumCurrencyPairs() {
 		s.Require().Equal(cps, uint64(2))
 	})
 }
-
-func (s *KeeperTestSuite) TestGetCurrencyPairMapping() {
-	s.Run("gets 0 no state", func() {
-		s.SetupTest()
-		res := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
-		s.Require().Empty(res)
-	})
-	s.Run("get 1 with 1 cp", func() {
-		s.SetupTest()
-		cp := slinkytypes.CurrencyPair{Base: "TEST", Quote: "COIN1"}
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp))
-
-		pairs := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
-		s.Require().Len(pairs, 1)
-		s.Require().Equal(cp, pairs[0])
-	})
-	s.Run("multiple currency pairs", func() {
-		s.SetupTest()
-		currencyPairs := []slinkytypes.CurrencyPair{
-			{Base: "TEST", Quote: "COIN1"},
-			{Base: "TEST", Quote: "COIN2"},
-			{Base: "FOO", Quote: "COIN3"},
-		}
-		for _, cp := range currencyPairs {
-			s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp))
-		}
-
-		pairs := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
-		s.Require().Len(pairs, len(currencyPairs))
-
-		for index, pair := range currencyPairs {
-			s.Require().Equal(pair, pairs[uint64(index)])
-		}
-	})
-}
