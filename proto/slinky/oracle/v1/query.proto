@@ -24,6 +24,15 @@ service Query {
   rpc GetPrices(GetPricesRequest) returns (GetPricesResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/get_prices";
   }
+
+  // Get the mapping of currency pair ID -> currency pair. This is useful for
+  // indexers that have access to the ID of a currency pair, but no way to get
+  // the underlying currency pair from it.
+  rpc GetCurrencyPairMapping(GetCurrencyPairMappingRequest)
+      returns (GetCurrencyPairMappingResponse) {
+    option (google.api.http).get =
+        "/slinky/oracle/v1/get_currency_pair_mapping";
+  }
 }
 
 message GetAllCurrencyPairsRequest {}
@@ -67,4 +76,15 @@ message GetPricesRequest { repeated string currency_pair_ids = 1; }
 // the x/oracle query service.
 message GetPricesResponse {
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
+}
+
+// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
+message GetCurrencyPairMappingRequest {}
+
+// GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
+message GetCurrencyPairMappingResponse {
+  // currency_pair_mapping is a mapping of the id representing the currency pair
+  // to the currency pair itself.
+  map<uint64, slinky.types.v1.CurrencyPair> currency_pair_mapping = 1
+      [ (gogoproto.nullable) = false ];
 }
