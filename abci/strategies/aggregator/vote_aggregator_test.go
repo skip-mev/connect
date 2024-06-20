@@ -432,7 +432,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().Equal(sixHundred.String(), prices[ethBTC].String())
 	})
 
-	s.Run("errors when the validator's prices are malformed", func() {
+	s.Run("continues when the validator's prices are malformed", func() {
 		// Create a single vote extension from my validator
 		myValPrices := map[uint64][]byte{
 			0: ongodhecappin,
@@ -448,9 +448,17 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
+		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
+			stakingtypes.Validator{
+				Tokens: math.NewInt(25),
+				Status: stakingtypes.Bonded,
+			},
+			nil,
+		).Once()
+
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
-		s.Require().Error(err)
+		s.Require().NoError(err)
 		s.Require().Len(prices, 0)
 	})
 }

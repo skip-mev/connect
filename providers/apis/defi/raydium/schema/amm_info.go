@@ -138,8 +138,8 @@ type AmmInfo struct {
 	TokenTempLp        ag_solanago.PublicKey
 	AmmOwner           ag_solanago.PublicKey
 	LpAmount           uint64
-	ClientOrderId uint64 //nolint:all
-	Padding       [2]uint64
+	ClientOrderId      uint64 //nolint:all
+	Padding            [2]uint64
 }
 
 func (obj AmmInfo) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {

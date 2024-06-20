@@ -151,4 +151,3 @@ var DefaultAPIConfig = config.APIConfig{
 		},
 	},
 }
-
