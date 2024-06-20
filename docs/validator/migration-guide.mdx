@@ -175,8 +175,7 @@ To run `slinky` with this config
 slinky --oracle-config <path to oracle.json file>
 ```
 
-For more details on the names of oracle config fields, see an example config [here](https://github.com/skip-mev/slinky/blob/main/config/core/oracle.json), for docs on what the config fields mean, see [here](https://github.com/skip-mev/slinky/tree/main/oracle/config). Any fields in the `OracleConfig` data-structure that are missing (unspecified) in the `oracle.json` file will be filled with defaults defined [here](/docs/slinky/validator/2-validator-slinky-config.md)
-
+For more details on the names of oracle config fields, see an example config [here](https://github.com/skip-mev/slinky/blob/main/config/core/oracle.json), for docs on what the config fields mean, see [here](https://github.com/skip-mev/slinky/tree/main/oracle/config). Any fields in the `OracleConfig` data-structure that are missing (unspecified) in the `oracle.json` file will be filled with defaults defined [here](/validator/validator-slinky-config.mdx)
 #### Overrides via environment variables
 
 You may override slinky defaults via environment variables as well. Slinky looks for environment variables prefixed with `SLINKY_CONFIG`. To specify an override for a specific `OracleConfig` field append the index (in json-query notation) into the `oracle.json` object to the `SLINKY_CONFIG` prefix, see below for examples
