@@ -1,4 +1,4 @@
-package orchestrator
+package oracle
 
 import (
 	"context"
@@ -10,9 +10,10 @@ import (
 )
 
 // listenForMarketMapUpdates is a goroutine that listens for market map updates and
-// updates the orchestrated providers with the new market map.
-func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
-	mmProvider := o.GetMarketMapProvider()
+// updates the orchestrated providers with the new market map. This method assumes a market map provider is present,
+// so callers of this method must nil check the provider first.
+func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
+	mmProvider := o.mmProvider
 	ids := mmProvider.GetIDs()
 	if len(ids) != 1 {
 		o.logger.Error("market map provider can only be responsible for one chain", zap.Any("ids", ids))
@@ -41,16 +42,16 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			// Update the orchestrator with the latest market map iff the market map has changed.
+			// Update the oracle with the latest market map iff the market map has changed.
 			updated := result.Value.MarketMap
 			if o.marketMap.Equal(updated) {
 				o.logger.Debug("market map has not changed")
 				continue
 			}
 
-			o.logger.Info("updating orchestrator with new market map")
-			if err := o.UpdateWithMarketMap(updated); err != nil {
-				o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
+			o.logger.Info("updating oracle with new market map")
+			if err := o.UpdateMarketMap(updated); err != nil {
+				o.logger.Error("failed to update oracle with new market map", zap.Error(err))
 				continue
 			}
 
@@ -59,13 +60,13 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
 
-			o.logger.Info("updated orchestrator with new market map", zap.Any("market_map", updated))
+			o.logger.Info("updated oracle with new market map", zap.Any("market_map", updated))
 		}
 	}
 }
 
-// WriteMarketMap writes the orchestrator's market map to the configured path.
-func (o *ProviderOrchestrator) WriteMarketMap() error {
+// WriteMarketMap writes the oracle's market map to the configured path.
+func (o *OracleImpl) WriteMarketMap() error {
 	if len(o.writeTo) == 0 {
 		return nil
 	}

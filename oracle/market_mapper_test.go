@@ -1,7 +1,8 @@
-package orchestrator_test
+package oracle_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -10,21 +11,22 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestListenForMarketMapUpdates(t *testing.T) {
-	t.Run("mapper has no chain IDs to fetch should not update the orchestrator", func(t *testing.T) {
+	t.Run("mapper has no chain IDs to fetch should not update the oracle", func(t *testing.T) {
 		handler, factory := marketMapperFactory(t, nil)
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("no ids")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -33,16 +35,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(1000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -51,10 +56,11 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler, factory := marketMapperFactory(t, []mmclienttypes.Chain{{ChainID: "eth"}, {ChainID: "bsc"}})
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("too many")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -62,16 +68,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(1000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -80,10 +89,11 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler, factory := marketMapperFactory(t, []mmclienttypes.Chain{{ChainID: "dYdX"}})
 		handler.On("CreateURL", mock.Anything).Return("", fmt.Errorf("failed to create url")).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 		current := o.GetMarketMap()
@@ -91,16 +101,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, current, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -117,11 +130,12 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithMarketMap(marketMap),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
 
@@ -129,16 +143,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -155,10 +172,11 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithOnlyMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
 		)
 		require.NoError(t, err)
 
@@ -166,16 +184,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(2000 * time.Millisecond)
 
-		// The orchestrator should not have been updated.
+		// The oracle should not have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -192,12 +213,13 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -205,16 +227,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(5000 * time.Millisecond)
 
-		// The orchestrator should have been updated.
+		// The oracle should have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 	})
@@ -232,13 +257,14 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
 
 		path := "test.json"
-		o, err := orchestrator.NewProviderOrchestrator(
+		o, err := oracle.New(
 			oracleCfgWithMockMapper,
-			orchestrator.WithLogger(logger),
-			orchestrator.WithMarketMapperFactory(factory),
-			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithWriteTo(path),
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			oracle.WithWriteTo(path),
 		)
 		require.NoError(t, err)
 
@@ -246,16 +272,19 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			require.NoError(t, o.Start(ctx))
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
 		}()
 
-		// Wait for the orchestrator to start.
+		// Wait for the oracle to start.
 		time.Sleep(5000 * time.Millisecond)
 
-		// The orchestrator should have been updated.
+		// The oracle should have been updated.
 		require.Equal(t, marketMap, o.GetMarketMap())
 
-		// Stop the orchestrator.
+		// Stop the oracle.
 		cancel()
 		o.Stop()
 

@@ -7,6 +7,7 @@ import (
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ oracle.PriceAggregator = &MedianAggregator{}
@@ -37,6 +38,8 @@ func (m *MedianAggregator) SetProviderPrices(provider string, data types.Prices)
 
 	m.providerPrices[provider] = data
 }
+
+func (m *MedianAggregator) UpdateMarketMap(_ mmtypes.MarketMap) {}
 
 // AggregatePrices inputs the aggregated prices from all providers and computes
 // the median price for each asset.

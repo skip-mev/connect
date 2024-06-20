@@ -124,13 +124,6 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 		return nil
 	})
 
-	// start the oracle, return error if it fails
-	eg.Go(func() error {
-		// start the oracle
-		os.logger.Info("starting oracle")
-		return os.o.Start(ctx)
-	})
-
 	// start the server
 	eg.Go(func() error {
 		// serve, and return any errors
@@ -194,9 +187,10 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 	}
 }
 
-// MarketMap returns the current market map from the ProviderOrchestrator.
+// MarketMap returns the current market map from the Oracle.
 func (os *OracleServer) MarketMap(_ context.Context, _ *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error) {
-	return &types.QueryMarketMapResponse{MarketMap: os.o.GetMarketMap()}, nil
+	mm := os.o.GetMarketMap()
+	return &types.QueryMarketMapResponse{MarketMap: &mm}, nil
 }
 
 // Close closes the underlying oracle server, and blocks until all open requests have been satisfied.
