@@ -287,10 +287,10 @@ func (k *Keeper) GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
 }
 
 // GetCurrencyPairMapping returns a CurrencyPair mapping by ID that have currently been stored to state.
-func (k *Keeper) GetCurrencyPairMapping(ctx sdk.Context) map[uint64]slinkytypes.CurrencyPair {
+func (k *Keeper) GetCurrencyPairMapping(ctx sdk.Context) (map[uint64]slinkytypes.CurrencyPair, error) {
 	numPairs, err := k.numCPs.Get(ctx)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	pairs := make(map[uint64]slinkytypes.CurrencyPair, numPairs)
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
@@ -298,7 +298,7 @@ func (k *Keeper) GetCurrencyPairMapping(ctx sdk.Context) map[uint64]slinkytypes.
 		pairs[cps.GetId()] = cp
 	})
 
-	return pairs
+	return pairs, nil
 }
 
 // IterateCurrencyPairs iterates over all CurrencyPairs in the store, and executes a callback for each CurrencyPair.

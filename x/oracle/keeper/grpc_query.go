@@ -126,6 +126,9 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 
 func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCurrencyPairMappingRequest) (*types.GetCurrencyPairMappingResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	pairs := q.k.GetCurrencyPairMapping(sdkCtx)
+	pairs, err := q.k.GetCurrencyPairMapping(sdkCtx)
+	if err != nil {
+		return nil, err
+	}
 	return &types.GetCurrencyPairMappingResponse{CurrencyPairMapping: pairs}, nil
 }
