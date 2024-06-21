@@ -6911,8 +6911,8 @@ var (
 			  }
 			]
 		  },
-		"MOG/USD": {
-			"ticker": {
+		  "MOG/USD": {
+		    "ticker": {
 			  "currency_pair": {
 				"Base": "MOG",
 				"Quote": "USD"
@@ -6925,6 +6925,23 @@ var (
 			  {
 				"name": "coingecko_api",
 				"off_chain_ticker": "mog-coin/usd"
+			  }
+			]	
+		  },
+		  "TRUMP/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "TRUMP",
+				"Quote": "USD"
+			  },
+			  "decimals": 11,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "coingecko_api",
+				"off_chain_ticker": "maga/usd"
 			  }
 			]
 		  },
