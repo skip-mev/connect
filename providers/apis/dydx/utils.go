@@ -69,7 +69,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 			URL: "https://dydx-api.lavenderfive.com:443",
 		},
 		{
-			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
+			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/yujin/update_raydium_ticker/public/configs/otherMarketData.json",
 		},
 	},
 }
