@@ -5998,6 +5998,40 @@ var (
 	CoinGeckoMarketMapJSON = `
 	{
 		"markets": {
+		  "POPCAT/USD": {
+			"ticker": {
+				"currency_pair": {
+				  "Base": "POPCAT",
+				  "Quote": "USD"
+				},
+				"decimals": 8,
+				"min_provider_count": 1,
+				"enabled": true
+			  },
+			  "provider_configs": [
+				{
+				  "name": "coingecko_api",
+				  "off_chain_ticker": "popcat/usd"
+				}
+			  ]
+		  },
+		  "$RETIRE/USD": {
+			"ticker": {
+				"currency_pair": {
+				  "Base": "$RETIRE",
+				  "Quote": "USD"
+				},
+				"decimals": 8,
+				"min_provider_count": 1,
+				"enabled": true
+			  },
+			  "provider_configs": [
+				{
+				  "name": "coingecko_api",
+				  "off_chain_ticker": "retire-on-sol/usd"
+				}
+			  ]
+		  },
 		  "AAVE/USD": {
 			"ticker": {
 			  "currency_pair": {
