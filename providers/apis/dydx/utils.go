@@ -69,8 +69,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 			URL: "https://dydx-api.lavenderfive.com:443",
 		},
 		{
-			// TODO: Update once the PR is merged.
-			URL: "https://raw.githubusercontent.com/nivasan1/v4-web/nv/adjust-raydium-markets-other-market-data-json/public/configs/otherMarketData.json",
+			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
 		},
 	},
 }

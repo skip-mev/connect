@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gagliardetto/solana-go/programs/serum"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
