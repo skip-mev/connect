@@ -38,6 +38,28 @@ var (
 			  }
 			]
 		  },
+		  "TRUMP/USD": {
+			"ticker": {
+			  "currency_pair": {
+				"Base": "TRUMP",
+				"Quote": "USD"
+			  },
+			  "decimals": 18,
+			  "min_provider_count": 1,
+			  "enabled": true
+			},
+			"provider_configs": [
+			  {
+				"name": "raydium_api",
+				"off_chain_ticker": "TRUMP/SOL",
+				"normalize_by_pair": {
+				  "Base": "SOL",
+				  "Quote": "USD"
+				},
+				"metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"GwUn3JYQ5PC6P9cB9HsatJN7y7aw3BXrNqHPpoHtWyKF\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"5DNPt6WYgj3x7EmU4Fyqe3jDYPk2HMAB21H5N4Ggbev9\",\"token_decimals\":9},\"amm_info_address\":\"7Lco4QdQLaW6M4sxVhWe8BHjrykyzjcjGTo4a6qYGABK\",\"open_orders_address\":\"FAWLdBB8kmWZQ74KpYAYN3YaEW31Si8qrwuQPauFSoma\"}"
+			  }
+			]
+		  },
 		  "BAZINGA/USD": {
 			"ticker": {
 			  "currency_pair": {
