@@ -91,7 +91,7 @@ We have an extensive suite of metrics available to validators and chain operator
 
 * metrics relevant to the oracle service's health + operation are [here](./metrics.md)
 
-### Oracle Application / Network Metrics
+### Oracle Application / Network Metrics 
 
 * metrics relevant to the network's (that is running the instance of slinky) performance are [here](./service/metrics/README.md)
 
