@@ -31,7 +31,7 @@ message QueryPricesResponse {
   // prices defines the list of prices.
   map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
   google.protobuf.Timestamp timestamp = 2
-  [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
 
 // QueryMarketMapRequest defines the request type for the MarketMap method.

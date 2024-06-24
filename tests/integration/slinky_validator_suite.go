@@ -5,6 +5,7 @@ import (
 	"time"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
