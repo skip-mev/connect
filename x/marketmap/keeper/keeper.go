@@ -128,7 +128,6 @@ func (k *Keeper) DeleteMarket(ctx sdk.Context, tickerStr string) error {
 	if !alreadyExists {
 		return types.NewMarketDoesNotExistsError(types.TickerString(tickerStr))
 	}
-	// Create the config
 	return k.markets.Remove(ctx, types.TickerString(tickerStr))
 }
 
