@@ -118,6 +118,20 @@ func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
+// DeleteMarket updates a Market.
+func (k *Keeper) DeleteMarket(ctx sdk.Context, tickerStr string) error {
+	// Check if Ticker exists
+	alreadyExists, err := k.markets.Has(ctx, types.TickerString(tickerStr))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(tickerStr))
+	}
+	// Create the config
+	return k.markets.Remove(ctx, types.TickerString(tickerStr))
+}
+
 // SetParams sets the x/marketmap module's parameters.
 func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 	return k.params.Set(ctx, params)
