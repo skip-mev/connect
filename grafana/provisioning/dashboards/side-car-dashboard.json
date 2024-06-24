@@ -1177,7 +1177,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 79
+        "y": 1129
       },
       "id": 47,
       "panels": [],
@@ -1202,8 +1202,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "orange",
@@ -1223,7 +1222,7 @@
         "h": 4,
         "w": 12,
         "x": 0,
-        "y": 80
+        "y": 1130
       },
       "id": 49,
       "options": {
@@ -1280,8 +1279,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "orange",
@@ -1301,7 +1299,7 @@
         "h": 4,
         "w": 12,
         "x": 12,
-        "y": 80
+        "y": 1130
       },
       "id": 57,
       "options": {
@@ -1388,8 +1386,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1481,7 +1478,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 84
+        "y": 1134
       },
       "id": 46,
       "options": {
@@ -1570,8 +1567,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -1582,7 +1578,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 84
+        "y": 1134
       },
       "id": 994,
       "options": {
@@ -1645,7 +1641,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 96
+        "y": 1146
       },
       "id": 419,
       "options": {
@@ -1739,7 +1735,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 96
+        "y": 1146
       },
       "id": 546,
       "options": {
@@ -1826,8 +1822,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "semi-dark-yellow",
@@ -1847,7 +1842,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 104
+        "y": 1154
       },
       "id": 58,
       "options": {
@@ -1902,8 +1897,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "semi-dark-yellow",
@@ -1923,7 +1917,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 108
+        "y": 1158
       },
       "id": 59,
       "options": {
@@ -1977,8 +1971,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           }
@@ -1989,7 +1982,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 1162
       },
       "id": 993,
       "options": {
@@ -2034,7 +2027,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 116
+        "y": 1166
       },
       "id": 55,
       "panels": [
@@ -2354,7 +2347,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 127
+        "y": 1177
       },
       "id": 980,
       "panels": [],
@@ -2391,7 +2384,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 128
+        "y": 1178
       },
       "id": 981,
       "options": {
@@ -2491,7 +2484,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 128
+        "y": 1178
       },
       "id": 982,
       "options": {
@@ -2586,7 +2579,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 136
+        "y": 1186
       },
       "id": 983,
       "options": {
@@ -2645,7 +2638,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "slinky-customer-dydx-vpn-staging-sidecar-0"
           ],
@@ -2677,12 +2670,12 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
-            "mog/usd"
+            "All"
           ],
           "value": [
-            "mog/usd"
+            "$__all"
           ]
         },
         "datasource": {
@@ -2710,7 +2703,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -2744,8 +2737,12 @@
         "allValue": "",
         "current": {
           "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -2772,7 +2769,7 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
