@@ -1,4 +1,4 @@
-package tickermetadatajson
+package tickermetadata
 
 // DyDx is the Ticker.Metadata_JSON published to every Ticker in the x/marketmap module on dYdX.
 type DyDx struct {
@@ -11,9 +11,9 @@ type DyDx struct {
 	// which the update for it is published.
 	// The liquidity value stored here is USD denominated.
 	Liquidity uint64 `json:"liquidity"`
-	// AggregateIds contains a list of AggregatorIDs associated with the ticker.
+	// AggregateIDs contains a list of AggregatorIDs associated with the ticker.
 	// This field may not be populated if no aggregator currently indexes this Ticker.
-	AggregateIds []AggregatorID `json:"aggregate_ids"`
+	AggregateIDs []AggregatorID `json:"aggregate_ids"`
 }
 
 type AggregatorID struct {
