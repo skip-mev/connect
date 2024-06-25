@@ -368,7 +368,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().Nil(resp)
 	})
 
-	s.Run("if a market DNE, create it + error if hook errors", func() {
+	s.Run("if a market does not exist, create it + error if hook errors", func() {
 		msg := &types.MsgUpsertMarkets{
 			Authority: s.marketAuthorities[0],
 			Markets: []types.Market{
@@ -384,7 +384,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().Nil(resp)
 	})
 
-	s.Run("if a market DNE, create it", func() {
+	s.Run("if a market does not exist, create it", func() {
 		msg := &types.MsgUpsertMarkets{
 			Authority: s.marketAuthorities[0],
 			Markets: []types.Market{

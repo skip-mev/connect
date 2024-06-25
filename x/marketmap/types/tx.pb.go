@@ -32,7 +32,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgUpsertMarkets defines a message carrying a payload for performing market upserts (update or
-// create if DNE) in the x/marketmap module.
+// create if does not exist) in the x/marketmap module.
 type MsgUpsertMarkets struct {
 	// Authority is the signer of this transaction.  This authority must be
 	// authorized by the module to execute the message.

@@ -36,7 +36,7 @@ service Msg {
 }
 
 // MsgUpsertMarkets defines a message carrying a payload for performing market upserts (update or 
-// create if DNE) in the x/marketmap module.
+// create if does not exist) in the x/marketmap module.
 message MsgUpsertMarkets {
   option (cosmos.msg.v1.signer) = "authority";
   option (amino.name) = "slinky/x/marketmap/MsgUpsertMarkets";
