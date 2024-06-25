@@ -30,7 +30,7 @@ type VoteExtensionHandler struct {
 	logger log.Logger
 
 	// oracleClient is the remote oracle client that is responsible for fetching prices
-	oracleClient client.OracleClient
+	oracleClient slinkyabci.OracleClient
 
 	// timeout is the maximum amount of time to wait for the oracle to respond
 	// to a price request.
