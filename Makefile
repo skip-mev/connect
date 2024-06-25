@@ -23,6 +23,7 @@ USE_UNISWAPV3_BASE_MARKETS ?= false
 USE_COINGECKO_MARKETS ?= false
 SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
+DEV_SIDECAR_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-sidecar-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
@@ -59,6 +60,14 @@ start-all-dev:
 stop-all-dev:
 	@echo "Stopping development network..."
 	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
+
+start-sidecar-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
+	@$(DOCKER_COMPOSE) -f $(DEV_SIDECAR_COMPOSE) up -d
+
+stop-sidecar-dev:
+	@echo "Stopping development oracle..."
+	@$(DOCKER_COMPOSE) -f $(DEV_SIDECAR_COMPOSE) down 
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
