@@ -17,7 +17,6 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 )
@@ -53,7 +52,7 @@ type VoteExtensionHandler struct {
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
 func NewVoteExtensionHandler(
 	logger log.Logger,
-	oracleClient client.OracleClient,
+	oracleClient slinkyabci.OracleClient,
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
