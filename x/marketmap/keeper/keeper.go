@@ -118,7 +118,9 @@ func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
-// DeleteMarket updates a Market.
+// DeleteMarket removes a Market.
+// This is currently only expected to be called in upgrade handlers, and callers will need to separately call
+// RemoveCurrencyPair on x/oracle to clean up leftover state in that module.
 func (k *Keeper) DeleteMarket(ctx sdk.Context, tickerStr string) error {
 	// Check if Ticker exists
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(tickerStr))
