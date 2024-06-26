@@ -37,6 +37,12 @@ type KeeperTestSuite struct {
 }
 
 func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
+	return s.initKeeperWithHooks(types.MultiMarketMapHooks{
+		s.oracleKeeper.Hooks(),
+	})
+}
+
+func (s *KeeperTestSuite) initKeeperWithHooks(hooks types.MarketMapHooks) *keeper.Keeper {
 	mmKey := storetypes.NewKVStoreKey(types.StoreKey)
 	oracleKey := storetypes.NewKVStoreKey(oracletypes.StoreKey)
 	mmSS := runtime.NewKVStoreService(mmKey)
@@ -69,9 +75,6 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	s.Require().NoError(k.SetParams(s.ctx, params))
 
 	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, k, s.authority)
-	hooks := types.MultiMarketMapHooks{
-		s.oracleKeeper.Hooks(),
-	}
 	k.SetHooks(hooks)
 
 	s.Require().NotPanics(func() {
@@ -271,4 +274,17 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
+}
+
+func (s *KeeperTestSuite) TestDeleteMarket() {
+	// create a valid markets
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+
+	// invalid delete fails
+	s.Require().Error(s.keeper.DeleteMarket(s.ctx, "foobar"))
+
+	// valid delete works
+	s.Require().NoError(s.keeper.DeleteMarket(s.ctx, btcusdt.Ticker.String()))
+	_, err := s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
+	s.Require().Error(err)
 }
