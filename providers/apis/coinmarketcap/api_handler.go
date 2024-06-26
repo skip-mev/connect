@@ -53,7 +53,7 @@ func NewAPIHandler(
 func (h *APIHandler) CreateURL(
 	tickers []types.ProviderTicker,
 ) (string, error) {
-	var ids []string
+	var ids []string //nolint:prealloc
 	for _, ticker := range tickers {
 		ids = append(ids, ticker.GetOffChainTicker())
 		h.cache.Add(ticker)

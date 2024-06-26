@@ -23,7 +23,7 @@ const (
 	Endpoint = "%s/v2/cryptocurrency/quotes/latest?id=%s"
 
 	// APIKeyHeader is the header that is used to pass the API key to the CoinMarketCap API.
-	APIKeyHeader = "X-CMC_PRO_API_KEY"
+	APIKeyHeader = "X-CMC_PRO_API_KEY" //nolint
 
 	// DefaultQuoteDenom is the default denomination provided by the CoinMarketCap API.
 	DefaultQuoteDenom = "USD"
@@ -103,13 +103,13 @@ var DefaultAPIConfig = config.APIConfig{
 //	}
 //
 // ref: https://coinmarketcap.com/api/documentation/v1/#operation/getV2CryptocurrencyQuotesLatest
-type CoinMarketCapResponse struct {
+type CoinMarketCapResponse struct { //nolint
 	Data   map[string]CoinMarketCapData `json:"data"`
 	Status CoinMarketCapStatus          `json:"status"`
 }
 
 // CoinMarketCapData is the data from the CoinMarketCap API.
-type CoinMarketCapData struct {
+type CoinMarketCapData struct { //nolint
 	ID     int64                         `json:"id"`
 	Name   string                        `json:"name"`
 	Symbol string                        `json:"symbol"`
@@ -118,12 +118,12 @@ type CoinMarketCapData struct {
 }
 
 // CoinMarketCapQuote is the quote from the CoinMarketCap API.
-type CoinMarketCapQuote struct {
+type CoinMarketCapQuote struct { //nolint
 	Price float64 `json:"price"`
 }
 
 // CoinMarketCapStatus is the status from the CoinMarketCap API.
-type CoinMarketCapStatus struct {
+type CoinMarketCapStatus struct { //nolint
 	ErrorCode    int64  `json:"error_code"`
 	ErrorMessage string `json:"error_message"`
 }
