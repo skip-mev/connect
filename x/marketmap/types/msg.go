@@ -25,7 +25,7 @@ func (m *MsgUpsertMarkets) ValidateBasic() error {
 	if len(m.Markets) == 0 {
 		return fmt.Errorf("no markets to upsert")
 	}
-	
+
 	seenTickers := make(map[string]struct{})
 	for _, market := range m.Markets {
 		ticker := market.Ticker.CurrencyPair.String()
