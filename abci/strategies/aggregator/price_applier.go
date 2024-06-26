@@ -7,6 +7,7 @@ import (
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabcitypes "github.com/skip-mev/slinky/abci/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -78,6 +79,12 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 		return nil, err
 	}
 
+	opa.logger.Debug(
+		"got oracle vote extensions",
+		"height", req.Height,
+		"num_votes", len(votes),
+	)
+
 	// Aggregate all oracle vote extensions into a single set of prices.
 	prices, err := opa.va.AggregateOracleVotes(ctx, votes)
 	if err != nil {
@@ -97,7 +104,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 	for _, cp := range currencyPairs {
 		price, ok := prices[cp]
 		if !ok || price == nil {
-			opa.logger.Info(
+			opa.logger.Debug(
 				"no price for currency pair",
 				"currency_pair", cp.String(),
 			)
@@ -133,7 +140,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 			return nil, err
 		}
 
-		opa.logger.Info(
+		opa.logger.Debug(
 			"set price for currency pair",
 			"currency_pair", cp.String(),
 			"quote_price", quotePrice.Price.String(),

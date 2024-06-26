@@ -1,91 +1,95 @@
 package oracle
 
 import (
-	"time"
-
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// Option is a function that can be used to configure an Oracle.
-type Option func(*OracleImpl)
+// Option is a functional option for the market map state.
+type Option func(impl *OracleImpl)
 
-// WithUpdateInterval sets the update interval on the Oracle.
-func WithUpdateInterval(updateInterval time.Duration) Option {
-	return func(o *OracleImpl) {
-		if updateInterval <= 0 {
-			panic("update interval must be positive")
-		}
-
-		o.updateInterval = updateInterval
-	}
-}
-
-// WithMaxCacheAge sets the max cache age on the Oracle.
-func WithMaxCacheAge(maxCacheAge time.Duration) Option {
-	return func(o *OracleImpl) {
-		if maxCacheAge <= 0 {
-			panic("max cache age must be positive")
-		}
-
-		o.maxCacheAge = maxCacheAge
-	}
-}
-
-// WithLogger sets the logger on the Oracle.
+// WithLogger sets the logger for the oracle.
 func WithLogger(logger *zap.Logger) Option {
-	return func(o *OracleImpl) {
+	return func(m *OracleImpl) {
 		if logger == nil {
-			panic("cannot set nil logger")
+			panic("logger cannot be nil")
 		}
 
-		o.logger = logger.With(zap.String("process", "oracle"))
+		m.logger = logger.With(zap.String("process", "oracle"))
 	}
 }
 
-// WithMetrics sets the metrics on the Oracle.
-func WithMetrics(metrics oraclemetrics.Metrics) Option {
-	return func(o *OracleImpl) {
-		if metrics == nil {
-			panic("cannot set nil metrics")
+// WithMarketMap sets the market map for the oracle.
+func WithMarketMap(marketMap mmtypes.MarketMap) Option {
+	return func(m *OracleImpl) {
+		if err := marketMap.ValidateBasic(); err != nil {
+			panic(err)
 		}
 
-		o.metrics = metrics
+		m.marketMap = marketMap
 	}
 }
 
-// WithMetricsConfig sets the metrics on the oracle from the given config.
-func WithMetricsConfig(config config.MetricsConfig) Option {
-	return func(o *OracleImpl) {
-		o.metrics = oraclemetrics.NewMetricsFromConfig(config)
-	}
-}
-
-// WithPriceAggregator sets the data aggregator on the Oracle.
-func WithPriceAggregator(agg PriceAggregator) Option {
-	return func(o *OracleImpl) {
-		if agg == nil {
-			panic("cannot set nil aggregator")
+// WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the oracle.
+// Specifically, this is what is utilized to construct price providers that are API based.
+func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
+	return func(m *OracleImpl) {
+		if factory == nil {
+			panic("api query handler factory cannot be nil")
 		}
 
-		o.priceAggregator = agg
+		m.priceAPIFactory = factory
 	}
 }
 
-// WithMarketMapGetter sets a getter function for the latest market map on the Oracle.
-func WithMarketMapGetter(fn func() mmtypes.MarketMap) Option {
-	return func(o *OracleImpl) {
-		o.marketMapGetter = fn
+// WithPriceWebSocketQueryHandlerFactory sets the websocket query handler factory for the oracle.
+// Specifically, this is what is utilized to construct price providers that are websocket based.
+func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
+	return func(m *OracleImpl) {
+		if factory == nil {
+			panic("websocket query handler factory cannot be nil")
+		}
+
+		m.priceWSFactory = factory
 	}
 }
 
-// WithProviders sets the providers on the Oracle.
-func WithProviders(providers []*types.PriceProvider) Option {
-	return func(o *OracleImpl) {
-		o.providers = providers
+// WithMarketMapperFactory sets the market map factory for the oracle.
+// Specifically, this is what is utilized to construct market map providers.
+func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
+	return func(m *OracleImpl) {
+		if factory == nil {
+			panic("market map factory cannot be nil")
+		}
+
+		m.marketMapperFactory = factory
+	}
+}
+
+// WithWriteTo sets the file path to which market map updates will be written to. Note that this is optional.
+func WithWriteTo(filePath string) Option {
+	return func(m *OracleImpl) {
+		m.writeTo = filePath
+	}
+}
+
+// WithPriceProviders allows pre-instantiated price providers to be used in the Oracle's price fetching loop.
+// This option is mainly used for testing, but can be useful for programmatically setting customized providers.
+func WithPriceProviders(pps ...*types.PriceProvider) Option {
+	return func(m *OracleImpl) {
+		for _, pp := range pps {
+			m.priceProviders[pp.Name()] = ProviderState{Provider: pp}
+		}
+	}
+}
+
+// WithMetrics sets the metrics service the Oracle will use to emit metrics.
+func WithMetrics(met oraclemetrics.Metrics) Option {
+	return func(m *OracleImpl) {
+		m.metrics = met
 	}
 }

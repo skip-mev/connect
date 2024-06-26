@@ -12,9 +12,12 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 	"go.uber.org/zap"
 
+	"github.com/gagliardetto/solana-go/programs/serum"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -43,7 +46,7 @@ type APIPriceFetcher struct {
 	client SolanaJSONRPCClient
 
 	// metaDataPerTicker is a map of ticker.String() -> TickerMetadata
-	metaDataPerTicker map[string]TickerMetadata
+	metaDataPerTicker *metadataCache
 
 	// logger
 	logger *zap.Logger
@@ -139,7 +142,7 @@ func NewAPIPriceFetcherWithClient(
 	pf := &APIPriceFetcher{
 		api:               api,
 		client:            client,
-		metaDataPerTicker: make(map[string]TickerMetadata),
+		metaDataPerTicker: newMetadataCache(),
 		logger:            logger.With(zap.String("fetcher", Name)),
 	}
 
@@ -156,11 +159,11 @@ func (pf *APIPriceFetcher) Fetch(
 	tickers []oracletypes.ProviderTicker,
 ) oracletypes.PriceResponse {
 	// get the accounts to query in order of the tickers given
-	expectedNumAccounts := len(tickers) * 2
+	expectedNumAccounts := len(tickers) * 4
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
 	for i, ticker := range tickers {
-		metadata, err := pf.updateMetaDataCache(ticker)
+		metadata, err := pf.metaDataPerTicker.updateMetaDataCache(ticker)
 		if err != nil {
 			return oracletypes.NewPriceResponseWithErr(
 				tickers,
@@ -171,8 +174,10 @@ func (pf *APIPriceFetcher) Fetch(
 			)
 		}
 
-		accounts[i*2] = solana.MustPublicKeyFromBase58(metadata.BaseTokenVault.TokenVaultAddress)
-		accounts[i*2+1] = solana.MustPublicKeyFromBase58(metadata.QuoteTokenVault.TokenVaultAddress)
+		accounts[i*4] = solana.MustPublicKeyFromBase58(metadata.BaseTokenVault.TokenVaultAddress)
+		accounts[i*4+1] = solana.MustPublicKeyFromBase58(metadata.QuoteTokenVault.TokenVaultAddress)
+		accounts[i*4+2] = solana.MustPublicKeyFromBase58(metadata.AMMInfoAddress)
+		accounts[i*4+3] = solana.MustPublicKeyFromBase58(metadata.OpenOrdersAddress)
 	}
 
 	// query the accounts
@@ -211,10 +216,38 @@ func (pf *APIPriceFetcher) Fetch(
 	resolved := make(oracletypes.ResolvedPrices)
 	unresolved := make(oracletypes.UnResolvedPrices)
 	for i, ticker := range tickers {
-		baseAccount := accountsResp.Value[i*2]
-		quoteAccount := accountsResp.Value[i*2+1]
+		baseAccount := accountsResp.Value[i*4]
+		quoteAccount := accountsResp.Value[i*4+1]
+		ammInfoAccount := accountsResp.Value[i*4+2]
+		openOrdersAccount := accountsResp.Value[i*4+3]
 
-		metadata, ok := pf.metaDataPerTicker[ticker.String()]
+		// decode the amm-info for the pair
+		ammInfo, err := unmarshalAMMInfo(ammInfoAccount)
+		if err != nil {
+			pf.logger.Error("error decoding amm info", zap.Error(err))
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(
+					SolanaJSONRPCError(err),
+					providertypes.ErrorAPIGeneral,
+				),
+			}
+			continue
+		}
+
+		// decode the open-orders for the pair
+		openOrders, err := unmarshalOpenOrders(openOrdersAccount)
+		if err != nil {
+			pf.logger.Error("error decoding open orders", zap.Error(err))
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(
+					SolanaJSONRPCError(err),
+					providertypes.ErrorAPIGeneral,
+				),
+			}
+			continue
+		}
+
+		metadata, ok := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
 		if !ok {
 			pf.logger.Error("metadata not found for ticker", zap.String("ticker", ticker.String()))
 			unresolved[ticker] = providertypes.UnresolvedResult{
@@ -227,7 +260,7 @@ func (pf *APIPriceFetcher) Fetch(
 		}
 
 		// parse the token balances
-		baseTokenBalance, err := getScaledTokenBalance(baseAccount)
+		baseTokenBalance, err := getScaledTokenBalance(baseAccount, ammInfo.OutPut.NeedTakePnlCoin, openOrders.NativeBaseTokenTotal)
 		if err != nil {
 			pf.logger.Debug("error getting base token balance", zap.Error(err))
 			unresolved[ticker] = providertypes.UnresolvedResult{
@@ -238,8 +271,14 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
+		pf.logger.Debug(
+			"pnl to take from base",
+			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlCoin),
+			zap.Uint64("openOrders", uint64(openOrders.NativeBaseTokenTotal)),
+			zap.String("baseTokenBalance", baseTokenBalance.String()),
+		)
 
-		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount)
+		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount, ammInfo.OutPut.NeedTakePnlPc, openOrders.NativeQuoteTokenTotal)
 		if err != nil {
 			pf.logger.Debug("error getting quote token balance", zap.Error(err))
 			unresolved[ticker] = providertypes.UnresolvedResult{
@@ -250,6 +289,12 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
+		pf.logger.Debug(
+			"pnl to take from quote",
+			zap.Uint64("pnl", ammInfo.OutPut.NeedTakePnlPc),
+			zap.Uint64("openOrders", uint64(openOrders.NativeQuoteTokenTotal)),
+			zap.String("quoteTokenBalance", quoteTokenBalance.String()),
+		)
 
 		pf.logger.Debug(
 			"unscaled balances",
@@ -276,7 +321,43 @@ func (pf *APIPriceFetcher) Fetch(
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
-func getScaledTokenBalance(account *rpc.Account) (*big.Int, error) {
+func unmarshalOpenOrders(account *rpc.Account) (serum.OpenOrders, error) {
+	// if the account is nil, return error
+	if account == nil {
+		return serum.OpenOrders{}, fmt.Errorf("account is nil")
+	}
+
+	// if the account is empty, return error
+	if account.Data == nil {
+		return serum.OpenOrders{}, fmt.Errorf("account data is nil")
+	}
+
+	var openOrders serum.OpenOrders
+	if err := binary.NewBinDecoder(account.Data.GetBinary()).Decode(&openOrders); err != nil {
+		return serum.OpenOrders{}, err
+	}
+	return openOrders, nil
+}
+
+func unmarshalAMMInfo(account *rpc.Account) (schema.AmmInfo, error) {
+	// if the account is nil, return error
+	if account == nil {
+		return schema.AmmInfo{}, fmt.Errorf("account is nil")
+	}
+
+	// if the account is empty, return error
+	if account.Data == nil {
+		return schema.AmmInfo{}, fmt.Errorf("account data is nil")
+	}
+
+	var ammInfo schema.AmmInfo
+	if err := binary.NewBinDecoder(account.Data.GetBinary()).Decode(&ammInfo); err != nil {
+		return schema.AmmInfo{}, err
+	}
+	return ammInfo, nil
+}
+
+func getScaledTokenBalance(account *rpc.Account, pnlToTake uint64, openOrders binary.Uint64) (*big.Int, error) {
 	// if the account is nil, return error
 	if account == nil {
 		return nil, fmt.Errorf("account is nil")
@@ -293,8 +374,20 @@ func getScaledTokenBalance(account *rpc.Account) (*big.Int, error) {
 		return nil, err
 	}
 
-	// get the token balance + scale by decimals
+	// get the token balance
 	balance := new(big.Int).SetUint64(tokenAccount.Amount)
+
+	// subtract PNL from fees
+	balance.Sub(balance, new(big.Int).SetUint64(pnlToTake))
+
+	// add value of open orders
+	balance.Add(balance, new(big.Int).SetUint64(uint64(openOrders)))
+
+	// fail if the balance is negative (this should never happen)
+	if balance.Sign() == -1 {
+		return nil, fmt.Errorf("negative balance")
+	}
+
 	return balance, nil
 }
 

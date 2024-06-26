@@ -2,107 +2,65 @@ package oracle_test
 
 import (
 	"context"
+	"errors"
 	"math/big"
-	"testing"
 	"time"
 
-	"github.com/stretchr/testify/suite"
-	"go.uber.org/zap"
-
 	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
 	"github.com/skip-mev/slinky/oracle/types"
 	mathtestutils "github.com/skip-mev/slinky/pkg/math/testutils"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 )
 
-type OracleMetricsTestSuite struct {
-	suite.Suite
-
-	// mock metrics
-	mockMetrics *metricmocks.Metrics
-
-	o oracle.Oracle
-}
-
-const (
-	oracleTicker = 1 * time.Second
-)
-
-func TestOracleMetricsTestSuite(t *testing.T) {
-	suite.Run(t, new(OracleMetricsTestSuite))
-}
-
-func (s *OracleMetricsTestSuite) SetupTest() {
-	ids := []types.ProviderTicker{
-		types.NewProviderTicker("BTCUSD", "{}"),
-		types.NewProviderTicker("ETHUSD", "{}"),
+func (s *OracleTestSuite) TestMetrics() {
+	cfg := config.OracleConfig{
+		UpdateInterval: 1 * time.Second,
+		MaxPriceAge:    1 * time.Minute,
+		Providers:      nil,
+		Metrics:        oracleCfg.Metrics,
+		Host:           oracleCfg.Host,
+		Port:           oracleCfg.Port,
 	}
-
-	// mock providers
-	resolved := types.ResolvedPrices{}
-	response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
-	responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
 	provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 		s.T(),
-		zap.NewNop(),
+		s.logger,
 		providerCfg1,
-		ids,
-		responses,
+		s.currencyPairs,
+		nil,
 		200*time.Millisecond,
 	)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*cfg.UpdateInterval)
+	defer cancel()
 
-	resolved2 := types.ResolvedPrices{}
-	response2 := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved2, nil)
-	responses2 := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response2}
-	provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
-		s.T(),
-		time.Second*2,
-		ids,
-		providerCfg2,
-		zap.NewNop(),
-		responses2,
-	)
-
-	providers := []*types.PriceProvider{provider, provider2}
-
-	// mock metrics
-	s.mockMetrics = metricmocks.NewMetrics(s.T())
-
-	var err error
-	s.o, err = oracle.New(
-		oracle.WithUpdateInterval(oracleTicker),
-		oracle.WithProviders(providers),
-		oracle.WithMetrics(s.mockMetrics),
-		oracle.WithPriceAggregator(mathtestutils.NewMedianAggregator()),
+	metrics := metricmocks.NewMetrics(s.T())
+	testOracle, err := oracle.New(
+		cfg,
+		mathtestutils.NewMedianAggregator(),
+		oracle.WithLogger(s.logger),
+		oracle.WithPriceProviders(provider),
+		oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+		oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		oracle.WithMarketMap(s.marketmap),
+		oracle.WithMetrics(metrics),
 	)
 	s.Require().NoError(err)
-}
 
-// TearDownTest is run after each test in the suite.
-func (s *OracleMetricsTestSuite) TearDownTest(_ *testing.T) {
-	checkFn := func() bool {
-		return !s.o.IsRunning()
-	}
-	s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
-}
-
-// test Tick metrics are updated correctly.
-func (s *OracleMetricsTestSuite) TestTickMetric() {
-	// expect tick to be called
-	s.mockMetrics.On("AddTick").Return()
-	s.mockMetrics.On("SetSlinkyBuildInfo").Return()
-
-	// wait for a tick on the oracle
 	go func() {
-		s.Require().NoError(s.o.Start(context.Background()))
+		err := testOracle.Start(ctx)
+		if err != nil {
+			if !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
+				s.T().Errorf("Start() should have returned context.Canceled error. Got: %v", err)
+			}
+		}
 	}()
 
-	// wait for a tick
-	time.Sleep(4 * oracleTicker)
+	metrics.On("SetSlinkyBuildInfo").Return()
+	metrics.On("AddTick").Return()
 
-	// assert expectations
-	s.mockMetrics.AssertExpectations(s.T())
-	s.o.Stop()
+	time.Sleep(2 * cfg.UpdateInterval)
+	metrics.AssertExpectations(s.T())
+	testOracle.Stop()
 }

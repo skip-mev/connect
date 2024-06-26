@@ -53,9 +53,15 @@ func APIQueryHandlerFactory(
 	var (
 		apiPriceFetcher types.PriceAPIFetcher
 		apiDataHandler  types.PriceAPIDataHandler
+		headers         = make(map[string]string)
 	)
 
-	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
+	// If the provider has an API key, add it to the headers.
+	if len(cfg.API.Endpoints) == 1 && cfg.API.Endpoints[0].Authentication.Enabled() {
+		headers[cfg.API.Endpoints[0].Authentication.APIKeyHeader] = cfg.API.Endpoints[0].Authentication.APIKey
+	}
+
+	requestHandler, err := apihandlers.NewRequestHandlerImpl(client, apihandlers.WithHTTPHeaders(headers))
 	if err != nil {
 		return nil, err
 	}

@@ -18,7 +18,23 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "links": [],
+  "id": 76,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": false,
+      "tags": [
+        "test"
+      ],
+      "targetBlank": true,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -44,13 +60,98 @@
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 885,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "side_car_slinky_build_info{job=~\"$job\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Version Information",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
               }
             ]
           }
@@ -61,7 +162,7 @@
         "h": 3,
         "w": 11,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 127,
       "options": {
@@ -69,6 +170,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -77,10 +179,11 @@
           "values": false
         },
         "showPercentChange": false,
+        "text": {},
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -88,9 +191,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_aggregated_price{job=~\"${job}\"})",
+          "expr": "count by (job) (side_car_aggregated_price{job=~\"${job}\"})",
           "instant": false,
-          "legendFormat": "Total # of Aggregated Feeds",
+          "legendFormat": "Aggregated {{job}}",
           "range": true,
           "refId": "A"
         },
@@ -100,14 +203,15 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_provider_price{job=~\"${job}\"})",
+          "expr": "count by (job) (side_car_provider_price{job=~\"${job}\"})",
           "hide": false,
           "instant": false,
-          "legendFormat": "Total # of Provider Feeds",
+          "legendFormat": "Provider {{job}}",
           "range": true,
           "refId": "B"
         }
       ],
+      "title": "Total # of Aggregated Feeds + Provider Feeds",
       "type": "stat"
     },
     {
@@ -126,8 +230,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -138,7 +241,7 @@
         "h": 3,
         "w": 13,
         "x": 11,
-        "y": 1
+        "y": 5
       },
       "id": 126,
       "options": {
@@ -146,6 +249,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -153,11 +257,11 @@
           "fields": "",
           "values": false
         },
-        "showPercentChange": true,
+        "showPercentChange": false,
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -165,11 +269,24 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_provider_status_responses{job=~\"${job}\", status=\"success\", provider=~\"${provider}\"}[$__range]))",
+          "expr": "sum by (job) (rate(side_car_provider_status_responses{job=~\"${job}\", status=\"success\", provider=~\"${provider}\"}[$__range]))",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}} prices / sec",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (job) (increase(side_car_provider_status_responses{job=~\"${job}\", status=\"success\", provider=~\"${provider}\"}[$__range]))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{job}} total prices",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Number of Prices Fetched / Sec in Range",
@@ -189,12 +306,12 @@
           "decimals": 2,
           "displayName": "updates/sec",
           "mappings": [],
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "semi-dark-green",
@@ -210,7 +327,7 @@
         "h": 3,
         "w": 11,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 71,
       "options": {
@@ -218,6 +335,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -229,7 +347,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -262,8 +380,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -274,7 +391,7 @@
         "h": 3,
         "w": 13,
         "x": 11,
-        "y": 4
+        "y": 8
       },
       "id": 116,
       "options": {
@@ -282,6 +399,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -290,13 +408,11 @@
           "values": false
         },
         "showPercentChange": false,
-        "text": {
-          "titleSize": 1
-        },
+        "text": {},
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -304,15 +420,120 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(increase(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range]))",
+          "expr": "sum by (job)(increase(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range]))",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         }
       ],
       "title": "Total Number of Attempted Price Calculations in Range",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "This table is tracking the number of attempted price aggregations to the actual number of aggregations. So effectively this ratio tells us how often we were able to get a final aggregated price.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Success Rate %",
+            "axisPlacement": "auto",
+            "axisSoftMax": 100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 1107,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Min",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum by (id, job) \n(rate(side_car_health_check_ticker_updates_total{job=~\"${job}\"}[$__range]))\n/\nscalar(rate(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range])) * 100",
+          "instant": false,
+          "legendFormat": "{{id}} {{job}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Successful Price Update % in Range Graphed",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -331,8 +552,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-red",
-                "value": null
+                "color": "semi-dark-red"
               },
               {
                 "color": "semi-dark-green",
@@ -345,10 +565,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 11,
+        "w": 24,
         "x": 0,
-        "y": 7
+        "y": 23
       },
       "id": 70,
       "options": {
@@ -356,6 +576,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -367,7 +588,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -402,8 +623,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -411,10 +631,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 13,
-        "x": 11,
-        "y": 7
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 34
       },
       "id": 115,
       "options": {
@@ -422,6 +642,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -433,7 +654,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -461,7 +682,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 44
       },
       "id": 210,
       "options": {
@@ -490,17 +711,221 @@
       "type": "logs"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "# of Running Go Routines",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "id": 790,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "go_goroutines{job=\"${job}\"}",
+          "instant": false,
+          "legendFormat": "{{job}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Go Routines",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 63
       },
       "id": 44,
       "panels": [],
       "title": "Side Car Aggregated Prices",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red"
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 1,
+        "x": 0,
+        "y": 64
+      },
+      "id": 1158,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0-72125",
+      "repeat": "id",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "adp6sdhuns3k0e"
+          },
+          "editorMode": "code",
+          "expr": "100 * (avg_over_time(side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}[5m]) - side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 5m) / side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 5m",
+          "instant": false,
+          "legendFormat": "5m",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "100 * (avg_over_time(side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}[1h]) - side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 1h) / side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 1h",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "1h",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "100 * (avg_over_time(side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}[6h]) - side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 6h) / side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 6h",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "6h",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "100 * (avg_over_time(side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}[24h]) - side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 24h) / side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"} offset 24h",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "24h",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Price Change in Time Range for ${id}",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -544,13 +969,19 @@
               "mode": "off"
             }
           },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Provider drilldown",
+              "url": "https://skipprotocol.grafana.net/d/fdl46t0q7u7eod/slinky-sidecar-provider-status?${DS_PROMETHEUS:queryparam}&var-job=All&var-id=All&var-provider=${__field.labels.provider}&var-market_map_provider=dydx_api&orgId=1"
+            }
+          ],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -575,17 +1006,22 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 28
+        "h": 15,
+        "w": 11,
+        "x": 1,
+        "y": 64
       },
       "id": 137,
       "maxPerRow": 2,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -605,7 +1041,7 @@
           "editorMode": "code",
           "expr": "side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}",
           "instant": false,
-          "legendFormat": "index",
+          "legendFormat": "index {{job}}",
           "range": true,
           "refId": "A"
         },
@@ -619,7 +1055,7 @@
           "expr": "side_car_provider_price{job=~\"${job}\", id=~\"${id}\", provider=~\"${provider}\"}",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{provider}}",
+          "legendFormat": "{{provider}}  {{job}}",
           "range": true,
           "refId": "B"
         }
@@ -643,7 +1079,7 @@
             "axisColorMode": "text",
             "axisLabel": "# Providers",
             "axisPlacement": "auto",
-            "axisSoftMax": 10,
+            "axisSoftMax": 12,
             "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
@@ -664,8 +1100,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "dark-blue",
@@ -677,10 +1112,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 15,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 64
       },
       "id": 283,
       "options": {
@@ -716,7 +1151,7 @@
           "editorMode": "code",
           "expr": "side_car_health_check_market_providers{job=~\"${job}\", id=~\"${id}\"}",
           "instant": false,
-          "legendFormat": "{{id}}",
+          "legendFormat": "{{id}} {{job}}",
           "range": true,
           "refId": "A"
         }
@@ -730,7 +1165,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 548
+        "y": 1129
       },
       "id": 47,
       "panels": [],
@@ -755,8 +1190,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "orange",
@@ -773,10 +1207,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 4,
         "w": 12,
         "x": 0,
-        "y": 549
+        "y": 1130
       },
       "id": 49,
       "options": {
@@ -784,6 +1218,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -795,7 +1230,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -832,8 +1267,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "orange",
@@ -850,10 +1284,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 4,
         "w": 12,
         "x": 12,
-        "y": 549
+        "y": 1130
       },
       "id": 57,
       "options": {
@@ -861,6 +1295,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -872,7 +1307,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -939,8 +1374,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1029,10 +1463,10 @@
         ]
       },
       "gridPos": {
-        "h": 13,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 556
+        "y": 1134
       },
       "id": 46,
       "options": {
@@ -1061,9 +1495,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code_exact,provider)",
+          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code,provider)",
           "instant": false,
-          "legendFormat": "{{provider}} - {{status_code_exact}}",
+          "legendFormat": "{{provider}} - {{status_code}}",
           "range": true,
           "refId": "A"
         }
@@ -1076,151 +1510,99 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Percentage of reads that were successfully made on the underlying connection by the data provider in the range. Note that a lower percentage doesn't necessarily imply that the connection is bad - it could just mean that it has received fewer updates.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
-          "decimals": 1,
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "# of Reads / Sec",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 29,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "mappings": [],
-          "noValue": "MISSING",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
-              },
-              {
-                "color": "semi-dark-yellow",
-                "value": 0.85
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 0.98
+                "color": "green"
               }
             ]
-          },
-          "unit": "percentunit"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 12,
         "x": 12,
-        "y": 556
+        "y": 1134
       },
-      "id": 58,
+      "id": 994,
       "options": {
-        "colorMode": "background_solid",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
+        "legend": {
           "calcs": [
-            "lastNotNull"
+            "lastNotNull",
+            "max",
+            "min",
+            "mean"
           ],
-          "fields": "",
-          "values": false
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-71516",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "grafanacloud-prom"
           },
           "editorMode": "code",
-          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"read_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"read_success|read_err\"}[$__range])))",
+          "expr": "rate(side_car_web_socket_connection_status{job=~\"${job}\", provider=~\"${provider}\", status=~\"read_success\"}[5m])",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{provider}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data Provider Successful WebSocket Connection Reads % in Range",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "The percentage of successful writes made by web socket data providers in the range.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "noValue": "N/A",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-red",
-                "value": null
-              },
-              {
-                "color": "semi-dark-yellow",
-                "value": 0.85
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 0.98
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 563
-      },
-      "id": 59,
-      "options": {
-        "colorMode": "background_solid",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|dial_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|write_err|dial_success|dial_error\"}[$__range])))",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Data Provider Successful WebSocket Connection Writes % in Range",
-      "type": "stat"
+      "title": "# of Successful Reads / Sec by Provider in Range",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -1247,7 +1629,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 569
+        "y": 1146
       },
       "id": 419,
       "options": {
@@ -1298,7 +1680,7 @@
           "unit": "ms"
         }
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -1306,7 +1688,7 @@
             "uid": "grafanacloud-prom"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum(rate(side_car_api_response_latency_bucket{job=~\"${job}\", provider=~\"${provider}|${market_map_provider}\"}[$__range])) by (le, provider))",
+          "expr": "histogram_quantile(0.5, sum(rate(side_car_api_response_latency_bucket{job=~\"${job}\"}[$__range])) by (le, provider))",
           "instant": false,
           "legendFormat": "{{provider}}",
           "range": true,
@@ -1341,7 +1723,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 569
+        "y": 1146
       },
       "id": 546,
       "options": {
@@ -1392,7 +1774,7 @@
           "unit": "ms"
         }
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -1411,45 +1793,32 @@
       "type": "heatmap"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 577
-      },
-      "id": 55,
-      "panels": [],
-      "title": "Detailed Side Car Provider Market Health",
-      "type": "row"
-    },
-    {
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Percentage of how often we were able to successfully retrieve a price from a provider per market when expected.",
+      "description": "Percentage of reads that were successfully made on the underlying connection by the data provider in the range. Note that a lower percentage doesn't necessarily imply that the connection is bad - it could just mean that it has received fewer updates.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 2,
+          "decimals": 1,
           "mappings": [],
+          "noValue": "MISSING",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
-                "color": "semi-dark-orange",
-                "value": 0.75
+                "color": "semi-dark-yellow",
+                "value": 0.85
               },
               {
                 "color": "semi-dark-green",
-                "value": 0.95
+                "value": 0.98
               }
             ]
           },
@@ -1458,18 +1827,18 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
+        "h": 4,
+        "w": 24,
         "x": 0,
-        "y": 578
+        "y": 1154
       },
-      "id": 93,
-      "maxPerRow": 2,
+      "id": 58,
       "options": {
         "colorMode": "background_solid",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1481,9 +1850,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
-      "repeat": "provider",
-      "repeatDirection": "h",
+      "pluginVersion": "11.2.0-72125",
       "targets": [
         {
           "datasource": {
@@ -1491,18 +1858,749 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "(sum by (provider, id) (increase(side_car_health_check_provider_updates_total{job=\"${job}\", success=\"true\", provider=~\"${provider}\"}[$__range])) / sum by (provider, id) (increase(side_car_health_check_provider_updates_total{job=\"${job}\", provider=~\"${provider}\"}[$__range])))",
+          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"read_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"read_success|read_err\"}[$__range])))",
           "instant": false,
-          "legendFormat": "{{id}}",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data Provider ${provider} Fetch Success % in Range",
+      "title": "Data Provider Successful WebSocket Connection Reads % in Range",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "The percentage of successful writes made by web socket data providers in the range.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "OK",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red"
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 0.85
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 0.98
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 1158
+      },
+      "id": 59,
+      "options": {
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|dial_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|write_err|dial_success|dial_error\"}[$__range])))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Data Provider Successful WebSocket Connection Writes % in Range",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "This metric tracks the total number of times a successful connection was created to the relevant providers.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 1162
+      },
+      "id": 993,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "diff"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "side_car_web_socket_connection_status{job=~\"${job}\", provider=~\"${provider}\", status=\"healthy\"}",
+          "instant": false,
+          "legendFormat": "{{provider}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total # of New WebSocket Connections in Range",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1166
+      },
+      "id": 55,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 0,
+            "y": 110
+          },
+          "id": 1004,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.2.0-72125",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "grafanacloud-prom"
+              },
+              "editorMode": "code",
+              "expr": "count(sum (increase(side_car_health_check_provider_updates_total{job=~\"$job\", id=~\"${id}\", provider=~\"${provider}\", success=~\"false|true\"}[$__range])) by (id))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "# of Price Feeds for ${provider}",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 3,
+            "y": 110
+          },
+          "id": 1023,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.2.0-72125",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "grafanacloud-prom"
+              },
+              "editorMode": "code",
+              "expr": "count((sum by (provider, id) (increase(side_car_health_check_provider_updates_total{job=\"${job}\", success=\"true\", provider=~\"${provider}\"}[$__range])) / sum by (provider, id) (increase(side_car_health_check_provider_updates_total{job=\"${job}\", provider=~\"${provider}\", success=~\"true|false\"}[$__range]))) > 0.95)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "# of Price Feeds with > 95% Success Rate",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Percentage of how often we were able to successfully retrieve a price from a provider per market when expected.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 2,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "dark-red"
+                  },
+                  {
+                    "color": "semi-dark-orange",
+                    "value": 0.75
+                  },
+                  {
+                    "color": "semi-dark-green",
+                    "value": 0.95
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 18,
+            "x": 6,
+            "y": 110
+          },
+          "id": 93,
+          "options": {
+            "colorMode": "background_solid",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.2.0-72125",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "1 - (\n    sum by (provider, id) \n    (increase(side_car_health_check_provider_updates_total{job=\"${job}\", success=\"false\", provider=~\"${provider}\"}[$__range])) \n    / \n    sum by (provider, id) \n    (increase(side_car_health_check_provider_updates_total{job=\"${job}\", provider=~\"${provider}\", success=~\"true|false\"}[$__range]))\n)",
+              "instant": false,
+              "legendFormat": "{{id}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Data Provider ${provider} Fetch Success % in Range",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "% Success Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 90
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 117
+          },
+          "id": 1051,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "grafanacloud-prom"
+              },
+              "editorMode": "code",
+              "expr": "(1 - (\n    sum by (provider, id) \n    (increase(side_car_health_check_provider_updates_total{job=\"${job}\", success=\"false\", provider=~\"${provider}\"}[$__range])) \n    / \n    sum by (provider, id) \n    (increase(side_car_health_check_provider_updates_total{job=\"${job}\", provider=~\"${provider}\", success=~\"true|false\"}[$__range]))\n)) * 100",
+              "instant": false,
+              "legendFormat": "{{id}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Price Feed Success Rate",
+          "type": "timeseries"
+        }
+      ],
+      "repeat": "provider",
+      "repeatDirection": "h",
+      "title": "Detailed Side Car ${provider} Market Health",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1188
+      },
+      "id": 980,
+      "panels": [],
+      "title": "Solana Node Provider Health",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red"
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1189
+      },
+      "id": 981,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "          sum(rate(\n              side_car_api_rpc_status_code{job=~\"${job}\", provider=\"raydium_api\", status_code=\"ok\"}[5m]\n          )) by (provider, endpoint) /\n          sum(rate(\n              side_car_api_rpc_status_code{job=~\"${job}\", provider=\"raydium_api\"}[5m]\n          )) by (provider, endpoint) * 100",
+          "instant": false,
+          "legendFormat": "{{provider}} - {{endpoint}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Solana Node Provider Health",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1189
+      },
+      "id": 982,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.1.0-70903",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(side_car_api_response_latency_sum{provider=\"raydium_api\", job=~\"${job}\"}[5m])) by (le, endpoint) / sum(rate(side_car_api_response_latency_count{provider=\"raydium_api\", job=~\"${job}\"}[5m])) by (le, endpoint)",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Solana Node Provider Latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1197
+      },
+      "id": 983,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum(rate(side_car_api_response_latency_bucket{provider=\"raydium_api\", job=~\"${job}\"}[5m])) by (le, endpoint))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "p95 Solana RPC Node Latency",
+      "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": "30s",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
@@ -1510,8 +2608,8 @@
       {
         "current": {
           "selected": false,
-          "text": "default",
-          "value": "default"
+          "text": "self-hosted-prometheus-prod",
+          "value": "adp6sdhuns3k0e"
         },
         "hide": 0,
         "includeAll": false,
@@ -1529,8 +2627,12 @@
       {
         "current": {
           "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
+          ],
+          "value": [
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -1556,12 +2658,12 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
-            "All"
+            "mog/usd"
           ],
           "value": [
-            "$__all"
+            "mog/usd"
           ]
         },
         "datasource": {
@@ -1589,7 +2691,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1622,10 +2724,13 @@
       {
         "allValue": "",
         "current": {
-          "isNone": true,
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -1633,9 +2738,9 @@
         },
         "definition": "label_values(side_car_provider_status_responses_per_id,provider)",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Market Map Provider",
-        "multi": false,
+        "multi": true,
         "name": "market_map_provider",
         "options": [],
         "query": {
@@ -1644,7 +2749,7 @@
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "(dydx_api|marketmap_api)",
+        "regex": "(dydx_api|marketmap_api|dydx_research_json_api)",
         "skipUrlSync": false,
         "sort": 1,
         "type": "query"
@@ -1652,7 +2757,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -1666,6 +2771,6 @@
   "timezone": "",
   "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 1,
+  "version": 144,
   "weekStart": ""
 }

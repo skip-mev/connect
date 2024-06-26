@@ -89,7 +89,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {
 				latency := time.Since(start)
-				h.logger.Info(
+				h.logger.Debug(
 					"finished executing the pre-block hook",
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
@@ -117,7 +117,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, nil
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"executing the pre-finalize block hook",
 			"height", req.Height,
 		)
@@ -133,8 +133,6 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 			return &sdk.ResponsePreBlock{}, err
 		}
-
-		h.logger.Info("finished executing the oracle pre-block hook")
 
 		return &sdk.ResponsePreBlock{}, nil
 	}

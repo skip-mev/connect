@@ -1,7 +1,6 @@
 package oracle_test
 
 import (
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-	abciaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmock "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
@@ -478,10 +476,11 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		s.Require().Error(err, expErr)
 	})
 
-	s.Run("error in aggregating oracle votes", func() {
+	s.Run("too many price bytes causes no errors in aggregating currency pairs", func() {
 		metrics := metricmock.NewMetrics(s.T())
 		extCodec := codecmock.NewExtendedCommitCodec(s.T())
 		veCodec := codecmock.NewVoteExtensionCodec(s.T())
+		mockOracleKeeper := slinkyabcimocks.NewOracleKeeper(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
 			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
@@ -489,7 +488,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 					return nil
 				}
 			},
-			nil,
+			mockOracleKeeper,
 			metrics,
 			nil,
 			veCodec,
@@ -512,22 +511,21 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 				1: make([]byte, 34),
 			},
 		}, nil)
-		expErr := abciaggregator.PriceAggregationError{
-			Err: fmt.Errorf("price bytes are too long: %d", 34),
-		}
 
 		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
-		metrics.On("AddABCIRequest", servicemetrics.PreBlock, expErr).Return()
+		metrics.On("AddABCIRequest", servicemetrics.PreBlock, servicemetrics.Success{}).Return()
 		// make ves enabled
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
 		s.ctx = s.ctx.WithBlockHeight(4)
+		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return(nil)
+
 		// run preblocker
 		_, err := handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{
 				[]byte("abc"),
 			},
 		})
-		s.Require().Error(err, expErr)
+		s.Require().NoError(err)
 	})
 }
 

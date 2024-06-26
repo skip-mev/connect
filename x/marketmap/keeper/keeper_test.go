@@ -272,3 +272,16 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
 }
+
+func (s *KeeperTestSuite) TestDeleteMarket() {
+	// create a valid markets
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+
+	// invalid delete fails
+	s.Require().Error(s.keeper.DeleteMarket(s.ctx, "foobar"))
+
+	// valid delete works
+	s.Require().NoError(s.keeper.DeleteMarket(s.ctx, btcusdt.Ticker.String()))
+	_, err := s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
+	s.Require().Error(err)
+}

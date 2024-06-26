@@ -17,7 +17,6 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 )
@@ -30,7 +29,7 @@ type VoteExtensionHandler struct {
 	logger log.Logger
 
 	// oracleClient is the remote oracle client that is responsible for fetching prices
-	oracleClient client.OracleClient
+	oracleClient slinkyabci.OracleClient
 
 	// timeout is the maximum amount of time to wait for the oracle to respond
 	// to a price request.
@@ -53,7 +52,7 @@ type VoteExtensionHandler struct {
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
 func NewVoteExtensionHandler(
 	logger log.Logger,
-	oracleClient client.OracleClient,
+	oracleClient slinkyabci.OracleClient,
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
@@ -93,7 +92,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 			// measure latency
 			latency := time.Since(start)
-			h.logger.Info(
+			h.logger.Debug(
 				"extend vote handler",
 				"duration (seconds)", latency.Seconds(),
 				"err", err,
@@ -198,7 +197,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"extending vote with oracle prices",
 			"req_height", req.Height,
 		)
@@ -218,7 +217,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 		// measure latencies from invocation to return
 		defer func() {
 			latency := time.Since(start)
-			h.logger.Info(
+			h.logger.Debug(
 				"verify vote extension handler",
 				"duration (seconds)", latency.Seconds(),
 			)
@@ -272,7 +271,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"validated vote extension",
 			"height", req.Height,
 			"size (bytes)", len(req.VoteExtension),
