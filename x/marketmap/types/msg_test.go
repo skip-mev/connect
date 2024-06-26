@@ -10,6 +10,99 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+func TestValidateBasicMsgUpsertMarket(t *testing.T) {
+	validCurrencyPair := slinkytypes.CurrencyPair{
+		Base:  "BTC",
+		Quote: "ETH",
+	}
+
+	validTicker := types.Ticker{
+		CurrencyPair:     validCurrencyPair,
+		Decimals:         8,
+		MinProviderCount: 2,
+	}
+
+	tcs := []struct {
+		name       string
+		msg        types.MsgUpsertMarkets
+		expectPass bool
+	}{
+		{
+			"if the authority is not an acc-address - fail",
+			types.MsgUpsertMarkets{
+				Authority: "invalid",
+			},
+			false,
+		},
+		{
+			"if there are no creates -  fail",
+			types.MsgUpsertMarkets{
+				Authority: sample.Address(sample.Rand()),
+			},
+			false,
+		},
+		{
+			"invalid ticker (0 decimals) - fail",
+			types.MsgUpsertMarkets{
+				Authority: sample.Address(sample.Rand()),
+				Markets: []types.Market{
+					{
+						Ticker: types.Ticker{
+							CurrencyPair:     validCurrencyPair,
+							Decimals:         0,
+							MinProviderCount: 0,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{
+			"valid message",
+			types.MsgUpsertMarkets{
+				Authority: sample.Address(sample.Rand()),
+				Markets: []types.Market{
+					{
+						Ticker: validTicker,
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+				},
+			},
+			true,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
 func TestValidateBasicMsgCreateMarket(t *testing.T) {
 	validCurrencyPair := slinkytypes.CurrencyPair{
 		Base:  "BTC",
