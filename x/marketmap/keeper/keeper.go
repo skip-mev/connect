@@ -133,6 +133,11 @@ func (k *Keeper) DeleteMarket(ctx sdk.Context, tickerStr string) error {
 	return k.markets.Remove(ctx, types.TickerString(tickerStr))
 }
 
+// HasMarket checks if a market exists in the store.
+func (k *Keeper) HasMarket(ctx sdk.Context, tickerStr string) (bool, error) {
+	return k.markets.Has(ctx, types.TickerString(tickerStr))
+}
+
 // SetParams sets the x/marketmap module's parameters.
 func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 	return k.params.Set(ctx, params)

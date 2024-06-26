@@ -31,6 +31,110 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgUpsertMarkets defines a message carrying a payload for performing market upserts (update or
+// create if DNE) in the x/marketmap module.
+type MsgUpsertMarkets struct {
+	// Authority is the signer of this transaction.  This authority must be
+	// authorized by the module to execute the message.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// CreateMarkets is the list of all markets to be created for the given
+	// transaction.
+	Markets []Market `protobuf:"bytes,2,rep,name=markets,proto3" json:"markets"`
+}
+
+func (m *MsgUpsertMarkets) Reset()         { *m = MsgUpsertMarkets{} }
+func (m *MsgUpsertMarkets) String() string { return proto.CompactTextString(m) }
+func (*MsgUpsertMarkets) ProtoMessage()    {}
+func (*MsgUpsertMarkets) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{0}
+}
+func (m *MsgUpsertMarkets) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpsertMarkets) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpsertMarkets.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpsertMarkets) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpsertMarkets.Merge(m, src)
+}
+func (m *MsgUpsertMarkets) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpsertMarkets) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpsertMarkets.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpsertMarkets proto.InternalMessageInfo
+
+func (m *MsgUpsertMarkets) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpsertMarkets) GetMarkets() []Market {
+	if m != nil {
+		return m.Markets
+	}
+	return nil
+}
+
+// MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the x/marketmap module.
+type MsgUpsertMarketsResponse struct {
+	// UpdatedMarkets is a map between the ticker and whether the market was updated.
+	MarketUpdates map[string]bool `protobuf:"bytes,1,rep,name=market_updates,json=marketUpdates,proto3" json:"market_updates,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+
+func (m *MsgUpsertMarketsResponse) Reset()         { *m = MsgUpsertMarketsResponse{} }
+func (m *MsgUpsertMarketsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpsertMarketsResponse) ProtoMessage()    {}
+func (*MsgUpsertMarketsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{1}
+}
+func (m *MsgUpsertMarketsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpsertMarketsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpsertMarketsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpsertMarketsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpsertMarketsResponse.Merge(m, src)
+}
+func (m *MsgUpsertMarketsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpsertMarketsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpsertMarketsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpsertMarketsResponse proto.InternalMessageInfo
+
+func (m *MsgUpsertMarketsResponse) GetMarketUpdates() map[string]bool {
+	if m != nil {
+		return m.MarketUpdates
+	}
+	return nil
+}
+
 // MsgCreateMarkets defines a message carrying a payload for creating markets in
 // the x/marketmap module.
 type MsgCreateMarkets struct {
@@ -46,7 +150,7 @@ func (m *MsgCreateMarkets) Reset()         { *m = MsgCreateMarkets{} }
 func (m *MsgCreateMarkets) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateMarkets) ProtoMessage()    {}
 func (*MsgCreateMarkets) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{0}
+	return fileDescriptor_e9adadfc18297083, []int{2}
 }
 func (m *MsgCreateMarkets) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -97,7 +201,7 @@ func (m *MsgCreateMarketsResponse) Reset()         { *m = MsgCreateMarketsRespon
 func (m *MsgCreateMarketsResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateMarketsResponse) ProtoMessage()    {}
 func (*MsgCreateMarketsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{1}
+	return fileDescriptor_e9adadfc18297083, []int{3}
 }
 func (m *MsgCreateMarketsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -141,7 +245,7 @@ func (m *MsgUpdateMarkets) Reset()         { *m = MsgUpdateMarkets{} }
 func (m *MsgUpdateMarkets) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateMarkets) ProtoMessage()    {}
 func (*MsgUpdateMarkets) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{2}
+	return fileDescriptor_e9adadfc18297083, []int{4}
 }
 func (m *MsgUpdateMarkets) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -192,7 +296,7 @@ func (m *MsgUpdateMarketsResponse) Reset()         { *m = MsgUpdateMarketsRespon
 func (m *MsgUpdateMarketsResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateMarketsResponse) ProtoMessage()    {}
 func (*MsgUpdateMarketsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{3}
+	return fileDescriptor_e9adadfc18297083, []int{5}
 }
 func (m *MsgUpdateMarketsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -235,7 +339,7 @@ func (m *MsgParams) Reset()         { *m = MsgParams{} }
 func (m *MsgParams) String() string { return proto.CompactTextString(m) }
 func (*MsgParams) ProtoMessage()    {}
 func (*MsgParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{4}
+	return fileDescriptor_e9adadfc18297083, []int{6}
 }
 func (m *MsgParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -286,7 +390,7 @@ func (m *MsgParamsResponse) Reset()         { *m = MsgParamsResponse{} }
 func (m *MsgParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgParamsResponse) ProtoMessage()    {}
 func (*MsgParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{5}
+	return fileDescriptor_e9adadfc18297083, []int{7}
 }
 func (m *MsgParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -330,7 +434,7 @@ func (m *MsgRemoveMarketAuthorities) Reset()         { *m = MsgRemoveMarketAutho
 func (m *MsgRemoveMarketAuthorities) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveMarketAuthorities) ProtoMessage()    {}
 func (*MsgRemoveMarketAuthorities) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{6}
+	return fileDescriptor_e9adadfc18297083, []int{8}
 }
 func (m *MsgRemoveMarketAuthorities) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -382,7 +486,7 @@ func (m *MsgRemoveMarketAuthoritiesResponse) Reset()         { *m = MsgRemoveMar
 func (m *MsgRemoveMarketAuthoritiesResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveMarketAuthoritiesResponse) ProtoMessage()    {}
 func (*MsgRemoveMarketAuthoritiesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{7}
+	return fileDescriptor_e9adadfc18297083, []int{9}
 }
 func (m *MsgRemoveMarketAuthoritiesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -412,6 +516,9 @@ func (m *MsgRemoveMarketAuthoritiesResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveMarketAuthoritiesResponse proto.InternalMessageInfo
 
 func init() {
+	proto.RegisterType((*MsgUpsertMarkets)(nil), "slinky.marketmap.v1.MsgUpsertMarkets")
+	proto.RegisterType((*MsgUpsertMarketsResponse)(nil), "slinky.marketmap.v1.MsgUpsertMarketsResponse")
+	proto.RegisterMapType((map[string]bool)(nil), "slinky.marketmap.v1.MsgUpsertMarketsResponse.MarketUpdatesEntry")
 	proto.RegisterType((*MsgCreateMarkets)(nil), "slinky.marketmap.v1.MsgCreateMarkets")
 	proto.RegisterType((*MsgCreateMarketsResponse)(nil), "slinky.marketmap.v1.MsgCreateMarketsResponse")
 	proto.RegisterType((*MsgUpdateMarkets)(nil), "slinky.marketmap.v1.MsgUpdateMarkets")
@@ -425,42 +532,49 @@ func init() {
 func init() { proto.RegisterFile("slinky/marketmap/v1/tx.proto", fileDescriptor_e9adadfc18297083) }
 
 var fileDescriptor_e9adadfc18297083 = []byte{
-	// 562 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xf6, 0x36, 0xb4, 0x52, 0x16, 0x5a, 0x5a, 0xb7, 0x52, 0x83, 0x41, 0x6e, 0x64, 0x7e, 0x14,
-	0x22, 0x62, 0xab, 0x45, 0x02, 0x91, 0x5b, 0x82, 0x84, 0xb8, 0x58, 0x42, 0x46, 0x70, 0xe0, 0x12,
-	0xb9, 0xc9, 0x6a, 0x6b, 0x85, 0xf5, 0x5a, 0x5e, 0x27, 0x6a, 0x6e, 0x88, 0xde, 0x38, 0x20, 0x1e,
-	0x81, 0x47, 0xc8, 0x81, 0x03, 0x8f, 0xd0, 0x63, 0xc4, 0x89, 0x13, 0x42, 0xc9, 0x21, 0x3c, 0x06,
-	0xf2, 0xee, 0xda, 0x8d, 0x23, 0xbb, 0xb4, 0xa8, 0x97, 0x68, 0x3d, 0xdf, 0x37, 0x33, 0xdf, 0xb7,
-	0x33, 0x1b, 0x78, 0x87, 0xbd, 0xf7, 0xfc, 0xfe, 0xc8, 0x22, 0x6e, 0xd8, 0x47, 0x11, 0x71, 0x03,
-	0x6b, 0xb8, 0x6f, 0x45, 0xc7, 0x66, 0x10, 0xd2, 0x88, 0xaa, 0xdb, 0x02, 0x35, 0x53, 0xd4, 0x1c,
-	0xee, 0x6b, 0xbb, 0x5d, 0xca, 0x08, 0x65, 0x16, 0x61, 0x38, 0x26, 0x13, 0x86, 0x05, 0x5b, 0xdb,
-	0xc1, 0x14, 0x53, 0x7e, 0xb4, 0xe2, 0x93, 0x8c, 0xde, 0x12, 0xf4, 0x8e, 0x00, 0xc4, 0x87, 0x84,
-	0xb6, 0x5c, 0xe2, 0xf9, 0xd4, 0xe2, 0xbf, 0x32, 0x54, 0xcd, 0xd3, 0x23, 0x3e, 0xce, 0x63, 0x04,
-	0x6e, 0xe8, 0x12, 0x59, 0xd6, 0x98, 0x00, 0xb8, 0x69, 0x33, 0xfc, 0x3c, 0x44, 0x6e, 0x84, 0x6c,
-	0x4e, 0x63, 0xea, 0x13, 0x58, 0x76, 0x07, 0xd1, 0x11, 0x0d, 0xbd, 0x68, 0x54, 0x01, 0x55, 0x50,
-	0x2b, 0xb7, 0x2b, 0x3f, 0xbe, 0x35, 0x76, 0xa4, 0xa0, 0x56, 0xaf, 0x17, 0x22, 0xc6, 0x5e, 0x47,
-	0xa1, 0xe7, 0x63, 0xe7, 0x8c, 0xaa, 0xbe, 0x84, 0x1b, 0x5d, 0x5e, 0xa8, 0x23, 0x1a, 0xb2, 0xca,
-	0x4a, 0xb5, 0x54, 0xbb, 0x7e, 0x70, 0xdb, 0xcc, 0xb9, 0x1b, 0x53, 0x74, 0x6b, 0x5f, 0x3b, 0xfd,
-	0xb5, 0xa7, 0x38, 0xeb, 0xdd, 0x45, 0x05, 0xcd, 0xe6, 0x9f, 0xaf, 0x7b, 0xca, 0xc7, 0xf9, 0xb8,
-	0x7e, 0x56, 0xfd, 0xd3, 0x7c, 0x5c, 0xbf, 0x2b, 0xfd, 0x1c, 0x2f, 0x38, 0x5a, 0x56, 0x6f, 0x68,
-	0xb0, 0xb2, 0x1c, 0x73, 0x10, 0x0b, 0xa8, 0xcf, 0x50, 0x62, 0xf7, 0x4d, 0xd0, 0xbb, 0x1a, 0xbb,
-	0x03, 0x5e, 0xe8, 0x3f, 0xec, 0x0e, 0x16, 0x15, 0x5c, 0xd2, 0x6e, 0x46, 0xbd, 0xb4, 0x9b, 0x89,
-	0xa5, 0x76, 0x3f, 0x03, 0x58, 0xb6, 0x19, 0x7e, 0xc5, 0x27, 0xae, 0x3e, 0x83, 0x6b, 0x62, 0xf6,
-	0xdc, 0x64, 0x91, 0x4e, 0x41, 0x96, 0x3a, 0x65, 0x42, 0xf6, 0x8a, 0x56, 0x2e, 0x7c, 0x45, 0xcd,
-	0x8d, 0xac, 0x29, 0x63, 0x1b, 0x6e, 0xa5, 0x7a, 0x52, 0x95, 0x27, 0x00, 0x6a, 0x36, 0xc3, 0x0e,
-	0x22, 0x74, 0x28, 0x2d, 0xb4, 0x64, 0x86, 0x87, 0x98, 0xfa, 0x10, 0x6e, 0x86, 0x1c, 0xea, 0xb8,
-	0xa2, 0x0d, 0x8a, 0x0d, 0x94, 0x6a, 0x65, 0xe7, 0xa6, 0x88, 0xb7, 0x92, 0xb0, 0x6a, 0xc2, 0x55,
-	0xb7, 0x47, 0x3c, 0xff, 0x9f, 0x12, 0x05, 0xad, 0x09, 0x63, 0x79, 0xe2, 0x6c, 0xdc, 0x83, 0x46,
-	0xb1, 0x88, 0x44, 0xeb, 0xc1, 0xf7, 0x12, 0x2c, 0xd9, 0x0c, 0xab, 0x08, 0xae, 0x67, 0xdf, 0xcc,
-	0xfd, 0xfc, 0xa1, 0x2f, 0x2d, 0xa2, 0xd6, 0xb8, 0x10, 0x2d, 0x69, 0x17, 0xb7, 0xc9, 0xee, 0x6a,
-	0x61, 0x9b, 0x0c, 0xad, 0xb8, 0x4d, 0xee, 0x9e, 0xa8, 0x6f, 0xe1, 0x0d, 0x01, 0xc8, 0x4d, 0xd1,
-	0x8b, 0xd2, 0x05, 0xae, 0x3d, 0x38, 0x1f, 0x4f, 0xeb, 0x9e, 0x00, 0xb8, 0x5b, 0x34, 0x56, 0xab,
-	0xa8, 0x46, 0x41, 0x82, 0xf6, 0xf4, 0x92, 0x09, 0x89, 0x0a, 0x6d, 0xf5, 0xc3, 0x7c, 0x5c, 0x07,
-	0xed, 0x17, 0xa7, 0x53, 0x1d, 0x4c, 0xa6, 0x3a, 0xf8, 0x3d, 0xd5, 0xc1, 0x97, 0x99, 0xae, 0x4c,
-	0x66, 0xba, 0xf2, 0x73, 0xa6, 0x2b, 0xef, 0x1e, 0x61, 0x2f, 0x3a, 0x1a, 0x1c, 0x9a, 0x5d, 0x4a,
-	0x2c, 0xd6, 0xf7, 0x82, 0x06, 0x41, 0x43, 0x2b, 0xe7, 0xed, 0x45, 0xa3, 0x00, 0xb1, 0xc3, 0x35,
-	0xfe, 0xcf, 0xf9, 0xf8, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8f, 0x7b, 0x41, 0xdd, 0x0f, 0x06,
+	// 674 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xcf, 0x6e, 0xd3, 0x4e,
+	0x10, 0xce, 0xa6, 0x7f, 0x7e, 0xbf, 0x2c, 0xa4, 0xb4, 0xdb, 0x4a, 0x35, 0x06, 0xb9, 0x91, 0xa1,
+	0xa8, 0x54, 0xc4, 0x56, 0x8b, 0xc4, 0x9f, 0x70, 0x69, 0x82, 0x40, 0x5c, 0x22, 0x21, 0xa3, 0x72,
+	0xe0, 0x12, 0xb9, 0xf1, 0xca, 0xb5, 0xd2, 0xb5, 0x2d, 0xef, 0x26, 0x6a, 0x6e, 0x88, 0xde, 0x38,
+	0x20, 0xde, 0x00, 0x1e, 0x21, 0x07, 0xde, 0x00, 0x21, 0xf5, 0x18, 0x71, 0xe2, 0x84, 0x50, 0x72,
+	0x08, 0x8f, 0x81, 0xe2, 0xdd, 0xb8, 0x71, 0x6b, 0x87, 0x04, 0xb8, 0x58, 0xbb, 0x33, 0xdf, 0xcc,
+	0x7e, 0xdf, 0xcc, 0xce, 0x1a, 0x5e, 0xa7, 0x47, 0x8e, 0xdb, 0x68, 0xeb, 0xc4, 0x0c, 0x1a, 0x98,
+	0x11, 0xd3, 0xd7, 0x5b, 0x3b, 0x3a, 0x3b, 0xd6, 0xfc, 0xc0, 0x63, 0x1e, 0x5a, 0xe5, 0x5e, 0x2d,
+	0xf2, 0x6a, 0xad, 0x1d, 0x79, 0xbd, 0xee, 0x51, 0xe2, 0x51, 0x9d, 0x50, 0x7b, 0x08, 0x26, 0xd4,
+	0xe6, 0x68, 0x79, 0xcd, 0xf6, 0x6c, 0x2f, 0x5c, 0xea, 0xc3, 0x95, 0xb0, 0x5e, 0xe5, 0xf0, 0x1a,
+	0x77, 0xf0, 0x8d, 0x70, 0xad, 0x98, 0xc4, 0x71, 0x3d, 0x3d, 0xfc, 0x0a, 0x53, 0x21, 0x89, 0x0f,
+	0xdf, 0x4c, 0x42, 0xf8, 0x66, 0x60, 0x12, 0x91, 0x56, 0xfd, 0x0c, 0xe0, 0x72, 0x95, 0xda, 0xfb,
+	0x3e, 0xc5, 0x01, 0xab, 0x86, 0x30, 0x8a, 0xee, 0xc1, 0x9c, 0xd9, 0x64, 0x87, 0x5e, 0xe0, 0xb0,
+	0xb6, 0x04, 0x0a, 0x60, 0x2b, 0x57, 0x91, 0xbe, 0x7e, 0x2a, 0xae, 0x09, 0x42, 0x65, 0xcb, 0x0a,
+	0x30, 0xa5, 0x2f, 0x58, 0xe0, 0xb8, 0xb6, 0x71, 0x06, 0x45, 0x8f, 0xe0, 0x7f, 0xfc, 0x24, 0x2a,
+	0x65, 0x0b, 0x73, 0x5b, 0x97, 0x76, 0xaf, 0x69, 0x09, 0x45, 0xd1, 0xf8, 0x31, 0x95, 0xf9, 0xd3,
+	0xef, 0x1b, 0x19, 0x63, 0x14, 0x51, 0x2a, 0xfd, 0xfc, 0xb8, 0x91, 0x79, 0x33, 0xe8, 0x6c, 0x9f,
+	0x25, 0x7c, 0x3b, 0xe8, 0x6c, 0xdf, 0x10, 0x12, 0x8e, 0xc7, 0x44, 0x9c, 0x27, 0xac, 0x7e, 0x01,
+	0x50, 0x3a, 0x6f, 0x34, 0x30, 0xf5, 0x3d, 0x97, 0x62, 0x64, 0xc3, 0x25, 0x1e, 0x5a, 0x6b, 0xfa,
+	0x96, 0xc9, 0x30, 0x95, 0x40, 0x48, 0x6e, 0x2f, 0x99, 0x5c, 0x4a, 0x1a, 0xc1, 0x7a, 0x9f, 0xa7,
+	0x78, 0xe2, 0xb2, 0xa0, 0x6d, 0xe4, 0xc9, 0xb8, 0x4d, 0xde, 0x83, 0xe8, 0x22, 0x08, 0x2d, 0xc3,
+	0xb9, 0x06, 0x16, 0x65, 0x34, 0x86, 0x4b, 0xb4, 0x06, 0x17, 0x5a, 0xe6, 0x51, 0x13, 0x4b, 0xd9,
+	0x02, 0xd8, 0xfa, 0xdf, 0xe0, 0x9b, 0x52, 0xf6, 0x01, 0x50, 0xbb, 0xbc, 0x1b, 0x8f, 0x03, 0x6c,
+	0x32, 0xfc, 0xb7, 0xdd, 0x78, 0x06, 0x97, 0xea, 0x61, 0xa2, 0xda, 0xcc, 0x4d, 0xc9, 0xd7, 0xc7,
+	0x19, 0xcc, 0xd8, 0x9a, 0x18, 0x7b, 0x55, 0x0e, 0x3b, 0x13, 0xb3, 0x8d, 0x4a, 0x3a, 0x92, 0xcb,
+	0xcb, 0xf5, 0x0f, 0xe4, 0xf2, 0xfe, 0xfe, 0x81, 0xdc, 0xe6, 0x38, 0x83, 0x99, 0x6f, 0xa2, 0x75,
+	0x41, 0x6e, 0xcc, 0x16, 0xc9, 0x7d, 0x07, 0x60, 0xae, 0x4a, 0xed, 0xe7, 0xe1, 0xfc, 0xa1, 0x87,
+	0x70, 0x91, 0x4f, 0x62, 0x28, 0x32, 0x8d, 0x27, 0x07, 0x0b, 0x9e, 0x22, 0x20, 0x5e, 0xa2, 0xec,
+	0xd4, 0x25, 0x2a, 0x2d, 0xc5, 0x45, 0xa9, 0xab, 0x70, 0x25, 0xe2, 0x13, 0xb1, 0x3c, 0x01, 0x50,
+	0xae, 0x52, 0xdb, 0xc0, 0xc4, 0x6b, 0x09, 0x09, 0x65, 0x11, 0xe1, 0x60, 0x8a, 0x6e, 0xc3, 0xe5,
+	0x20, 0x74, 0xd5, 0x4c, 0x7e, 0x8c, 0x98, 0xa7, 0x9c, 0x71, 0x85, 0xdb, 0xcb, 0x23, 0x33, 0xd2,
+	0xe0, 0x82, 0x69, 0x11, 0xc7, 0xfd, 0x2d, 0x45, 0x0e, 0x2b, 0xc1, 0x21, 0x3d, 0xbe, 0x56, 0x6f,
+	0x42, 0x35, 0x9d, 0xc4, 0x88, 0xeb, 0xee, 0x87, 0x79, 0x38, 0x57, 0xa5, 0x36, 0xc2, 0x30, 0x1f,
+	0x9f, 0x99, 0xcd, 0xb4, 0xd9, 0x8e, 0xc1, 0xe4, 0xe2, 0x54, 0xb0, 0xe8, 0x25, 0xc1, 0x30, 0x1f,
+	0xbf, 0xab, 0x9b, 0xe9, 0x4f, 0x88, 0x35, 0xcd, 0x31, 0x89, 0xf7, 0x04, 0xbd, 0x84, 0x97, 0xb9,
+	0x43, 0xdc, 0x14, 0x25, 0x2d, 0x9c, 0xfb, 0xe5, 0x5b, 0x93, 0xfd, 0x51, 0xde, 0x13, 0x00, 0xd7,
+	0xd3, 0xda, 0xaa, 0xa7, 0xe5, 0x48, 0x09, 0x90, 0xef, 0xcf, 0x18, 0x10, 0x2f, 0xe2, 0xf8, 0xdf,
+	0x66, 0x73, 0xaa, 0x77, 0x78, 0x52, 0x11, 0x13, 0x9e, 0x6b, 0x79, 0xe1, 0xf5, 0xa0, 0xb3, 0x0d,
+	0x2a, 0x4f, 0x4f, 0x7b, 0x0a, 0xe8, 0xf6, 0x14, 0xf0, 0xa3, 0xa7, 0x80, 0xf7, 0x7d, 0x25, 0xd3,
+	0xed, 0x2b, 0x99, 0x6f, 0x7d, 0x25, 0xf3, 0xea, 0x8e, 0xed, 0xb0, 0xc3, 0xe6, 0x81, 0x56, 0xf7,
+	0x88, 0x4e, 0x1b, 0x8e, 0x5f, 0x24, 0xb8, 0xa5, 0x27, 0x8c, 0x38, 0x6b, 0xfb, 0x98, 0x1e, 0x2c,
+	0x86, 0xbf, 0xcb, 0xbb, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0xff, 0xa6, 0xe9, 0x9a, 0x04, 0x08,
 	0x00, 0x00,
 }
 
@@ -486,6 +600,10 @@ type MsgClient interface {
 	// RemoveMarketAuthorities defines a method for removing market authorities
 	// from the x/marketmap module. the signer must be the admin.
 	RemoveMarketAuthorities(ctx context.Context, in *MsgRemoveMarketAuthorities, opts ...grpc.CallOption) (*MsgRemoveMarketAuthoritiesResponse, error)
+	// UpsertMarkets wraps both Create / Update markets into a single message. Specifically
+	// if a market does not exist it will be created, otherwise it will be updated. The response
+	// will be a map between ticker -> updated.
+	UpsertMarkets(ctx context.Context, in *MsgUpsertMarkets, opts ...grpc.CallOption) (*MsgUpsertMarketsResponse, error)
 }
 
 type msgClient struct {
@@ -532,6 +650,15 @@ func (c *msgClient) RemoveMarketAuthorities(ctx context.Context, in *MsgRemoveMa
 	return out, nil
 }
 
+func (c *msgClient) UpsertMarkets(ctx context.Context, in *MsgUpsertMarkets, opts ...grpc.CallOption) (*MsgUpsertMarketsResponse, error) {
+	out := new(MsgUpsertMarketsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Msg/UpsertMarkets", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateMarkets creates markets from the given message.
@@ -544,6 +671,10 @@ type MsgServer interface {
 	// RemoveMarketAuthorities defines a method for removing market authorities
 	// from the x/marketmap module. the signer must be the admin.
 	RemoveMarketAuthorities(context.Context, *MsgRemoveMarketAuthorities) (*MsgRemoveMarketAuthoritiesResponse, error)
+	// UpsertMarkets wraps both Create / Update markets into a single message. Specifically
+	// if a market does not exist it will be created, otherwise it will be updated. The response
+	// will be a map between ticker -> updated.
+	UpsertMarkets(context.Context, *MsgUpsertMarkets) (*MsgUpsertMarketsResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -561,6 +692,9 @@ func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgParams)
 }
 func (*UnimplementedMsgServer) RemoveMarketAuthorities(ctx context.Context, req *MsgRemoveMarketAuthorities) (*MsgRemoveMarketAuthoritiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveMarketAuthorities not implemented")
+}
+func (*UnimplementedMsgServer) UpsertMarkets(ctx context.Context, req *MsgUpsertMarkets) (*MsgUpsertMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertMarkets not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -639,6 +773,24 @@ func _Msg_RemoveMarketAuthorities_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpsertMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpsertMarkets)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpsertMarkets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.marketmap.v1.Msg/UpsertMarkets",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpsertMarkets(ctx, req.(*MsgUpsertMarkets))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "slinky.marketmap.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -659,9 +811,102 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			MethodName: "RemoveMarketAuthorities",
 			Handler:    _Msg_RemoveMarketAuthorities_Handler,
 		},
+		{
+			MethodName: "UpsertMarkets",
+			Handler:    _Msg_UpsertMarkets_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "slinky/marketmap/v1/tx.proto",
+}
+
+func (m *MsgUpsertMarkets) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpsertMarkets) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpsertMarkets) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Markets) > 0 {
+		for iNdEx := len(m.Markets) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Markets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpsertMarketsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpsertMarketsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpsertMarketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.MarketUpdates) > 0 {
+		for k := range m.MarketUpdates {
+			v := m.MarketUpdates[k]
+			baseI := i
+			i--
+			if v {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintTx(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintTx(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *MsgCreateMarkets) Marshal() (dAtA []byte, err error) {
@@ -934,6 +1179,42 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *MsgUpsertMarkets) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Markets) > 0 {
+		for _, e := range m.Markets {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUpsertMarketsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.MarketUpdates) > 0 {
+		for k, v := range m.MarketUpdates {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovTx(uint64(len(k))) + 1 + 1
+			n += mapEntrySize + 1 + sovTx(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
 func (m *MsgCreateMarkets) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1047,6 +1328,287 @@ func sovTx(x uint64) (n int) {
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgUpsertMarkets) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpsertMarkets: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpsertMarkets: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Markets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Markets = append(m.Markets, Market{})
+			if err := m.Markets[len(m.Markets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpsertMarketsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpsertMarketsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpsertMarketsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MarketUpdates", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.MarketUpdates == nil {
+				m.MarketUpdates = make(map[string]bool)
+			}
+			var mapkey string
+			var mapvalue bool
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTx
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowTx
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthTx
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthTx
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapvaluetemp int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowTx
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvaluetemp |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					mapvalue = bool(mapvaluetemp != 0)
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipTx(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthTx
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.MarketUpdates[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *MsgCreateMarkets) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
