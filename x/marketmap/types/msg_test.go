@@ -68,6 +68,49 @@ func TestValidateBasicMsgUpsertMarket(t *testing.T) {
 			false,
 		},
 		{
+			"duplicate tickers",
+			types.MsgUpsertMarkets{
+				Authority: sample.Address(sample.Rand()),
+				Markets: []types.Market{
+					{
+						Ticker: types.Ticker{
+							CurrencyPair:     validCurrencyPair,
+							Decimals:         0,
+							MinProviderCount: 0,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+					{
+						Ticker: types.Ticker{
+							CurrencyPair:     validCurrencyPair,
+							Decimals:         0,
+							MinProviderCount: 0,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{
 			"valid message",
 			types.MsgUpsertMarkets{
 				Authority: sample.Address(sample.Rand()),

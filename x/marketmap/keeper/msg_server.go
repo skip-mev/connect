@@ -27,9 +27,10 @@ var _ types.MsgServer = (*msgServer)(nil)
 // if a market does not exist it will be created, otherwise it will be updated. The response
 // will be a map between ticker -> updated.
 func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMarkets) (*types.MsgUpsertMarketsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
 	// perform basic msg validity checks
-	ctx, err := ms.verifyMarketAuthoritiesAndExtractContext(goCtx, msg)
-	if err != nil {
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
 		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
 	}
 
@@ -86,7 +87,7 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 	}
 
 	// validate that the new state of the marketmap is valid
-	if err = ms.k.ValidateState(ctx, msg.Markets); err != nil {
+	if err := ms.k.ValidateState(ctx, msg.Markets); err != nil {
 		return nil, err
 	}
 
@@ -96,15 +97,16 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 // CreateMarkets updates the marketmap by creating markets from the given message.  All updates are made to the market
 // map and then the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMarkets) (*types.MsgCreateMarketsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
 	// perform basic msg validity checks
-	ctx, err := ms.verifyMarketAuthoritiesAndExtractContext(goCtx, msg)
-	if err != nil {
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
 		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
 	}
 
 	// create markets
 	for _, market := range msg.CreateMarkets {
-		err = ms.k.CreateMarket(ctx, market)
+		err := ms.k.CreateMarket(ctx, market)
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +127,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// validate that the new state of the marketmap is valid
-	err = ms.k.ValidateState(ctx, msg.CreateMarkets)
+	err := ms.k.ValidateState(ctx, msg.CreateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
@@ -136,14 +138,15 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 // UpdateMarkets updates the marketmap by updating markets from the given message.  All updates are made to the market
 // map and then the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMarkets) (*types.MsgUpdateMarketsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
 	// perform basic msg validity checks
-	ctx, err := ms.verifyMarketAuthoritiesAndExtractContext(goCtx, msg)
-	if err != nil {
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
 		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
 	}
 
 	for _, market := range msg.UpdateMarkets {
-		err = ms.k.UpdateMarket(ctx, market)
+		err := ms.k.UpdateMarket(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to update market: %w", err)
 		}
@@ -165,38 +168,35 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	}
 
 	// validate that the new state of the marketmap is valid
-	err = ms.k.ValidateState(ctx, msg.UpdateMarkets)
-	if err != nil {
+	if err := ms.k.ValidateState(ctx, msg.UpdateMarkets); err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
 	return &types.MsgUpdateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
-// verifyMarketAuthoritiesAndExtractContext verifies that the msg-submitter is a market-authority
+// verifyMarketAuthorities verifies that the msg-submitter is a market-authority
 // and returns the context for the msg, this method returns an error if the submitter is not a market
 // authority.
-func (ms msgServer) verifyMarketAuthoritiesAndExtractContext(goCtx context.Context, msg interface {
+func (ms msgServer) verifyMarketAuthorities(ctx sdk.Context, msg interface {
 	GetAuthority() string
 },
-) (sdk.Context, error) {
+) error {
 	if msg == nil {
-		return sdk.Context{}, fmt.Errorf("unable to process nil msg")
+		return fmt.Errorf("unable to process nil msg")
 	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	params, err := ms.k.GetParams(ctx)
 	if err != nil {
-		return sdk.Context{}, fmt.Errorf("unable to get marketmap params: %w", err)
+		return fmt.Errorf("unable to get marketmap params: %w", err)
 	}
 
 	found := checkMarketAuthority(msg.GetAuthority(), params)
 	if !found {
-		return sdk.Context{}, fmt.Errorf("request signer %s does not match module market authorities", msg.GetAuthority())
+		return fmt.Errorf("request signer %s does not match module market authorities", msg.GetAuthority())
 	}
 
-	return ctx, nil
+	return nil
 }
 
 // UpdateParams updates the x/marketmap module's Params.
