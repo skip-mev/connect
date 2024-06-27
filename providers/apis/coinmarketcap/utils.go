@@ -41,10 +41,6 @@ var DefaultAPIConfig = config.APIConfig{
 	Endpoints: []config.Endpoint{
 		{
 			URL: URL,
-			Authentication: config.Authentication{
-				APIKeyHeader: APIKeyHeader,
-				APIKey:       "",
-			},
 		},
 	},
 }
