@@ -10,6 +10,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/arrays"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -22,8 +23,8 @@ func NewResearchAPIHandler(
 	logger *zap.Logger,
 	api config.APIConfig,
 ) (*ResearchAPIHandler, error) {
-	if api.Name != ResearchAPIHandlerName {
-		return nil, fmt.Errorf("expected api config name %s, got %s", ResearchAPIHandlerName, api.Name)
+	if api.Name != ResearchAPIHandlerName && api.Name != ResearchCMCAPIHandlerName {
+		return nil, fmt.Errorf("expected api config name %s or %s, got %s", ResearchAPIHandlerName, ResearchCMCAPIHandlerName, api.Name)
 	}
 
 	if !api.Enabled {
@@ -39,7 +40,8 @@ func NewResearchAPIHandler(
 			api:    api,
 			logger: logger,
 		},
-		url: api.Endpoints[1].URL, // We assume the first URL is the endpoint of the dydx mainnet
+		url:     api.Endpoints[1].URL, // We assume the first URL is the endpoint of the dydx mainnet
+		onlyCMC: api.Name == ResearchCMCAPIHandlerName,
 	}, nil
 }
 
@@ -50,6 +52,8 @@ type ResearchAPIHandler struct {
 
 	// url is the URL to query for the market map.
 	url string
+	// onlyCMC is a flag that indicates whether the handler should only return CoinMarketCap markets.
+	onlyCMC bool
 }
 
 // CreateURL returns a static url (the url of the first configured endpoint). If the dydx chain is not
@@ -101,7 +105,7 @@ func (h *ResearchAPIHandler) ParseResponse(
 	}
 
 	// convert the dydx research json into a QueryAllMarketsParamsResponse
-	respMarketParams, err := researchJSONToQueryAllMarketsParamsResponse(research)
+	respMarketParams, err := h.researchJSONToQueryAllMarketsParamsResponse(research)
 	if err != nil {
 		h.logger.Error("failed to convert dydx research json into QueryAllMarketsParamsResponse", zap.Error(err))
 		return types.NewMarketMapResponseWithErr(
@@ -136,12 +140,16 @@ func (h *ResearchAPIHandler) ParseResponse(
 
 // researchJSONToQueryAllMarketsParamsResponse converts a dydx research json into a
 // QueryAllMarketsParamsResponse.
-func researchJSONToQueryAllMarketsParamsResponse(research dydxtypes.ResearchJSON) (dydxtypes.QueryAllMarketParamsResponse, error) {
+func (h *ResearchAPIHandler) researchJSONToQueryAllMarketsParamsResponse(research dydxtypes.ResearchJSON) (dydxtypes.QueryAllMarketParamsResponse, error) {
 	// iterate over all entries in the research json + unmarshal it's market-params
 	resp := dydxtypes.QueryAllMarketParamsResponse{}
 	for _, market := range research {
+		if market.CMCID < 1 {
+			continue
+		}
+
 		// convert the dydx research json market-param into a MarketParam struct
-		marketParam, err := marketParamFromResearchJSONMarketParam(market.ResearchJSONMarketParam)
+		marketParam, err := h.marketParamFromResearchJSONMarketParam(market)
 		if err != nil {
 			return dydxtypes.QueryAllMarketParamsResponse{}, err
 		}
@@ -155,9 +163,20 @@ func researchJSONToQueryAllMarketsParamsResponse(research dydxtypes.ResearchJSON
 
 // marketParamFromResearchJSONMarketParam converts a dydx research json market-param
 // into a MarketParam struct.
-func marketParamFromResearchJSONMarketParam(marketParam dydxtypes.ResearchJSONMarketParam) (dydxtypes.MarketParam, error) {
-	exchangeConfigJSON := dydxtypes.ExchangeConfigJson{
-		Exchanges: marketParam.ExchangeConfigJSON,
+func (h *ResearchAPIHandler) marketParamFromResearchJSONMarketParam(marketParam dydxtypes.Params) (dydxtypes.MarketParam, error) {
+	var exchangeConfigJSON dydxtypes.ExchangeConfigJson
+	if !h.onlyCMC {
+		exchangeConfigJSON = dydxtypes.ExchangeConfigJson{
+			Exchanges: marketParam.ExchangeConfigJSON,
+		}
+	} else {
+		exchange := dydxtypes.ExchangeMarketConfigJson{
+			ExchangeName: coinmarketcap.Name,
+			Ticker:       fmt.Sprintf("%d", marketParam.CMCID),
+		}
+		exchangeConfigJSON = dydxtypes.ExchangeConfigJson{
+			Exchanges: []dydxtypes.ExchangeMarketConfigJson{exchange},
+		}
 	}
 	// marshal to a json string
 	exchangeConfigJSONBz, err := json.Marshal(exchangeConfigJSON)
@@ -165,11 +184,19 @@ func marketParamFromResearchJSONMarketParam(marketParam dydxtypes.ResearchJSONMa
 		return dydxtypes.MarketParam{}, err
 	}
 
+	var minExchanges uint32
+	if h.onlyCMC {
+		minExchanges = 1
+	} else {
+		minExchanges = marketParam.MinExchanges
+
+	}
+
 	return dydxtypes.MarketParam{
 		Id:                 marketParam.ID,
 		Pair:               marketParam.Pair,
 		Exponent:           int32(marketParam.Exponent),
-		MinExchanges:       marketParam.MinExchanges,
+		MinExchanges:       minExchanges,
 		MinPriceChangePpm:  marketParam.MinPriceChangePpm,
 		ExchangeConfigJson: string(exchangeConfigJSONBz),
 	}, nil
