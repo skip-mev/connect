@@ -30,4 +30,9 @@ func TestMarkets(t *testing.T) {
 	var mm4 mmtypes.MarketMap
 	require.NoError(t, json.Unmarshal([]byte(constants.CoinGeckoMarketMapJSON), &mm4))
 	require.NoError(t, constants.CoinGeckoMarketMap.ValidateBasic())
+
+	// Unmarshal the CoinMarketCapMarketMapJSON into CoinMarketCapMarketMap.
+	var mm5 mmtypes.MarketMap
+	require.NoError(t, json.Unmarshal([]byte(constants.CoinMarketCapMarketMapJSON), &mm5))
+	require.NoError(t, constants.CoinMarketCapMarketMap.ValidateBasic())
 }

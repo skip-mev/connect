@@ -9,6 +9,1480 @@ import (
 )
 
 var (
+	// CoinMarketCapMarketMap is used to initialize the CoinMarketCap market map. This only includes
+	// the markets that are supported by CoinMarketCap.
+	CoinMarketCapMarketMap mmtypes.MarketMap
+	// CoinMarketCapMarketMapJSON is the JSON representation of the CoinMarketCap MarketMap that can be used
+	// to initialize for a genesis state or used by the sidecar as as static market map.
+	CoinMarketCapMarketMapJSON = `
+{
+    "markets": {
+      "KHAI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "KHAI",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "30948"
+          }
+        ]
+      },
+      "WAFFLES/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "WAFFLES",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31442"
+          }
+        ]
+      },
+      "HEGE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "HEGE",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31044"
+          }
+        ]
+      },
+      "WUF/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "WUF",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "30683"
+          }
+        ]
+      },
+      "CHAT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "CHAT",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29478"
+          }
+        ]
+      },
+      "BEER/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BEER",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31337"
+          }
+        ]
+      },
+      "MANEKI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MANEKI",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "30912"
+          }
+        ]
+      },
+      "SLERF/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SLERF",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29920"
+          }
+        ]
+      },
+      "MYRO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MYRO",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28382"
+          }
+        ]
+      },
+      "RAY/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "RAY",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "8526"
+          }
+        ]
+      },
+      "WIF/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "WIF",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28752"
+          }
+        ]
+      },
+      "MICHI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MICHI",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "30943"
+          }
+        ]
+      },
+      "MEW/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MEW",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "30126"
+          }
+        ]
+      },
+      "PONKE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "PONKE",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29150"
+          }
+        ]
+      },
+      "BOME/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BOME",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29870"
+          }
+        ]
+      },
+      "DJT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "DJT",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31891"
+          }
+        ]
+      },
+      "POPCAT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "POPCAT",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28782"
+          }
+        ]
+      },
+      "AAVE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "AAVE",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "7278"
+          }
+        ]
+      },
+      "ADA/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ADA",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "2010"
+          }
+        ]
+      },
+      "AEVO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "AEVO",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29676"
+          }
+        ]
+      },
+      "AGIX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "AGIX",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "2424"
+          }
+        ]
+      },
+      "ALGO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ALGO",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "4030"
+          }
+        ]
+      },
+      "APE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "APE",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "18876"
+          }
+        ]
+      },
+      "APT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "APT",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "21794"
+          }
+        ]
+      },
+      "ARB/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ARB",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "11841"
+          }
+        ]
+      },
+      "ARKM/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ARKM",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "27565"
+          }
+        ]
+      },
+      "ASTR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ASTR",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "12885"
+          }
+        ]
+      },
+      "ATOM/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ATOM",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "3794"
+          }
+        ]
+      },
+      "AVAX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "AVAX",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "5805"
+          }
+        ]
+      },
+      "AXL/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "AXL",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "17799"
+          }
+        ]
+      },
+      "BCH/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BCH",
+            "Quote": "USD"
+          },
+          "decimals": 7,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1831"
+          }
+        ]
+      },
+      "BLUR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BLUR",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "23121"
+          }
+        ]
+      },
+      "BNB/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BNB",
+            "Quote": "USD"
+          },
+          "decimals": 7,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1839"
+          }
+        ]
+      },
+      "BONK/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BONK",
+            "Quote": "USD"
+          },
+          "decimals": 14,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "23095"
+          }
+        ]
+      },
+      "BTC/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BTC",
+            "Quote": "USD"
+          },
+          "decimals": 5,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1"
+          }
+        ]
+      },
+      "BUBBA/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BUBBA",
+            "Quote": "USD"
+          },
+          "decimals": 12,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31411"
+          }
+        ]
+      },
+      "COMP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "COMP",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "5692"
+          }
+        ]
+      },
+      "CRV/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "CRV",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "6538"
+          }
+        ]
+      },
+      "DOGE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "DOGE",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "74"
+          }
+        ]
+      },
+      "DOT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "DOT",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "6636"
+          }
+        ]
+      },
+      "DYDX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "DYDX",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28324"
+          }
+        ]
+      },
+      "DYM/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "DYM",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28932"
+          }
+        ]
+      },
+      "TREMP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "TREMP",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29717"
+          }
+        ]
+      },
+      "MOG/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MOG",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "27659"
+          }
+        ]
+      },
+      "MOTHER/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MOTHER",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "31510"
+          }
+        ]
+      },
+      "EOS/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "EOS",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1765"
+          }
+        ]
+      },
+      "ETC/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ETC",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1321"
+          }
+        ]
+      },
+      "ETH/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ETH",
+            "Quote": "USD"
+          },
+          "decimals": 6,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1027"
+          }
+        ]
+      },
+      "FET/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "FET",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "3773"
+          }
+        ]
+      },
+      "FIL/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "FIL",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "2280"
+          }
+        ]
+      },
+      "GRT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "GRT",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "6719"
+          }
+        ]
+      },
+      "HBAR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "HBAR",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "4642"
+          }
+        ]
+      },
+      "ICP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ICP",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "8916"
+          }
+        ]
+      },
+      "IMX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "IMX",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "10603"
+          }
+        ]
+      },
+      "INJ/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "INJ",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "7226"
+          }
+        ]
+      },
+      "JTO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "JTO",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28541"
+          }
+        ]
+      },
+      "JUP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "JUP",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29210"
+          }
+        ]
+      },
+      "LDO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "LDO",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "8000"
+          }
+        ]
+      },
+      "LINK/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "LINK",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1975"
+          }
+        ]
+      },
+      "LTC/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "LTC",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "2"
+          }
+        ]
+      },
+      "MANA/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MANA",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1966"
+          }
+        ]
+      },
+      "MATIC/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MATIC",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "3890"
+          }
+        ]
+      },
+      "MKR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "MKR",
+            "Quote": "USD"
+          },
+          "decimals": 6,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1518"
+          }
+        ]
+      },
+      "NEAR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "NEAR",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "6535"
+          }
+        ]
+      },
+      "NTRN/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "NTRN",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "26680"
+          }
+        ]
+      },
+      "OP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "OP",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "11840"
+          }
+        ]
+      },
+      "ORDI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ORDI",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "25028"
+          }
+        ]
+      },
+      "PEPE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "PEPE",
+            "Quote": "USD"
+          },
+          "decimals": 16,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "24478"
+          }
+        ]
+      },
+      "PYTH/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "PYTH",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "28177"
+          }
+        ]
+      },
+      "RNDR/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "RNDR",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "5690"
+          }
+        ]
+      },
+      "RUNE/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "RUNE",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "4157"
+          }
+        ]
+      },
+      "SEI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SEI",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "23149"
+          }
+        ]
+      },
+      "SHIB/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SHIB",
+            "Quote": "USD"
+          },
+          "decimals": 15,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "5994"
+          }
+        ]
+      },
+      "SNX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SNX",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "2586"
+          }
+        ]
+      },
+      "SOL/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SOL",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "5426"
+          }
+        ]
+      },
+      "STRK/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "STRK",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "22691"
+          }
+        ]
+      },
+      "STX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "STX",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "4847"
+          }
+        ]
+      },
+      "SUI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "SUI",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "20947"
+          }
+        ]
+      },
+      "TIA/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "TIA",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "22861"
+          }
+        ]
+      },
+      "TRX/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "TRX",
+            "Quote": "USD"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "1958"
+          }
+        ]
+      },
+      "UNI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "UNI",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "7083"
+          }
+        ]
+      },
+      "USDT/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "825"
+          }
+        ]
+      },
+      "WLD/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "WLD",
+            "Quote": "USD"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "13502"
+          }
+        ]
+      },
+      "WOO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "WOO",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "7501"
+          }
+        ]
+      },
+      "XLM/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "XLM",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "512"
+          }
+        ]
+      },
+      "XRP/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "XRP",
+            "Quote": "USD"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "52"
+          }
+        ]
+      }
+    }
+}
+	`
+
 	// RaydiumMarketMap is used to initialize the Raydium market map. This only includes
 	// the markets that are supported by Raydium.
 	RaydiumMarketMap mmtypes.MarketMap
@@ -8010,6 +9484,12 @@ var (
 )
 
 func init() {
+	// Unmarshal the CoinMarketCapMarketMapJSON into CoinMarketCapMarketMap.
+	if err := json.Unmarshal([]byte(CoinMarketCapMarketMapJSON), &CoinMarketCapMarketMap); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to unmarshal CoinMarketCapMarketMapJSON: %v\n", err)
+		panic(err)
+	}
+
 	// Unmarshal the RaydiumMarketMapJSON into RaydiumMarketMap.
 	if err := json.Unmarshal([]byte(RaydiumMarketMapJSON), &RaydiumMarketMap); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to unmarshal RaydiumMarketMapJSON: %v\n", err)
