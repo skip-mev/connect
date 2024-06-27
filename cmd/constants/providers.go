@@ -8,6 +8,7 @@ import (
 	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
@@ -62,6 +63,11 @@ var (
 		{
 			Name: coingecko.Name,
 			API:  coingecko.DefaultAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: coinmarketcap.Name,
+			API:  coinmarketcap.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{

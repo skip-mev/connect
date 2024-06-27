@@ -61,6 +61,6 @@ func (s *OracleTestSuite) TestMetrics() {
 	metrics.On("AddTick").Return()
 
 	time.Sleep(2 * cfg.UpdateInterval)
+	testOracle.Stop() // block on the oracle actually closing
 	metrics.AssertExpectations(s.T())
-	testOracle.Stop()
 }

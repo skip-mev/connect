@@ -1,15 +1,20 @@
 package keeper_test
 
 import (
+	"fmt"
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/skip-mev/chaintestutil/sample"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
+	mmmocks "github.com/skip-mev/slinky/x/marketmap/types/mocks"
 )
 
 func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
@@ -327,5 +332,195 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarketAuthorities() {
 			MarketAuthorities: s.marketAuthorities,
 			Admin:             s.admin,
 		}))
+	})
+}
+
+func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
+	hooks := mmmocks.NewMarketMapHooks(s.T())
+
+	// init keeper w/ mocked hooks
+	s.keeper = s.initKeeperWithHooks(hooks)
+
+	msgServer := keeper.NewMsgServer(s.keeper)
+
+	s.Run("unable to process for invalid authority", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: "invalid",
+		}
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority (valid bech32)", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: sdk.AccAddress("invalid").String(),
+		}
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	// set a market in the map
+	s.Run("unable to process nil request", func() {
+		resp, err := msgServer.UpsertMarkets(s.ctx, nil)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("if a market does not exist, create it + error if hook errors", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				usdcusd,
+			},
+		}
+
+		err := fmt.Errorf("hook error")
+		hooks.On("AfterMarketCreated", s.ctx, usdcusd).Return(err).Once()
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("if a market does not exist, create it", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				btcusdt,
+			},
+		}
+
+		hooks.On("AfterMarketCreated", mock.Anything, btcusdt).Return(nil).Once()
+
+		s.ctx = s.ctx.WithBlockHeight(12)
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// expect response to contain the market
+		s.Require().Len(resp.MarketUpdates, 1)
+		s.Require().False(resp.MarketUpdates[btcusdt.String()])
+
+		// check that the market now exists
+		found, err := s.keeper.HasMarket(s.ctx, btcusdt.Ticker.String())
+		s.Require().NoError(err)
+		s.Require().True(found)
+
+		// check that last updated is correct
+		lastUpdated, err := s.keeper.GetLastUpdated(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated)
+
+		// check that the emitted events are correct (get the last event)
+		event := s.ctx.EventManager().Events()[len(s.ctx.EventManager().Events())-1]
+		s.Require().Equal(types.EventTypeCreateMarket, event.Type)
+
+		// require that attributes are correct
+		s.Require().Equal(btcusdt.Ticker.String(), event.Attributes[0].Value)
+		s.Require().Equal(strconv.FormatUint(btcusdt.Ticker.Decimals, 10), event.Attributes[1].Value)
+		s.Require().Equal(strconv.FormatUint(btcusdt.Ticker.MinProviderCount, 10), event.Attributes[2].Value)
+		s.Require().Equal(btcusdt.Ticker.Metadata_JSON, event.Attributes[3].Value)
+	})
+
+	s.Run("if a market exists, update it but fail when the hook fails", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				usdtusd,
+				btcusdt,
+			},
+		}
+
+		err := fmt.Errorf("hook error")
+		hooks.On("AfterMarketCreated", mock.Anything, usdtusd).Return(nil).Once()
+		hooks.On("AfterMarketUpdated", mock.Anything, btcusdt).Return(err).Once()
+
+		s.ctx = s.ctx.WithBlockHeight(13)
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("if a market exists, update it", func() {
+		btcusdt.Ticker.MinProviderCount = 5
+
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				ethusdt,
+				btcusdt,
+			},
+		}
+
+		hooks.On("AfterMarketUpdated", mock.Anything, btcusdt).Return(nil).Once()
+		hooks.On("AfterMarketCreated", mock.Anything, ethusdt).Return(nil).Once()
+
+		s.ctx = s.ctx.WithBlockHeight(13)
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// expect response to contain the market
+		s.Require().Len(resp.MarketUpdates, 2)
+		s.Require().True(resp.MarketUpdates[btcusdt.Ticker.String()])
+		s.Require().False(resp.MarketUpdates[ethusdt.Ticker.String()])
+
+		// check that the market still exists
+		found, err := s.keeper.HasMarket(s.ctx, btcusdt.Ticker.String())
+		s.Require().NoError(err)
+		s.Require().True(found)
+
+		// check that the market now exists
+		found, err = s.keeper.HasMarket(s.ctx, ethusdt.Ticker.String())
+		s.Require().NoError(err)
+		s.Require().True(found)
+
+		// check that last updated is correct
+		lastUpdated, err := s.keeper.GetLastUpdated(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated)
+
+		// check that the emitted events are correct (get the last event)
+		event := s.ctx.EventManager().Events()[len(s.ctx.EventManager().Events())-1]
+		s.Require().Equal(types.EventTypeUpdateMarket, event.Type)
+
+		// require that attributes are correct
+		s.Require().Equal(btcusdt.Ticker.String(), event.Attributes[0].Value)
+		s.Require().Equal(strconv.FormatUint(btcusdt.Ticker.Decimals, 10), event.Attributes[1].Value)
+		s.Require().Equal(strconv.FormatUint(btcusdt.Ticker.MinProviderCount, 10), event.Attributes[2].Value)
+		s.Require().Equal(btcusdt.Ticker.Metadata_JSON, event.Attributes[3].Value)
+	})
+
+	s.Run("if a market breaks the market-map, fail", func() {
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				{
+					Ticker: ethusdt.Ticker,
+					ProviderConfigs: []types.ProviderConfig{
+						{
+							Name:           "kucoin",
+							OffChainTicker: "eth-usdt",
+							NormalizeByPair: &slinkytypes.CurrencyPair{
+								Base:  "INVALID",
+								Quote: "PAIR",
+							},
+						},
+					},
+				},
+			},
+		}
+		hooks.On("AfterMarketUpdated", mock.Anything, mock.Anything).Return(nil).Once()
+
+		s.ctx = s.ctx.WithBlockHeight(13)
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
 	})
 }
