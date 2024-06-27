@@ -37,9 +37,6 @@ const (
 	//
 	// ref: https://www.okx.com/docs-v5/en/#overview-websocket-overview
 	MaxSubscriptionsPerConnection = 15
-
-	// DefaultReadTimeout is the default read timeout for the OKX Websocket.
-	DefaultReadTimeout = 30 * time.Second
 )
 
 // DefaultWebSocketConfig is the default configuration for the OKX Websocket.
@@ -54,7 +51,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	WriteBufferSize:               config.DefaultWriteBufferSize,
 	HandshakeTimeout:              config.DefaultHandshakeTimeout,
 	EnableCompression:             config.DefaultEnableCompression,
-	ReadTimeout:                   DefaultReadTimeout,
+	ReadTimeout:                   config.DefaultReadTimeout,
 	WriteTimeout:                  config.DefaultWriteTimeout,
 	PingInterval:                  config.DefaultPingInterval,
 	WriteInterval:                 WriteInterval,

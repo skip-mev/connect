@@ -37,7 +37,7 @@ const (
 
 	// DefaultReadTimeout is the default read deadline on the underlying network
 	// connection.
-	DefaultReadTimeout = 5 * time.Second
+	DefaultReadTimeout = 10 * time.Second
 
 	// DefaultWriteTimeout is the default write deadline on the underlying network
 	// connection.
