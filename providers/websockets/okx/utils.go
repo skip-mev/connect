@@ -39,7 +39,7 @@ const (
 	MaxSubscriptionsPerConnection = 15
 
 	// DefaultReadTimeout is the default read timeout for the OKX Websocket.
-	DefaultReadTimeout = 60 * time.Second
+	DefaultReadTimeout = 30 * time.Second
 )
 
 // DefaultWebSocketConfig is the default configuration for the OKX Websocket.
