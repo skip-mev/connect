@@ -54,11 +54,19 @@ run-oracle-client: build
 
 start-all-dev:
 	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile all up -d --build
 
 stop-all-dev:
 	@echo "Stopping development network..."
-	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile all down
+
+start-sidecar-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile sidecar up -d --build
+
+stop-sidecar-dev:
+	@echo "Stopping development oracle..."
+	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile sidecar down
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
