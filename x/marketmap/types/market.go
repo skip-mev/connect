@@ -13,9 +13,14 @@ import (
 //		2. Ensure that each provider config has a valid corresponding ticker.
 //	 	3. Ensure that all normalization markets are enabled.
 func (mm *MarketMap) ValidateBasic() error {
-	for _, market := range mm.Markets {
+	for ticker, market := range mm.Markets {
 		if err := market.ValidateBasic(); err != nil {
 			return err
+		}
+
+		// expect that the ticker (index) is equal to the market.Ticker.String()
+		if ticker != market.Ticker.String() {
+			return fmt.Errorf("ticker %s does not match market.Ticker.String() %s", ticker, market.Ticker.String())
 		}
 
 		for _, providerConfig := range market.ProviderConfigs {
