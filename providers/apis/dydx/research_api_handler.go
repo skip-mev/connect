@@ -189,7 +189,6 @@ func (h *ResearchAPIHandler) marketParamFromResearchJSONMarketParam(marketParam 
 		minExchanges = 1
 	} else {
 		minExchanges = marketParam.MinExchanges
-
 	}
 
 	return dydxtypes.MarketParam{
