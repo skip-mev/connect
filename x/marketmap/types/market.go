@@ -50,7 +50,9 @@ func (m *Market) ValidateBasic() error {
 	}
 
 	if uint64(len(m.ProviderConfigs)) < m.Ticker.MinProviderCount {
-		return fmt.Errorf("this ticker must have at least %d providers; got %d",
+		return fmt.Errorf(
+			"ticker %q must have at least %d providers; got %d",
+			m.Ticker.String(),
 			m.Ticker.MinProviderCount,
 			len(m.ProviderConfigs),
 		)
