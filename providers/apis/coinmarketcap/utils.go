@@ -41,10 +41,6 @@ var DefaultAPIConfig = config.APIConfig{
 	Endpoints: []config.Endpoint{
 		{
 			URL: URL,
-			Authentication: config.Authentication{
-				APIKeyHeader: APIKeyHeader,
-				APIKey:       "4ece5018-53df-472a-a306-3efe1874c321",
-			},
 		},
 	},
 }
