@@ -20,10 +20,6 @@
       "url": "https://skip.money/products"
     },
     {
-      "name": "Contact",
-      "url": "https://skip.money/contact"
-    },
-    {
       "name": "Research",
       "url": "https://ideas.skip.money"
     },
@@ -39,10 +35,10 @@
     {
       "group": "🔮 General",
       "pages": [
-        "general/overview",
-        "general/security-properties",
-        "general/slashing",
-        "general/upcoming-work"
+        "overview",
+        "security-properties",
+        "slashing",
+        "upcoming-work"
       ]
     },
     {

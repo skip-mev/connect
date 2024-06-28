@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/interchain-security/v5 v5.0.0
 	github.com/ethereum/go-ethereum v1.14.5
 	github.com/gagliardetto/binary v0.8.0
-	github.com/gagliardetto/solana-go v1.10.0
+	github.com/gagliardetto/solana-go v1.11.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
