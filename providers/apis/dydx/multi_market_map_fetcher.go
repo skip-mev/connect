@@ -166,6 +166,12 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 		return dydxMainnetMarketMapResponse
 	}
 
+	// if the dydx research market-map response failed, return the dydx research failed response
+	if _, ok := dydxResearchMarketMapResponse.UnResolved[DYDXChain]; ok {
+		f.logger.Error("dydx research market-map fetch failed", zap.Any("response", dydxResearchMarketMapResponse))
+		return dydxResearchMarketMapResponse
+	}
+
 	// otherwise, add all markets from dydx research
 	dydxMainnetMarketMap := dydxMainnetMarketMapResponse.Resolved[DYDXChain].Value.MarketMap
 
