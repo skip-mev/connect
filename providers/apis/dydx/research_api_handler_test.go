@@ -325,6 +325,7 @@ func TestParseResponseResearchCMCAPI(t *testing.T) {
 				},
 			},
 		}
+
 		bz, err := json.Marshal(researchJSON)
 		require.NoError(t, err)
 

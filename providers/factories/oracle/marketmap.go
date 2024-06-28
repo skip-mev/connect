@@ -54,7 +54,12 @@ func MarketMapProviderFactory(
 		apiDataHandler, err = dydx.NewAPIHandler(logger, cfg.API)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	case name == dydx.ResearchAPIHandlerName || name == dydx.ResearchCMCAPIHandlerName:
-		apiDataHandler, err = dydx.NewResearchAPIHandler(logger, cfg.API)
+		marketMapFetcher, err = dydx.DefaultDYDXResearchMarketMapFetcher(
+			requestHandler,
+			apiMetrics,
+			cfg.API,
+			logger,
+		)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
 		marketMapFetcher, err = marketmap.NewMarketMapFetcher(
