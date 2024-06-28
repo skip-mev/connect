@@ -1,4 +1,4 @@
-package constants
+package marketmaps
 
 import (
 	"encoding/json"
@@ -17,6 +17,125 @@ var (
 	CoinMarketCapMarketMapJSON = `
 {
     "markets": {
+	  "W/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "W",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29587"
+          }
+        ]
+      },
+	  "TON/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "TON",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "11419"
+          }
+        ]
+      },
+	  "ZRO/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ZRO",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "26997"
+          }
+        ]
+      },
+	  "CHZ/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "CHZ",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "4066"
+          }
+        ]
+      },
+	  "ZK/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ZK",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "24091"
+          }
+        ]
+      },
+	  "BODEN/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BODEN",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29687"
+          }
+        ]
+      },
+	  "ETHFI/USD": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "ETHFI",
+            "Quote": "USD"
+          },
+          "decimals": 8,
+          "min_provider_count": 1,
+          "enabled": true
+        },
+        "provider_configs": [
+          {
+            "name": "coinmarketcap_api",
+            "off_chain_ticker": "29814"
+          }
+        ]
+      },
       "KHAI/USD": {
         "ticker": {
           "currency_pair": {

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/skip-mev/slinky/cmd/constants"
+	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -28,27 +28,27 @@ func main() {
 
 	if *useCore {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using core markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.CoreMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoreMarketMap)
 	}
 
 	if *useRaydium {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using raydium markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.RaydiumMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.RaydiumMarketMap)
 	}
 
 	if *useUniswapV3Base {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using uniswapv3 base markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.UniswapV3BaseMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.UniswapV3BaseMarketMap)
 	}
 
 	if *useCoinGecko {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using coingecko markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.CoinGeckoMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoinGeckoMarketMap)
 	}
 
 	if *useCoinMarketCap {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using coinmarketcap markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.CoinMarketCapMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoinMarketCapMarketMap)
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
