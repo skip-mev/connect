@@ -103,8 +103,9 @@ func DefaultSwitchOverMarketMapFetcher(
 	}, nil
 }
 
-// NewSwitchOverProvider returns a new SwitchOverProvider.
-func NewSwitchOverProvider(
+// NewSwitchOverFetcher returns a new SwitchOverFetcher with the provided
+// fetchers.
+func NewSwitchOverFetcher(
 	logger *zap.Logger,
 	pricesFetcher mmclient.MarketMapFetcher,
 	marketmapFetcher mmclient.MarketMapFetcher,

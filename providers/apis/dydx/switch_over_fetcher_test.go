@@ -142,7 +142,7 @@ func TestNewSwitchOverAPIHandler(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := dydx.NewSwitchOverProvider(tc.logger, tc.pricesFetcher, tc.marketmapFetcher)
+			_, err := dydx.NewSwitchOverFetcher(tc.logger, tc.pricesFetcher, tc.marketmapFetcher)
 			if tc.err {
 				require.Error(t, err)
 				return
@@ -156,7 +156,7 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 	pf := apihandlermocks.NewAPIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse](t)
 	mmf := apihandlermocks.NewAPIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse](t)
 
-	provider, err := dydx.NewSwitchOverProvider(zap.NewNop(), pf, mmf)
+	fetcher, err := dydx.NewSwitchOverFetcher(zap.NewNop(), pf, mmf)
 	require.NoError(t, err)
 
 	cases := []struct {
@@ -249,7 +249,7 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 			tc.pricesFetcher(pf)
 			tc.marketmapFetcher(mmf)
 
-			resp := provider.Fetch(context.Background(), nil)
+			resp := fetcher.Fetch(context.Background(), nil)
 			require.Equal(t, tc.resp, resp)
 		})
 	}
