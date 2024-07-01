@@ -154,7 +154,7 @@ type response struct{}
 
 func (r response) IsConsensusParamsChanged() bool { return true }
 
-func (f *fakeModule) PreBlock(ctx context.Context) (appmodule.ResponsePreBlock, error) {
+func (f *fakeModule) PreBlock(_ context.Context) (appmodule.ResponsePreBlock, error) {
 	f.called++
 	return &response{}, nil
 }
