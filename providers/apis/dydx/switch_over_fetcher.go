@@ -35,7 +35,6 @@ type SwitchOverFetcher struct {
 	marketmapFetcher mmclient.MarketMapFetcher
 	// switched is true if the fetcher has switched over to the x/marketmap API.
 	switched bool
-	
 }
 
 // DefaultSwitchOverMarketMapFetcher returns a new SwitchOverProvider with the default
@@ -142,7 +141,7 @@ func (f *SwitchOverFetcher) Fetch(
 		return f.marketmapFetcher.Fetch(ctx, chains)
 	}
 
-	f.logger.Info("fetching from x/prices API")
+	f.logger.Debug("fetching marketmap from x/marketmap")
 	resp := f.marketmapFetcher.Fetch(ctx, chains)
 	if len(resp.Resolved) > 0 {
 		f.logger.Info("got response from x/marketmap; switching over to x/marketmap")
@@ -150,6 +149,6 @@ func (f *SwitchOverFetcher) Fetch(
 		return resp
 	}
 
-	f.logger.Info("fetching from x/prices API")
+	f.logger.Debug("x/marketmap did not return a marketmap response; fetching marketmap from x/prices")
 	return f.pricesFetcher.Fetch(ctx, chains)
 }
