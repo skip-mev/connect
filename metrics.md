@@ -52,9 +52,9 @@ Slinky exposes metrics on the `/metrics` endpoint on port `8002` by default. The
 
 There are three primary health metrics that are exposed by Slinky:
 
-* [`side_car_health_check_system_updates_total`](#side_car_health_check_system_updates_total): This metric is a counter that increments every time the side-car updates its internal state. This is a good indicator of the side-car's overall health.
-* [`side_car_health_check_ticker_updates_total`](#side_car_health_check_ticker_updates_total): This metric is a counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
-* [`side_car_health_check_provider_updates_total`](#side_car_health_check_provider_updates_total): This metric is a counter that increments every time the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider. Note that providers may not be responsible for every market. However, the side-car correctly tracks the number of expected updates for each provider.
+* (RECOMMENDED) [`side_car_health_check_system_updates_total`](#side_car_health_check_system_updates_total): This metric is a counter that increments every time the side-car updates its internal state. This is a good indicator of the side-car's overall health.
+* (RECOMMENDED) [`side_car_health_check_ticker_updates_total`](#side_car_health_check_ticker_updates_total): This metric is a counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
+* (OPTIONAL) [`side_car_health_check_provider_updates_total`](#side_car_health_check_provider_updates_total): This metric is a counter that increments every time the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider. Note that providers may not be responsible for every market. However, the side-car correctly tracks the number of expected updates for each provider.
 
 Given the additional context above, we should expect the health metrics to be increasing at a rate of 2.0 updates/sec (every 500 milliseconds) for each market and provider. If the rate of updates is lower than expected, this may indicate an issue with the side-car.
 

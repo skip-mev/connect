@@ -162,11 +162,17 @@ var (
 			API:  dydx.DefaultResearchAPIConfig,
 			Type: mmtypes.ConfigType,
 		},
+		{
+			Name: dydx.ResearchCMCAPIHandlerName,
+			API:  dydx.DefaultResearchCMCAPIConfig,
+			Type: mmtypes.ConfigType,
+		},
 	}
 
 	MarketMapProviderNames = map[string]struct{}{
-		dydx.Name:                   {},
-		dydx.ResearchAPIHandlerName: {},
-		marketmap.Name:              {},
+		dydx.Name:                      {},
+		dydx.ResearchAPIHandlerName:    {},
+		dydx.ResearchCMCAPIHandlerName: {},
+		marketmap.Name:                 {},
 	}
 )

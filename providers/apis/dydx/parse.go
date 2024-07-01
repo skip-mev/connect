@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
@@ -49,6 +50,7 @@ var ProviderMapping = map[string]string{
 	"Raydium":              raydium.Name,
 	"UniswapV3-Ethereum":   uniswapv3.ProviderNames[constants.ETHEREUM],
 	"UniswapV3-Base":       uniswapv3.ProviderNames[constants.BASE],
+	coinmarketcap.Name:     coinmarketcap.Name,
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
