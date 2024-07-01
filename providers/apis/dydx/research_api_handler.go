@@ -144,7 +144,7 @@ func (h *ResearchAPIHandler) researchJSONToQueryAllMarketsParamsResponse(researc
 	// iterate over all entries in the research json + unmarshal it's market-params
 	resp := dydxtypes.QueryAllMarketParamsResponse{}
 	for _, market := range research {
-		if market.CMCID < 0 {
+		if h.onlyCMC && market.CMCID < 0 {
 			continue
 		}
 
