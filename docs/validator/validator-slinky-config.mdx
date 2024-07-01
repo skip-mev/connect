@@ -218,3 +218,68 @@ auth support.
   }
 }
 ```
+
+### A Typical dYdX Slinky Config (as of dYdX protocol version 5)
+
+A Typical dYdX Slinky Config (as of dYdX protocol version 5)
+Note that you can also set the dydx_api endpoint via a flag on the Slinky binary instead of overriding it in the json config.
+
+```
+slinky --marketmap-provider dydx_api --market-map-endpoint "http://localhost:1317"
+```
+
+```json
+{
+  "providers": {
+    "dydx_api": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "localhost:1317"
+          }
+        ]
+      }
+    },
+    "raydium_api": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "solana-rpc1.com",
+            "authentication": {
+              "apiKey": "abc123",
+              "apiKeyHeader": "x-api-key"
+            }
+          },
+          {
+            "url": "solana-rpc2.com",
+            "authentication": {
+              "apiKey": "123abc",
+              "apiKeyHeader": "x-api-key"
+            }
+          }
+        ]
+      }
+    },
+    "uniswapv3_api-base": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "base-rpc1.com",
+            "authentication": {
+              "apiKey": "abc123",
+              "apiKeyHeader": "x-api-key"
+            }
+          },
+          {
+            "url": "base-rpc2.com",
+            "authentication": {
+              "apiKey": "123abc",
+              "apiKeyHeader": "x-api-key"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
