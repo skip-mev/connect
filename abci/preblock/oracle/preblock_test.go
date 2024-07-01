@@ -1,6 +1,7 @@
 package oracle_test
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"math/big"
 	"testing"
 
@@ -50,6 +51,7 @@ type PreBlockTestSuite struct {
 	veCodec       compression.VoteExtensionCodec
 	commitCodec   compression.ExtendedCommitCodec
 	mockMetrics   *metricmock.Metrics
+	mm            *module.Manager
 }
 
 func TestPreBlockTestSuite(t *testing.T) {
@@ -57,8 +59,8 @@ func TestPreBlockTestSuite(t *testing.T) {
 }
 
 func (s *PreBlockTestSuite) SetupTest() {
+	s.mm = &module.Manager{}
 	s.myVal = sdk.ConsAddress("myVal")
-
 	s.currencyPairs = []slinkytypes.CurrencyPair{
 		{
 			Base:  "BTC",
@@ -157,7 +159,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			s.commitCodec,
 		)
 
-		_, err := s.handler.PreBlocker()(s.ctx, nil)
+		_, err := s.handler.PreBlocker(s.mm)(s.ctx, nil)
 		s.Require().Error(err)
 
 		// require no updates
@@ -183,7 +185,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 			s.commitCodec,
 		)
 
-		_, err := s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{})
+		_, err := s.handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{})
 		s.Require().NoError(err)
 
 		// require no updates
@@ -264,7 +266,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 
 		mockValidatorStore.On("TotalBondedTokens", s.ctx).Return(math.NewInt(2), nil)
 
-		_, err = s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err = s.handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{extCommitBz},
 		})
 		s.Require().NoError(err)
@@ -347,7 +349,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 
 		mockValidatorStore.On("TotalBondedTokens", s.ctx).Return(math.NewInt(2), nil)
 
-		_, err = s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err = s.handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{extCommitBz},
 		})
 		s.Require().NoError(err)
@@ -376,7 +378,7 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		)
 
 		// run preblocker
-		_, err := s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{})
+		_, err := s.handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{})
 		s.Require().NoError(err)
 	})
 
@@ -394,7 +396,7 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		s.mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
 		s.mockMetrics.On("AddABCIRequest", servicemetrics.PreBlock, mock.Anything)
 		// run preblocker
-		_, err := s.handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err := s.handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Height: 1,
 		})
 		s.Require().NoError(err)
@@ -419,7 +421,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		)
 
 		// run preblocker
-		_, err := handler.PreBlocker()(s.ctx, nil)
+		_, err := handler.PreBlocker(s.mm)(s.ctx, nil)
 		s.Require().Error(err)
 	})
 
@@ -442,7 +444,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
 		metrics.On("AddABCIRequest", servicemetrics.PreBlock, servicemetrics.Success{}).Return()
 		// run preblocker
-		_, err := handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{})
+		_, err := handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{})
 		s.Require().NoError(err)
 	})
 
@@ -470,7 +472,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
 		s.ctx = s.ctx.WithBlockHeight(4)
 		// run preblocker
-		_, err := handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err := handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{},
 		})
 		s.Require().Error(err, expErr)
@@ -520,7 +522,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return(nil)
 
 		// run preblocker
-		_, err := handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err := handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{
 				[]byte("abc"),
 			},
@@ -553,7 +555,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		// enable vote-extensions
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
 		req := &cometabci.RequestFinalizeBlock{}
-		_, err := handler.PreBlocker()(s.ctx, req)
+		_, err := handler.PreBlocker(s.mm)(s.ctx, req)
 		s.Require().NoError(err)
 	})
 
@@ -584,7 +586,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		s.ctx = s.ctx.WithBlockHeight(4)
 		s.ctx = s.ctx.WithExecMode(sdk.ExecModeFinalize)
 		// run preblocker
-		_, err := handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{})
+		_, err := handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{})
 		s.Require().Error(err, types.MissingCommitInfoError{})
 	})
 
@@ -678,7 +680,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics.On("AddValidatorReportForTicker", val3.String(), mogUsd, servicemetrics.Absent)
 
 		// run preblocker
-		_, err = handler.PreBlocker()(s.ctx, &cometabci.RequestFinalizeBlock{
+		_, err = handler.PreBlocker(s.mm)(s.ctx, &cometabci.RequestFinalizeBlock{
 			Txs: [][]byte{extCommitBz},
 			DecidedLastCommit: cometabci.CommitInfo{
 				Votes: []cometabci.VoteInfo{

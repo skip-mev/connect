@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -70,9 +72,9 @@ func NewOraclePreBlockHandler(
 }
 
 // PreBlocker is called by the base app before the block is finalized. It
-// is responsible for aggregating oracle data from each validator and writing
-// the oracle data to the store.
-func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
+// is responsible for running the module manager's PreBlock function (in case of upgrades),
+// aggregating oracle data from each validator, and writing the oracle data to the store.
+func (h *PreBlockHandler) PreBlocker(mm *module.Manager) sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
 		if req == nil {
 			ctx.Logger().Error(
@@ -81,6 +83,13 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			)
 
 			return &sdk.ResponsePreBlock{}, fmt.Errorf("received nil RequestFinalizeBlock in oracle preblocker: height %d", ctx.BlockHeight())
+		}
+
+		// call module manager's PreBlocker first in case there is changes made on upgrades
+		// that can modify state and lead to serialization/deserialization issues
+		response, err := mm.PreBlock(ctx)
+		if err != nil {
+			return nil, err
 		}
 
 		start := time.Now()
@@ -134,6 +143,6 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, err
 		}
 
-		return &sdk.ResponsePreBlock{}, nil
+		return response, nil
 	}
 }

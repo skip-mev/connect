@@ -13,7 +13,6 @@ import (
 	circuitkeeper "cosmossdk.io/x/circuit/keeper"
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
-	"github.com/cometbft/cometbft/abci/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -367,7 +366,7 @@ func NewSimApp(
 		),
 	)
 
-	app.wrapAndSetPreBlocker(oraclePreBlockHandler.PreBlocker())
+	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker(app.ModuleManager))
 
 	// Create the vote extensions handler that will be used to extend and verify
 	// vote extensions (i.e. oracle data).
@@ -529,28 +528,6 @@ func (app *SimApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICon
 	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
 		panic(err)
 	}
-}
-
-// wrapAndSetPreBlocker sets the application's PreBlocker while still calling the originals.
-// This is needed to set custom PreBlock logic, but still allow things like x/upgrade to function.
-func (app *SimApp) wrapAndSetPreBlocker(pb sdk.PreBlocker) {
-	app.SetPreBlocker(func(ctx sdk.Context, block *types.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-		// call app's preblocker first in case there is changes made on upgrades
-		// that can modify state and lead to serialization/deserialization issues
-		resp, err := app.ModuleManager.PreBlock(ctx)
-		if err != nil {
-			return resp, err
-		}
-
-		// call the extra PreBlocker.
-		_, err = pb(ctx, block)
-		if err != nil {
-			return &sdk.ResponsePreBlock{}, err
-		}
-
-		// return resp from app's preblocker which can return consensus param changed flag
-		return resp, nil
-	})
 }
 
 // GetMaccPerms returns a copy of the module account permissions
