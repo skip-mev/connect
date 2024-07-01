@@ -71,11 +71,11 @@ func NewOraclePreBlockHandler(
 	}
 }
 
-// PreBlocker is called by the base app before the block is finalized. It
-// is responsible for running the module manager's PreBlock function (in case of upgrades),
-// aggregating oracle data from each validator, and writing the oracle data to the store.
-func (h *PreBlockHandler) PreBlocker(mm *module.Manager) sdk.PreBlocker {
-	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
+// WrappedPreBlocker is called by the base app before the block is finalized. It
+// is responsible for calling the module manager's PreBlock method, aggregating oracle data from each validator and
+// writing the oracle data to the store.
+func (h *PreBlockHandler) WrappedPreBlocker(mm *module.Manager) sdk.PreBlocker {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (response *sdk.ResponsePreBlock, err error) {
 		if req == nil {
 			ctx.Logger().Error(
 				"received nil RequestFinalizeBlock in oracle preblocker",
@@ -87,9 +87,81 @@ func (h *PreBlockHandler) PreBlocker(mm *module.Manager) sdk.PreBlocker {
 
 		// call module manager's PreBlocker first in case there is changes made on upgrades
 		// that can modify state and lead to serialization/deserialization issues
-		response, err := mm.PreBlock(ctx)
+		response, err = mm.PreBlock(ctx)
 		if err != nil {
-			return nil, err
+			return response, err
+		}
+
+		start := time.Now()
+		var prices map[slinkytypes.CurrencyPair]*big.Int
+		defer func() {
+			// only measure latency in Finalize
+			if ctx.ExecMode() == sdk.ExecModeFinalize {
+				latency := time.Since(start)
+				h.logger.Debug(
+					"finished executing the pre-block hook",
+					"height", ctx.BlockHeight(),
+					"latency (seconds)", latency.Seconds(),
+				)
+				slinkyabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+
+				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
+				if err == nil && prices != nil {
+					// record price metrics
+					h.recordPrices(prices)
+
+					// record validator report metrics
+					h.recordValidatorReports(ctx, req.DecidedLastCommit)
+				}
+			}
+		}()
+
+		// If vote extensions are not enabled, then we don't need to do anything.
+		if !ve.VoteExtensionsEnabled(ctx) {
+			h.logger.Info(
+				"vote extensions are not enabled",
+				"height", ctx.BlockHeight(),
+			)
+
+			return response, nil
+		}
+
+		h.logger.Debug(
+			"executing the pre-finalize block hook",
+			"height", req.Height,
+		)
+
+		// decode vote-extensions + apply prices to state
+		prices, err = h.pa.ApplyPricesFromVoteExtensions(ctx, req)
+		if err != nil {
+			h.logger.Error(
+				"failed to apply prices from vote extensions",
+				"height", req.Height,
+				"error", err,
+			)
+
+			return response, err
+		}
+
+		return response, nil
+	}
+}
+
+// PreBlocker is called by the base app before the block is finalized. It
+// is responsible for aggregating oracle data from each validator and writing
+// the oracle data to the store.
+//
+// Deprecated: using PreBlocker requires wrapping module Manager's PreBlock call. This method should no longer be used.
+// Use WrappedPreBlocker instead to handle this functionality automatically.
+func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
+		if req == nil {
+			ctx.Logger().Error(
+				"received nil RequestFinalizeBlock in oracle preblocker",
+				"height", ctx.BlockHeight(),
+			)
+
+			return &sdk.ResponsePreBlock{}, fmt.Errorf("received nil RequestFinalizeBlock in oracle preblocker: height %d", ctx.BlockHeight())
 		}
 
 		start := time.Now()
@@ -143,6 +215,6 @@ func (h *PreBlockHandler) PreBlocker(mm *module.Manager) sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, err
 		}
 
-		return response, nil
+		return &sdk.ResponsePreBlock{}, nil
 	}
 }
