@@ -34,42 +34,7 @@ For example, if you wanted to add a new RPC with the URL `skiprpc.com` with the 
 }
 ```
 
-Note: For v 0.4.X and earlier the following config is required.
-
-```json
-{
-  "providers": [
-    {
-      "name": "raydium_api",
-      "api": {
-        "enabled": true,
-        "timeout": 500000000,
-        "interval": 500000000,
-        "reconnectTimeout": 2000000000,
-        "maxQueries": 10,
-        "atomic": false,
-        "url": "",
-        "endpoints": [
-          {
-            "url": "https://api.devnet.solana.com"
-          },
-          {
-            "url": "skiprpc.com",
-            "authentication": {
-              "apiKeyHeader": "x-api-key",
-              "apiKey": "skip123"
-            }
-          }
-        ],
-        "batchSize": 50,
-        "name": "raydium_api"
-      }
-    }
-  ]
-}
-```
-
-After this is completed, save you config file, and restart your node!
+After this is completed, save your config file, and restart your node!
 
 The supported decentralized providers for which this is applicable are:
 

@@ -49,8 +49,7 @@
         "validator/validator-slinky-config",
         "validator/troubleshooting",
         "validator/rpc-providers",
-        "validator/flags-guide",
-        "validator/migration-guide"
+        "validator/flags-guide"
       ]
     },
     {
