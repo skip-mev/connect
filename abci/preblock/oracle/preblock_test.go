@@ -1,7 +1,6 @@
 package oracle_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"math/big"
 	"testing"
 
@@ -11,6 +10,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
