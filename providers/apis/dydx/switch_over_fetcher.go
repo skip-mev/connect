@@ -16,9 +16,7 @@ import (
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
-var (
-	_ mmclient.MarketMapFetcher = &SwitchOverFetcher{}
-)
+var _ mmclient.MarketMapFetcher = &SwitchOverFetcher{}
 
 // SwitchOverFetcher is an implementation of a RestAPIFetcher that wraps a
 // dydx x/prices market map fetcher and a x/marketmap fetcher. The fetcher
@@ -31,7 +29,7 @@ type SwitchOverFetcher struct {
 
 	// dydxPricesFetcher is the fetcher for the dydx x/prices market map.
 	pricesFetcher mmclient.MarketMapFetcher
-	//marketmapFetcher is the fetcher for the x/marketmap market map.
+	// marketmapFetcher is the fetcher for the x/marketmap market map.
 	marketmapFetcher mmclient.MarketMapFetcher
 	// switched is true if the fetcher has switched over to the x/marketmap API.
 	switched bool

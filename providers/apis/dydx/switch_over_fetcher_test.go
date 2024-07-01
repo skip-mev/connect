@@ -198,7 +198,7 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 		},
 		{
 			name: "market map returns resolved markets",
-			pricesFetcher: func(pf *apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
+			pricesFetcher: func(*apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
 			},
 			marketmapFetcher: func(mmf *apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
 				resp := mmclient.NewMarketMapResponse(
@@ -224,7 +224,7 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 		},
 		{
 			name: "market map returns error after switch over (should not make request to x/prices)",
-			pricesFetcher: func(pf *apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
+			pricesFetcher: func(*apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
 			},
 			marketmapFetcher: func(mmf *apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse]) {
 				resp := mmclient.NewMarketMapResponse(

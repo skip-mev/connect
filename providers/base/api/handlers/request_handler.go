@@ -18,8 +18,10 @@ type RequestHandler interface {
 	Type() string
 }
 
-var _ RequestHandler = (*RequestHandlerImpl)(nil)
-var _ RequestHandler = (*NoOpRequestHandler)(nil)
+var (
+	_ RequestHandler = (*RequestHandlerImpl)(nil)
+	_ RequestHandler = (*NoOpRequestHandler)(nil)
+)
 
 // RequestHandlerImpl is the default implementation of the RequestHandler interface.
 type RequestHandlerImpl struct {
