@@ -18,6 +18,9 @@ const (
 	// Name is the name of the MarketMap provider.
 	Name = "dydx_api"
 
+	// SwitchOverAPIHandlerName is the name of the dYdX switch over API.
+	SwitchOverAPIHandlerName = "dydx_migration_api"
+
 	// ResearchAPIHandlerName is the name of the dYdX research json API.
 	ResearchAPIHandlerName = "dydx_research_json_api"
 
@@ -56,6 +59,25 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	Endpoints:        []config.Endpoint{{URL: "http://localhost:1317"}},
+}
+
+// DefaultSwitchOverAPIConfig returns the default configuration for the dYdX switch over API provider.
+var DefaultSwitchOverAPIConfig = config.APIConfig{
+	Name:             SwitchOverAPIHandlerName,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
+	Interval:         10 * time.Second,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints: []config.Endpoint{
+		{
+			URL: "https://dydx-api.lavenderfive.com", // REST endpoint (HTTP/HTTPS prefix)
+		},
+		{
+			URL: "localhost:9090", // gRPC endpoint (NO HTTP/HTTPS prefix)
+		},
+	},
 }
 
 // DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.

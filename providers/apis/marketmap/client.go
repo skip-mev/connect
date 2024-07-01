@@ -62,6 +62,19 @@ func NewGRPCClient(
 	}, nil
 }
 
+// NewGRPCClientWithConn returns a new GRPC client for MarketMap module with the given connection.
+func NewGRPCClientWithConn(
+	conn *grpc.ClientConn,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+) (mmtypes.QueryClient, error) {
+	return &MarketMapClient{
+		QueryClient: mmtypes.NewQueryClient(conn),
+		apiMetrics:  apiMetrics,
+		api:         api,
+	}, nil
+}
+
 // MarketMap wraps the MarketMapClient's query with additional metrics.
 func (c *MarketMapClient) MarketMap(
 	ctx context.Context,

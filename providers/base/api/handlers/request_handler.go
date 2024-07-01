@@ -19,6 +19,7 @@ type RequestHandler interface {
 }
 
 var _ RequestHandler = (*RequestHandlerImpl)(nil)
+var _ RequestHandler = (*NoOpRequestHandler)(nil)
 
 // RequestHandlerImpl is the default implementation of the RequestHandler interface.
 type RequestHandlerImpl struct {
@@ -29,6 +30,9 @@ type RequestHandlerImpl struct {
 	// headers is the HTTP headers to use when sending requests.
 	headers map[string]string
 }
+
+// NoOpRequestHandler is a no-op RequestHandler that does nothing.
+type NoOpRequestHandler struct{}
 
 // NewRequestHandlerImpl creates a new RequestHandlerImpl. It manages making HTTP requests.
 func NewRequestHandlerImpl(client *http.Client, opts ...Option) (RequestHandler, error) {
@@ -66,4 +70,19 @@ func (r *RequestHandlerImpl) Do(ctx context.Context, url string) (*http.Response
 // Type returns the HTTP method used to send requests.
 func (r *RequestHandlerImpl) Type() string {
 	return r.method
+}
+
+// NewNoOpRequestHandler creates a new NoOpRequestHandler.
+func NewNoOpRequestHandler() RequestHandler {
+	return &NoOpRequestHandler{}
+}
+
+// Do is a no-op function that does nothing.
+func (n *NoOpRequestHandler) Do(_ context.Context, _ string) (*http.Response, error) {
+	return nil, nil
+}
+
+// Type returns an empty string.
+func (n *NoOpRequestHandler) Type() string {
+	return ""
 }

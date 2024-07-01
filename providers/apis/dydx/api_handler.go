@@ -31,8 +31,13 @@ func NewAPIHandler(
 	logger *zap.Logger,
 	api config.APIConfig,
 ) (*APIHandler, error) {
-	if api.Name != Name {
-		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
+	if api.Name != Name && api.Name != SwitchOverAPIHandlerName {
+		return nil, fmt.Errorf(
+			"expected api config name %s or %s, got %s",
+			SwitchOverAPIHandlerName,
+			Name,
+			api.Name,
+		)
 	}
 
 	if !api.Enabled {
