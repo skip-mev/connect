@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
+	"github.com/skip-mev/slinky/providers/apis/marketmaps/marketmap"
 
 	_ "net/http/pprof" //nolint: gosec
 

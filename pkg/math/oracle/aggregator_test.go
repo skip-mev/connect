@@ -10,9 +10,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	pkgtypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/binance"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/apis/prices/binance"
+	"github.com/skip-mev/slinky/providers/apis/prices/coinbase"
+	"github.com/skip-mev/slinky/providers/websockets/prices/kucoin"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 

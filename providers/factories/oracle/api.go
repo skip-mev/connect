@@ -12,13 +12,14 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/binance"
-	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/apis/coingecko"
-	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
-	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
-	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/apis/prices/binance"
+	"github.com/skip-mev/slinky/providers/apis/prices/bitstamp"
+	coinbaseapi "github.com/skip-mev/slinky/providers/apis/prices/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/prices/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/prices/coinmarketcap"
+	"github.com/skip-mev/slinky/providers/apis/prices/geckoterminal"
+	"github.com/skip-mev/slinky/providers/apis/prices/kraken"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
@@ -70,6 +71,8 @@ func APIQueryHandlerFactory(
 	switch providerName := cfg.Name; {
 	case providerName == binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
+	case providerName == bitstamp.Name:
+		apiDataHandler, err = bitstamp.NewAPIHandler(cfg.API)
 	case providerName == coinbaseapi.Name:
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case providerName == coingecko.Name:

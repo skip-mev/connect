@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/dydx"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
+	"github.com/skip-mev/slinky/providers/apis/marketmaps/dydx"
+	"github.com/skip-mev/slinky/providers/apis/marketmaps/marketmap"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"

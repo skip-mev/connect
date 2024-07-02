@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
+	"github.com/skip-mev/slinky/providers/apis/marketmaps/marketmap"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"

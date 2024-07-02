@@ -9,11 +9,11 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/binance"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/prices/binance"
+	"github.com/skip-mev/slinky/providers/apis/prices/coinbase"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/skip-mev/slinky/providers/websockets/okx"
+	"github.com/skip-mev/slinky/providers/websockets/prices/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 

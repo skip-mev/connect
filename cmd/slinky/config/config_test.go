@@ -11,8 +11,8 @@ import (
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/websockets/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/marketmaps/marketmap"
+	"github.com/skip-mev/slinky/providers/websockets/prices/coinbase"
 	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
