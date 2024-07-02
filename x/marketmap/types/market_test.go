@@ -296,6 +296,27 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			expectErr: true,
 		},
 		{
+			name: "market-map with invalid key",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusd.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     btcusdtCP,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
 			name: "valid single provider",
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
