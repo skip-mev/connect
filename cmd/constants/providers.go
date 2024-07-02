@@ -6,6 +6,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
+	bitstampapi "github.com/skip-mev/slinky/providers/apis/bitstamp"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
@@ -53,6 +54,11 @@ var (
 		{
 			Name: binanceapi.Name,
 			API:  binanceapi.DefaultNonUSAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: bitstampapi.Name,
+			API:  bitstampapi.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
