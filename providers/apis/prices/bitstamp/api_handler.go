@@ -53,6 +53,10 @@ func NewAPIHandler(
 func (h *APIHandler) CreateURL(
 	tickers []types.ProviderTicker,
 ) (string, error) {
+	if len(tickers) == 0 {
+		return "", fmt.Errorf("no tickers provided")
+	}
+
 	for _, ticker := range tickers {
 		h.cache.Add(ticker)
 	}
