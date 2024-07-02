@@ -72,7 +72,7 @@ var DefaultSwitchOverAPIConfig = config.APIConfig{
 	MaxQueries:       1,
 	Endpoints: []config.Endpoint{
 		{
-			URL: "https://dydx-api.lavenderfive.com", // REST endpoint (HTTP/HTTPS prefix)
+			URL: "http://localhost:1317", // REST endpoint (HTTP/HTTPS prefix)
 		},
 		{
 			URL: "localhost:9090", // gRPC endpoint (NO HTTP/HTTPS prefix)

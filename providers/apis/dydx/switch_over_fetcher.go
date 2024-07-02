@@ -35,9 +35,9 @@ type SwitchOverFetcher struct {
 	switched bool
 }
 
-// DefaultSwitchOverMarketMapFetcher returns a new SwitchOverProvider with the default
+// NewDefaultSwitchOverMarketMapFetcher returns a new SwitchOverProvider with the default
 // dYdX x/prices and x/marketmap fetchers.
-func DefaultSwitchOverMarketMapFetcher(
+func NewDefaultSwitchOverMarketMapFetcher(
 	logger *zap.Logger,
 	api config.APIConfig,
 	rh apihandlers.RequestHandler,
@@ -51,7 +51,7 @@ func DefaultSwitchOverMarketMapFetcher(
 	}
 	if len(api.Endpoints) != 2 {
 		return nil, fmt.Errorf(
-			"expected two endpoints, got %d; the first end point must be the rest port second endpoint gRPC",
+			"expected two endpoints, got %d",
 			len(api.Endpoints),
 		)
 	}

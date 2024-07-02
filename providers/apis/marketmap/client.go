@@ -68,6 +68,18 @@ func NewGRPCClientWithConn(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
+	if conn == nil {
+		return nil, fmt.Errorf("connection is required but got nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is required")
+	}
+
 	return &MarketMapClient{
 		QueryClient: mmtypes.NewQueryClient(conn),
 		apiMetrics:  apiMetrics,

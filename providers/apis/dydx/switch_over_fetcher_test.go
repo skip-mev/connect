@@ -92,7 +92,7 @@ func TestDefaultSwitchOverProvider(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := dydx.DefaultSwitchOverMarketMapFetcher(tc.logger, tc.api, tc.rh, tc.metrics)
+			_, err := dydx.NewDefaultSwitchOverMarketMapFetcher(tc.logger, tc.api, tc.rh, tc.metrics)
 			if tc.err {
 				require.Error(t, err)
 				return
