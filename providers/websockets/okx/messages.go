@@ -24,14 +24,8 @@ type (
 const (
 	// OperationSubscribe is the operation to subscribe to a channel.
 	OperationSubscribe Operation = "subscribe"
-)
-
-const (
 	// IndexTickersChannel is the channel for mark price updates.
 	IndexTickersChannel Channel = "index-tickers"
-)
-
-const (
 	// EventSubscribe is the event denoting that we have successfully subscribed to a channel.
 	EventSubscribe EventType = "subscribe"
 	// EventTickers is the event for tickers. By default, this field will not be populated
@@ -39,6 +33,9 @@ const (
 	EventTickers EventType = ""
 	// EventError is the event for an error.
 	EventError EventType = "error"
+
+	// subscriptionMsgSize is the amount of tickers to subscribe to in a single Subscribe message.
+	subscriptionMsgSize = 10
 )
 
 // BaseMessage is utilized to determine the type of message that was received.
@@ -98,17 +95,30 @@ func NewSubscribeToTickersRequestMessage(
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numMsg := len(instruments) / subscriptionMsgSize
+
+	msgs := make([]handlers.WebsocketEncodedMessage, numMsg)
+	for i := range numMsg {
+		msg := SubscribeRequestMessage{
+			Operation: string(OperationSubscribe),
+			Arguments: make([]SubscriptionTopic, 0),
+		}
+
+		start := i * subscriptionMsgSize
+		end := start + subscriptionMsgSize
+		if end > len(instruments) {
+			end = len(instruments)
+		}
+
+		msg.Arguments = instruments[start:end]
+
 		bz, err := json.Marshal(
-			SubscribeRequestMessage{
-				Operation: string(OperationSubscribe),
-				Arguments: []SubscriptionTopic{instrument},
-			},
+			msg,
 		)
 		if err != nil {
 			return msgs, err
 		}
+
 		msgs[i] = bz
 	}
 
