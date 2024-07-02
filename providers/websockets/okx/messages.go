@@ -95,7 +95,7 @@ func NewSubscribeToTickersRequestMessage(
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	numMsg := len(instruments) / subscriptionMsgSize
+	numMsg := (len(instruments) / subscriptionMsgSize) + 1
 
 	msgs := make([]handlers.WebsocketEncodedMessage, numMsg)
 	for i := range numMsg {
