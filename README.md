@@ -7,7 +7,6 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://godoc.org/github.com/skip-mev/slinky)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skip-mev/slinky?style=flat-square)](https://goreportcard.com/report/github.com/skip-mev/slinky)
 [![Version](https://img.shields.io/github/tag/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/slinky/releases/latest)
-[![License: BSL](https://img.shields.io/github/license/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/slinky/blob/main/LICENSE)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/slinky?style=flat-square)](https://github.com/skip-mev/slinky)
 
 A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.money/slinky/overview) page for more information!
@@ -16,11 +15,8 @@ Slinky uses Vote Extensions to create an hyperperformant, extremely secure mecha
 many of the highest-performance decentralized applications today. If you would like to integrate Slinky to power your use case, please contact us on our
 [discord](https://discord.gg/PeBGE9jrbu).
 
-:::info Slinky License
-
+[!NOTE]
 Slinky is **business-licensed software** under BSL, meaning it requires a license to use or reference. It is source viewable, but [**reach out to us on Discord**](https://skip.money/discord) if you are interested in integrating! We are limiting the number of chains we work with to seven in 2024. We apologize if we run out of capacity.
-
-:::
 
 ## Install
 
