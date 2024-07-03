@@ -18,9 +18,7 @@ type RequestHandler interface {
 	Type() string
 }
 
-var (
-	_ RequestHandler = (*RequestHandlerImpl)(nil)
-)
+var _ RequestHandler = (*RequestHandlerImpl)(nil)
 
 // RequestHandlerImpl is the default implementation of the RequestHandler interface.
 type RequestHandlerImpl struct {

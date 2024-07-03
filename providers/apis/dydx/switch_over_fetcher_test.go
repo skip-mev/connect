@@ -168,7 +168,7 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 		name             string
 		pricesFetcher    func(*apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse])
 		marketmapFetcher func(*apihandlermocks.APIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse])
-		metrics 		func(*apimetricsmocks.APIMetrics)
+		metrics          func(*apimetricsmocks.APIMetrics)
 		resp             mmclient.MarketMapResponse
 	}{
 		{
@@ -223,7 +223,6 @@ func TestSwitchOverProvider_Fetch(t *testing.T) {
 			},
 			metrics: func(m *apimetricsmocks.APIMetrics) {
 				m.On("AddProviderResponse", marketmap.Name, strings.ToLower(dydx.DYDXChain.String()), providertypes.OK).Once()
-	
 			},
 			resp: mmclient.NewMarketMapResponse(
 				mmclient.ResolvedMarketMap{

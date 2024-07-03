@@ -3,6 +3,7 @@ package dydx
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -14,7 +15,7 @@ import (
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"strings"
+
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -35,7 +36,7 @@ type SwitchOverFetcher struct {
 	marketmapFetcher mmclient.MarketMapFetcher
 	// switched is true if the fetcher has switched over to the x/marketmap API.
 	switched bool
-	metrics metrics.APIMetrics
+	metrics  metrics.APIMetrics
 }
 
 // NewDefaultSwitchOverMarketMapFetcher returns a new SwitchOverProvider with the default
@@ -103,7 +104,7 @@ func NewDefaultSwitchOverMarketMapFetcher(
 		logger:           logger.With(zap.String("api", api.Name)),
 		pricesFetcher:    pricesFetcher,
 		marketmapFetcher: marketmapFetcher,
-		metrics: 		metrics,
+		metrics:          metrics,
 	}, nil
 }
 
