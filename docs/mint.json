@@ -16,10 +16,6 @@
   },
   "topbarLinks": [
     {
-      "name": "Products",
-      "url": "https://skip.money/products"
-    },
-    {
       "name": "Research",
       "url": "https://ideas.skip.money"
     },
