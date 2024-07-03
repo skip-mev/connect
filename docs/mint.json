@@ -16,10 +16,6 @@
   },
   "topbarLinks": [
     {
-      "name": "Products",
-      "url": "https://skip.money/products"
-    },
-    {
       "name": "Research",
       "url": "https://ideas.skip.money"
     },
@@ -49,8 +45,7 @@
         "validator/validator-slinky-config",
         "validator/troubleshooting",
         "validator/rpc-providers",
-        "validator/flags-guide",
-        "validator/migration-guide"
+        "validator/flags-guide"
       ]
     },
     {
