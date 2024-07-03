@@ -42,7 +42,7 @@
       "pages": [
         "validator/quickstart",
         "validator/validator-app-config",
-        "validator/validator-slinky-config",
+        "validator/validator-connect-config",
         "validator/troubleshooting",
         "validator/rpc-providers",
         "validator/flags-guide"
@@ -58,8 +58,8 @@
       {
         "group": "🛠️ Integrators",
         "pages": [
-          "using-slinky/high-level",
-          "using-slinky/neutron-sdk"
+          "using-connect/high-level",
+          "using-connect/neutron-sdk"
         ]
       }
   ],

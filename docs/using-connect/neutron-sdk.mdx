@@ -1,21 +1,21 @@
 ---
-description: ⚛️ Slinky with CosmWasm using Neutron-SDK
-title: ⚛️ Slinky with CosmWasm using Neutron-SDK
+description: ⚛️ Connect with CosmWasm using Neutron-SDK
+title: ⚛️ Connect with CosmWasm using Neutron-SDK
 ---
 
 <Note>
-**Building with Slinky? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
+**Building with Connect? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
 </Note>
 
 ## Summary
 
-Slinky prices, since they're stored on-chain in `x/oracle`, are accessible locally via CosmWasm smart contracts. `x/marketmap` has configuration information that may also be helpful in your development.
+Connect prices, since they're stored on-chain in `x/oracle`, are accessible locally via CosmWasm smart contracts. `x/marketmap` has configuration information that may also be helpful in your development.
 
 Here's a couple code snippets on how to get started:
 
-## How to access Slinky prices safely
+## How to access Connect prices safely
 
-There are a number of highly-recommended checks we suggest developers use before accessing a Slinky price. These include:
+There are a number of highly-recommended checks we suggest developers use before accessing a Connect price. These include:
 
 1. Check to make sure the currency-pair exists within the `x/oracle` and `x/marketmap` modules.
 1. Check to make sure the currency-pair is `enabled` within the `x/marketmap` (otherwise, it won't update)
@@ -30,7 +30,7 @@ In the snippets below some details might be omitted. Please check out the comple
 
 ### Install dependencies and import the libraries
 
-In order to start using the slinky modules, you need to install some dependencies. Add the following libraries to your dependencies section:
+In order to start using the connect modules, you need to install some dependencies. Add the following libraries to your dependencies section:
 
 ```toml
 [dependencies]
@@ -56,7 +56,7 @@ use neutron_sdk::bindings::oracle::query::{
 };
 ```
 
-### Getting all supported markets on Slinky, and checking to see if an individual market is included
+### Getting all supported markets on Connect, and checking to see if an individual market is included
 
 ```rust
 // create a CurrencyPair object
@@ -130,7 +130,7 @@ if (current_block_height - oracle_price_response.price.block_height) > max_block
 
 ### Nil-checking a price response
 
-Slinky may sometimes return a "nil" Price if it has not been written to. This means, within the `GetPriceResponse`, the price will have `Nonce = 0`
+Connect may sometimes return a "nil" Price if it has not been written to. This means, within the `GetPriceResponse`, the price will have `Nonce = 0`
 
 The safest way to check for a nil price is to check if the `Nonce == 0`, here's a code snippet below:
 

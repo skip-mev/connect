@@ -1,22 +1,22 @@
 ---
-description: Slinky Validator Quickstart
+description: Connect Validator Quickstart
 title: ☝️ Quickstart
 ---
 
 <Note>
-**Running Slinky? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
+**Running Connect? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
 </Note>
 
 ## Summary of Steps
 
 **Estimated Time**: 10 mins
 
-In this walkthrough, we'll be going through the 5 steps to set up Slinky.
+In this walkthrough, we'll be going through the 5 steps to set up Connect.
 
 1. Install the binary of a support chain application.
-2. Install the slinky binary.
-3. Configure your slinky sidecar process.
-4. Run the slinky sidecar.
+2. Install the connect binary.
+3. Configure your connect sidecar process.
+4. Run the connect sidecar.
 5. Start the chain application.
 
 ## 1. Install the Chain Binary ✅
@@ -25,9 +25,9 @@ In this walkthrough, we'll be going through the 5 steps to set up Slinky.
 
 For the purposes of this guide we'll use `testappd` as our example application binary, but it will be the same for any chain!
 
-## 2. Install the `slinky` binary ✅
+## 2. Install the Connect binary, `slinky` ✅
 
-You can install the slinky binary either by building from source or by downloading a pre-built binary.
+You can install the Connect binary either by building from source or by downloading a pre-built binary.
 
 - Install the latest binary from the <b>[releases page](https://github.com/skip-mev/slinky/releases)</b>
 - Build from source by cloning the <b>[repo](https://github.com/skip-mev/slinky)</b> and running `make install`
@@ -38,24 +38,24 @@ cd slinky
 make install
 ```
 
-Slinky should now be in your path. Check to make sure with:
+Connect's binary, `slinky`, should now be in your path. Check to make sure with:
 
 ```shell
 which slinky
 ```
 
-## 3. Configure your Slinky Sidecar Process ✅
+## 3. Configure your Connect Sidecar Process ✅
 
-The Slinky binary sets sane defaults for as many values as possible. Depending on the chain you're operating for, you may need to override some of the default values.
+The Connect binary sets sane defaults for as many values as possible. Depending on the chain you're operating for, you may need to override some of the default values.
 
-Please see our [slinky config](/validator/validator-slinky-config) page for a complete reference on configurable values. Additionally, our [chain config](/validator/validator-app-config) has references for particular integrations.
+Please see our [connect config](/validator/validator-connect-config) page for a complete reference on configurable values. Additionally, our [chain config](/validator/validator-app-config) has references for particular integrations.
 
-## 4. Run the Slinky Sidecar ✅
+## 4. Run the Connect Sidecar ✅
 
-You can run the slinky sidecar by running the following command:
+You can run the connect sidecar by running the following command:
 
 ```shell
-slinky --oracle-config-path oracle.json
+slinky
 ```
 
 You can verify whether prices are being retrieved by running the following command:

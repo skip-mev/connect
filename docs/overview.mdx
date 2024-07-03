@@ -11,7 +11,7 @@ title: ✨ Overview
 
 **Licensing**
 
-Slinky is **business-licensed software** under BSL. It is source viewable, but [**reach out to us**](https://skip.money/contact) to us if you are interested in integrating! We are limiting the number of chains we work with in 2024. We apologize if we run out of capacity.
+Connect is **business-licensed software** under BSL. It is source viewable, but [**reach out to us**](https://skip.money/contact) to us if you are interested in integrating! We are limiting the number of chains we work with in 2024. We apologize if we run out of capacity.
 
 Visit the GitHub repo [here](https://github.com/skip-mev/slinky).
 
@@ -23,19 +23,19 @@ For support, [**join our discord**](https://skip.money/discord)!
   <img src='/img/slinky_customers.png' width="100%"/>
 </Frame>
 
-## 🦾 Slinky Features
+## 🦾 Connect Features
 
-✅ **Runs on the chain validator set** - Slinky leverages the chain’s security, giving the fastest updates possible, and removing the requirements for any 3rd party systems.
+✅ **Runs on the chain validator set** - Connect leverages the chain’s security, giving the fastest updates possible, and removing the requirements for any 3rd party systems.
 
-✅ **Highly performant** - Slinky can support over 2000 currency pairs and price feeds, allowing the launch of thousands of permissionless on-chain markets.
+✅ **Highly performant** - Connect can support over 2000 currency pairs and price feeds, allowing the launch of thousands of permissionless on-chain markets.
 
 ✅ **Full operational support** - comes with a 1-day SLAs for adding new feeds, and 24/7 on-call support and maintenance by the Skip team.
 
-✅ **Better Application UX** - by leveraging new advancements in consensus like vote extensions & ABCI++, Slinky guarantees a millisecond-fresh oracle update every block, allowing applications to build without sacrificing UX for safety.
+✅ **Better Application UX** - by leveraging new advancements in consensus like vote extensions & ABCI++, Connect guarantees a millisecond-fresh oracle update every block, allowing applications to build without sacrificing UX for safety.
 
-## 🏎️ The Slinky Sidecar
+## 🏎️ The Connect Sidecar
 
-- The Slinky sidecar is an out-of-process service that efficiently fetches prices from various data sources and runs aggregation logic
+- The Connect sidecar is an out-of-process service that efficiently fetches prices from various data sources and runs aggregation logic
   to combine them into a single price for each feed.
 - Validators use GRPC requests to the sidecar to fetch the latest updates to update on-chain prices from over 20+ providers.
 
@@ -43,9 +43,9 @@ For support, [**join our discord**](https://skip.money/discord)!
 
 ## ⚡️ On-chain aggregation
 
-Slinky uses <b>[ABCI++](https://docs.cometbft.com/v0.37/spec/abci/)</b> to separate Oracle aggregation into secure and efficient steps.
+Connect uses <b>[ABCI++](https://docs.cometbft.com/v0.37/spec/abci/)</b> to separate Oracle aggregation into secure and efficient steps.
 
-![Slinky Architecture](/img/slinky-arch.png)
+![Connect Architecture](/img/slinky-arch.png)
 
 ### Extend Vote / Verify Vote
 
@@ -60,7 +60,7 @@ The `ExtendVote` and `VerifyVote` methods of ABCI++ are where a price is first q
 
 During `PrepareProposal`, the vote extensions from the previous block are aggregated by the block proposer into their block proposal, after various checks are run on them.
 
-- Slinky ensures that the set of vote extensions comprise the required minimum stake required for a price update (default of 2/3).
+- Connect ensures that the set of vote extensions comprise the required minimum stake required for a price update (default of 2/3).
 - It also ensures that the vote extensions are valid and can be understood by the application.
 - Finally, it encodes the vote extensions and injects them into the top of the block proposal as a pseudo-transaction ignored by the chain.
 

@@ -1,21 +1,21 @@
 ---
-description: 🏖️ Accessing Slinky Prices
-title: 🏖️ Accessing Slinky Prices
+description: 🏖️ Accessing Connect Prices
+title: 🏖️ Accessing Connect Prices
 ---
 
 <Note>
-    **Building with Slinky? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
+    **Building with Connect? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
 </Note>
 
 ## Summary
 
-Slinky prices are stored within the [`x/oracle`](https://github.com/skip-mev/slinky/tree/main/x/oracle) module by default.
+Connect prices are stored within the [`x/oracle`](https://github.com/skip-mev/slinky/tree/main/x/oracle) module by default.
 
 On very specific chains - right now only dYdX - they live in a different storage module (in dYdX's case, `x/prices`).
 
 These prices are updated on a per-block basis, when there is sufficient difference from the last block's price. They can be accessed natively by CosmWasm smart contracts, by other modules, or by anyone else who has access to chain state.
 
-Slinky market configuration is stored in the [`x/marketmap`](https://github.com/skip-mev/slinky/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
+Connect market configuration is stored in the [`x/marketmap`](https://github.com/skip-mev/slinky/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
 
 ### Getting Supported Assets
 
@@ -27,9 +27,9 @@ Every chain will have a different set of supported assets. You can find out whic
 
 This will return a JSON list of supported assets with associated metadata.
 
-### Accessing Slinky Prices over node APIs and RPC
+### Accessing Connect Prices over node APIs and RPC
 
-To access **all** Slinky prices (as of the last committed block), you can run:
+To access **all** Connect prices (as of the last committed block), you can run:
 
 1. (via a local running chain): `curl http://localhost:1317/slinky/oracle/v1/get_prices`
 2. (via gRPC): `grpcurl -plaintext localhost:9090 slinky.oracle.v1.Query/GetPrices`
@@ -39,7 +39,7 @@ To get a **specific** currency pair, you can call:
 1. (Get all currency pairs request) `appd q oracle currency-pairs`
 2. (Get price request) `appd q oracle price [base] [quote]`
 
-### Price Metadata within Slinky
+### Price Metadata within Connect
 
 When calling `getPrices` via the above methods, you are returned an array of `GetPriceResponse`, each of which contains the following metadata about individual prices:
 
@@ -98,18 +98,18 @@ Inside `QuotePrice`, you can fetch for the currency-pair:
     }
 ```
 
-### Slinky Price Update Timing
+### Connect Price Update Timing
 
-Prices within Slinky committed on a one-block delay, since validators use the vote extensions from block `n-1` to securely submit their price data for block `n`.
+Prices within Connect committed on a one-block delay, since validators use the vote extensions from block `n-1` to securely submit their price data for block `n`.
 
-Most of the time, Slinky feeds will update every single block. This happens when there is a non-insignificant update to the price, and over 66% of validators are correctly running their price-fetching sidecar.
+Most of the time, Connect feeds will update every single block. This happens when there is a non-insignificant update to the price, and over 66% of validators are correctly running their price-fetching sidecar.
 
-However, an individual Slinky feed will not update on any given block if:
+However, an individual Connect feed will not update on any given block if:
 
-1. (More common) There was not a sufficient enough change from last block's price to surpass the Slinky `min_price_change` parameter. To save network bandwidth, the price won't update.
+1. (More common) There was not a sufficient enough change from last block's price to surpass the Connect `min_price_change` parameter. To save network bandwidth, the price won't update.
 2. (Less common) The market is disabled (i.e. not updating) within `x/marketmap`
-3. (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run the Slinky sidecar, or there is a massive, widespread outage across providers.
+3. (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run the Connect sidecar, or there is a massive, widespread outage across providers.
 
-### Q: Can I get historical prices in Slinky?
+### Q: Can I get historical prices in Connect?
 
 **A:** No, the `x/oracle` module only stores the most recently posted price. However, you can use blockchain indexers or inspect past blocks to see the prices committed on previous heights.

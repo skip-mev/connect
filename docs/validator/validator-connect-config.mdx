@@ -1,35 +1,35 @@
 ---
-description: Slinky Sidecar Configuration
-title: Validator Slinky Configuration Reference
+description: Connect Sidecar Configuration
+title: Validator Connect Configuration Reference
 ---
 
 # Oracle Side-Car Configuration
 
-This page gives an overview of the configurations options available in Slinky, what the default values are, and how to override them.
+This page gives an overview of the configurations options available in Connect, what the default values are, and how to override them.
 
 ## Overriding Defaults
 
-Configurations in Slinky have sane defaults in each release which can optionally be overridden in the following ways.
+Configurations in Connect have sane defaults in each release which can optionally be overridden in the following ways.
 
-1. A JSON file can be supplied to the Slinky binary via `slinky --oracle-config oracle.json` which should contain the set
+1. A JSON file can be supplied to the Connect binary via `slinky --oracle-config oracle.json` which should contain the set
    of options to be overridden.
 
 2. Each config option can be set in environment variables where the prefix is `SLINKY_CONFIG` and the separator for
    each path element is `_` e.g. `export SLINKY_CONFIG_FOO_BAR_BAZ=false`.
 
-## Configurable Values in Slinky
+## Configurable Values in Connect
 
-The following is a list of configurable options in Slinky along with their defaults and the supported methods of
+The following is a list of configurable options in Connect along with their defaults and the supported methods of
 overriding each option.
 
 ### Base Options
 
 | Name      | Type                                     | Default   | Environment Variable | Description                                                                      |
 | --------- | ---------------------------------------- | --------- | -------------------- | -------------------------------------------------------------------------------- |
-| providers | \{"ProviderName": [Provider](#providers)} |           |                      | The configuration values for each of the configured providers running in Slinky. |
-| metrics   | [Metrics](#metrics)                      |           |                      | The configuration values for prometheus metrics setup in Slinky.                 |
-| host      | String                                   | "0.0.0.0" | SLINKY_CONFIG_HOST   | The host address which the Slinky API server will listen on.                     |
-| port      | String                                   | "8080"    | SLINKY_CONFIG_PORT   | The port which the Slinky API server will listen on.                             |
+| providers | \{"ProviderName": [Provider](#providers)} |           |                      | The configuration values for each of the configured providers running in Connect. |
+| metrics   | [Metrics](#metrics)                      |           |                      | The configuration values for prometheus metrics setup in Connect.                 |
+| host      | String                                   | "0.0.0.0" | SLINKY_CONFIG_HOST   | The host address which the Connect API server will listen on.                     |
+| port      | String                                   | "8080"    | SLINKY_CONFIG_PORT   | The port which the Connect API server will listen on.                             |
 
 ### Providers
 
@@ -71,8 +71,8 @@ The API Config applies to all API Providers including those listed above as well
 
 #### Market Map Providers
 
-The market map provider is a unique concept within Slinky. It fetches the set of Providers each chain needs data from and
-updates Slinky based on the response.
+The market map provider is a unique concept within Connect. It fetches the set of Providers each chain needs data from and
+updates Connect based on the response.
 
 <Info>
 The endpoint of your configured market map provider should be set to your validating node's endpoint.
@@ -81,7 +81,7 @@ The endpoint of your configured market map provider should be set to your valida
 Currently supported Market Map Providers:
 
 - marketmap_api  
-  This is the default Provider from which Slinky will determine which data to fetch. It uses the GRPC port of the validating node.
+  This is the default Provider from which Connect will determine which data to fetch. It uses the GRPC port of the validating node.
 
 - dydx_api  
   This is a custom-built Provider which reads from dYdX version 5 in order to determine which markets to fetch. It uses the REST port of the validating node.
@@ -116,7 +116,7 @@ Currently supported websocket Providers:
 | Name                    | Type    | Default        | Environment Variable                          | Description                                                                                           |
 | ----------------------- | ------- | -------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | enabled                 | Boolean | true           | SLINKY_CONFIG_METRICS_ENABLED                 | Enabling metrics will attempt to serve Prometheus metrics at the provided Prometheus metrics address. |
-| prometheusServerAddress | String  | "0.0.0.0:8002" | SLINKY_CONFIG_METRICS_PROMETHEUSSERVERADDRESS | The address at which Slinky's Prometheus metrics will be exposed.                                     |
+| prometheusServerAddress | String  | "0.0.0.0:8002" | SLINKY_CONFIG_METRICS_PROMETHEUSSERVERADDRESS | The address at which Connect's Prometheus metrics will be exposed.                                     |
 
 ### Durations
 
@@ -219,10 +219,10 @@ auth support.
 }
 ```
 
-### A Typical dYdX Slinky Config (as of dYdX protocol version 5)
+### A Typical dYdX Connect Config (as of dYdX protocol version 5)
 
-A Typical dYdX Slinky Config (as of dYdX protocol version 5)
-Note that you can also set the dydx_api endpoint via a flag on the Slinky binary instead of overriding it in the json config.
+A Typical dYdX Connect Config (as of dYdX protocol version 5)
+Note that you can also set the dydx_api endpoint via a flag on the Connect binary instead of overriding it in the json config.
 
 ```
 slinky --marketmap-provider dydx_api --market-map-endpoint "http://localhost:1317"

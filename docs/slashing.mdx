@@ -1,45 +1,45 @@
 ---
-description: Slinky Incentivization Method
+description: Connect Incentivization Method
 title: ⚖️ Incentivization & Slashing
 ---
 
-## 🤝 Validators and Slinky
+## 🤝 Validators and Connect
 
-✅ **Validators are the lifeblood of Slinky operation** - Slinky is a restaking product. This means it reuses all available network stake of a protocol to secure oracle operation. To do this, validators need to run the infrastructure required for Slinky to operate.
+✅ **Validators are the lifeblood of Connect operation** - Connect is a restaking product. This means it reuses all available network stake of a protocol to secure oracle operation. To do this, validators need to run the infrastructure required for Connect to operate.
 
-✅ **Validators do this by running the Slinky Sidecar** - Slinky comes with a highly optimized and reliable piece of software called the Sidecar, which validators run in tandem with chain binaries to fetch prices safely and reliably.
+✅ **Validators do this by running the Connect Sidecar** - Connect comes with a highly optimized and reliable piece of software called the Sidecar, which validators run in tandem with chain binaries to fetch prices safely and reliably.
 
-✅ **Validators benefit from running Slinky** - Validators can (should!) be rewarded for doing more for the chains they operate on. To accomplish this, Slinky can providet `fee-sharing` for validators who honestly operate the oracle. Fees can come from trading activity, inflation, or other mechanisms.
+✅ **Validators benefit from running Connect** - Validators can (should!) be rewarded for doing more for the chains they operate on. To accomplish this, Connect can providet `fee-sharing` for validators who honestly operate the oracle. Fees can come from trading activity, inflation, or other mechanisms.
 
-✅ **Validators can be punished for misuse** - As they are with the consensus process, validators can be punished if they don't report prices or report incorrect prices. As long as validators follow the correct operation guides and act honestly, this should never happen. To ensure its accuracy, Slinky has two prebuilt mechanisms to enable slashing.
+✅ **Validators can be punished for misuse** - As they are with the consensus process, validators can be punished if they don't report prices or report incorrect prices. As long as validators follow the correct operation guides and act honestly, this should never happen. To ensure its accuracy, Connect has two prebuilt mechanisms to enable slashing.
 
 ## 💰 Reward Mechanism
 
-- When Slinky is integrated, it can assign per-block rewards to validators who operate it correctly. Correct operation means:
+- When Connect is integrated, it can assign per-block rewards to validators who operate it correctly. Correct operation means:
   - posting prices reliably
   - posting correct prices
 
-Rewards can come from various sources. The easiest to implement is an additional share of inflation yield. However, Slinky also can support sharing of trading-fees and any arbitrary source of revenue.
+Rewards can come from various sources. The easiest to implement is an additional share of inflation yield. However, Connect also can support sharing of trading-fees and any arbitrary source of revenue.
 
 <Info>
 
 We Share Everything
 
-Skip is dedicated to rewarding validators. For any fees a chain agrees to pay Skip for Slinky operation, we share 20% of this with the validators who operate it.
+Skip is dedicated to rewarding validators. For any fees a chain agrees to pay Skip for Connect operation, we share 20% of this with the validators who operate it.
 
 </Info>
 
-With fee sharing, a fixed amount of fees is shared <b>per-block</b> to validators that correctly operate Slinky.
+With fee sharing, a fixed amount of fees is shared <b>per-block</b> to validators that correctly operate Connect.
 
-- This means, if `$1000` was allocated for a certain block, and only 10 validators correctly operated Slinky that block, each validator would receive an additional `$100` on top of their block rewards.
+- This means, if `$1000` was allocated for a certain block, and only 10 validators correctly operated Connect that block, each validator would receive an additional `$100` on top of their block rewards.
 
-Note that the Slinky reward is <b>additional</b> to normal validator commission.
+Note that the Connect reward is <b>additional</b> to normal validator commission.
 
 ## 📉 Downtime slashing
 
-Slinky comes prebuilt with the optional `x/sla` module, which enforces a minimum Service-Level Agreement (SLA) on validators and is verified on-chain.
+Connect comes prebuilt with the optional `x/sla` module, which enforces a minimum Service-Level Agreement (SLA) on validators and is verified on-chain.
 
-See the code here: https://github.com/skip-mev/slinky/tree/main/x/sla
+See the code [here](https://github.com/skip-mev/slinky/tree/main/x/sla)
 
 The SLA module is designed to issue a (small) slash whenever a validator doesn't meet the uptime SLA for a specific price feed over a moving window of blocks. For example, with an SLA set to `80%` for a currency pair (e.g. `ETH/USDC`) over a block-window of `100`, then:
 

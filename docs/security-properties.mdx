@@ -1,5 +1,5 @@
 ---
-description: Slinky Security Properties
+description: Connect Security Properties
 title: 🔒 Security Properties
 ---
 
@@ -9,25 +9,25 @@ title: 🔒 Security Properties
 
 ## ⛓️ Overall Assumptions
 
-✅ **Slinky is as secure as the chain it is deployed on** - This is the meaning of a "restaked" oracle - Slinky leverages all available
+✅ **Connect is as secure as the chain it is deployed on** - This is the meaning of a "restaked" oracle - Connect leverages all available
 security that the chain can provide by using the existing validator set and tying updates to consensus via vote extensions.
 
 ✅ **Prices require 2/3 participation from validators to be posted on chain** - We require a minimum of 2/3 of stake weight to contribute
 to a price aggregation for that price to actually update chain state. This is the same stake weight required to commit blocks.
 
-✅ **Slinky avoids any external dependencies** - Slinky injects price data directly into the chain it's deployed on. This means there's no
+✅ **Connect avoids any external dependencies** - Connect injects price data directly into the chain it's deployed on. This means there's no
 additional chain, token, relayer, or other outside actor dependency. The same operators that run the chain run the oracle.
 
-✅ **Slinky price updates are atomic with liveness** - Since Slinky data is signed atomically with `PreCommit` votes via Vote Extensions, chains can
+✅ **Connect price updates are atomic with liveness** - Since Connect data is signed atomically with `PreCommit` votes via Vote Extensions, chains can
 configure their application (or parts of their application) to depend on per-block price updates. This makes almost all forms of oracle attacks impossible,
 and allows applications to avoid having to build their own UX roadblocks to ensure safety.
 
 ## 🔀 Impact of Vote Extensions
 
-Slinky updates by having over 2/3 of the validator set (by stake weight) suggest a series of prices, and then aggregates across
+Connect updates by having over 2/3 of the validator set (by stake weight) suggest a series of prices, and then aggregates across
 them using a stake-weighted median. This price data is committed to the chain by validators through [vote extensions](https://docs.cosmos.network/main/build/abci/vote-extensions).
 
-Vote extensions are arbitrary metadata that is signed atomically with a validator's `PreCommit` vote. In Slinky's case, that metadata is
+Vote extensions are arbitrary metadata that is signed atomically with a validator's `PreCommit` vote. In Connect's case, that metadata is
 locally observed prices for a series of `CurrencyPairs` (e.g. `ETH/USDC`).
 
 Given blocks cannot progress without 2/3 of stake weight submitting votes, blocks also cannot progress without 2/3 of vote extensions.
@@ -36,18 +36,18 @@ price updates. This means that every price update has the same participation as 
 
 ## 👺 Manipulation Thresholds
 
-In the standard configuration of Slinky, it requires `1/3` of stake to be manipulated to post an incorrect oracle price. This is because:
+In the standard configuration of Connect, it requires `1/3` of stake to be manipulated to post an incorrect oracle price. This is because:
 
 - `2/3` of stake is required to post any update (as described above)
 - half of that stake must be manipulated to post incorrect prices in the _same direction_ to move the stake-weighted median final price posted on-chain
 - That is, (`2/3 / 2 = 1/3`) of stake must be manipulated to post a malicious price.
 
-However, Slinky can support additional constraints to increase this level to `2/3` of stake. To do this, the final on-chain prices are re-checked by all validators on the network in the `ProcessProposal` step to enforce some minimum deviation from their local prices are not exceeded. `2/3` of stake weight is required to vote "yes" on this check, raising the overall security back to that of the chain itself.
+However, Connect can support additional constraints to increase this level to `2/3` of stake. To do this, the final on-chain prices are re-checked by all validators on the network in the `ProcessProposal` step to enforce some minimum deviation from their local prices are not exceeded. `2/3` of stake weight is required to vote "yes" on this check, raising the overall security back to that of the chain itself.
 
 There are tradeoffs to increasing the security to this level. Validators may reject proposals more often if there is high volatility in price updates between them, which could result in longer periods of oracle downtime in periods of crypto market instability.
 
 ## 🎖️ Importance of Operational Excellence
 
-Security assumptions, no matter how good, are no substitute for the oracle operators (the chain's validator set) keeping high uptime, reliable, and accurate price updates. Slinky makes this easy for validators, providing an ample amount of operational support and tooling for alerting, upgrading, and maintaining the Slinky sidecar. We work with operators from respected oracles like [ChainLink](https://chain.link/) to ensure validators replicate best practices.
+Security assumptions, no matter how good, are no substitute for the oracle operators (the chain's validator set) keeping high uptime, reliable, and accurate price updates. Connect makes this easy for validators, providing an ample amount of operational support and tooling for alerting, upgrading, and maintaining the Connect sidecar. We work with operators from respected oracles like [ChainLink](https://chain.link/) to ensure validators replicate best practices.
 
 Operational excellence is heavily tied to incentivization and disincentivization mechanisms imposed on operators. Please read our section on [Incentivization & Slashing](/slashing) for more info.

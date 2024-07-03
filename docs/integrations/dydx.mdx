@@ -9,42 +9,41 @@ title: dYdX
 
 **A:** Here is a quick (5-10 minutes) step-by-step breakdown. Please reach out to us at [skip.money/discord](http://skip.money/discord) if you have questions!
 
-#### **Download the Slinky binary.**
+#### **Download the Connect binary.**
 
-The best way to get the Slinky binary is in the GitHub releases page for Slinky.
+The best way to get the Connect binary is in the GitHub releases page for Connect.
 
 https://github.com/skip-mev/slinky/releases
 
-The **minimum** slinky version required for dYdX is [`v1.0.1`](https://github.com/skip-mev/slinky/releases/tag/v1.0.1)
+The **minimum** connect version required for dYdX is [`v1.0.1`](https://github.com/skip-mev/slinky/releases/tag/v1.0.1)
 
 We also provide a container image at [ghcr.io/skip-mev/slinky-sidecar](https://github.com/skip-mev/slinky/pkgs/container/slinky-sidecar/230279145?tag=v1.0.1)
 
-This will include the Slinky binary, `slinky`.
+This will include the Connect binary, `slinky`.
 
-#### **Integrate the Slinky sidecar into your setup.**
+#### **Integrate the Connect sidecar into your setup.**
 
 The configuration of your validator setup requires you to tackle a few problems which we’ll mention here.
 
-**_Configure the Slinky process_**
+**_Configure the Connect process_**
 
-To run the slinky sidecar with stable defaults defined by the skip team
+To run the connect sidecar with stable defaults defined by the skip team
 
 ```bash
 slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint>
 ```
 
-> Notice, some default values may need to change depending on how you've setup your node + slinky-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
-
+> Notice, some default values may need to change depending on how you've setup your node + connect-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
 
 Before you complete your sidecar setup it is important that you setup your raydium API-keys + configure your sidecar to use these, see [here](#get-your-free-api-keys-and-configure-your-decentralized-provider-endpoints) for directions.
 
-#### **Point your chain binary at the Slinky sidecar**
+#### **Point your chain binary at the Connect sidecar**
 
-The dYdX binary has been altered to accept new options which are used to configure your application. The following options in `app.toml` are relevant to Slinky operation.
+The dYdX binary has been altered to accept new options which are used to configure your application. The following options in `app.toml` are relevant to Connect operation.
 The top level config fields are as follows:
 
 ```toml
-# This is a top level field which controls slinky vote extension enablement.
+# This is a top level field which controls connect vote extension enablement.
 # It should always be set to true.
 slinky-vote-extension-oracle-enabled = "true"
 ```
@@ -78,7 +77,7 @@ metrics_enabled = "true"
 
 #### **Get your free API Keys and configure your decentralized provider endpoints**
 
-Slinky supports the addition of state-RPCs to gather data directly from Solana and EVM chains. The Skip and dYdX
+Connect supports the addition of state-RPCs to gather data directly from Solana and EVM chains. The Skip and dYdX
 team have already set up relationships and pre-paid for API endpoints you can use to get this data.
 
 For each RPC URL, you will need an API key unique to your validator. To get this, go to the dYdX validator slack channel
@@ -147,13 +146,13 @@ slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node RE
 
 **A:** A full set of prometheus metrics are integrated into both the sidecar and the dYdX application binary.
 
-A comprehensive overview of the relevant side-car metrics is hosted in the root [metrics.md](https://github.com/skip-mev/slinky/blob/main/metrics.md). This document includes a grafana dashboard that can be utilized to monitor the sidecar. Apart from the Slinky SideCar Dashboard, we highly recommend the [LavenderFive](https://github.com/LavenderFive/slinky-monitoring) and [RhinoStake](https://github.com/RhinoStake/slinky_monitoring_dashboard) monitoring dashboards which are built to be used with the Slinky sidecar.
+A comprehensive overview of the relevant side-car metrics is hosted in the root [metrics.md](https://github.com/skip-mev/slinky/blob/main/metrics.md). This document includes a grafana dashboard that can be utilized to monitor the sidecar. Apart from the Connect SideCar Dashboard, we highly recommend the [LavenderFive](https://github.com/LavenderFive/slinky-monitoring) and [RhinoStake](https://github.com/RhinoStake/slinky_monitoring_dashboard) monitoring dashboards which are built to be used with the Connect sidecar.
 
 To check if the sidecar is properly fetching prices, you can run `curl localhost:8080/slinky/oracle/v1/prices | jq` - where localhost:8080 is the default address of the sidecar. This will return a JSON object with the prices the sidecar has fetched.
 
 To check if the dYdX application is properly fetching prices from the sidecar, you can run `curl -s http://localhost:26660 | grep 'app_oracle_responses'` - where localhost:26660 is the local prometheus endpoint of the dYdX application.
 
-Additionally, the logs from your dYdX node binary will contain the following error if it is unable to connect to Slinky to grab prices:
+Additionally, the logs from your dYdX node binary will contain the following error if it is unable to connect to the sidecar to grab prices:
 
 `Failed to run fetch prices for slinky daemon`
 
@@ -163,11 +162,11 @@ If you are having issues, please read over the live support section below.
 
 **A:** Upgrading the sidecar can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
 
-If you are running the Slinky sidecar in a container you can shut down the container, pull the updated container image and relaunch your container to update.
+If you are running the Connect sidecar in a container you can shut down the container, pull the updated container image and relaunch your container to update.
 
 If you are running the binary via systemd or other management tool, you will need to stop the process and re-launch using the newly released binary.
 
-The dydx node will still be able to participate in consensus without the sidecar, and will begin attaching prices to blocks once Slinky is available. In the worst case, an upgrade in any of these manners will cause you to miss including vote extensions for a single block which should have no negative effects on you or the network.
+The dydx node will still be able to participate in consensus without the sidecar, and will begin attaching prices to blocks once Connect is available. In the worst case, an upgrade in any of these manners will cause you to miss including vote extensions for a single block which should have no negative effects on you or the network.
 
 ### **Q: Which version of the sidecar binary should I be running?**
 
@@ -179,6 +178,6 @@ For future releases we are working with the dYdX team and validators to build au
 
 ### **Q: Is there a place I can go to get live support?**
 
-**A:** For Slinky related issues, join the Skip discord [skip.money/discord](http://skip.money/discord). Follow the onboarding prompts and get certified as a validator—you will be able to join dedicated discord channels based on which chain you are a validator for (dYdX).
+**A:** For Connect related issues, join the Skip discord [skip.money/discord](http://skip.money/discord). Follow the onboarding prompts and get certified as a validator—you will be able to join dedicated discord channels based on which chain you are a validator for (dYdX).
 
 For general issues related to dYdX, your normal support channels remain the same. If you can’t reach anyone from the Skip team for some reason which is critical, the dYdX team will be able to pull us in quickly as well.
