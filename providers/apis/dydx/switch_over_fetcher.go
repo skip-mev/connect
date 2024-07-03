@@ -14,6 +14,8 @@ import (
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	"strings"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 var _ mmclient.MarketMapFetcher = &SwitchOverFetcher{}
@@ -33,6 +35,7 @@ type SwitchOverFetcher struct {
 	marketmapFetcher mmclient.MarketMapFetcher
 	// switched is true if the fetcher has switched over to the x/marketmap API.
 	switched bool
+	metrics metrics.APIMetrics
 }
 
 // NewDefaultSwitchOverMarketMapFetcher returns a new SwitchOverProvider with the default
@@ -97,9 +100,10 @@ func NewDefaultSwitchOverMarketMapFetcher(
 	}
 
 	return &SwitchOverFetcher{
-		logger:           logger,
+		logger:           logger.With(zap.String("api", api.Name)),
 		pricesFetcher:    pricesFetcher,
 		marketmapFetcher: marketmapFetcher,
+		metrics: 		metrics,
 	}, nil
 }
 
@@ -109,6 +113,7 @@ func NewSwitchOverFetcher(
 	logger *zap.Logger,
 	pricesFetcher mmclient.MarketMapFetcher,
 	marketmapFetcher mmclient.MarketMapFetcher,
+	metrics metrics.APIMetrics,
 ) (mmclient.MarketMapFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger is nil")
@@ -126,6 +131,7 @@ func NewSwitchOverFetcher(
 		logger:           logger,
 		pricesFetcher:    pricesFetcher,
 		marketmapFetcher: marketmapFetcher,
+		metrics:          metrics,
 	}, nil
 }
 
@@ -136,18 +142,39 @@ func (f *SwitchOverFetcher) Fetch(
 	ctx context.Context,
 	chains []mmclient.Chain,
 ) mmclient.MarketMapResponse {
+	var resp mmclient.MarketMapResponse
+
+	// we need to emit a ProviderResponse (if any of the underlying fetches were successful)
+	// to indicate which provider is currently in use
+	defer func() {
+		provider := Name
+		if f.switched {
+			provider = marketmap.Name
+		}
+
+		for id := range resp.Resolved {
+			f.metrics.AddProviderResponse(provider, strings.ToLower(id.String()), providertypes.OK)
+		}
+
+		for id, result := range resp.UnResolved {
+			f.metrics.AddProviderResponse(provider, strings.ToLower(id.String()), result.Code())
+		}
+	}()
+
 	if f.switched {
-		return f.marketmapFetcher.Fetch(ctx, chains)
+		resp = f.marketmapFetcher.Fetch(ctx, chains)
+		return resp
 	}
 
-	f.logger.Debug("fetching marketmap from x/marketmap")
-	resp := f.marketmapFetcher.Fetch(ctx, chains)
+	f.logger.Info("fetching marketmap from x/marketmap")
+	resp = f.marketmapFetcher.Fetch(ctx, chains)
 	if len(resp.Resolved) > 0 {
 		f.logger.Info("got response from x/marketmap; switching over to x/marketmap")
 		f.switched = true
 		return resp
 	}
 
-	f.logger.Debug("x/marketmap did not return a marketmap response; fetching marketmap from x/prices")
-	return f.pricesFetcher.Fetch(ctx, chains)
+	f.logger.Info("x/marketmap did not return a marketmap response; fetching marketmap from x/prices")
+	resp = f.pricesFetcher.Fetch(ctx, chains)
+	return resp
 }
