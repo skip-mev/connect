@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,7 +32,7 @@ var (
 
 			// Set up a connection to the server.
 			url := fmt.Sprintf("%s:%s", host, port)
-			conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := slinkygrpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)
 			}

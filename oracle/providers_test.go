@@ -2,6 +2,7 @@ package oracle_test
 
 import (
 	"context"
+	"errors"
 	"math/big"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	mathtestutils "github.com/skip-mev/slinky/pkg/math/testutils"
 	"github.com/skip-mev/slinky/providers/base/testutils"
+	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -138,34 +140,38 @@ func (s *OracleTestSuite) TestProviders() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
+				MaxPriceAge:    1 * time.Minute,
+				Providers:      nil,
+				Metrics:        oracleCfg.Metrics,
+				Host:           oracleCfg.Host,
+				Port:           oracleCfg.Port,
 			}
-
 			providers := tc.factory()
-			ctx, cancel := context.WithTimeout(context.Background(), 4*cfg.UpdateInterval)
+			ctx, cancel := context.WithTimeout(context.Background(), 10*cfg.UpdateInterval)
 			defer cancel()
 
-			for _, provider := range providers {
-				p := provider
-				go func() {
-					// context deadline exceeded
-					s.Require().Error(p.Start(ctx))
-				}()
-			}
-
 			testOracle, err := oracle.New(
-				oracle.WithUpdateInterval(cfg.UpdateInterval),
+				cfg,
+				mathtestutils.NewMedianAggregator(),
 				oracle.WithLogger(s.logger),
-				oracle.WithProviders(providers),
-				oracle.WithPriceAggregator(mathtestutils.NewMedianAggregator()),
+				oracle.WithPriceProviders(providers...),
+				oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+				oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+				oracle.WithMarketMap(s.marketmap),
 			)
 			s.Require().NoError(err)
 
 			go func() {
-				s.Require().NoError(testOracle.Start(ctx))
+				err := testOracle.Start(ctx)
+				if err != nil {
+					if !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
+						s.T().Errorf("Start() should have returned context.Canceled error. Got: %v", err)
+					}
+				}
 			}()
 
 			// Wait for the oracle to start and update.
-			time.Sleep(2 * cfg.UpdateInterval)
+			time.Sleep(5 * cfg.UpdateInterval)
 
 			// Get the prices.
 			prices := testOracle.GetPrices()

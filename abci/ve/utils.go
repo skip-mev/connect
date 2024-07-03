@@ -182,10 +182,15 @@ func ValidateVoteExtensions(
 			continue
 		}
 
+		// If the validator does not have a valid public key, we skip the signature verification logic but still include
+		// the validator's voting power in the total voting power. The app may have pruned the validator's public key
+		// from the store, but comet considered the validator as active and included them in the commit since there
+		// is a 1 block delay between the validator set update on the app and comet.
+		sumVP += vote.Validator.Power
 		valConsAddr := sdk.ConsAddress(vote.Validator.Address)
 		pubKeyProto, err := valStore.GetPubKeyByConsAddr(ctx, valConsAddr)
 		if err != nil {
-			return fmt.Errorf("failed to get validator %X public key: %w", valConsAddr, err)
+			continue
 		}
 
 		cmtPubKey, err := cryptoenc.PubKeyFromProto(pubKeyProto)
@@ -208,8 +213,6 @@ func ValidateVoteExtensions(
 		if !cmtPubKey.VerifySignature(extSignBytes, vote.ExtensionSignature) {
 			return fmt.Errorf("failed to verify validator %X vote extension signature", valConsAddr)
 		}
-
-		sumVP += vote.Validator.Power
 	}
 
 	// This check is probably unnecessary, but better safe than sorry.

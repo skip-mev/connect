@@ -21,7 +21,7 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 	dydxMainnetMMFetcher := apihandlermocks.NewAPIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse](t)
 	dydxResearchMMFetcher := apihandlermocks.NewAPIFetcher[mmclient.Chain, *mmtypes.MarketMapResponse](t)
 
-	fetcher := dydx.NewDYDXResearchMarketMapFetcher(dydxMainnetMMFetcher, dydxResearchMMFetcher, zap.NewExample())
+	fetcher := dydx.NewDYDXResearchMarketMapFetcher(dydxMainnetMMFetcher, dydxResearchMMFetcher, zap.NewExample(), false)
 
 	t.Run("test that if the mainnet api-price fetcher response is unresolved, we return it", func(t *testing.T) {
 		ctx := context.Background()

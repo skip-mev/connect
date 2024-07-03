@@ -2,8 +2,8 @@ package dydx_test
 
 import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"

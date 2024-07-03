@@ -3,10 +3,11 @@ package types_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -289,6 +290,27 @@ func TestMarketMapValidateBasic(t *testing.T) {
 							MinProviderCount: 1,
 						},
 						ProviderConfigs: []types.ProviderConfig{},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "market-map with invalid key",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusd.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     btcusdtCP,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
 					},
 				},
 			},

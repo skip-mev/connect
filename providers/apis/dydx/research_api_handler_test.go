@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/skip-mev/slinky/providers/apis/binance"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	"github.com/skip-mev/slinky/providers/base/testutils"
+	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
@@ -173,10 +175,8 @@ func TestParseResponseResearchAPI(t *testing.T) {
 		}
 
 		researchJSON := dydxtypes.ResearchJSON{
-			"1INCH": struct {
-				dydxtypes.ResearchJSONMarketParam "json:\"params\""
-			}{
-				dydxtypes.ResearchJSONMarketParam{
+			"1INCH": {
+				ResearchJSONMarketParam: dydxtypes.ResearchJSONMarketParam{
 					ID:                0,
 					Pair:              "1INCH-USD",
 					Exponent:          -10.0,
@@ -214,10 +214,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 		bz, err := json.Marshal(researchJSON)
 		require.NoError(t, err)
 
-		resp := ah.ParseResponse(chains, &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       io.NopCloser(bytes.NewBuffer(bz)),
-		})
+		resp := ah.ParseResponse(chains, testutils.CreateResponseFromJSON(string(bz)))
 
 		require.Len(t, resp.UnResolved, 0)
 		require.Len(t, resp.Resolved, 1)
@@ -263,6 +260,101 @@ func TestParseResponseResearchAPI(t *testing.T) {
 			okx.Name: {
 				Name:           okx.Name,
 				OffChainTicker: "1INCH-USDT",
+			},
+		}
+
+		for _, provider := range market.ProviderConfigs {
+			expectedProvider, ok := expectedProviders[provider.Name]
+			require.True(t, ok)
+			require.Equal(t, expectedProvider, provider)
+		}
+	})
+}
+
+func TestParseResponseResearchCMCAPI(t *testing.T) {
+	ah, err := dydx.NewResearchAPIHandler(
+		zap.NewNop(),
+		dydx.DefaultResearchCMCAPIConfig,
+	)
+	require.NoError(t, err)
+
+	t.Run("success", func(t *testing.T) {
+		chains := []types.Chain{
+			{
+				ChainID: dydx.ChainID,
+			},
+		}
+
+		researchJSON := dydxtypes.ResearchJSON{
+			"1INCH": {
+				ResearchJSONMarketParam: dydxtypes.ResearchJSONMarketParam{
+					ID:                0,
+					Pair:              "1INCH-USD",
+					Exponent:          -10.0,
+					MinPriceChangePpm: 4000,
+					MinExchanges:      3,
+					ExchangeConfigJSON: []dydxtypes.ExchangeMarketConfigJson{
+						{
+							ExchangeName: "Binance",
+							Ticker:       "1INCHUSDT",
+						},
+						{
+							ExchangeName: "CoinbasePro",
+							Ticker:       "1INCH-USD",
+						},
+						{
+							ExchangeName: "Gate",
+							Ticker:       "1INCH_USDT",
+						},
+						{
+							ExchangeName: "Kucoin",
+							Ticker:       "1INCH-USDT",
+						},
+						{
+							ExchangeName: "Mexc",
+							Ticker:       "1INCH_USDT",
+						},
+						{
+							ExchangeName: "Okx",
+							Ticker:       "1INCH-USDT",
+						},
+					},
+				},
+				MetaData: dydxtypes.MetaData{
+					CMCID: 1,
+				},
+			},
+		}
+
+		bz, err := json.Marshal(researchJSON)
+		require.NoError(t, err)
+
+		resp := ah.ParseResponse(chains, testutils.CreateResponseFromJSON(string(bz)))
+
+		require.Len(t, resp.UnResolved, 0)
+		require.Len(t, resp.Resolved, 1)
+
+		mm := resp.Resolved[chains[0]].Value.MarketMap
+		require.Len(t, mm.Markets, 1)
+
+		// index by the pair
+		market, ok := mm.Markets["1INCH/USD"]
+		require.True(t, ok)
+
+		// check the ticker
+		expectedTicker := mmtypes.Ticker{
+			CurrencyPair:     slinkytypes.NewCurrencyPair("1INCH", "USD"),
+			Decimals:         10,
+			MinProviderCount: 1,
+			Enabled:          true,
+		}
+		require.Equal(t, expectedTicker, market.Ticker)
+
+		// check each provider
+		expectedProviders := map[string]mmtypes.ProviderConfig{
+			coinmarketcap.Name: {
+				Name:           coinmarketcap.Name,
+				OffChainTicker: "1",
 			},
 		}
 

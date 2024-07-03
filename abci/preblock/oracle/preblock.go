@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -69,9 +71,88 @@ func NewOraclePreBlockHandler(
 	}
 }
 
+// WrappedPreBlocker is called by the base app before the block is finalized. It
+// is responsible for calling the module manager's PreBlock method, aggregating oracle data from each validator and
+// writing the oracle data to the store.
+func (h *PreBlockHandler) WrappedPreBlocker(mm *module.Manager) sdk.PreBlocker {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (response *sdk.ResponsePreBlock, err error) {
+		if req == nil {
+			ctx.Logger().Error(
+				"received nil RequestFinalizeBlock in oracle preblocker",
+				"height", ctx.BlockHeight(),
+			)
+
+			return &sdk.ResponsePreBlock{}, fmt.Errorf("received nil RequestFinalizeBlock in oracle preblocker: height %d", ctx.BlockHeight())
+		}
+
+		// call module manager's PreBlocker first in case there is changes made on upgrades
+		// that can modify state and lead to serialization/deserialization issues
+		response, err = mm.PreBlock(ctx)
+		if err != nil {
+			return response, err
+		}
+
+		start := time.Now()
+		var prices map[slinkytypes.CurrencyPair]*big.Int
+		defer func() {
+			// only measure latency in Finalize
+			if ctx.ExecMode() == sdk.ExecModeFinalize {
+				latency := time.Since(start)
+				h.logger.Debug(
+					"finished executing the pre-block hook",
+					"height", ctx.BlockHeight(),
+					"latency (seconds)", latency.Seconds(),
+				)
+				slinkyabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+
+				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
+				if err == nil && prices != nil {
+					// record price metrics
+					h.recordPrices(prices)
+
+					// record validator report metrics
+					h.recordValidatorReports(ctx, req.DecidedLastCommit)
+				}
+			}
+		}()
+
+		// If vote extensions are not enabled, then we don't need to do anything.
+		if !ve.VoteExtensionsEnabled(ctx) {
+			h.logger.Info(
+				"vote extensions are not enabled",
+				"height", ctx.BlockHeight(),
+			)
+
+			return response, nil
+		}
+
+		h.logger.Debug(
+			"executing the pre-finalize block hook",
+			"height", req.Height,
+		)
+
+		// decode vote-extensions + apply prices to state
+		prices, err = h.pa.ApplyPricesFromVoteExtensions(ctx, req)
+		if err != nil {
+			h.logger.Error(
+				"failed to apply prices from vote extensions",
+				"height", req.Height,
+				"error", err,
+			)
+
+			return response, err
+		}
+
+		return response, nil
+	}
+}
+
 // PreBlocker is called by the base app before the block is finalized. It
 // is responsible for aggregating oracle data from each validator and writing
 // the oracle data to the store.
+//
+// Deprecated: using PreBlocker requires wrapping module Manager's PreBlock call. This method should no longer be used.
+// Use WrappedPreBlocker instead to handle this functionality automatically.
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
 		if req == nil {
@@ -89,7 +170,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {
 				latency := time.Since(start)
-				h.logger.Info(
+				h.logger.Debug(
 					"finished executing the pre-block hook",
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
@@ -117,7 +198,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, nil
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"executing the pre-finalize block hook",
 			"height", req.Height,
 		)
@@ -133,8 +214,6 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 			return &sdk.ResponsePreBlock{}, err
 		}
-
-		h.logger.Info("finished executing the oracle pre-block hook")
 
 		return &sdk.ResponsePreBlock{}, nil
 	}

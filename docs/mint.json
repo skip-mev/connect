@@ -1,0 +1,70 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Skip",
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0E0E0E",
+    "light": "#FAFAFA",
+    "dark": "#0E0E0E",
+    "background": {
+      "dark": "#151617"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Research",
+      "url": "https://ideas.skip.money"
+    },
+    {
+      "name": "Jobs",
+      "url": "https://jobs.skip.money"
+    }
+  ],
+  "modeToggle": {
+    "default": "dark"
+  },
+  "navigation": [ 
+    {
+      "group": "🔮 General",
+      "pages": [
+        "overview",
+        "security-properties",
+        "slashing",
+        "upcoming-work"
+      ]
+    },
+    {
+      "group": "👾 Validators",
+      "pages": [
+        "validator/quickstart",
+        "validator/validator-app-config",
+        "validator/validator-slinky-config",
+        "validator/troubleshooting",
+        "validator/rpc-providers",
+        "validator/flags-guide"
+      ]
+    },
+    {
+      "group": "⛓ Chain Integrations",
+      "pages": [
+        "integrations/dydx",
+        "integrations/neutron"
+      ]
+    },
+      {
+        "group": "🛠️ Integrators",
+        "pages": [
+          "using-slinky/high-level",
+          "using-slinky/neutron-sdk"
+        ]
+      }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/skipprotocol",
+    "discord": "https://discord.com/invite/hFeHVAE26P"
+  }
+}

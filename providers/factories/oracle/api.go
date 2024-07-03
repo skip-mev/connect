@@ -15,6 +15,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
@@ -53,9 +54,15 @@ func APIQueryHandlerFactory(
 	var (
 		apiPriceFetcher types.PriceAPIFetcher
 		apiDataHandler  types.PriceAPIDataHandler
+		headers         = make(map[string]string)
 	)
 
-	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
+	// If the provider has an API key, add it to the headers.
+	if len(cfg.API.Endpoints) == 1 && cfg.API.Endpoints[0].Authentication.Enabled() {
+		headers[cfg.API.Endpoints[0].Authentication.APIKeyHeader] = cfg.API.Endpoints[0].Authentication.APIKey
+	}
+
+	requestHandler, err := apihandlers.NewRequestHandlerImpl(client, apihandlers.WithHTTPHeaders(headers))
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +74,8 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case providerName == coingecko.Name:
 		apiDataHandler, err = coingecko.NewAPIHandler(cfg.API)
+	case providerName == coinmarketcap.Name:
+		apiDataHandler, err = coinmarketcap.NewAPIHandler(cfg.API)
 	case providerName == geckoterminal.Name:
 		apiDataHandler, err = geckoterminal.NewAPIHandler(cfg.API)
 	case providerName == kraken.Name:

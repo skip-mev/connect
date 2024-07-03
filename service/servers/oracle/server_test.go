@@ -71,9 +71,6 @@ func (s *ServerTestSuite) SetupTest() {
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
-	// expect oracle to start
-	s.mockOracle.On("Start", mock.Anything).Return(nil)
-
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
 
@@ -171,7 +168,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 }
 
 func (s *ServerTestSuite) TestOracleMarketMap() {
-	dummyMarketMap := &mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
+	dummyMarketMap := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
 		"foo": {
 			Ticker: mmtypes.Ticker{
 				CurrencyPair:     slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
@@ -199,7 +196,7 @@ func (s *ServerTestSuite) TestOracleMarketMap() {
 
 	res, err := s.client.MarketMap(context.Background(), &stypes.QueryMarketMapRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(res.GetMarketMap(), dummyMarketMap)
+	s.Require().Equal(*res.GetMarketMap(), dummyMarketMap)
 }
 
 // test that the oracle server closes when expected.
@@ -219,23 +216,4 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)
-}
-
-func TestOracleFailureStopsServer(t *testing.T) {
-	// create mock oracle
-	mockOracle := mocks.NewOracle(t)
-	mockOracle.On("Start", mock.Anything).Return(fmt.Errorf("failed to start oracle"))
-
-	// create server
-	srv := server.NewOracleServer(mockOracle, zap.NewNop())
-
-	// start the server, and expect immediate closure
-	go srv.StartServer(context.Background(), localhost, port)
-
-	// wait for server to close
-	select {
-	case <-srv.Done():
-	case <-time.After(1 * time.Second):
-		t.Fatal("server failed to stop")
-	}
 }
