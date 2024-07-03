@@ -21,23 +21,23 @@ We also provide a container image at [ghcr.io/skip-mev/slinky-sidecar](https://g
 
 This will include the Connect binary, `slinky`.
 
-#### **Integrate the Connect sidecar into your setup.**
+#### **Integrate Connect into your setup.**
 
 The configuration of your validator setup requires you to tackle a few problems which we’ll mention here.
 
 **_Configure the Connect process_**
 
-To run the connect sidecar with stable defaults defined by the skip team
+To run connect with stable defaults defined by the skip team
 
 ```bash
 slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint>
 ```
 
-> Notice, some default values may need to change depending on how you've setup your node + connect-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
+> Notice, some default values may need to change depending on how you've setup your node + connect instance. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
 
-Before you complete your sidecar setup it is important that you setup your raydium API-keys + configure your sidecar to use these, see [here](#get-your-free-api-keys-and-configure-your-decentralized-provider-endpoints) for directions.
+Before you complete your connect setup it is important that you setup your raydium API-keys + configure your connect instance to use these, see [here](#get-your-free-api-keys-and-configure-your-decentralized-provider-endpoints) for directions.
 
-#### **Point your chain binary at the Connect sidecar**
+#### **Point your chain binary at your Connect instance**
 
 The dYdX binary has been altered to accept new options which are used to configure your application. The following options in `app.toml` are relevant to operating Connect.
 The top level config fields are as follows:
@@ -136,7 +136,7 @@ for API keys to fill in below.
 }
 ```
 
-Once you've created this file, you may run your sidecar as follows:
+Once you've created this file, you may run your connect sidecar as follows:
 
 ```
 slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API> --oracle-config <path to oracle.json>
@@ -144,23 +144,23 @@ slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node RE
 
 ### **Q: How do I know if my validator is properly fetching prices and posting them to the chain?**
 
-**A:** A full set of prometheus metrics are integrated into both the sidecar and the dYdX application binary.
+**A:** A full set of prometheus metrics are integrated into both connect and the dYdX application binary.
 
-A comprehensive overview of the relevant side-car metrics is hosted in the root [metrics.md](https://github.com/skip-mev/slinky/blob/main/metrics.md). This document includes a grafana dashboard that can be utilized to monitor the sidecar. Apart from the Connect SideCar Dashboard, we highly recommend the [LavenderFive](https://github.com/LavenderFive/slinky-monitoring) and [RhinoStake](https://github.com/RhinoStake/slinky_monitoring_dashboard) monitoring dashboards which are built to be used with the Connect sidecar.
+A comprehensive overview of the relevant connect metrics is hosted in the root [metrics.md](https://github.com/skip-mev/slinky/blob/main/metrics.md). This document includes a grafana dashboard that can be utilized to monitor the sidecar. Apart from the Connect SideCar Dashboard, we highly recommend the [LavenderFive](https://github.com/LavenderFive/slinky-monitoring) and [RhinoStake](https://github.com/RhinoStake/slinky_monitoring_dashboard) monitoring dashboards which are built to be used with Connect.
 
-To check if the sidecar is properly fetching prices, you can run `curl localhost:8080/slinky/oracle/v1/prices | jq` - where localhost:8080 is the default address of the sidecar. This will return a JSON object with the prices the sidecar has fetched.
+To check if connect is properly fetching prices, you can run `curl localhost:8080/slinky/oracle/v1/prices | jq` - where localhost:8080 is the default address of the sidecar. This will return a JSON object with the prices the sidecar has fetched.
 
-To check if the dYdX application is properly fetching prices from the sidecar, you can run `curl -s http://localhost:26660 | grep 'app_oracle_responses'` - where localhost:26660 is the local prometheus endpoint of the dYdX application.
+To check if the dYdX application is properly fetching prices from your connect instance, you can run `curl -s http://localhost:26660 | grep 'app_oracle_responses'` - where localhost:26660 is the local prometheus endpoint of the dYdX application.
 
-Additionally, the logs from your dYdX node binary will contain the following error if it is unable to connect to the sidecar to grab prices:
+Additionally, the logs from your dYdX node binary will contain the following error if it is unable to connect to your connect instance to grab prices:
 
 `Failed to run fetch prices for slinky daemon`
 
 If you are having issues, please read over the live support section below.
 
-### **Q: How do I upgrade the sidecar binary?**
+### **Q: How do I upgrade the connect binary?**
 
-**A:** Upgrading the sidecar can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
+**A:** Upgrading your connect instance can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
 
 If you are running the Connect sidecar in a container you can shut down the container, pull the updated container image and relaunch your container to update.
 

@@ -9,9 +9,9 @@ title: Neutron
 
 **A:** Here is a quick (5-10 minutes) step-by-step breakdown. Please reach out to us at [skip.money/discord](http://skip.money/discord) if you have questions!
 
-1. **Download the Connect Sidecar binary.**
+1. **Download the Connect binary.**
 
-   The best way to get the Connect Sidecar binary is in the GitHub releases page for Connect.
+   The best way to get the Connect binary is in the GitHub releases page for Connect.
 
    https://github.com/skip-mev/slinky/releases/tag/v1.0.1
 
@@ -23,7 +23,7 @@ title: Neutron
 
 2. **Integrate the Connect sidecar into your setup.**
 
-   To run the connect sidecar with stable defaults defined by the skip team
+   To run connect with stable defaults defined by the skip team
 
    ```bash
    slinky
@@ -31,7 +31,7 @@ title: Neutron
 
    > Notice, some default values may need to change depending on how you've setup your node + connect-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
 
-3. **Point your chain binary at the Connect sidecar**
+3. **Point your chain binary at your Connect instance**
 
    The chain binary has been altered to accept new options which are used to configure your application. The following options in `app.toml` are relevant to Connect operation.
 

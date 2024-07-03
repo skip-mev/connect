@@ -108,7 +108,7 @@ However, an individual Connect feed will not update on any given block if:
 
 1. (More common) There was not a sufficient enough change from last block's price to surpass the Connect `min_price_change` parameter. To save network bandwidth, the price won't update.
 2. (Less common) The market is disabled (i.e. not updating) within `x/marketmap`
-3. (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run the Connect sidecar, or there is a massive, widespread outage across providers.
+3. (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run Connect, or there is a massive, widespread outage across providers.
 
 ### Q: Can I get historical prices in Connect?
 
