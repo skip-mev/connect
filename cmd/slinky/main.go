@@ -76,7 +76,7 @@ func init() {
 		"marketmap-provider",
 		"",
 		marketmap.Name,
-		"MarketMap provider to use (marketmap_api, dydx_api).",
+		"MarketMap provider to use (marketmap_api, dydx_api, dydx_migration_api).",
 	)
 	rootCmd.Flags().StringVarP(
 		&oracleCfgPath,

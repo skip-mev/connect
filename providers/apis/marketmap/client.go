@@ -30,20 +30,8 @@ func NewGRPCClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
-	if err := api.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
-	}
-
-	if !api.Enabled {
-		return nil, fmt.Errorf("api is not enabled")
-	}
-
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("metrics is required")
 	}
 
 	// TODO: Do we want to ignore proxy settings?
@@ -54,6 +42,34 @@ func NewGRPCClient(
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	return NewGRPCClientWithConn(
+		conn,
+		api,
+		apiMetrics,
+	)
+}
+
+// NewGRPCClientWithConn returns a new GRPC client for MarketMap module with the given connection.
+func NewGRPCClientWithConn(
+	conn *grpc.ClientConn,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+) (mmtypes.QueryClient, error) {
+	if conn == nil {
+		return nil, fmt.Errorf("connection is required but got nil")
+	}
+	if err := api.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is required")
 	}
 
 	return &MarketMapClient{
