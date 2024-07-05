@@ -158,6 +158,11 @@ var (
 			Type: mmtypes.ConfigType,
 		},
 		{
+			Name: dydx.SwitchOverAPIHandlerName,
+			API:  dydx.DefaultSwitchOverAPIConfig,
+			Type: mmtypes.ConfigType,
+		},
+		{
 			Name: dydx.ResearchAPIHandlerName,
 			API:  dydx.DefaultResearchAPIConfig,
 			Type: mmtypes.ConfigType,
@@ -171,6 +176,7 @@ var (
 
 	MarketMapProviderNames = map[string]struct{}{
 		dydx.Name:                      {},
+		dydx.SwitchOverAPIHandlerName:  {},
 		dydx.ResearchAPIHandlerName:    {},
 		dydx.ResearchCMCAPIHandlerName: {},
 		marketmap.Name:                 {},
