@@ -17,7 +17,7 @@
   "topbarLinks": [
     {
       "name": "Skip:Go",
-      "url": "go"
+      "url": "https://docs.skip.build/go"
     },
     {
       "name": "Research",
