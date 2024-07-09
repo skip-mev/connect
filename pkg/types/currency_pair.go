@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	ethereum         = "ETHEREUM"
-	MaxCPFieldLength = 256
-	fieldSeparator   = ","
+	ethereum            = "ETHEREUM"
+	MaxCPFieldLength    = 256
+	fieldSeparator      = ","
+	expectedSplitLength = 3
 )
 
 // NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
@@ -79,13 +80,23 @@ func (cp *CurrencyPair) ValidateBasic() error {
 func ValidateLegacyAssetString(asset string) error {
 	// check formatting of asset
 	if strings.ToUpper(asset) != asset {
-		return fmt.Errorf("incorrectly formatted asset string, expected: %s got: %s", strings.ToUpper(cp.Base), cp.Base)
+		return fmt.Errorf("incorrectly formatted asset string, expected: %s got: %s", strings.ToUpper(asset), asset)
 	}
 
 	return nil
 }
 
 func ValidateDefiAssetString(asset string) error {
+	split := strings.Split(asset, fieldSeparator)
+	if len(split) != expectedSplitLength {
+		return fmt.Errorf("asset fields have wrong length, expected: %d got: %d", expectedSplitLength, len(split))
+	}
+
+	// first element is a ticker, so we require it to pass legacy asset validation:
+	if err := ValidateLegacyAssetString(split[0]); err != nil {
+		return fmt.Errorf("asset field '%s' is invalid: %w", split[0], err)
+	}
+
 	return nil
 }
 
