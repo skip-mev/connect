@@ -124,16 +124,23 @@ func (pf *APIPriceFetcher) Fetch(
 
 	for _, ticker := range tickers {
 		go func(ticker oracletypes.ProviderTicker) {
+			var err error
 			defer wg.Done()
-			metadata, err := pf.metaDataPerTicker.updateMetaDataCache(ticker)
-			if err != nil {
-				unresolved[ticker] = providertypes.UnresolvedResult{
-					ErrorWithCode: providertypes.NewErrorWithCode(
-						err,
-						providertypes.ErrorTickerMetadataNotFound,
-					),
+
+			// get or set metadata
+			// TODO: how expensive is this ?
+			metadata, found := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
+			if !found {
+				metadata, err = pf.metaDataPerTicker.updateMetaDataCache(ticker)
+				if err != nil {
+					unresolved[ticker] = providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(
+							err,
+							providertypes.ErrorTickerMetadataNotFound,
+						),
+					}
+					return
 				}
-				return
 			}
 
 			callCtx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
@@ -170,6 +177,8 @@ func (pf *APIPriceFetcher) Fetch(
 			resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
 		}(ticker)
 	}
+
+	wg.Wait()
 
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
