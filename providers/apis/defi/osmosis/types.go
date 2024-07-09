@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
@@ -95,4 +97,21 @@ func unmarshalMetadataJSON(metadata string) (TickerMetadata, error) {
 	}
 
 	return tickerMetadata, nil
+}
+
+// DefaultAPIConfig is the default configuration for the Osmosis API price fetcher.
+var DefaultAPIConfig = config.APIConfig{
+	Enabled:          true,
+	Name:             Name,
+	Timeout:          2 * time.Second,
+	Interval:         500 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       10,
+	Atomic:           false,
+	BatchSize:        25, // maximal # of accounts in getMultipleAccounts query is 100
+	Endpoints: []config.Endpoint{
+		{
+			URL: "osmosis-grpc.polkachu.com:12590",
+		},
+	},
 }

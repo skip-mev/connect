@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/osmosis-labs/osmosis/v25/x/poolmanager/client/queryproto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis/queryproto"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
@@ -21,7 +21,7 @@ var (
 	_ GRPCCLient = &GRPCMultiClientImpl{}
 )
 
-// GRPCClient is the expected interface for an osmosis grpc client.
+// GRPCCLient is the expected interface for an osmosis grpc client.
 //
 //go:generate mockery --name GRPCCLient --output ./mocks/ --case underscore
 type GRPCCLient interface {
@@ -94,7 +94,7 @@ func (c *GRPCCLientImpl) SpotPrice(grpcCtx context.Context, req *queryproto.Spot
 	return resp, nil
 }
 
-// GRPCMultiClientImpl is a Osmosis GRPC client that wraps a set of multiple Clients.
+// GRPCMultiClientImpl is an Osmosis GRPC client that wraps a set of multiple Clients.
 type GRPCMultiClientImpl struct {
 	logger     *zap.Logger
 	api        config.APIConfig

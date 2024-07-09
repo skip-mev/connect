@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/osmosis-labs/osmosis/v25/x/poolmanager/client/queryproto"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis/queryproto"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -135,7 +135,7 @@ func (pf *APIPriceFetcher) Fetch(
 				if err != nil {
 					unresolved[ticker] = providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
-							err,
+							NoOsmosisMetadataForTickerError(ticker.String()),
 							providertypes.ErrorTickerMetadataNotFound,
 						),
 					}

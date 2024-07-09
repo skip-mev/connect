@@ -283,6 +283,7 @@ gen-mocks:
 	@echo "--> generating mocks"
 	@go install github.com/vektra/mockery/v2
 	@go generate ./...
+	@cd ./providers/apis/defi/osmosis && go generate ./...
 
 ###############################################################################
 ###                                Formatting                               ###
