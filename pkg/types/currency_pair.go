@@ -7,7 +7,8 @@ import (
 
 const (
 	ethereum         = "ETHEREUM"
-	MaxCPFieldLength = 128
+	MaxCPFieldLength = 256
+	fieldSeparator   = ","
 )
 
 // NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
@@ -18,9 +19,79 @@ func NewCurrencyPair(base, quote string) CurrencyPair {
 	}
 }
 
+// IsLegacyAssetString returns true if the asset string is of the following format:
+// - contains no ",":
+func IsLegacyAssetString(asset string) bool {
+	return !strings.Contains(asset, fieldSeparator)
+}
+
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
-// Base + Quote are non-empty, and are in upper-case.
+// For base and quote asset:
+// check if the asset is formatted in the legacy validation form:
+//   - if so, check that fields are not empty and all upper case
+//   - else, check that the format is in the following form: tokenName,tokenAddress,chainID
 func (cp *CurrencyPair) ValidateBasic() error {
+	// check base asset
+	if cp.Base == "" {
+		return fmt.Errorf("base asset cannot be empty")
+	}
+
+	if cp.Quote == "" {
+		return fmt.Errorf("quote currency pair cannot be empty")
+	}
+
+	if len(cp.Base) > MaxCPFieldLength {
+		return fmt.Errorf("base currency pair has wrong length")
+	}
+
+	if len(cp.Quote) > MaxCPFieldLength {
+		return fmt.Errorf("quote currency pair has wrong length")
+	}
+
+	if IsLegacyAssetString(cp.Base) {
+		err := ValidateLegacyAssetString(cp.Base)
+		if err != nil {
+			return fmt.Errorf("base asset '%s' is invalid: %w", cp.Base, err)
+		}
+	} else {
+		err := ValidateDefiAssetString(cp.Base)
+		if err != nil {
+			return fmt.Errorf("base defi asset '%s' is invalid: %w", cp.Base, err)
+		}
+	}
+
+	// check quote asset
+	if IsLegacyAssetString(cp.Quote) {
+		err := ValidateLegacyAssetString(cp.Quote)
+		if err != nil {
+			return fmt.Errorf("quote asset '%s' is invalid: %w", cp.Quote, err)
+		}
+	} else {
+		err := ValidateDefiAssetString(cp.Quote)
+		if err != nil {
+			return fmt.Errorf("quote defi asset '%s' is invalid: %w", cp.Quote, err)
+		}
+	}
+
+	return nil
+}
+
+func ValidateLegacyAssetString(asset string) error {
+	// check formatting of asset
+	if strings.ToUpper(asset) != asset {
+		return fmt.Errorf("incorrectly formatted asset string, expected: %s got: %s", strings.ToUpper(cp.Base), cp.Base)
+	}
+
+	return nil
+}
+
+func ValidateDefiAssetString(asset string) error {
+	return nil
+}
+
+// LegacyValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
+// Base + Quote are non-empty, and are in upper-case.
+func (cp *CurrencyPair) LegacyValidateBasic() error {
 	// strings must be valid
 	if cp.Base == "" || cp.Quote == "" {
 		return fmt.Errorf("empty quote or base string")
