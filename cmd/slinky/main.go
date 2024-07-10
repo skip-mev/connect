@@ -8,21 +8,19 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-
 	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/cmd/build"
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-
-	"github.com/skip-mev/slinky/cmd/build"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
+	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
