@@ -125,7 +125,7 @@ func ValidateDefiAssetString(asset string) error {
 }
 
 // SplitDefiAssetString splits a defi asset by the fieldSeparator and checks that it is the proper length.
-// returns the split string as (token, address, chainID)
+// returns the split string as (token, address, chainID).
 func SplitDefiAssetString(defiString string) (token, address, chainID string, err error) {
 	split := strings.Split(defiString, fieldSeparator)
 	if len(split) != expectedSplitLength {
