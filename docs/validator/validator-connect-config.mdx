@@ -149,6 +149,28 @@ auth support.
 
 ## Sample Configuration:
 
+### Overriding the market-map / oracle server endpoint
+
+```json
+{
+  "port": 8080,
+  "metrics": {
+    "prometheusServerAddress": "0.0.0.0:26662"
+  },
+  "providers": {
+    "marketmap_api": {
+      "api": {
+        "endpoints": [
+          {
+            "url": "127.0.0.1:9090"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
 ### Overriding Prometheus Server Endpoint
 
 ```json

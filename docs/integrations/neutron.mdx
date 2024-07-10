@@ -29,9 +29,12 @@ title: Neutron
    slinky
    ```
 
-   > Notice, some default values may need to change depending on how you've setup your node + connect-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide)
+   > Notice, some default values may need to change depending on how you've setup your node + connect-sidecar. See the **marketmap-provider** [section](/validator/flags-guide#marketmap-provider) of the [flags-guide](/validator/flags-guide) an example config that over-rides relevant slinky defaults is [here](/validator/validator-connect-config#overriding-the-market-map-oracle-server-endpoint)
 
 3. **Point your chain binary at your Connect instance**
+
+   > Notice if you are using a remote signer, please see [this](/validator/troubleshooting#can-i-use-a-remote-signer)
+
 
    The chain binary has been altered to accept new options which are used to configure your application. The following options in `app.toml` are relevant to Connect operation.
 

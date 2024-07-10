@@ -30,3 +30,12 @@ Yes - feel free to contribute via opening an issue in [our repo](https://github.
 ### I do not see an issue addressing my question.
 
 Please reach out to us using your preferred method. We are available on [our website](https://skip.money/contact) or via a [Github issue](https://github.com/skip-mev/slinky/issues/new).
+
+### Can I use a remote signer?
+
+The following remote signers with the specified versions are supported
+
+- [Horcrux](https://github.com/strangelove-ventures/horcrux/releases/tag/v3.3.0): v3.3.0+ is compatible with slinky + vote-extensions
+    - If you are using [horcrux-proxy](https://github.com/strangelove-ventures/horcrux-proxy/releases/tag/v1.0.0) be sure to use v1.0.0+ so that the `maxReadSize` can be configured in accordance with larger vote-extension payloads
+
+- [TMKMS](https://github.com/iqlusioninc/tmkms/tree/v0.13.1): v0.13.1+ is compatible with slinky + vote-extensions
