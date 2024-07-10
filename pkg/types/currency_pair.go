@@ -89,7 +89,7 @@ func (cp *CurrencyPair) ValidateBasic() error {
 
 // ValidateLegacyAssetString checks if the asset string is formatted correctly, i.e.
 // - asset string is fully uppercase
-// - fields
+// - asset string does not contain the `fieldSeparator`
 //
 // NOTE: this function assumes that coreValidate() has already been run.
 func ValidateLegacyAssetString(asset string) error {
