@@ -5224,7 +5224,7 @@ var (
 				}
 			  },
 			  {
-				"name": "bitstamp_ws",
+				"name": "bitstamp_api",
 				"off_chain_ticker": "hbarusd"
 			  },
 			  {
