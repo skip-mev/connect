@@ -32,6 +32,86 @@ func TestValidateBasic(t *testing.T) {
 			false,
 		},
 		{
+			"if Base formatted incorrectly as defi, Quote standard - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "bB,testAddress,testChain",
+				Quote: "AA",
+			},
+			false,
+		},
+		{
+			"if Quote formatted correctly as defi, Base incorrectly  - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "bB",
+				Quote: "AA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"if both Quote + Base are formatted incorrectly as defi - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "bB,testAddress,testChain",
+				Quote: "AA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"if Base formatted correctly as defi, Quote incorrectly - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain",
+				Quote: "aA",
+			},
+			false,
+		},
+		{
+			"if Quote formatted incorrectly as defi, Quote standard - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: "aA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"if both Quote + Base are formatted incorrectly as defi - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain",
+				Quote: "aA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"Base defi asset too many fields - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain,extra",
+				Quote: "AA",
+			},
+			false,
+		},
+		{
+			"Base defi asset too few fields - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress",
+				Quote: "AA",
+			},
+			false,
+		},
+		{
+			"Quote defi asset too many fields - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: "AA,testAddress,testChain,extra",
+			},
+			false,
+		},
+		{
+			"Quote defi asset too few fields - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: "AA,testAddress",
+			},
+			false,
+		},
+		{
 			"if the base string is empty - fail",
 			slinkytypes.CurrencyPair{
 				Base:  "",
@@ -71,6 +151,30 @@ func TestValidateBasic(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"if Base formatted correctly as defi, Quote standard - pass",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain",
+				Quote: "AA",
+			},
+			true,
+		},
+		{
+			"if Quote formatted correctly as Base, Quote standard - pass",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: "AA,testAddress,testChain",
+			},
+			true,
+		},
+		{
+			"if both Quote + Base are formatted correctly as defi - pass",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain",
+				Quote: "AA,testAddress,testChain",
+			},
+			true,
+		},
 	}
 
 	for _, tc := range tcs {
@@ -101,6 +205,18 @@ func TestToFromString(t *testing.T) {
 			false,
 		},
 		{
+			"if string is incorrectly formatted (defi), return an empty CurrencyPair",
+			"a,a,a,a,a,a/a",
+			slinkytypes.CurrencyPair{},
+			false,
+		},
+		{
+			"if string is incorrectly formatted (empty), return an empty CurrencyPair",
+			"",
+			slinkytypes.CurrencyPair{},
+			false,
+		},
+		{
 			"if the string is correctly formatted, return the original CurrencyPair",
 			slinkytypes.CurrencyPairString("A", "B"),
 			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
@@ -110,6 +226,30 @@ func TestToFromString(t *testing.T) {
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"a/B",
 			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			true,
+		},
+		{
+			"if the string is not formatted upper-case, return the original CurrencyPair",
+			"A/b",
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			true,
+		},
+		{
+			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
+			"a,testAddress,testChain/B",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			true,
+		},
+		{
+			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
+			"a/b,testAddress,testChain",
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B,testAddress,testChain"},
+			true,
+		},
+		{
+			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
+			"A,testAddress,testChain/B,testAddress,testChain",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
 			true,
 		},
 	}
@@ -169,6 +309,30 @@ func TestEqual(t *testing.T) {
 			"if the CurrencyPairs are not equal, return false",
 			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
 			slinkytypes.CurrencyPair{Base: "B", Quote: "A"},
+			false,
+		},
+		{
+			"if the CurrencyPairs are equal, return true - defi",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			true,
+		},
+		{
+			"if the CurrencyPairs are not equal, return false - defi",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A"},
+			false,
+		},
+		{
+			"if the CurrencyPairs are equal, return true - defi",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			true,
+		},
+		{
+			"if the CurrencyPairs are not equal, return false - defi",
+			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			slinkytypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A,testAddress,testChain"},
 			false,
 		},
 	}
