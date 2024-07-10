@@ -16,12 +16,16 @@
   },
   "topbarLinks": [
     {
+      "name": "Skip:Go",
+      "url": "https://docs.skip.build/go"
+    },
+    {
       "name": "Research",
-      "url": "https://ideas.skip.money"
+      "url": "https://ideas.skip.build"
     },
     {
       "name": "Jobs",
-      "url": "https://jobs.skip.money"
+      "url": "https://jobs.skip.build"
     }
   ],
   "modeToggle": {
