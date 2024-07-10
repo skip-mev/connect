@@ -222,10 +222,10 @@ func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]h
 		// Get the instruments for the batch.
 		start := i * h.ws.MaxSubscriptionsPerBatch
 		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
-
-		// Create the message for the instruments.
-		params := make([]string, 0)
 		batch := instruments[start:end]
+
+		// Create the subscriptions for the instruments.
+		params := make([]string, 0)
 		for _, instrument := range batch {
 			params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(AggregateTradeStream)))
 			params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(TickerStream)))

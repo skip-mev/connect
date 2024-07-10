@@ -25,6 +25,9 @@ var (
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETH-USDT",
 	}
+	mogusdt = types.DefaultProviderTicker{
+		OffChainTicker: "MOG-USDT",
+	}
 	logger = zap.NewExample()
 )
 
@@ -406,6 +409,51 @@ func TestCreateMessages(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 				msgs[0] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple currency pairs with batch config and remainder",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				mogusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				msg := kucoin.SubscribeRequestMessage{
+					Type: string(kucoin.SubscribeMessage),
+					Topic: fmt.Sprintf(
+						"%s%s,%s",
+						kucoin.TickerTopic,
+						"BTC-USDT",
+						"ETH-USDT",
+					),
+					PrivateChannel: false,
+					Response:       false,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				msg = kucoin.SubscribeRequestMessage{
+					Type: string(kucoin.SubscribeMessage),
+					Topic: fmt.Sprintf(
+						"%s%s",
+						kucoin.TickerTopic,
+						"MOG-USDT",
+					),
+					PrivateChannel: false,
+					Response:       false,
+				}
+
+				bz, err = json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[1] = bz
 
 				return msgs
 			},
