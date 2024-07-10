@@ -87,7 +87,7 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
-// ValidateLegacyAssetString checks if all fields in the asset string are formatted correctly, i.e.
+// ValidateLegacyAssetString checks if the asset string is formatted correctly, i.e.
 // - fields are fully uppercase
 // - fields
 //
