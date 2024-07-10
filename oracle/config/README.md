@@ -429,7 +429,7 @@ Sample configuration:
       "type": "price_provider"
     },
     {
-      "name": "bitstamp_ws",
+      "name": "bitstamp_api",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -445,7 +445,7 @@ Sample configuration:
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws.bitstamp.net",
-        "name": "bitstamp_ws",
+        "name": "bitstamp_api",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/skip-mev/slinky/providers/apis/bitstamp"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
 	"go.uber.org/zap"
@@ -70,6 +71,8 @@ func APIQueryHandlerFactory(
 	switch providerName := cfg.Name; {
 	case providerName == binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
+	case providerName == bitstamp.Name:
+		apiDataHandler, err = bitstamp.NewAPIHandler(cfg.API)
 	case providerName == coinbaseapi.Name:
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case providerName == coingecko.Name:
