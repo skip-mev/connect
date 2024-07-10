@@ -1,14 +1,68 @@
+version: '3.7'
+
 networks:
   oracle_network:
     driver: bridge
 
 services:
+  market_generator:
+    build:
+      context: ../..
+      dockerfile: ./contrib/images/slinky.generator.dev.Dockerfile
+    entrypoint: [
+      "/usr/local/bin/scripts",
+      "--use-core=$USE_CORE_MARKETS",
+      "--use-raydium=$USE_RAYDIUM_MARKETS",
+      "--use-uniswapv3-base=$USE_UNISWAPV3_BASE_MARKETS",
+      "--use-coingecko=$USE_COINGECKO_MARKETS",
+      "--use-coinmarketcap=$USE_COINMARKETCAP_MARKETS",
+      "--temp-file=data/markets.json",
+    ]
+    environment:
+      - USE_CORE_MARKETS=${USE_CORE_MARKETS:-true}
+      - USE_RAYDIUM_MARKETS=${USE_RAYDIUM_MARKETS:-false}
+      - USE_UNISWAPV3_BASE_MARKETS=${USE_UNISWAPV3_BASE_MARKETS:-false}
+      - USE_COINGECKO_MARKETS=${USE_COINGECKO_MARKETS:-false}
+      - USE_COINMARKETCAP_MARKETS=${USE_COINMARKETCAP_MARKETS:-false}
+    volumes:
+      - markets_data:/data
+    networks:
+      - oracle_network
+    profiles:
+      - sidecar
+
+  oracle:
+    build:
+      context: ../..
+      dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
+    environment:
+      - SLINKY_CONFIG_UPDATEINTERVAL=${SLINKY_CONFIG_UPDATEINTERVAL:-250ms}
+    entrypoint: [
+      "slinky",
+      "--market-config-path", "/data/markets.json",
+      "--pprof-port", "6060",
+      "--run-pprof",
+    ]
+    ports:
+      - "8080:8080" # main oracle port
+      - "6060:6060" # pprof port
+      - "8002:8002" # metrics port
+    depends_on:
+      - market_generator
+    volumes:
+      - markets_data:/data
+    networks:
+      - oracle_network
+    profiles:
+      - sidecar
+
   blockchain:
     environment:
       - USE_CORE_MARKETS=${USE_CORE_MARKETS:-true}
       - USE_RAYDIUM_MARKETS=${USE_RAYDIUM_MARKETS:-false}
       - USE_UNISWAPV3_BASE_MARKETS=${USE_UNISWAPV3_BASE_MARKETS:-false}
       - USE_COINGECKO_MARKETS=${USE_COINGECKO_MARKETS:-false}
+      - USE_COINMARKETCAP_MARKETS=${USE_COINMARKETCAP_MARKETS:-false}
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.local.Dockerfile
@@ -22,8 +76,10 @@ services:
       - "9090:9090"
     networks:
       - oracle_network
+    profiles:
+      - all
 
-  oracle:
+  oracle_with_blockchain:
     build:
       context: ../..
       dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
@@ -40,7 +96,9 @@ services:
       - "8002:8002" # metrics port
     networks:
       - oracle_network
-  
+    profiles:
+      - all
+
   prometheus:
     image: prom/prometheus
     ports:
@@ -49,6 +107,9 @@ services:
       - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - oracle_network
+    profiles:
+      - all
+      - sidecar
 
   grafana:
     image: grafana/grafana
@@ -59,6 +120,10 @@ services:
       - ../../grafana/provisioning:/etc/grafana/provisioning
     networks:
       - oracle_network
+    profiles:
+      - all
+      - sidecar
 
 volumes:
   grafana_data:
+  markets_data:

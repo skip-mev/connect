@@ -7,11 +7,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -86,7 +89,12 @@ func DefaultDYDXResearchMarketMapFetcher(
 		return nil, err
 	}
 
-	return NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher, logger), nil
+	return NewDYDXResearchMarketMapFetcher(
+		mainnetFetcher,
+		researchFetcher,
+		logger,
+		api.Name == ResearchCMCAPIHandlerName,
+	), nil
 }
 
 // MultiMarketMapRestAPIFetcher is an implementation of a RestAPIFetcher that wraps
@@ -101,14 +109,22 @@ type MultiMarketMapRestAPIFetcher struct {
 
 	// logger is the logger for the fetcher
 	logger *zap.Logger
+
+	// isCMCOnly is a flag that indicates whether the fetcher should only return CoinMarketCap markets.
+	isCMCOnly bool
 }
 
 // NewDYDXResearchMarketMapFetcher returns an aggregated market-map among the dydx mainnet and the dydx research json.
-func NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher mmclient.MarketMapFetcher, logger *zap.Logger) *MultiMarketMapRestAPIFetcher {
+func NewDYDXResearchMarketMapFetcher(
+	mainnetFetcher, researchFetcher mmclient.MarketMapFetcher,
+	logger *zap.Logger,
+	isCMCOnly bool,
+) *MultiMarketMapRestAPIFetcher {
 	return &MultiMarketMapRestAPIFetcher{
 		dydxMainnetFetcher:  mainnetFetcher,
 		dydxResearchFetcher: researchFetcher,
 		logger:              logger.With(zap.String("module", "dydx-research-market-map-fetcher")),
+		isCMCOnly:           isCMCOnly,
 	}
 }
 
@@ -142,20 +158,25 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 	wg.Wait()
 
 	dydxMainnetMarketMapResponse := <-dydxMainnetResponseChan
-
 	dydxResearchMarketMapResponse := <-dydxResearchResponseChan
 
-	// combine the two market maps
 	// if the dydx mainnet market-map response failed, return the dydx mainnet failed response
 	if _, ok := dydxMainnetMarketMapResponse.UnResolved[DYDXChain]; ok {
 		f.logger.Error("dydx mainnet market-map fetch failed", zap.Any("response", dydxMainnetMarketMapResponse))
 		return dydxMainnetMarketMapResponse
 	}
 
+	// if the dydx research market-map response failed, return the dydx research failed response
+	if _, ok := dydxResearchMarketMapResponse.UnResolved[DYDXChain]; ok {
+		f.logger.Error("dydx research market-map fetch failed", zap.Any("response", dydxResearchMarketMapResponse))
+		return dydxResearchMarketMapResponse
+	}
+
 	// otherwise, add all markets from dydx research
 	dydxMainnetMarketMap := dydxMainnetMarketMapResponse.Resolved[DYDXChain].Value.MarketMap
 
-	if resolved, ok := dydxResearchMarketMapResponse.Resolved[DYDXChain]; ok {
+	resolved, ok := dydxResearchMarketMapResponse.Resolved[DYDXChain]
+	if ok {
 		for ticker, market := range resolved.Value.MarketMap.Markets {
 			// if the market is not already in the dydx mainnet market-map, add it
 			if _, ok := dydxMainnetMarketMap.Markets[ticker]; !ok {
@@ -163,8 +184,45 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 				dydxMainnetMarketMap.Markets[ticker] = market
 			}
 		}
-	} else {
-		return dydxResearchMarketMapResponse
+	}
+
+	// if the fetcher is only for CoinMarketCap markets, filter out all non-CMC markets
+	if f.isCMCOnly {
+		for ticker, market := range dydxMainnetMarketMap.Markets {
+			market.Ticker.MinProviderCount = 1
+			dydxMainnetMarketMap.Markets[ticker] = market
+
+			var (
+				seenCMC     = false
+				cmcProvider mmtypes.ProviderConfig
+			)
+
+			for _, provider := range market.ProviderConfigs {
+				if provider.Name == coinmarketcap.Name {
+					seenCMC = true
+					cmcProvider = provider
+				}
+			}
+
+			// if we saw a CMC provider, add it to the market
+			if seenCMC {
+				market.ProviderConfigs = []mmtypes.ProviderConfig{cmcProvider}
+				dydxMainnetMarketMap.Markets[ticker] = market
+				continue
+			}
+
+			// If we did not see a CMC provider, we can attempt to add it using the CMC marketmap
+			cmcMarket, ok := marketmaps.CoinMarketCapMarketMap.Markets[ticker]
+			if !ok {
+				f.logger.Info("did not find CMC market for ticker", zap.String("ticker", ticker))
+				delete(dydxMainnetMarketMap.Markets, ticker)
+				continue
+			}
+
+			// add the CMC provider to the market
+			market.ProviderConfigs = cmcMarket.ProviderConfigs
+			dydxMainnetMarketMap.Markets[ticker] = market
+		}
 	}
 
 	// validate the combined market-map

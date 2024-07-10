@@ -18,8 +18,14 @@ const (
 	// Name is the name of the MarketMap provider.
 	Name = "dydx_api"
 
+	// SwitchOverAPIHandlerName is the name of the dYdX switch over API.
+	SwitchOverAPIHandlerName = "dydx_migration_api"
+
 	// ResearchAPIHandlerName is the name of the dYdX research json API.
 	ResearchAPIHandlerName = "dydx_research_json_api"
+
+	// ResearchCMCAPIHandlerName is the name of the dYdX research json API that only returns CoinMarketCap markets.
+	ResearchCMCAPIHandlerName = "dydx_research_coinmarketcap_api"
 
 	// ChainID is the chain ID for the dYdX market map provider.
 	ChainID = "dydx-node"
@@ -55,6 +61,25 @@ var DefaultAPIConfig = config.APIConfig{
 	Endpoints:        []config.Endpoint{{URL: "http://localhost:1317"}},
 }
 
+// DefaultSwitchOverAPIConfig returns the default configuration for the dYdX switch over API provider.
+var DefaultSwitchOverAPIConfig = config.APIConfig{
+	Name:             SwitchOverAPIHandlerName,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
+	Interval:         10 * time.Second,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints: []config.Endpoint{
+		{
+			URL: "http://localhost:1317", // REST endpoint (HTTP/HTTPS prefix)
+		},
+		{
+			URL: "localhost:9090", // gRPC endpoint (NO HTTP/HTTPS prefix)
+		},
+	},
+}
+
 // DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.
 var DefaultResearchAPIConfig = config.APIConfig{
 	Name:             ResearchAPIHandlerName,
@@ -66,7 +91,26 @@ var DefaultResearchAPIConfig = config.APIConfig{
 	MaxQueries:       1,
 	Endpoints: []config.Endpoint{
 		{
-			URL: "https://dydx-api.lavenderfive.com:443",
+			URL: "https://dydx-api.lavenderfive.com",
+		},
+		{
+			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
+		},
+	},
+}
+
+// DefaultResearchCMCAPIConfig returns the default configuration for the dYdX market map API that only returns CoinMarketCap markets.
+var DefaultResearchCMCAPIConfig = config.APIConfig{
+	Name:             ResearchCMCAPIHandlerName,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
+	Interval:         10 * time.Second,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints: []config.Endpoint{
+		{
+			URL: "https://dydx-api.lavenderfive.com",
 		},
 		{
 			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",

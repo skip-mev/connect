@@ -6,8 +6,10 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
+	bitstampapi "github.com/skip-mev/slinky/providers/apis/bitstamp"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
@@ -55,6 +57,11 @@ var (
 			Type: types.ConfigType,
 		},
 		{
+			Name: bitstampapi.Name,
+			API:  bitstampapi.DefaultAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
 			Name: coinbaseapi.Name,
 			API:  coinbaseapi.DefaultAPIConfig,
 			Type: types.ConfigType,
@@ -62,6 +69,11 @@ var (
 		{
 			Name: coingecko.Name,
 			API:  coingecko.DefaultAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: coinmarketcap.Name,
+			API:  coinmarketcap.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
@@ -152,15 +164,27 @@ var (
 			Type: mmtypes.ConfigType,
 		},
 		{
+			Name: dydx.SwitchOverAPIHandlerName,
+			API:  dydx.DefaultSwitchOverAPIConfig,
+			Type: mmtypes.ConfigType,
+		},
+		{
 			Name: dydx.ResearchAPIHandlerName,
 			API:  dydx.DefaultResearchAPIConfig,
+			Type: mmtypes.ConfigType,
+		},
+		{
+			Name: dydx.ResearchCMCAPIHandlerName,
+			API:  dydx.DefaultResearchCMCAPIConfig,
 			Type: mmtypes.ConfigType,
 		},
 	}
 
 	MarketMapProviderNames = map[string]struct{}{
-		dydx.Name:                   {},
-		dydx.ResearchAPIHandlerName: {},
-		marketmap.Name:              {},
+		dydx.Name:                      {},
+		dydx.SwitchOverAPIHandlerName:  {},
+		dydx.ResearchAPIHandlerName:    {},
+		dydx.ResearchCMCAPIHandlerName: {},
+		marketmap.Name:                 {},
 	}
 )

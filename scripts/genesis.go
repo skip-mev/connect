@@ -1,13 +1,10 @@
-//go:build ignore
-// +build ignore
-
 package main
 
 import (
 	"flag"
 	"fmt"
 
-	"github.com/skip-mev/slinky/cmd/constants"
+	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -16,6 +13,7 @@ var (
 	useRaydium       = flag.Bool("use-raydium", false, "use raydium markets")
 	useUniswapV3Base = flag.Bool("use-uniswapv3-base", false, "use uniswapv3 base markets")
 	useCoinGecko     = flag.Bool("use-coingecko", false, "use coingecko markets")
+	useCoinMarketCap = flag.Bool("use-coinmarketcap", false, "use coinmarketcap markets")
 	tempFile         = flag.String("temp-file", "markets.json", "temporary file to store the market map")
 )
 
@@ -30,22 +28,27 @@ func main() {
 
 	if *useCore {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using core markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.CoreMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoreMarketMap)
 	}
 
 	if *useRaydium {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using raydium markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.RaydiumMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.RaydiumMarketMap)
 	}
 
 	if *useUniswapV3Base {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using uniswapv3 base markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.UniswapV3BaseMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.UniswapV3BaseMarketMap)
 	}
 
 	if *useCoinGecko {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using coingecko markets\n")
-		marketMap = mergeMarketMaps(marketMap, constants.CoinGeckoMarketMap)
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoinGeckoMarketMap)
+	}
+
+	if *useCoinMarketCap {
+		fmt.Fprintf(flag.CommandLine.Output(), "Using coinmarketcap markets\n")
+		marketMap = mergeMarketMaps(marketMap, marketmaps.CoinMarketCapMarketMap)
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {

@@ -3,6 +3,8 @@ package types
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // MarketMapHooks is the interface that defines the hooks that can be integrated by other modules.
+//
+//go:generate mockery --name MarketMapHooks
 type MarketMapHooks interface {
 	// AfterMarketCreated is called after CreateMarket is called.
 	AfterMarketCreated(ctx sdk.Context, market Market) error

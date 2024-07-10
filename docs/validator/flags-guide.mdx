@@ -1,11 +1,11 @@
 ---
-description: Overviewing the flags available in Slinky
+description: Overviewing the flags available in Connect
 title: 🏁 Flags Guide
 ---
 
 # Overview
 
-Flags allow you to customize the behavior of `slinky` to suit your needs.
+Flags allow you to customize the behavior of the Connect sidecar, `slinky`, to suit your needs.
 
 ## Connecting to a Node
 
@@ -22,7 +22,7 @@ This flag allows you to specify how `slinky` should be looking for the markets i
 slinky --marketmap-provider dydx_api
 ```
 
-By default this assumes that the dydx node's REST endpoint is running at `http://localhost:1317`. If you need to change this, please utilize the [market-map-endpoint](/validator/flags-guide.mdx#market-map-endpoint) flag.
+By default this assumes that the dydx node's REST endpoint is running at `http://localhost:1317`. If you need to change this, please utilize the [market-map-endpoint](#market-map-endpoint) flag.
 
 If you are serving prices for any other network, you should be using the `marketmap_api` (which is the default `slinky` is using).
 
@@ -31,13 +31,13 @@ If you are serving prices for any other network, you should be using the `market
 slinky
 ```
 
-By default this assumes that the node's app GRPC endpoint is running at `localhost:9090`. If you need to change this, please utilize the [market-map-endpoint](/validator/flags-guide.mdx#market-map-endpoint) flag.
+By default this assumes that the node's app GRPC endpoint is running at `localhost:9090`. If you need to change this, please utilize the [market-map-endpoint](#market-map-endpoint) flag.
 
 ### market-map-endpoint
 
 > The `marketmap_api` provider must always point to the app GRPC endpoint (typically port 9090), while the `dydx_api` provider must always point to the REST endpoint (typically port 1317).
 
-This flag allows you to specify where `slinky` should be looking for the markets it will be serving prices for. By default, `slinky` assumes `localhost:9090` for the `marketmap_api` provider and `localhost:1317` for the `dydx_api` provider.
+This flag allows you to specify where `slinky` should be looking for the markets it will be serving prices for. By default, `slinky` assumes `localhost:9090` for the `marketmap_api` provider and `http://localhost:1317` for the `dydx_api` provider.
 
 To change the default behavior, you can run `slinky` with the following arguments:
 

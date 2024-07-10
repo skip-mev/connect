@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/skip-mev/slinky/providers/apis/bitstamp"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
 	"go.uber.org/zap"
@@ -15,6 +16,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
@@ -69,10 +71,14 @@ func APIQueryHandlerFactory(
 	switch providerName := cfg.Name; {
 	case providerName == binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
+	case providerName == bitstamp.Name:
+		apiDataHandler, err = bitstamp.NewAPIHandler(cfg.API)
 	case providerName == coinbaseapi.Name:
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case providerName == coingecko.Name:
 		apiDataHandler, err = coingecko.NewAPIHandler(cfg.API)
+	case providerName == coinmarketcap.Name:
+		apiDataHandler, err = coinmarketcap.NewAPIHandler(cfg.API)
 	case providerName == geckoterminal.Name:
 		apiDataHandler, err = geckoterminal.NewAPIHandler(cfg.API)
 	case providerName == kraken.Name:

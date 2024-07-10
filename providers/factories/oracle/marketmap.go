@@ -49,11 +49,19 @@ func MarketMapProviderFactory(
 		return nil, err
 	}
 
-	switch cfg.Name {
-	case dydx.Name:
+	switch name := cfg.Name; {
+	case name == dydx.Name:
 		apiDataHandler, err = dydx.NewAPIHandler(logger, cfg.API)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
-	case dydx.ResearchAPIHandlerName:
+	case name == dydx.SwitchOverAPIHandlerName:
+		marketMapFetcher, err = dydx.NewDefaultSwitchOverMarketMapFetcher(
+			logger,
+			cfg.API,
+			requestHandler,
+			apiMetrics,
+		)
+		ids = []types.Chain{{ChainID: dydx.ChainID}}
+	case name == dydx.ResearchAPIHandlerName || name == dydx.ResearchCMCAPIHandlerName:
 		marketMapFetcher, err = dydx.DefaultDYDXResearchMarketMapFetcher(
 			requestHandler,
 			apiMetrics,

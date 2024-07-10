@@ -11,7 +11,38 @@ var (
 	_ sdk.Msg = &MsgUpdateMarkets{}
 	_ sdk.Msg = &MsgParams{}
 	_ sdk.Msg = &MsgRemoveMarketAuthorities{}
+	_ sdk.Msg = &MsgUpsertMarkets{}
 )
+
+// ValidateBasic asserts that the authority address in the upsert-markets message is formatted correctly.
+// If also verifies that all markets w/in the message are valid, if no markets are present it returns an error.
+func (m *MsgUpsertMarkets) ValidateBasic() error {
+	// validate signer address
+	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+		return err
+	}
+
+	if len(m.Markets) == 0 {
+		return fmt.Errorf("no markets to upsert")
+	}
+
+	seenTickers := make(map[string]struct{})
+	for _, market := range m.Markets {
+		ticker := market.Ticker.CurrencyPair.String()
+
+		if _, seen := seenTickers[ticker]; seen {
+			return fmt.Errorf("duplicate ticker: %s", ticker)
+		}
+
+		if err := market.ValidateBasic(); err != nil {
+			return err
+		}
+
+		seenTickers[ticker] = struct{}{}
+	}
+
+	return nil
+}
 
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the signer is a valid acc-address.
