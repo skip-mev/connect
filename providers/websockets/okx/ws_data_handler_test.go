@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
@@ -20,6 +21,9 @@ var (
 	}
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETH-USDT",
+	}
+	mogusdt = types.DefaultProviderTicker{
+		OffChainTicker: "MOG-USDT",
 	}
 	logger = zap.NewExample()
 )
@@ -325,15 +329,20 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	batchCfg := okx.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
+			cfg:  okx.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -344,6 +353,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
+			cfg: okx.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
@@ -368,6 +378,7 @@ func TestCreateMessage(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
+			cfg: okx.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msgs := make([]handlers.WebsocketEncodedMessage, 2)
 				for i, ticker := range []string{"BTC-USDT", "ETH-USDT"} {
@@ -389,11 +400,83 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "two currency pairs with batch",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msg := okx.SubscribeRequestMessage{
+					Operation: string(okx.OperationSubscribe),
+					Arguments: []okx.SubscriptionTopic{
+						{
+							Channel:      string(okx.IndexTickersChannel),
+							InstrumentID: "BTC-USDT",
+						},
+						{
+							Channel:      string(okx.IndexTickersChannel),
+							InstrumentID: "ETH-USDT",
+						},
+					},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return []handlers.WebsocketEncodedMessage{bz}
+			},
+			expectedErr: false,
+		},
+		{
+			name: "two currency pairs with batch and remainder",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				mogusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msg1 := okx.SubscribeRequestMessage{
+					Operation: string(okx.OperationSubscribe),
+					Arguments: []okx.SubscriptionTopic{
+						{
+							Channel:      string(okx.IndexTickersChannel),
+							InstrumentID: "BTC-USDT",
+						},
+						{
+							Channel:      string(okx.IndexTickersChannel),
+							InstrumentID: "ETH-USDT",
+						},
+					},
+				}
+
+				bz1, err := json.Marshal(msg1)
+				require.NoError(t, err)
+
+				msg2 := okx.SubscribeRequestMessage{
+					Operation: string(okx.OperationSubscribe),
+					Arguments: []okx.SubscriptionTopic{
+						{
+							Channel:      string(okx.IndexTickersChannel),
+							InstrumentID: "MOG-USDT",
+						},
+					},
+				}
+
+				bz2, err := json.Marshal(msg2)
+				require.NoError(t, err)
+
+				return []handlers.WebsocketEncodedMessage{bz1, bz2}
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := okx.NewWebSocketDataHandler(logger, okx.DefaultWebSocketConfig)
+			wsHandler, err := okx.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

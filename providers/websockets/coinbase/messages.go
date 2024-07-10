@@ -3,7 +3,9 @@ package coinbase
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -119,16 +121,22 @@ type SubscribeRequestMessage struct {
 }
 
 // NewSubscribeRequestMessage returns a new subscribe request message.
-func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("no instruments provided")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(SubscribeRequestMessage{
 			Type:       string(SubscribeMessage),
-			ProductIDs: []string{instrument},
+			ProductIDs: instruments[start:end],
 			Channels:   []string{string(TickerChannel), string(HeartbeatChannel)},
 		})
 		if err != nil {

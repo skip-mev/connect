@@ -73,9 +73,8 @@ func (h *WebSocketHandler) HandleMessage(
 		return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %w", err)
 	}
 
-	opType := Operation(baseResponse.Op)
-	switch {
-	case opType == OperationSubscribe:
+	switch Operation(baseResponse.Op) {
+	case OperationSubscribe:
 		h.logger.Debug("received subscribe response message")
 
 		var subscribeMessage SubscriptionResponse
@@ -89,7 +88,7 @@ func (h *WebSocketHandler) HandleMessage(
 		}
 
 		return resp, updateMessage, nil
-	case opType == OperationPing:
+	case OperationPing:
 		h.logger.Debug("received pong response message")
 
 		return resp, nil, nil
@@ -123,7 +122,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscriptionRequestMessage(pairs)
+	return h.NewSubscriptionRequestMessage(pairs)
 }
 
 // HeartBeatMessages is used to construct heartbeat messages to be sent to the data provider. Note that
