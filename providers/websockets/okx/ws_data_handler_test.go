@@ -332,6 +332,9 @@ func TestCreateMessage(t *testing.T) {
 	batchCfg := okx.DefaultWebSocketConfig
 	batchCfg.MaxSubscriptionsPerBatch = 2
 
+	nonBatchCfg := okx.DefaultWebSocketConfig
+	nonBatchCfg.MaxSubscriptionsPerBatch = 1
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
@@ -342,7 +345,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
-			cfg:  okx.DefaultWebSocketConfig,
+			cfg:  nonBatchCfg,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -353,7 +356,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
-			cfg: okx.DefaultWebSocketConfig,
+			cfg: nonBatchCfg,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
@@ -378,7 +381,7 @@ func TestCreateMessage(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
-			cfg: okx.DefaultWebSocketConfig,
+			cfg: nonBatchCfg,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msgs := make([]handlers.WebsocketEncodedMessage, 2)
 				for i, ticker := range []string{"BTC-USDT", "ETH-USDT"} {

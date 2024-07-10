@@ -37,6 +37,10 @@ const (
 	//
 	// ref: https://www.okx.com/docs-v5/en/#overview-websocket-overview
 	MaxSubscriptionsPerConnection = 15
+
+	// MaxSubscriptionsPerBatch is the maximum number of subscriptions that can be
+	// assigned to a single batch for the OKX provider. We set the limit to 5 to be safe.
+	MaxSubscriptionsPerBatch = 5
 )
 
 // DefaultWebSocketConfig is the default configuration for the OKX Websocket.
@@ -57,5 +61,5 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	WriteInterval:                 WriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
-	MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
+	MaxSubscriptionsPerBatch:      MaxSubscriptionsPerBatch,
 }
