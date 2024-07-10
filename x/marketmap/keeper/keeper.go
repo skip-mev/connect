@@ -69,6 +69,35 @@ func (k *Keeper) GetMarket(ctx sdk.Context, tickerStr string) (types.Market, err
 	return k.markets.Get(ctx, types.TickerString(tickerStr))
 }
 
+// setMarket sets a market.
+func (k *Keeper) setMarket(ctx sdk.Context, market types.Market) error {
+	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+}
+
+// EnableMarket sets the Enabled field of a Market Ticker to true.
+func (k *Keeper) EnableMarket(ctx sdk.Context, tickerStr string) error {
+	market, err := k.GetMarket(ctx, tickerStr)
+	if err != nil {
+		return err
+	}
+
+	market.Ticker.Enabled = true
+
+	return k.setMarket(ctx, market)
+}
+
+// DisableMarket sets the Enabled field of a Market Ticker to false.
+func (k *Keeper) DisableMarket(ctx sdk.Context, tickerStr string) error {
+	market, err := k.GetMarket(ctx, tickerStr)
+	if err != nil {
+		return err
+	}
+
+	market.Ticker.Enabled = false
+
+	return k.setMarket(ctx, market)
+}
+
 // GetAllMarkets returns the set of Market objects currently stored in state
 // as a map[TickerString] -> Markets.
 func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error) {
@@ -101,7 +130,7 @@ func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
 		return types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String()))
 	}
 	// Create the config
-	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+	return k.setMarket(ctx, market)
 }
 
 // UpdateMarket updates a Market.
@@ -116,7 +145,7 @@ func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
 		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
 	}
 	// Create the config
-	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+	return k.setMarket(ctx, market)
 }
 
 // DeleteMarket removes a Market.
