@@ -56,3 +56,20 @@ func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, markets map[st
 
 // MarketMapHooksWrapper is a wrapper for modules to inject MarketMapHooks using depinject.
 type MarketMapHooksWrapper struct{ MarketMapHooks }
+
+var _ MarketMapHooks = &NoopMarketMapHooks{}
+
+// NoopMarketMapHooks defines market map hooks that are a no-op.
+type NoopMarketMapHooks struct{}
+
+func (n *NoopMarketMapHooks) AfterMarketCreated(_ sdk.Context, _ Market) error {
+	return nil
+}
+
+func (n *NoopMarketMapHooks) AfterMarketUpdated(_ sdk.Context, _ Market) error {
+	return nil
+}
+
+func (n *NoopMarketMapHooks) AfterMarketGenesis(_ sdk.Context, _ map[string]Market) error {
+	return nil
+}

@@ -61,8 +61,14 @@ jobs:
     name: Run codespell
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Check out the PR commit head
       uses: actions/checkout@v4
+      if: github.event_name == 'pull_request'
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Check out the repo
+      uses: actions/checkout@v4
+      if: github.event_name != 'pull_request'
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
