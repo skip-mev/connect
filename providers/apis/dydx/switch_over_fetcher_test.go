@@ -7,6 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
@@ -17,9 +21,6 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 func TestDefaultSwitchOverProvider(t *testing.T) {
