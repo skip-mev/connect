@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/service/metrics"
