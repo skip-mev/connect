@@ -64,12 +64,10 @@ type NoopMarketMapHooks struct{}
 
 func (n *NoopMarketMapHooks) AfterMarketCreated(_ sdk.Context, _ Market) error {
 	return nil
-
 }
 
 func (n *NoopMarketMapHooks) AfterMarketUpdated(_ sdk.Context, _ Market) error {
 	return nil
-
 }
 
 func (n *NoopMarketMapHooks) AfterMarketGenesis(_ sdk.Context, _ map[string]Market) error {

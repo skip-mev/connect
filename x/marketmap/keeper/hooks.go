@@ -17,9 +17,5 @@ func (k *Keeper) Hooks() types.MarketMapHooks {
 // SetHooks sets the x/marketmap hooks.  In contrast to other receivers, this method must take a pointer due to nature
 // of the hooks interface and SDK start up sequence.
 func (k *Keeper) SetHooks(mmh types.MarketMapHooks) {
-	if k.hooks != nil {
-		panic("cannot set marketmap hooks twice")
-	}
-
 	k.hooks = mmh
 }
