@@ -8,7 +8,7 @@ import (
 func (k *Keeper) Hooks() types.MarketMapHooks {
 	if k.hooks == nil {
 		// return a no-op implementation if no hooks are set
-		return types.MultiMarketMapHooks{}
+		return &types.NoopMarketMapHooks{}
 	}
 
 	return k.hooks
