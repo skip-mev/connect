@@ -16,6 +16,11 @@ The current set of supported providers are:
         * `curl https://api.binance.com/api/v3/exchangeInfo | jq`
     * Check if a given market is supported:
         * `curl https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT | jq`
+* [Bitstamp](./bitstamp/README.md) - Bitstamp is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Bitstamp is a **primary data source** for the oracle.
+    * Check all supported markets: 
+        * `curl https://www.bitstamp.net/api/v2/trading-pairs-info/ | jq`
+    * Check if a given market is supported: 
+        * `curl https://www.bitstamp.net/api/v2/ticker/{btcusd} | jq`
 * [Coinbase](./coinbase/README.md) - Coinbase is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Coinbase is a **primary data source** for the oracle.
     * Check all supported markets: 
         * `curl https://api.exchange.coinbase.com/currencies | jq`

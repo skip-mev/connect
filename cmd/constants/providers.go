@@ -6,6 +6,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
+	bitstampapi "github.com/skip-mev/slinky/providers/apis/bitstamp"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
@@ -53,6 +54,11 @@ var (
 		{
 			Name: binanceapi.Name,
 			API:  binanceapi.DefaultNonUSAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: bitstampapi.Name,
+			API:  bitstampapi.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
@@ -158,6 +164,11 @@ var (
 			Type: mmtypes.ConfigType,
 		},
 		{
+			Name: dydx.SwitchOverAPIHandlerName,
+			API:  dydx.DefaultSwitchOverAPIConfig,
+			Type: mmtypes.ConfigType,
+		},
+		{
 			Name: dydx.ResearchAPIHandlerName,
 			API:  dydx.DefaultResearchAPIConfig,
 			Type: mmtypes.ConfigType,
@@ -171,6 +182,7 @@ var (
 
 	MarketMapProviderNames = map[string]struct{}{
 		dydx.Name:                      {},
+		dydx.SwitchOverAPIHandlerName:  {},
 		dydx.ResearchAPIHandlerName:    {},
 		dydx.ResearchCMCAPIHandlerName: {},
 		marketmap.Name:                 {},
