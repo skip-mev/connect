@@ -98,8 +98,7 @@ func ValidateLegacyAssetString(asset string) error {
 		return fmt.Errorf("incorrectly formatted asset string, expected: %s got: %s", strings.ToUpper(asset), asset)
 	}
 
-	split := strings.Split(asset, fieldSeparator)
-	if len(split) != 1 {
+	if !IsLegacyAssetString(asset) {
 		return fmt.Errorf("incorrectly formatted asset string, asset %s should not contain the %q character", asset, fieldSeparator)
 	}
 
@@ -112,26 +111,27 @@ func ValidateLegacyAssetString(asset string) error {
 //
 // NOTE: this function assumes that coreValidate() has already been run.
 func ValidateDefiAssetString(asset string) error {
-	split, err := splitDefiAssetString(asset)
+	token, _, _, err := SplitDefiAssetString(asset)
 	if err != nil {
 		return err
 	}
 
 	// first element is a ticker, so we require it to pass legacy asset validation:
-	if err := ValidateLegacyAssetString(split[0]); err != nil {
-		return fmt.Errorf("asset field '%s' is invalid: %w", split[0], err)
+	if err := ValidateLegacyAssetString(token); err != nil {
+		return fmt.Errorf("token field '%s' is invalid: %w", token, err)
 	}
 
 	return nil
 }
 
-// splitDefiAssetString splits a defi asset by the fieldSeparator and checks that it is the proper length.
-func splitDefiAssetString(asset string) ([]string, error) {
-	split := strings.Split(asset, fieldSeparator)
+// SplitDefiAssetString splits a defi asset by the fieldSeparator and checks that it is the proper length.
+// returns the split string as (token, address, chainID)
+func SplitDefiAssetString(defiString string) (token, address, chainID string, err error) {
+	split := strings.Split(defiString, fieldSeparator)
 	if len(split) != expectedSplitLength {
-		return nil, fmt.Errorf("asset fields have wrong length, expected: %d got: %d", expectedSplitLength, len(split))
+		return "", "", "", fmt.Errorf("asset fields have wrong length, expected: %d got: %d", expectedSplitLength, len(split))
 	}
-	return split, nil
+	return split[0], split[1], split[2], nil
 }
 
 // LegacyValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
@@ -205,13 +205,13 @@ func sanitizeAssetString(s string) (string, error) {
 	if IsLegacyAssetString(s) {
 		s = strings.ToUpper(s)
 	} else {
-		defiSplits, err := splitDefiAssetString(s)
+		token, address, chainID, err := SplitDefiAssetString(s)
 		if err != nil {
 			return "", fmt.Errorf("incorrectly formatted asset: %q: %w", s, err)
 		}
 
-		defiSplits[0] = strings.ToUpper(defiSplits[0])
-		s = strings.Join(defiSplits, fieldSeparator)
+		token = strings.ToUpper(token)
+		s = strings.Join([]string{token, address, chainID}, fieldSeparator)
 	}
 
 	return s, nil
