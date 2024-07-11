@@ -10,10 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
