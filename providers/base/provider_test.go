@@ -610,7 +610,7 @@ func TestWebSocketProvider(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*4)
 			defer cancel()
 
-			provider.Start(ctx)
+			_ = provider.Start(ctx)
 
 			data := provider.GetData()
 			for cp, price := range tc.expectedPrices {

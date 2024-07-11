@@ -184,7 +184,10 @@ func init() {
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
 func main() {
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "error executing command: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func runOracle() error {
@@ -211,8 +214,11 @@ func runOracle() error {
 
 	// Build logger.
 	logger := log.NewLogger(logCfg)
-	defer logger.Sync()
-
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			logger.Error(fmt.Sprintf("failed to sync logger: %v\n", err))
+		}
+	}()
 	var cfg config.OracleConfig
 	var err error
 

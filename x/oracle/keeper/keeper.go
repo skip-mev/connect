@@ -279,9 +279,12 @@ func (k *Keeper) GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
 	cps := make([]slinkytypes.CurrencyPair, 0)
 
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
-	k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, _ types.CurrencyPairState) {
+	err := k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, _ types.CurrencyPairState) {
 		cps = append(cps, cp)
 	})
+	if err != nil {
+		return nil
+	}
 
 	return cps
 }
@@ -294,9 +297,12 @@ func (k *Keeper) GetCurrencyPairMapping(ctx sdk.Context) (map[uint64]slinkytypes
 	}
 	pairs := make(map[uint64]slinkytypes.CurrencyPair, numPairs)
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
-	k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, cps types.CurrencyPairState) {
+	err = k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, cps types.CurrencyPairState) {
 		pairs[cps.GetId()] = cp
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return pairs, nil
 }

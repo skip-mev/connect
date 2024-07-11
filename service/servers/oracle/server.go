@@ -59,8 +59,11 @@ func NewOracleServer(o oracle.Oracle, logger *zap.Logger) *OracleServer {
 		// if the server has been started, close it
 		if os.httpSrv != nil {
 			ctx, cf := context.WithTimeout(context.Background(), DefaultServerShutdownTimeout)
-			os.httpSrv.Shutdown(ctx) // close HTTP server backing GRPC-gateway
-			os.grpcSrv.Stop()        // close GRPC server serving listeners that have been routed to GRPC server
+			err := os.httpSrv.Shutdown(ctx)
+			if err != nil {
+				os.logger.Error(fmt.Sprintf("error shutting down http server: %v", err))
+			} // close HTTP server backing GRPC-gateway
+			os.grpcSrv.Stop() // close GRPC server serving listeners that have been routed to GRPC server
 			cf()
 		}
 	})

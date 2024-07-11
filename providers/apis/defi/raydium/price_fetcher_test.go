@@ -382,14 +382,16 @@ func TestProviderFetch(t *testing.T) {
 		ethVaultTokenMetadata := token.Account{
 			Amount: uint64(1e18),
 		}
-		ethVaultTokenMetadata.MarshalWithEncoder(ethEnc)
+		err := ethVaultTokenMetadata.MarshalWithEncoder(ethEnc)
+		require.NoError(t, err)
 
 		usdtVaultBz := new(bytes.Buffer)
 		usdcEnc := bin.NewBinEncoder(usdtVaultBz)
 		usdtTokenVaultMetadata := token.Account{
 			Amount: 3 * (1e6),
 		}
-		usdtTokenVaultMetadata.MarshalWithEncoder(usdcEnc)
+		err = usdtTokenVaultMetadata.MarshalWithEncoder(usdcEnc)
+		require.NoError(t, err)
 
 		ethUsdtAMMIDBz := new(bytes.Buffer)
 		ethUsdtAMMIDEnc := bin.NewBinEncoder(ethUsdtAMMIDBz)
@@ -399,7 +401,8 @@ func TestProviderFetch(t *testing.T) {
 				NeedTakePnlPc:   uint64(16e5),
 			},
 		}
-		ethUsdtAMMIDEnc.Encode(&ethUsdtAMMIDMetadata)
+		err = ethUsdtAMMIDEnc.Encode(&ethUsdtAMMIDMetadata)
+		require.NoError(t, err)
 
 		ethUsdtOpenOrdersBz := new(bytes.Buffer)
 		ethUsdtOpenOrdersEnc := bin.NewBinEncoder(ethUsdtOpenOrdersBz)
@@ -407,14 +410,16 @@ func TestProviderFetch(t *testing.T) {
 			NativeBaseTokenTotal:  bin.Uint64(1e17),
 			NativeQuoteTokenTotal: bin.Uint64(0.1e6),
 		}
-		ethUsdtOpenOrdersEnc.Encode(&ethUsdtOpenOrdersMetadata)
+		err = ethUsdtOpenOrdersEnc.Encode(&ethUsdtOpenOrdersMetadata)
+		require.NoError(t, err)
 
 		solVaultBz := new(bytes.Buffer)
 		solEnc := bin.NewBinEncoder(solVaultBz)
 		solTokenVaultMetadata := token.Account{
 			Amount: 1e9,
 		}
-		solTokenVaultMetadata.MarshalWithEncoder(solEnc)
+		err = solTokenVaultMetadata.MarshalWithEncoder(solEnc)
+		require.NoError(t, err)
 
 		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
 			btcVaultPk, usdcVaultPk, usdcBtcAMMIDPk, usdcBtcOpenOrdersPk,

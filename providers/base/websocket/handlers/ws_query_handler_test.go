@@ -806,7 +806,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], 20)
 
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			handler.Start(ctx, tc.ids, responseCh)
+			err = handler.Start(ctx, tc.ids, responseCh)
+			require.NoError(t, err)
 			cancel()
 			close(responseCh)
 

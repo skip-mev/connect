@@ -72,7 +72,10 @@ func (s *ServerTestSuite) SetupTest() {
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
 	// start server + client w/ context
-	go s.srv.StartServer(s.ctx, localhost, port)
+	go func() {
+		err := s.srv.StartServer(s.ctx, localhost, port)
+		s.Require().NoError(err)
+	}()
 
 	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

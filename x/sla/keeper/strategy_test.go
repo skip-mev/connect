@@ -44,7 +44,8 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -55,14 +56,15 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 20; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
 
 		s.stakingKeeper.On("GetLastValidatorPower", s.ctx, sdk.ValAddress(validator.Bytes())).Return(int64(0), fmt.Errorf("validator does not exist"))
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 
@@ -80,7 +82,8 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -91,7 +94,7 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 20; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
@@ -108,7 +111,8 @@ func (s *KeeperTestSuite) TestExecSLA() {
 			expectedSlashFactor,
 		).Return(math.NewInt(10), nil)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -119,17 +123,18 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 16; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithPrice)
 		}
 		for i := 0; i < 4; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
 
 		s.stakingKeeper.On("GetLastValidatorPower", mock.Anything, sdk.ValAddress(validator)).Return(int64(100), nil)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -140,14 +145,15 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 20; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
 
 		s.stakingKeeper.On("GetLastValidatorPower", mock.Anything, sdk.ValAddress(validator)).Return(int64(100), nil)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -158,10 +164,10 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
@@ -179,7 +185,8 @@ func (s *KeeperTestSuite) TestExecSLA() {
 			expectedSlashFactor,
 		).Return(math.NewInt(10), nil)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -190,10 +197,10 @@ func (s *KeeperTestSuite) TestExecSLA() {
 		priceFeed, err := slatypes.NewPriceFeed(uint(maximumViableWindow), validator, cp, id)
 		s.Require().NoError(err)
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			_ = priceFeed.SetUpdate(slatypes.VoteWithPrice)
 		}
 		err = s.keeper.SetPriceFeed(s.ctx, priceFeed)
 		s.Require().NoError(err)
@@ -211,7 +218,8 @@ func (s *KeeperTestSuite) TestExecSLA() {
 			expectedSlashFactor,
 		).Return(math.NewInt(10), nil)
 
-		s.keeper.SetSLA(s.ctx, sla)
+		err = s.keeper.SetSLA(s.ctx, sla)
+		s.Require().NoError(err)
 		err = s.keeper.ExecSLA(s.ctx, sla)
 		s.Require().NoError(err)
 	})
@@ -286,7 +294,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 
 	s.Run("100% uptime with minimum number of blocks", func() {
 		for i := 0; i < 10; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -301,7 +309,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 
 	s.Run("100% uptime with maximum number of blocks", func() {
 		for i := 0; i < 20; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -324,11 +332,11 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 5; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		for i := 0; i < 5; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -363,11 +371,11 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 10; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		for i := 0; i < 10; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -402,7 +410,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 10; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -436,7 +444,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 20; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -470,11 +478,11 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 15; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		for i := 0; i < 5; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -509,11 +517,11 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 20; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		for i := 0; i < 5; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(
@@ -548,11 +556,11 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 		s.Require().NoError(err)
 
 		for i := 0; i < 50; i++ {
-			feed.SetUpdate(slatypes.VoteWithPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithPrice)
 		}
 
 		for i := 0; i < 5; i++ {
-			feed.SetUpdate(slatypes.VoteWithoutPrice)
+			_ = feed.SetUpdate(slatypes.VoteWithoutPrice)
 		}
 
 		s.stakingKeeper.On(

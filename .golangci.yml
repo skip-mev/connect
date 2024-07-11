@@ -27,6 +27,7 @@ linters:
     - ineffassign
     - misspell
     - nakedret
+    - errcheck
     - errorlint
     # Checks for pointers to enclosing loop variables.
     - exportloopref

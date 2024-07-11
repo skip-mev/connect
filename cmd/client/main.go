@@ -104,5 +104,8 @@ func init() {
 }
 
 func main() {
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatalf("failed to execute root command: %v", err)
+	}
 }

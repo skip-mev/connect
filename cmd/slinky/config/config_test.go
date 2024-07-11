@@ -339,7 +339,8 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 			coinbase.Name,
 			endpointOverride.URL,
 		)
-		tmpfile.Write([]byte(overrides))
+		_, err = tmpfile.Write([]byte(overrides))
+		require.NoError(t, err)
 
 		cfg, err := cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
 		require.NoError(t, err)

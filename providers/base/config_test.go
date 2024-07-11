@@ -44,7 +44,7 @@ func TestConfigUpdater(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			provider.Start(ctx)
+			_ = provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -92,7 +92,7 @@ func TestConfigUpdater(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			provider.Start(ctx)
+			_ = provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -142,7 +142,7 @@ func TestConfigUpdater(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			provider.Start(ctx)
+			_ = provider.Start(ctx)
 		}()
 
 		// The initial API handler should be the same as the provider's API handler.
@@ -205,7 +205,7 @@ func TestConfigUpdater(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			provider.Start(ctx)
+			_ = provider.Start(ctx)
 		}()
 
 		// The initial WebSocket handler should be the same as the provider's WebSocket handler.
