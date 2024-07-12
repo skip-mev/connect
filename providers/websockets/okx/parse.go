@@ -69,7 +69,7 @@ func (h *WebSocketHandler) parseSubscribeResponseMessage(resp SubscribeResponseM
 // parseTickerResponseMessage parses a ticker response message. The format of the message is defined
 // in the messages.go file. This message contains the latest price data for a set of instruments.
 func (h *WebSocketHandler) parseTickerResponseMessage(
-	resp IndexTickersResponseMessage,
+	resp TickersResponseMessage,
 ) (types.PriceResponse, error) {
 	var (
 		resolved   = make(types.ResolvedPrices)
@@ -77,7 +77,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	)
 
 	// The channel must be the index tickers channel.
-	if Channel(resp.Arguments.Channel) != IndexTickersChannel {
+	if Channel(resp.Arguments.Channel) != TickersChannel {
 		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("invalid channel %s", resp.Arguments.Channel)
 	}
@@ -91,7 +91,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		}
 
 		// Convert the price to a big.Float.
-		price, err := math.Float64StringToBigFloat(instrument.IndexPrice)
+		price, err := math.Float64StringToBigFloat(instrument.LastPrice)
 		if err != nil {
 			wErr := fmt.Errorf("failed to convert price to big.Float: %w", err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
