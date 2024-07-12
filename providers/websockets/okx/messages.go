@@ -29,7 +29,7 @@ const (
 )
 
 const (
-	// TickersChannel is the channel for tickers. This includes hte spot price of the instrument.
+	// TickersChannel is the channel for tickers. This includes the spot price of the instrument.
 	//
 	// ref: https://www.okx.com/docs-v5/en/#order-book-trading-market-data-ws-tickers-channel
 	TickersChannel Channel = "tickers"
