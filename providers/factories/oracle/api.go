@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
+	"github.com/skip-mev/slinky/providers/apis/bitstamp"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
@@ -70,6 +71,8 @@ func APIQueryHandlerFactory(
 	switch providerName := cfg.Name; {
 	case providerName == binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
+	case providerName == bitstamp.Name:
+		apiDataHandler, err = bitstamp.NewAPIHandler(cfg.API)
 	case providerName == coinbaseapi.Name:
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case providerName == coingecko.Name:

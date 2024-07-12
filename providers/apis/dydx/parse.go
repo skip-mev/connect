@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/bitstamp"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
@@ -17,7 +18,6 @@ import (
 	"github.com/skip-mev/slinky/providers/volatile"
 	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
-	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
@@ -231,10 +231,6 @@ func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 		}
 
 		return denom, nil
-	case exchange == bitstamp.Name:
-		if strings.Contains(denom, "/") {
-			return strings.ToLower(strings.ReplaceAll(denom, "/", "")), nil
-		}
 	case exchange == raydium.Name:
 		// split the ticker by /, and expect there to at least be two values
 		fields := strings.Split(denom, RaydiumTickerSeparator)
@@ -246,5 +242,4 @@ func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 	default:
 		return denom, nil
 	}
-	return "", nil
 }
