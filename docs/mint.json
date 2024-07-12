@@ -7,9 +7,9 @@
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#0E0E0E",
-    "light": "#FAFAFA",
-    "dark": "#0E0E0E",
+    "primary": "#0061ff",
+    "light": "#0061ff",
+    "dark": "#0061ff",
     "background": {
       "dark": "#151617"
     }
@@ -38,18 +38,19 @@
         "overview",
         "security-properties",
         "slashing",
-        "upcoming-work"
+        "upcoming-work",
+        "getting-started"
       ]
     },
     {
-      "group": "👾 Validators",
+      "group": "Validators",
       "pages": [
-        "validator/quickstart",
-        "validator/validator-app-config",
-        "validator/validator-connect-config",
-        "validator/troubleshooting",
-        "validator/rpc-providers",
-        "validator/flags-guide"
+        "validators/quickstart",
+        "validators/validator-app-config",
+        "validators/validator-connect-config",
+        "validators/troubleshooting",
+        "validators/rpc-providers",
+        "validators/flags-guide"
       ]
     },
     {
@@ -69,6 +70,7 @@
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/skipprotocol",
-    "discord": "https://discord.com/invite/hFeHVAE26P"
+    "discord": "https://discord.com/invite/hFeHVAE26P",
+    "github": "https://github.com/skip-mev/slinky"
   }
 }

@@ -1,0 +1,86 @@
+---
+description: Connect Validator Quickstart
+title: Quickstart
+icon: space-station-moon
+---
+
+<Note>
+**Running Connect? Join our [Discord](https://discord.gg/amAgf9Z39w)!**
+</Note>
+
+## Installation
+
+First things first, lets get Connect on your machine.
+
+### From GitHub Releases
+
+Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and install the binary.
+
+### From Source
+To install from source, you'll need [Git](https://git-scm.com/) and [Go](https://go.dev/).
+
+Enter the commands below to install the binary.
+```shell
+git clone git@github.com:skip-mev/slinky.git
+cd slinky
+make install
+```
+
+### Verify the Installation
+Let's check Connect is properly installed on your machine.
+You should see the version printed in your terminal after running the following command:
+```shell
+slinky version
+````
+
+## Configuration
+
+Connect has two sides; the on-chain modules, and the off-chain oracle. Let's start with configuring the on-chain portion.
+
+### On Chain Configuration
+
+All thats needed to set up your chain for Connect is an edit to your `app.toml`.
+
+
+## 4. Run the Connect Sidecar ✅
+
+You can run connect by running the following command:
+
+```shell
+slinky
+```
+
+You can verify whether prices are being retrieved by running the following command:
+
+```shell
+curl 'http://localhost:8080/slinky/oracle/v1/prices' | jq .
+```
+
+You should see output similar to the following:
+
+```JSON
+{
+  "prices": {
+    "ATOM/USD": "920650000",
+    "BITCOIN/USD": "3980283250000",
+    "DYDX/USD": "273682500",
+    "ETHEREUM/BITCOIN": "5842000",
+    "ETHEREUM/USD": "232550500000",
+    "POLKADOT/USD": "638800000",
+    "SOLANA/USD": "8430350000"
+  },
+  "timestamp": "2024-01-23T01:15:09.776890Z"
+}
+```
+
+## 5. Start the chain application ✅
+
+Starting the chain application should be no different than starting the application without the sidecar.
+
+```shell
+testappd start
+```
+
+## Troubleshooting
+
+If you are having issues running the oracle sidecar, please see the [Troubleshooting section](validator/troubleshooting.mdx) for more information.
