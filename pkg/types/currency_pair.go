@@ -95,11 +95,12 @@ func (cp *CurrencyPair) ValidateBasic() error {
 func ValidateLegacyAssetString(asset string) error {
 	// check formatting of asset
 	if strings.ToUpper(asset) != asset {
-		return fmt.Errorf("incorrectly formatted asset string, expected: %s got: %s", strings.ToUpper(asset), asset)
+		return fmt.Errorf("incorrectly formatted asset string, expected: %q got: %q", strings.ToUpper(asset), asset)
 	}
 
 	if !IsLegacyAssetString(asset) {
-		return fmt.Errorf("incorrectly formatted asset string, asset %s should not contain the %q character", asset, fieldSeparator)
+		return fmt.Errorf("incorrectly formatted asset string, asset %q should not contain the %q character", asset,
+			fieldSeparator)
 	}
 
 	return nil
@@ -118,7 +119,7 @@ func ValidateDefiAssetString(asset string) error {
 
 	// first element is a ticker, so we require it to pass legacy asset validation:
 	if err := ValidateLegacyAssetString(token); err != nil {
-		return fmt.Errorf("token field '%s' is invalid: %w", token, err)
+		return fmt.Errorf("token field %q is invalid: %w", token, err)
 	}
 
 	return nil
@@ -143,10 +144,11 @@ func (cp *CurrencyPair) LegacyValidateBasic() error {
 	}
 	// check formatting of base / quote
 	if strings.ToUpper(cp.Base) != cp.Base {
-		return fmt.Errorf("incorrectly formatted base string, expected: %s got: %s", strings.ToUpper(cp.Base), cp.Base)
+		return fmt.Errorf("incorrectly formatted base string, expected: %q got: %q", strings.ToUpper(cp.Base), cp.Base)
 	}
 	if strings.ToUpper(cp.Quote) != cp.Quote {
-		return fmt.Errorf("incorrectly formatted quote string, expected: %s got: %s", strings.ToUpper(cp.Quote), cp.Quote)
+		return fmt.Errorf("incorrectly formatted quote string, expected: %q got: %q", strings.ToUpper(cp.Quote),
+			cp.Quote)
 	}
 
 	if len(cp.Base) > MaxCPFieldLength || len(cp.Quote) > MaxCPFieldLength {
