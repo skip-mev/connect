@@ -62,12 +62,12 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	if IsLegacyAssetString(cp.Base) {
 		err := ValidateLegacyAssetString(cp.Base)
 		if err != nil {
-			return fmt.Errorf("base asset '%s' is invalid: %w", cp.Base, err)
+			return fmt.Errorf("base asset %q is invalid: %w", cp.Base, err)
 		}
 	} else {
 		err := ValidateDefiAssetString(cp.Base)
 		if err != nil {
-			return fmt.Errorf("base defi asset '%s' is invalid: %w", cp.Base, err)
+			return fmt.Errorf("base defi asset %q is invalid: %w", cp.Base, err)
 		}
 	}
 
@@ -75,12 +75,12 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	if IsLegacyAssetString(cp.Quote) {
 		err := ValidateLegacyAssetString(cp.Quote)
 		if err != nil {
-			return fmt.Errorf("quote asset '%s' is invalid: %w", cp.Quote, err)
+			return fmt.Errorf("quote asset %q is invalid: %w", cp.Quote, err)
 		}
 	} else {
 		err := ValidateDefiAssetString(cp.Quote)
 		if err != nil {
-			return fmt.Errorf("quote defi asset '%s' is invalid: %w", cp.Quote, err)
+			return fmt.Errorf("quote defi asset %q is invalid: %w", cp.Quote, err)
 		}
 	}
 
