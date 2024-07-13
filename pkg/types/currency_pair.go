@@ -35,15 +35,15 @@ func (cp *CurrencyPair) coreValidate() error {
 	}
 
 	if cp.Quote == "" {
-		return fmt.Errorf("quote currency pair cannot be empty")
+		return fmt.Errorf("quote assetcannot be empty")
 	}
 
 	if len(cp.Base) > MaxCPFieldLength {
-		return fmt.Errorf("base currency pair has wrong length")
+		return fmt.Errorf("base asset exceeds max length of %d", MaxCPFieldLength)
 	}
 
 	if len(cp.Quote) > MaxCPFieldLength {
-		return fmt.Errorf("quote currency pair has wrong length")
+		return fmt.Errorf("quote asset exceeds max length of %d", MaxCPFieldLength)
 	}
 
 	return nil
