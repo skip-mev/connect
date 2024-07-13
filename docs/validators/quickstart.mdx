@@ -35,11 +35,36 @@ slinky version
 
 ## Configuration
 
-Connect has two sides; the on-chain modules, and the off-chain oracle. Let's start with configuring the on-chain portion.
+We need to configure the two sides of Connect before we get connected to data; the chain application, and the oracle.
 
-### On Chain Configuration
+Lets start with the on-chain config.
 
-All thats needed to set up your chain for Connect is an edit to your `app.toml`.
+<Tip>
+    Are you running Connect on a separate machine than your application? Make sure to change the `oracle_address` in the app.toml example below.
+</Tip>
+
+### Chain Configuration
+
+Configuration the application to work with Connect, we just need to edit the `app.toml`.
+
+**Example**:
+
+```toml app.toml
+# ... other application configurations
+[oracle]
+enabled = "true"
+oracle_address = "localhost:8080"
+client_timeout = "250ms"
+metrics_enabled = "true"
+```
+
+| Key               | Description                                                                                             |
+|-------------------|---------------------------------------------------------------------------------------------------------|
+| `enabled`         | Whether or not the oracle should be enabled on your infrastructure.                                     |
+| `oracle_address`  | The address of the Connect oracle.                                                                      |
+| `client_timeout`  | The amount of time the application will wait for a response from the oracle.                            |
+| `metrics_enabled` | Set to true if you want metrics emitted from your Connect oracle. See TODO for more details on metrics. |
+
 
 
 ## 4. Run the Connect Sidecar ✅
