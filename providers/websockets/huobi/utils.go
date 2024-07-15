@@ -36,4 +36,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	WriteInterval:                 config.DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	// Note that Huobi does not support batch subscriptions. As such each new
+	// market will be subscribed to with a new message.
+	MaxSubscriptionsPerBatch: config.DefaultMaxSubscriptionsPerBatch,
 }

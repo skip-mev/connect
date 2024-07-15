@@ -3,8 +3,10 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -209,29 +211,40 @@ type TickerMessageResponse struct {
 // NewSubscribeRequestMessage returns a set of messages to subscribe to the Binance websocket. This will
 // subscribe each instrument to the aggregate trade and ticker streams.
 func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("no instruments to subscribe to")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, 0)
-	for _, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+		batch := instruments[start:end]
+
+		// Create the subscriptions for the instruments.
+		params := make([]string, 0)
+		for _, instrument := range batch {
+			params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(AggregateTradeStream)))
+			params = append(params, fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(TickerStream)))
+		}
+
 		// Generate a random ID.
 		id := h.GenerateID()
 		msg, err := json.Marshal(SubscribeMessageRequest{
 			Method: string(SubscribeMethod),
-			Params: []string{
-				fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(AggregateTradeStream)),
-				fmt.Sprintf("%s%s%s", strings.ToLower(instrument), Separator, string(TickerStream)),
-			},
-			ID: id,
+			Params: params,
+			ID:     id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal subscribe message: %w", err)
 		}
 
 		// Set the IDs
-		h.SetIDForInstruments(id, []string{instrument})
-		msgs = append(msgs, msg)
+		h.SetIDForInstruments(id, batch)
+		msgs[i] = msg
 	}
 
 	return msgs, nil
