@@ -64,15 +64,15 @@ func TestHandleMessage(t *testing.T) {
 		{
 			name: "instrument price update",
 			msg: func() []byte {
-				msg := okx.IndexTickersResponseMessage{
+				msg := okx.TickersResponseMessage{
 					Arguments: okx.SubscriptionTopic{
-						Channel:      string(okx.IndexTickersChannel),
+						Channel:      string(okx.TickersChannel),
 						InstrumentID: "BTC-USDT",
 					},
 					Data: []okx.IndexTicker{
 						{
-							ID:         "BTC-USDT",
-							IndexPrice: "1",
+							ID:        "BTC-USDT",
+							LastPrice: "1",
 						},
 					},
 				}
@@ -96,19 +96,19 @@ func TestHandleMessage(t *testing.T) {
 		{
 			name: "multiple instruments included in the response",
 			msg: func() []byte {
-				msg := okx.IndexTickersResponseMessage{
+				msg := okx.TickersResponseMessage{
 					Arguments: okx.SubscriptionTopic{
-						Channel:      string(okx.IndexTickersChannel),
+						Channel:      string(okx.TickersChannel),
 						InstrumentID: "BTC-USDT",
 					},
 					Data: []okx.IndexTicker{
 						{
-							ID:         "BTC-USDT",
-							IndexPrice: "1",
+							ID:        "BTC-USDT",
+							LastPrice: "1",
 						},
 						{
-							ID:         "ETH-USDT",
-							IndexPrice: "2",
+							ID:        "ETH-USDT",
+							LastPrice: "2",
 						},
 					},
 				}
@@ -135,15 +135,15 @@ func TestHandleMessage(t *testing.T) {
 		{
 			name: "instrument price update with unknown instrument ID",
 			msg: func() []byte {
-				msg := okx.IndexTickersResponseMessage{
+				msg := okx.TickersResponseMessage{
 					Arguments: okx.SubscriptionTopic{
-						Channel:      string(okx.IndexTickersChannel),
+						Channel:      string(okx.TickersChannel),
 						InstrumentID: "MOG-USDT",
 					},
 					Data: []okx.IndexTicker{
 						{
-							ID:         "MOG-USDT",
-							IndexPrice: "1",
+							ID:        "MOG-USDT",
+							LastPrice: "1",
 						},
 					},
 				}
@@ -165,7 +165,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				msg := okx.SubscribeResponseMessage{
 					Arguments: okx.SubscriptionTopic{
-						Channel:      string(okx.IndexTickersChannel),
+						Channel:      string(okx.TickersChannel),
 						InstrumentID: "BTC-USDT",
 					},
 					Event:        string(okx.EventSubscribe),
@@ -191,7 +191,7 @@ func TestHandleMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 					},
@@ -222,7 +222,7 @@ func TestHandleMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 					},
@@ -264,7 +264,7 @@ func TestHandleMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 					},
@@ -362,7 +362,7 @@ func TestCreateMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 					},
@@ -389,7 +389,7 @@ func TestCreateMessage(t *testing.T) {
 						Operation: string(okx.OperationSubscribe),
 						Arguments: []okx.SubscriptionTopic{
 							{
-								Channel:      string(okx.IndexTickersChannel),
+								Channel:      string(okx.TickersChannel),
 								InstrumentID: ticker,
 							},
 						},
@@ -415,11 +415,11 @@ func TestCreateMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "ETH-USDT",
 						},
 					},
@@ -445,11 +445,11 @@ func TestCreateMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "BTC-USDT",
 						},
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "ETH-USDT",
 						},
 					},
@@ -462,7 +462,7 @@ func TestCreateMessage(t *testing.T) {
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
 						{
-							Channel:      string(okx.IndexTickersChannel),
+							Channel:      string(okx.TickersChannel),
 							InstrumentID: "MOG-USDT",
 						},
 					},
