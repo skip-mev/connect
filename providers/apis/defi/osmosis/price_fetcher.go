@@ -16,12 +16,6 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-const (
-	// responseDecimals is the set of decimals to be used for scaling.
-	// https://github.com/osmosis-labs/osmosis/blob/194ef2da5f0dcb9401e4a9bbbeaeee30aefcca67/x/gamm/keeper/grpc_query.go#L387.
-	responseDecimals = 18
-)
-
 var _ oracletypes.PriceAPIFetcher = &APIPriceFetcher{}
 
 type APIPriceFetcher struct {
@@ -102,9 +96,10 @@ func NewAPIPriceFetcherWithClient(
 	}
 
 	return &APIPriceFetcher{
-		api:    api,
-		client: client,
-		logger: logger.With(zap.String("fetcher", Name)),
+		api:               api,
+		client:            client,
+		logger:            logger.With(zap.String("fetcher", Name)),
+		metaDataPerTicker: newMetadataCache(),
 	}, nil
 }
 

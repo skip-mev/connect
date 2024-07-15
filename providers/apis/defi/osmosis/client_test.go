@@ -7,7 +7,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
 )
 
-func TestMultiGRPCClient(t *testing.T) {
+func TestMultiClient(t *testing.T) {
 	cfg := osmosis.DefaultAPIConfig
 	cfg.Endpoints = []config.Endpoint{
 		{

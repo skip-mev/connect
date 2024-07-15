@@ -31,15 +31,14 @@ type Client interface {
 	) (SpotPriceResponse, error)
 }
 
-// ClientImpl is an implementation of a client to Osmosis using an http client.
+// ClientImpl is an implementation of a client to Osmosis using a
 // poolmanager Query Client.
 type ClientImpl struct {
 	api         config.APIConfig
 	apiMetrics  metrics.APIMetrics
 	redactedURL string
 	endpoint    config.Endpoint
-
-	httpClient *http.Client
+	httpClient  *http.Client
 }
 
 func NewClient(
