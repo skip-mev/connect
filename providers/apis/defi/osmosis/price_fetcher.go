@@ -39,7 +39,7 @@ type APIPriceFetcher struct {
 }
 
 // NewAPIPriceFetcher returns a new APIPriceFetcher. This method constructs the
-// default Osmosis gRPC client in accordance with the config's endpoints.
+// default Osmosis client in accordance with the config's endpoints.
 func NewAPIPriceFetcher(
 	logger *zap.Logger,
 	api config.APIConfig,
@@ -74,7 +74,7 @@ func NewAPIPriceFetcher(
 }
 
 // NewAPIPriceFetcherWithClient returns a new APIPriceFetcher. This method constructs the
-// osmosis gRPC client with the given client.
+// osmosis client with the given client.
 func NewAPIPriceFetcherWithClient(
 	logger *zap.Logger,
 	api config.APIConfig,
@@ -108,7 +108,7 @@ func NewAPIPriceFetcherWithClient(
 	}, nil
 }
 
-// Fetch fetches prices from the osmosis gRPC API for the given currency-pairs. Specifically
+// Fetch fetches prices from the osmosis API for the given currency-pairs. Specifically
 // for each currency-pair,
 //   - Query the spot price.
 func (pf *APIPriceFetcher) Fetch(
