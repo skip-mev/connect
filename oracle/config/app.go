@@ -9,6 +9,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	// MaxInterval is the maximum time between each price update request.
+	MaxInterval = 2 * time.Minute
+	// MaxMaxAge is the maximum maximum age of the latest price response before it is
+	// considered stale.
+	MaxMaxAge = 2 * time.Minute
+)
+
 const (
 	// DefaultConfigTemplate should be utilized in the app.toml file.
 	// This template configures the application to connect to the
@@ -38,6 +46,16 @@ client_timeout = "{{ .Oracle.ClientTimeout }}"
 # this enables instrumentation of the oracle client and the interaction between
 # the oracle and the app.
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
+
+# MaxAge is the maximum age of the latest price response before it is considered stale. 
+# The recommended max age is 5 seconds. If this is greater than 2 minutes, the app
+# will not start.
+max_age = "{{ .Oracle.MaxAge }}"
+
+# Interval is the time between each price update request. The recommended interval
+# is the block time of the chain. Otherwise, 1 second is a good default. If this
+# is greater than 2 minutes, the app will not start.
+interval = "{{ .Oracle.Interval }}"
 `
 )
 
@@ -47,6 +65,8 @@ const (
 	flagClientTimeout           = "oracle.client_timeout"
 	flagMetricsEnabled          = "oracle.metrics_enabled"
 	flagPrometheusServerAddress = "oracle.prometheus_server_address"
+	flagMaxAge                  = "oracle.max_age"
+	flagInterval                = "oracle.interval"
 )
 
 // AppConfig contains the application side oracle configurations that must
@@ -65,6 +85,12 @@ type AppConfig struct {
 
 	// MetricsEnabled is a flag that determines whether oracle metrics are enabled.
 	MetricsEnabled bool `mapstructure:"metrics_enabled" toml:"metrics_enabled"`
+
+	// MaxAge is the maximum age of the latest price response before it is considered stale.
+	MaxAge time.Duration `mapstructure:"max_age" toml:"max_age"`
+
+	// Interval is the time between each price update request.
+	Interval time.Duration `mapstructure:"interval" toml:"interval"`
 }
 
 // ValidateBasic performs basic validation of the app config.
@@ -79,6 +105,14 @@ func (c *AppConfig) ValidateBasic() error {
 
 	if c.ClientTimeout <= 0 {
 		return fmt.Errorf("oracle client timeout must be greater than 0")
+	}
+
+	if c.MaxAge <= 0 || c.MaxAge > MaxMaxAge {
+		return fmt.Errorf("oracle max age must be between 0 and %s", MaxMaxAge)
+	}
+
+	if c.Interval <= 0 || c.Interval > MaxInterval {
+		return fmt.Errorf("oracle interval must be between 0 and %s", MaxInterval)
 	}
 
 	return nil
@@ -139,6 +173,20 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	// get the metrics enabled
 	if v := opts.Get(flagMetricsEnabled); v != nil {
 		if cfg.MetricsEnabled, err = cast.ToBoolE(v); err != nil {
+			return cfg, err
+		}
+	}
+
+	// get the max age
+	if v := opts.Get(flagMaxAge); v != nil {
+		if cfg.MaxAge, err = cast.ToDurationE(v); err != nil {
+			return cfg, err
+		}
+	}
+
+	// get the interval
+	if v := opts.Get(flagInterval); v != nil {
+		if cfg.Interval, err = cast.ToDurationE(v); err != nil {
 			return cfg, err
 		}
 	}

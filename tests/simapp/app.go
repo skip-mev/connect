@@ -302,12 +302,11 @@ func NewSimApp(
 
 	// Connect to the oracle service (default timeout of 5 seconds).
 	go func() {
+		app.Logger().Info("attempting to start oracle client...", "address", cfg.OracleAddress)
 		if err := app.oracleClient.Start(context.Background()); err != nil {
 			app.Logger().Error("failed to start oracle client", "err", err)
 			panic(err)
 		}
-
-		app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
 	}()
 
 	// register streaming services
