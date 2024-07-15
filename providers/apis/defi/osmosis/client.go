@@ -2,49 +2,51 @@ package osmosis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sync"
 	"time"
 
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/defi/osmosis/queryproto"
+	"github.com/skip-mev/slinky/pkg/http"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 var (
-	_ GRPCCLient = &GRPCCLientImpl{}
-	_ GRPCCLient = &GRPCMultiClientImpl{}
+	_ Client = &ClientImpl{}
+	_ Client = &MultiClientImpl{}
 )
 
-// GRPCCLient is the expected interface for an osmosis grpc client.
+// Client is the expected interface for an osmosis client.
 //
-//go:generate mockery --name GRPCCLient --output ./mocks/ --case underscore
-type GRPCCLient interface {
+//go:generate mockery --name Client --output ./mocks/ --case underscore
+type Client interface {
 	SpotPrice(grpcCtx context.Context,
-		req *queryproto.SpotPriceRequest,
-	) (*queryproto.SpotPriceResponse, error)
+		poolID uint64,
+		baseAsset,
+		quoteAsset string,
+	) (SpotPriceResponse, error)
 }
 
-// GRPCCLientImpl is an implementation of a GPRC client to Osmosis using a
+// ClientImpl is an implementation of a client to Osmosis using an http client.
 // poolmanager Query Client.
-type GRPCCLientImpl struct {
+type ClientImpl struct {
 	api         config.APIConfig
 	apiMetrics  metrics.APIMetrics
 	redactedURL string
+	endpoint    config.Endpoint
 
-	pmClient queryproto.QueryClient
+	httpClient *http.Client
 }
 
-func NewGRPCCLient(
+func NewClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 	endpoint config.Endpoint,
-) (GRPCCLient, error) {
+) (Client, error) {
 	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("failed to validate config: %w", err)
 	}
@@ -61,53 +63,58 @@ func NewGRPCCLient(
 		return nil, fmt.Errorf("invalid config: apiMetrics is nil")
 	}
 
-	// TODO set up creds and API keys etc
-	cc, err := grpc.NewClient(endpoint.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create grpc client: %w", err)
-	}
-
-	pmClient := queryproto.NewQueryClient(cc)
 	redactedURL := metrics.RedactedEndpointURL(0)
 
-	return &GRPCCLientImpl{
+	return &ClientImpl{
 		api:         api,
 		apiMetrics:  apiMetrics,
 		redactedURL: redactedURL,
-		pmClient:    pmClient,
+		endpoint:    endpoint,
+		httpClient:  http.NewClient(),
 	}, nil
 }
 
 // SpotPrice uses the underlying x/poolmanager client to access spot prices.
-func (c *GRPCCLientImpl) SpotPrice(grpcCtx context.Context, req *queryproto.SpotPriceRequest) (*queryproto.SpotPriceResponse, error) {
+func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (SpotPriceResponse, error) {
 	start := time.Now()
 	defer func() {
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
-	resp, err := c.pmClient.SpotPrice(grpcCtx, req)
+	url, err := createURL(c.endpoint.URL, poolID, baseAsset, quoteAsset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to spot price: %w", err)
+		return SpotPriceResponse{}, err
+	}
+
+	// T
+	resp, err := c.httpClient.GetWithContext(ctx, url)
+	if err != nil {
+		return SpotPriceResponse{}, err
+	}
+
+	var spotPriceResponse SpotPriceResponse
+	if err := json.NewDecoder(resp.Body).Decode(&spotPriceResponse); err != nil {
+		return SpotPriceResponse{}, err
 	}
 
 	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
-	return resp, nil
+	return spotPriceResponse, nil
 }
 
-// GRPCMultiClientImpl is an Osmosis GRPC client that wraps a set of multiple Clients.
-type GRPCMultiClientImpl struct {
+// MultiClientImpl is an Osmosis client that wraps a set of multiple Clients.
+type MultiClientImpl struct {
 	logger     *zap.Logger
 	api        config.APIConfig
 	apiMetrics metrics.APIMetrics
 
-	clients []GRPCCLient
+	clients []Client
 }
 
-func NewGRPCMultiClient(
+func NewMultiClient(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
-) (GRPCCLient, error) {
+) (Client, error) {
 	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("failed to validate config: %w", err)
 	}
@@ -124,17 +131,17 @@ func NewGRPCMultiClient(
 		return nil, fmt.Errorf("invalid config: apiMetrics is nil")
 	}
 
-	var clients []GRPCCLient
+	var clients []Client
 	for _, endpoint := range api.Endpoints {
-		c, err := NewGRPCCLient(api, apiMetrics, endpoint)
+		c, err := NewClient(api, apiMetrics, endpoint)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create grpc client: %w", err)
+			return nil, fmt.Errorf("failed to create client: %w", err)
 		}
 
 		clients = append(clients, c)
 	}
 
-	return &GRPCMultiClientImpl{
+	return &MultiClientImpl{
 		logger:     logger,
 		api:        api,
 		apiMetrics: apiMetrics,
@@ -144,8 +151,8 @@ func NewGRPCMultiClient(
 
 // SpotPrice delegates the request to all underlying clients and applies a filter to the
 // set of responses.
-func (mc *GRPCMultiClientImpl) SpotPrice(grpcCtx context.Context, req *queryproto.SpotPriceRequest) (*queryproto.SpotPriceResponse, error) {
-	resps := make([]*queryproto.SpotPriceResponse, len(mc.clients))
+func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (SpotPriceResponse, error) {
+	resps := make([]SpotPriceResponse, len(mc.clients))
 
 	var wg sync.WaitGroup
 	wg.Add(len(mc.clients))
@@ -154,7 +161,7 @@ func (mc *GRPCMultiClientImpl) SpotPrice(grpcCtx context.Context, req *queryprot
 	for i, client := range mc.clients {
 		url := mc.api.Endpoints[i].URL
 		index := i
-		go func(index int, client GRPCCLient) {
+		go func(index int, client Client) {
 			// Observe the latency of the request.
 			start := time.Now()
 			defer func() {
@@ -162,7 +169,7 @@ func (mc *GRPCMultiClientImpl) SpotPrice(grpcCtx context.Context, req *queryprot
 				mc.apiMetrics.ObserveProviderResponseLatency(mc.api.Name, metrics.RedactedEndpointURL(index), time.Since(start))
 			}()
 
-			resp, err := client.SpotPrice(grpcCtx, req)
+			resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 			if err != nil {
 				mc.apiMetrics.AddRPCStatusCode(mc.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeError)
 				mc.logger.Error("failed to fetch accounts", zap.String("url", url), zap.Error(err))
@@ -184,11 +191,11 @@ func (mc *GRPCMultiClientImpl) SpotPrice(grpcCtx context.Context, req *queryprot
 
 // filterSpotPriceResponses currently just chooses a random response as there is no way to differentiate.
 // TODO differentiate.
-func filterSpotPriceResponses(responses []*queryproto.SpotPriceResponse) (*queryproto.SpotPriceResponse, error) {
-	var bestResp *queryproto.SpotPriceResponse
+func filterSpotPriceResponses(responses []SpotPriceResponse) (SpotPriceResponse, error) {
+	var bestResp SpotPriceResponse
 
 	if len(responses) == 0 {
-		return nil, fmt.Errorf("no responses found")
+		return SpotPriceResponse{}, fmt.Errorf("no responses found")
 	}
 
 	idx := rand.Intn(len(responses))

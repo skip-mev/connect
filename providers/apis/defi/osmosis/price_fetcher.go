@@ -12,7 +12,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/apis/defi/osmosis/queryproto"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -29,8 +28,8 @@ type APIPriceFetcher struct {
 	// config is the APIConfiguration for this provider
 	api config.APIConfig
 
-	// client is the osmosis gRPC client used to query the API.
-	client GRPCCLient
+	// client is the osmosis client used to query the API.
+	client Client
 
 	// metaDataPerTicker is a map of ticker.String() -> TickerMetadata
 	metaDataPerTicker *metadataCache
@@ -66,7 +65,7 @@ func NewAPIPriceFetcher(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
-	client, err := NewGRPCMultiClient(logger, api, apiMetrics)
+	client, err := NewMultiClient(logger, api, apiMetrics)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize client: %w", err)
 	}
@@ -80,7 +79,7 @@ func NewAPIPriceFetcherWithClient(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
-	client GRPCCLient,
+	client Client,
 ) (*APIPriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -146,16 +145,16 @@ func (pf *APIPriceFetcher) Fetch(
 			callCtx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
 			defer cancel()
 
-			resp, err := pf.client.SpotPrice(callCtx, &queryproto.SpotPriceRequest{
-				PoolId:          metadata.PoolID,
-				BaseAssetDenom:  metadata.BaseTokenDenom,
-				QuoteAssetDenom: metadata.QuoteTokenDenom,
-			})
+			resp, err := pf.client.SpotPrice(callCtx,
+				metadata.PoolID,
+				metadata.BaseTokenDenom,
+				metadata.QuoteTokenDenom,
+			)
 			if err != nil {
 				pf.logger.Error("failed to fetch spot price", zap.Error(err))
 				unresolved[ticker] = providertypes.UnresolvedResult{
 					ErrorWithCode: providertypes.NewErrorWithCode(
-						GRPCError(err),
+						err,
 						providertypes.ErrorAPIGeneral,
 					),
 				}
@@ -183,6 +182,6 @@ func (pf *APIPriceFetcher) Fetch(
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
-func calculatePrice(resp *queryproto.SpotPriceResponse) (*big.Float, error) {
+func calculatePrice(resp SpotPriceResponse) (*big.Float, error) {
 	return math.Float64StringToBigFloat(resp.SpotPrice)
 }

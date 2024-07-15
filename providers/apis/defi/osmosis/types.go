@@ -3,6 +3,8 @@ package osmosis
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
 	"sync"
 	"time"
 
@@ -10,11 +12,13 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-const Name = "osmosis_api"
+const (
+	Name      = "osmosis_api"
+	URLSuffix = "osmosis/poolmanager/v2/pools/%s/prices\\?base_asset_denom\\=%s\\&quote_asset_denom\\=%s"
+)
 
-// GRPCError is returned when there is an error querying the osmosis gRPC client.
-func GRPCError(err error) error {
-	return fmt.Errorf("osmosis gRPC error: %s", err.Error())
+func createURL(baseURL string, poolID uint64, baseAsset, quoteAsset string) (string, error) {
+	return url.JoinPath(baseURL, fmt.Sprintf(URLSuffix, strconv.FormatUint(poolID, 10), baseAsset, quoteAsset))
 }
 
 // NoOsmosisMetadataForTickerError is returned when there is no metadata associated with a given ticker.
@@ -114,4 +118,8 @@ var DefaultAPIConfig = config.APIConfig{
 			URL: "osmosis-grpc.polkachu.com:12590",
 		},
 	},
+}
+
+type SpotPriceResponse struct {
+	SpotPrice string `json:"spot_price"`
 }
