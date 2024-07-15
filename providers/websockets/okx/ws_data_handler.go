@@ -124,7 +124,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeToTickersRequestMessage(instruments)
+	return h.NewSubscribeToTickersRequestMessage(instruments)
 }
 
 // HeartBeatMessages is not used for okx.

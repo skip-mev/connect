@@ -62,6 +62,10 @@ const (
 	// a provider can handle per-connection.  When this value is 0, one connection
 	// will handle all subscriptions.
 	DefaultMaxSubscriptionsPerConnection = 0
+
+	// DefaultMaxSubscriptionsPerBatch is the default maximum number of subscriptions
+	// that can be assigned to a single batch/write/message.
+	DefaultMaxSubscriptionsPerBatch = 1
 )
 
 // WebSocketConfig defines a config for a websocket based data provider.
@@ -133,6 +137,10 @@ type WebSocketConfig struct {
 	// can be assigned to a single connection for this provider.  The null value (0),
 	// indicates that there is no limit per connection.
 	MaxSubscriptionsPerConnection int `json:"maxSubscriptionsPerConnection"`
+
+	// MaxSubscriptionsPerBatch is the maximum number of subscription messages that the
+	// provider will send in a single batch/write.
+	MaxSubscriptionsPerBatch int `json:"maxSubscriptionsPerBatch"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -201,6 +209,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.MaxSubscriptionsPerConnection < 0 {
 		return fmt.Errorf("websocket max subscriptions per connection cannot be negative")
+	}
+
+	if c.MaxSubscriptionsPerBatch < 1 {
+		return fmt.Errorf("websocket max subscriptions per batch must be greater than 0")
 	}
 
 	return nil

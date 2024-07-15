@@ -11,7 +11,10 @@ const (
 	// URLProd is the public BitFinex Websocket URL.
 	URLProd = "wss://api-pub.bitfinex.com/ws/2"
 
-	MaxSubscriptionsPerConnection = 30
+	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions
+	// per connection. By default, BitFinex accepts up to 30 subscriptions per connection.
+	// However, we limit this to 20 to prevent overloading the connection.
+	DefaultMaxSubscriptionsPerConnection = 20
 )
 
 // DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
@@ -31,5 +34,8 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	PingInterval:                  config.DefaultPingInterval,
 	WriteInterval:                 config.DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+	// Note that BitFinex does not support batch subscriptions. As such each new
+	// market will be subscribed to with a new message.
+	MaxSubscriptionsPerBatch: config.DefaultMaxSubscriptionsPerBatch,
 }

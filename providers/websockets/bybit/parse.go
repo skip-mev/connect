@@ -26,6 +26,7 @@ func (h *WebSocketHandler) parseSubscriptionResponse(resp SubscriptionResponse) 
 		return nil, nil
 	}
 
+	// TODO(david): Add a retry mechanism here.
 	if t := Operation(resp.Op); t == OperationSubscribe && !resp.Success {
 		return nil, fmt.Errorf("received error message: %s", resp.RetMsg)
 	}

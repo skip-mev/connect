@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -176,9 +177,13 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessages(t *testing.T) {
+	batchCfg := mexc.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
@@ -187,6 +192,7 @@ func TestCreateMessages(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
+			cfg: mexc.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8"]}`
 				return []handlers.WebsocketEncodedMessage{[]byte(msg)}
@@ -200,6 +206,7 @@ func TestCreateMessages(t *testing.T) {
 				ethusdt,
 				atomusdc,
 			},
+			cfg: mexc.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg1 := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8"]}`
 				msg2 := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@ETHUSDT@UTC+8"]}`
@@ -208,11 +215,39 @@ func TestCreateMessages(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "multiple currency pairs with batch",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msg1 := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8"]}`
+				return []handlers.WebsocketEncodedMessage{[]byte(msg1)}
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple currency pairs with batch and remainder",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				atomusdc,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msg1 := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8"]}`
+				msg2 := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@ATOMUSDC@UTC+8"]}`
+				return []handlers.WebsocketEncodedMessage{[]byte(msg1), []byte(msg2)}
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultWebSocketConfig)
+			wsHandler, err := mexc.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

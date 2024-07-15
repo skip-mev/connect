@@ -3,7 +3,9 @@ package kraken
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -158,19 +160,25 @@ type Subscription struct {
 
 // NewSubscribeRequestMessage returns a new SubscribeRequestMessage with the
 // given asset pairs.
-func NewSubscribeRequestMessage(
+func (h *WebSocketHandler) NewSubscribeRequestMessage(
 	instruments []string,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(
 			SubscribeRequestMessage{
 				Event: string(SubscribeEvent),
-				Pair:  []string{instrument},
+				Pair:  instruments[start:end],
 				Subscription: Subscription{
 					Name: string(TickerChannel),
 				},

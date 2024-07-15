@@ -104,14 +104,13 @@ func (h *WebSocketHandler) CreateMessages(
 	}
 
 	instruments := make([]string, 0)
-
 	for _, ticker := range tickers {
 		mexcTicker := fmt.Sprintf("%s%s%s", string(MiniTickerChannel), strings.ToUpper(ticker.GetOffChainTicker()), "@UTC+8")
 		instruments = append(instruments, mexcTicker)
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeRequestMessage(instruments)
+	return h.NewSubscribeRequestMessage(instruments)
 }
 
 // HeartBeatMessages is used by the MEXC handler to send heart beat messages to the data provider.
