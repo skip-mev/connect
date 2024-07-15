@@ -3,7 +3,9 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -91,19 +93,25 @@ type SubscriptionTopic struct {
 
 // NewSubscribeToTickersRequestMessage returns a new SubscribeRequestMessage for subscribing
 // to the tickers channel.
-func NewSubscribeToTickersRequestMessage(
+func (h *WebSocketHandler) NewSubscribeToTickersRequestMessage(
 	instruments []SubscriptionTopic,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for this batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(
 			SubscribeRequestMessage{
 				Operation: string(OperationSubscribe),
-				Arguments: []SubscriptionTopic{instrument},
+				Arguments: instruments[start:end],
 			},
 		)
 		if err != nil {

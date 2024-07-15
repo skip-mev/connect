@@ -108,7 +108,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeRequest(instruments)
+	return h.NewSubscribeRequest(instruments)
 }
 
 // HeartBeatMessages is not used for Gate.io.

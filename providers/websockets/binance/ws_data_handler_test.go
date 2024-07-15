@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -19,6 +20,7 @@ var (
 	logger  = zap.NewExample()
 	btcusdt = types.NewProviderTicker("BTCUSDT", "")
 	ethusdt = types.NewProviderTicker("ETHUSDT", "")
+	mogusdt = types.NewProviderTicker("MOGUSDT", "")
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -301,15 +303,20 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessages(t *testing.T) {
+	batchCfg := binance.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	cases := []struct {
 		name        string
 		ticker      []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []binance.SubscribeMessageRequest
 		expectedErr bool
 	}{
 		{
 			name:   "no tickers",
 			ticker: []types.ProviderTicker{},
+			cfg:    binance.DefaultWebSocketConfig,
 			expected: func() []binance.SubscribeMessageRequest {
 				return []binance.SubscribeMessageRequest{}
 			},
@@ -320,6 +327,7 @@ func TestCreateMessages(t *testing.T) {
 			ticker: []types.ProviderTicker{
 				btcusdt,
 			},
+			cfg: binance.DefaultWebSocketConfig,
 			expected: func() []binance.SubscribeMessageRequest {
 				return []binance.SubscribeMessageRequest{
 					{
@@ -340,6 +348,7 @@ func TestCreateMessages(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
+			cfg: binance.DefaultWebSocketConfig,
 			expected: func() []binance.SubscribeMessageRequest {
 				return []binance.SubscribeMessageRequest{
 					{
@@ -362,11 +371,66 @@ func TestCreateMessages(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "multiple tickers with batch config",
+			ticker: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []binance.SubscribeMessageRequest {
+				return []binance.SubscribeMessageRequest{
+					{
+						Method: string(binance.SubscribeMethod),
+						Params: []string{
+							"btcusdt@aggTrade",
+							"btcusdt@ticker",
+							"ethusdt@aggTrade",
+							"ethusdt@ticker",
+						},
+						ID: 1,
+					},
+				}
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple tickers with batch config and multiple batches",
+			ticker: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				mogusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []binance.SubscribeMessageRequest {
+				return []binance.SubscribeMessageRequest{
+					{
+						Method: string(binance.SubscribeMethod),
+						Params: []string{
+							"btcusdt@aggTrade",
+							"btcusdt@ticker",
+							"ethusdt@aggTrade",
+							"ethusdt@ticker",
+						},
+						ID: 1,
+					},
+					{
+						Method: string(binance.SubscribeMethod),
+						Params: []string{
+							"mogusdt@aggTrade",
+							"mogusdt@ticker",
+						},
+						ID: 2,
+					},
+				}
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := binance.NewWebSocketDataHandler(logger, binance.DefaultWebSocketConfig)
+			handler, err := binance.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessages(tc.ticker)

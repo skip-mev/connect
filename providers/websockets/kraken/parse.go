@@ -65,7 +65,7 @@ func (h *WebSocketHandler) parseBaseMessage(message []byte, event Event) ([]hand
 				zap.String("error", resp.ErrorMessage),
 			)
 
-			return NewSubscribeRequestMessage([]string{resp.Pair})
+			return h.NewSubscribeRequestMessage([]string{resp.Pair})
 		default:
 			return nil, fmt.Errorf("unknown subscription status %s", status)
 		}
