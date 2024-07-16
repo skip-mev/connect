@@ -4,17 +4,12 @@ title: Quickstart
 icon: space-station-moon
 ---
 
-<Note>
-**Running Connect? Join our [Discord](https://discord.gg/amAgf9Z39w)!**
-</Note>
-
 ## Installation
 
-First things first, lets get Connect on your machine.
 
 ### From GitHub Releases
 
-Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and install the binary.
+Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and download the binary that matches your machine's architecture.
 
 ### From Source
 To install from source, you'll need [Git](https://git-scm.com/) and [Go](https://go.dev/).
@@ -31,59 +26,27 @@ Let's check Connect is properly installed on your machine.
 You should see the version printed in your terminal after running the following command:
 ```shell
 slinky version
-````
-
-## Configuration
-
-We need to configure the two sides of Connect before we get connected to data; the chain application, and the oracle.
-
-Lets start with the on-chain config.
-
-<Tip>
-    Are you running Connect on a separate machine than your application? Make sure to change the `oracle_address` in the app.toml example below.
-</Tip>
-
-### Chain Configuration
-
-Configuration the application to work with Connect, we just need to edit the `app.toml`.
-
-**Example**:
-
-```toml app.toml
-# ... other application configurations
-[oracle]
-enabled = "true"
-oracle_address = "localhost:8080"
-client_timeout = "250ms"
-metrics_enabled = "true"
 ```
 
-| Key               | Description                                                                                             |
-|-------------------|---------------------------------------------------------------------------------------------------------|
-| `enabled`         | Whether or not the oracle should be enabled on your infrastructure.                                     |
-| `oracle_address`  | The address of the Connect oracle.                                                                      |
-| `client_timeout`  | The amount of time the application will wait for a response from the oracle.                            |
-| `metrics_enabled` | Set to true if you want metrics emitted from your Connect oracle. See TODO for more details on metrics. |
+## Run Connect
 
-
-
-## 4. Run the Connect Sidecar ✅
-
-You can run connect by running the following command:
+Running connect is done via the following command:
 
 ```shell
 slinky
 ```
 
-You can verify whether prices are being retrieved by running the following command:
+### Verify Connect
+
+To verify Connect is working, run the following command:
 
 ```shell
 curl 'http://localhost:8080/slinky/oracle/v1/prices' | jq .
 ```
 
-You should see output similar to the following:
+The output of the command should look similar to this:
 
-```JSON
+```json
 {
   "prices": {
     "ATOM/USD": "920650000",
@@ -96,16 +59,19 @@ You should see output similar to the following:
   },
   "timestamp": "2024-01-23T01:15:09.776890Z"
 }
+
 ```
 
-## 5. Start the chain application ✅
+## Run Chain
 
-Starting the chain application should be no different than starting the application without the sidecar.
+In order for the chain binary to get prices from Connect, we need to add the following lines under the `[oracle]` heading to your `app.toml`.
 
-```shell
-testappd start
+```toml app.toml
+[oracle]
+enabled = "true"
+oracle_address = "localhost:8080"
+client_timeout = "250ms"
+metrics_enabled = "true"
 ```
 
-## Troubleshooting
-
-If you are having issues running the oracle sidecar, please see the [Troubleshooting section](validator/troubleshooting.mdx) for more information.
+Then, start your chain as normal. To check that the symbiosis between Connect and the chain was successful, head over to METRICS TODO.

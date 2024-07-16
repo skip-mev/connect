@@ -33,19 +33,16 @@
   },
   "navigation": [ 
     {
-      "group": "🔮 General",
+      "group": "General",
       "pages": [
-        "overview",
-        "security-properties",
-        "slashing",
-        "upcoming-work",
-        "getting-started"
+        "introduction"
       ]
     },
     {
       "group": "Validators",
       "pages": [
         "validators/quickstart",
+        "validators/configuration",
         "validators/validator-app-config",
         "validators/validator-connect-config",
         "validators/troubleshooting",
