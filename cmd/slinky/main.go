@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 
 	_ "net/http/pprof" //nolint: gosec
@@ -64,6 +66,7 @@ var (
 	maxAge              int
 	disableCompressLogs bool
 	disableRotatingLogs bool
+	useCMCOnly          bool
 )
 
 const (
@@ -176,6 +179,13 @@ func init() {
 		"",
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
 	)
+	rootCmd.Flags().BoolVarP(
+		&useCMCOnly,
+		"use-cmc-only",
+		"",
+		false,
+		"Use CoinMarketCap only for price data. **This should only be used for testing.**. Only works if you pair this with the --market-config-path flag.",
+	)
 	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 	rootCmd.MarkFlagsMutuallyExclusive("market-map-endpoint", "market-config-path")
 
@@ -234,6 +244,10 @@ func runOracle() error {
 		marketCfg, err = mmtypes.ReadMarketMapFromFile(marketCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read market config file: %w", err)
+		}
+
+		if useCMCOnly {
+			marketCfg = filterToOnlyCMCMarkets(marketCfg)
 		}
 	}
 
@@ -342,4 +356,59 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	}
 
 	return cfg, fmt.Errorf("no market-map provider found in config")
+}
+
+// filterToOnlyCMCMarkets is a helper function that filters out all markets that are not from CoinMarketCap. It
+// mutates the marketmap to only include CoinMarketCap markets.
+func filterToOnlyCMCMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
+	res := mmtypes.MarketMap{
+		Markets: make(map[string]mmtypes.Market),
+	}
+
+	// Filter out all markets that are not from CoinMarketCap.
+	for _, market := range marketmap.Markets {
+		var meta metaDataJson
+		if err := json.Unmarshal([]byte(market.Ticker.Metadata_JSON), &meta); err != nil {
+			continue
+		}
+
+		var id string
+		for _, aggregateID := range meta.AggregateIDs {
+			if aggregateID.Venue == "coinmarketcap" {
+				id = aggregateID.ID
+				break
+			}
+		}
+
+		if len(id) == 0 {
+			continue
+		}
+
+		resTicker := market.Ticker
+		resTicker.MinProviderCount = 1
+
+		providers := []mmtypes.ProviderConfig{
+			{
+				Name:           coinmarketcap.Name,
+				OffChainTicker: id,
+			},
+		}
+
+		res.Markets[resTicker.CurrencyPair.String()] = mmtypes.Market{
+			Ticker:          resTicker,
+			ProviderConfigs: providers,
+		}
+	}
+
+	return res
+}
+
+// Ref:
+// {\"reference_price\":0,\"liquidity\":0,\"aggregate_ids\":[{\"venue\":\"coinmarketcap\",\"ID\":\"4030\"}]}
+type metaDataJson struct {
+	AggregateIDs []aggregateIDsJson `json:"aggregate_ids"`
+}
+type aggregateIDsJson struct {
+	Venue string `json:"venue"`
+	ID    string `json:"ID"`
 }
