@@ -191,7 +191,7 @@ func initAppConfig() (string, interface{}) {
 		OracleAddress:  "oracle_with_blockchain:8080",
 		ClientTimeout:  250 * time.Millisecond,
 		MetricsEnabled: true,
-		MaxAge:         5 * time.Second,
+		PriceTTL:       5 * time.Second,
 		Interval:       1 * time.Second,
 	}
 

@@ -31,7 +31,7 @@ func TestNewPriceDaemon(t *testing.T) {
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			client: &oracle.NoOpClient{},
 			err:    false,
@@ -44,7 +44,7 @@ func TestNewPriceDaemon(t *testing.T) {
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			client: &oracle.NoOpClient{},
 			err:    true,
@@ -66,7 +66,7 @@ func TestNewPriceDaemon(t *testing.T) {
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			client: nil,
 			err:    true,
@@ -92,7 +92,7 @@ func TestPriceDaemon_Start(t *testing.T) {
 		OracleAddress: "localhost:8080",
 		ClientTimeout: time.Second,
 		Interval:      time.Millisecond * 100,
-		MaxAge:        time.Second,
+		PriceTTL:      time.Second,
 	}
 
 	t.Run("stops with context cancel", func(t *testing.T) {
@@ -152,7 +152,7 @@ func TestPriceDaemon_Start(t *testing.T) {
 			Enabled:       true,
 			OracleAddress: "localhost:8080",
 			ClientTimeout: time.Second,
-			MaxAge:        time.Millisecond * 250,
+			PriceTTL:      time.Millisecond * 250,
 			Interval:      time.Millisecond * 100,
 		}
 
@@ -178,7 +178,7 @@ func TestPriceDaemon_Start(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, prices, resp.Prices)
 
-		time.Sleep(cfg.MaxAge * 2)
+		time.Sleep(cfg.PriceTTL * 2)
 		resp, err = d.Prices(context.Background(), &types.QueryPricesRequest{})
 		require.Error(t, err)
 		require.Nil(t, resp)

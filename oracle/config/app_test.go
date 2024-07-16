@@ -16,21 +16,21 @@ enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
 interval = "10s"
-max_age = "20s"
+price_ttl = "20s"
 `
 
 	missingAddressConfig = `
 enabled = true
 client_timeout = "10s"
 interval = "10s"
-max_age = "10s"
+price_ttl = "10s"
 `
 
 	missingTimeoutConfig = `
 enabled = true
 oracle_address = "localhost:8080"
 interval = "10s"
-max_age = "10s"
+price_ttl = "10s"
 `
 
 	missingMaxAgeConfig = `
@@ -44,7 +44,7 @@ interval = "10s"
 enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
-max_age = "10s"
+price_ttl = "10s"
 `
 
 	invalidMaxAgeConfig = `
@@ -52,7 +52,7 @@ enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
 interval = "10s"
-max_age = "lel"
+price_ttl = "lel"
 `
 
 	invalidIntervalConfig = `
@@ -60,7 +60,7 @@ enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
 interval = "lel"
-max_age = "10s"
+price_ttl = "10s"
 `
 )
 
@@ -82,7 +82,7 @@ func TestValidateBasic(t *testing.T) {
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			expectedErr: false,
 		},
@@ -94,7 +94,7 @@ func TestValidateBasic(t *testing.T) {
 				ClientTimeout:  time.Second,
 				MetricsEnabled: true,
 				Interval:       time.Second,
-				MaxAge:         time.Second * 2,
+				PriceTTL:       time.Second * 2,
 			},
 			expectedErr: false,
 		},
@@ -104,7 +104,7 @@ func TestValidateBasic(t *testing.T) {
 				Enabled:       true,
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			expectedErr: true,
 		},
@@ -114,7 +114,7 @@ func TestValidateBasic(t *testing.T) {
 				Enabled:       true,
 				OracleAddress: "localhost:8080",
 				Interval:      time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			expectedErr: true,
 		},
@@ -134,7 +134,7 @@ func TestValidateBasic(t *testing.T) {
 				Enabled:       true,
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
-				MaxAge:        time.Second * 2,
+				PriceTTL:      time.Second * 2,
 			},
 			expectedErr: true,
 		},
@@ -145,7 +145,7 @@ func TestValidateBasic(t *testing.T) {
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
 				Interval:      time.Second,
-				MaxAge:        time.Millisecond,
+				PriceTTL:      time.Millisecond,
 			},
 			expectedErr: true,
 		},

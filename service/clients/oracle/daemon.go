@@ -113,7 +113,7 @@ func (d *PriceDaemon) Prices(
 		return nil, fmt.Errorf("no prices fetched by price daemon yet")
 	}
 
-	if time.Since(ts) > d.config.MaxAge {
+	if time.Since(ts) > d.config.PriceTTL {
 		return nil, fmt.Errorf(
 			"latest prices from the price daemon are too stale; last fetched at %s; diff %s ago",
 			ts.Format(time.RFC3339),
