@@ -183,4 +183,57 @@ func TestPriceDaemon_Start(t *testing.T) {
 		require.Error(t, err)
 		require.Nil(t, resp)
 	})
+
+	t.Run("returns an error if it never started", func(t *testing.T) {
+		client := mocks.NewOracleClient(t)
+		d, err := oracle.NewPriceDaemon(logger, cfg, client)
+		require.NoError(t, err)
+
+		resp, err := d.Prices(context.Background(), &types.QueryPricesRequest{})
+		require.Error(t, err)
+		require.Nil(t, resp)
+	})
+
+	t.Run("stops after channel recieve", func(t *testing.T) {
+		client := mocks.NewOracleClient(t)
+		client.On("Start", mock.Anything).Return(nil).Once()
+		client.On("Prices", mock.Anything, mock.Anything).Return(&types.QueryPricesResponse{}, nil).Maybe()
+		client.On("Stop").Return(nil).Once()
+
+		d, err := oracle.NewPriceDaemon(logger, cfg, client)
+		require.NoError(t, err)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		go func() {
+			time.Sleep(time.Millisecond * 300)
+			d.Stop()
+		}()
+
+		err = d.Start(ctx)
+		require.NoError(t, err)
+	})
+
+	t.Run("client only returns errors", func(t *testing.T) {
+		client := mocks.NewOracleClient(t)
+		client.On("Start", mock.Anything).Return(nil).Once()
+		client.On("Prices", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("failed to make request")).Maybe()
+		client.On("Stop").Return(nil).Once()
+
+		d, err := oracle.NewPriceDaemon(logger, cfg, client)
+		require.NoError(t, err)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() {
+			time.Sleep(time.Millisecond * 300)
+			cancel()
+		}()
+
+		err = d.Start(ctx)
+		require.Error(t, err)
+
+		resp, err := d.Prices(context.Background(), &types.QueryPricesRequest{})
+		require.Error(t, err)
+		require.Nil(t, resp)
+	})
 }

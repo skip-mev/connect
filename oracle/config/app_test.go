@@ -46,6 +46,22 @@ oracle_address = "localhost:8080"
 client_timeout = "10s"
 max_age = "10s"
 `
+
+	invalidMaxAgeConfig = `
+enabled = true
+oracle_address = "localhost:8080"
+client_timeout = "10s"
+interval = "10s"
+max_age = "lel"
+`
+
+	invalidIntervalConfig = `
+enabled = true
+oracle_address = "localhost:8080"
+client_timeout = "10s"
+interval = "lel"
+max_age = "10s"
+`
 )
 
 func TestValidateBasic(t *testing.T) {
@@ -176,6 +192,16 @@ func TestReadConfigFromFile(t *testing.T) {
 		{
 			name:        "missing interval field config",
 			config:      missingIntervalConfig,
+			expectedErr: true,
+		},
+		{
+			name:        "invalid max age config",
+			config:      invalidMaxAgeConfig,
+			expectedErr: true,
+		},
+		{
+			name:        "invalid interval config",
+			config:      invalidIntervalConfig,
 			expectedErr: true,
 		},
 	}
