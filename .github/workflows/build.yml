@@ -68,7 +68,7 @@ jobs:
             type=sha,priority=700,prefix=
             type=ref,event=branch
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: "./contrib/images/${{ matrix.image.file }}"
