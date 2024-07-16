@@ -367,7 +367,7 @@ func filterToOnlyCMCMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
 
 	// Filter out all markets that are not from CoinMarketCap.
 	for _, market := range marketmap.Markets {
-		var meta metaDataJson
+		var meta metaDataJSON
 		if err := json.Unmarshal([]byte(market.Ticker.Metadata_JSON), &meta); err != nil {
 			continue
 		}
@@ -403,12 +403,10 @@ func filterToOnlyCMCMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
 	return res
 }
 
-// Ref:
-// {\"reference_price\":0,\"liquidity\":0,\"aggregate_ids\":[{\"venue\":\"coinmarketcap\",\"ID\":\"4030\"}]}
-type metaDataJson struct {
-	AggregateIDs []aggregateIDsJson `json:"aggregate_ids"`
+type metaDataJSON struct {
+	AggregateIDs []aggregateIDsJSON `json:"aggregate_ids"`
 }
-type aggregateIDsJson struct {
+type aggregateIDsJSON struct {
 	Venue string `json:"venue"`
 	ID    string `json:"ID"`
 }
