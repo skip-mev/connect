@@ -16,7 +16,7 @@ enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
 interval = "10s"
-max_age = "10s"
+max_age = "20s"
 `
 
 	missingAddressConfig = `
