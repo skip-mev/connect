@@ -11,10 +11,10 @@ import (
 
 var (
 	// MaxInterval is the maximum time between each price update request.
-	MaxInterval = 2 * time.Minute
+	MaxInterval = 1 * time.Minute
 	// MaxMaxAge is the maximum maximum age of the latest price response before it is
 	// considered stale.
-	MaxMaxAge = 2 * time.Minute
+	MaxMaxAge = 1 * time.Minute
 )
 
 const (
@@ -48,13 +48,13 @@ client_timeout = "{{ .Oracle.ClientTimeout }}"
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 
 # MaxAge is the maximum age of the latest price response before it is considered stale. 
-# The recommended max age is 5 seconds. If this is greater than 2 minutes, the app
+# The recommended max age is 30 seconds. If this is greater than 1 minute, the app
 # will not start.
 max_age = "{{ .Oracle.MaxAge }}"
 
 # Interval is the time between each price update request. The recommended interval
-# is the block time of the chain. Otherwise, 1 second is a good default. If this
-# is greater than 2 minutes, the app will not start.
+# is the block time of the chain. Otherwise, 2 seconds is a good default. If this
+# is greater than 1 minute, the app will not start.
 interval = "{{ .Oracle.Interval }}"
 `
 )
@@ -113,6 +113,10 @@ func (c *AppConfig) ValidateBasic() error {
 
 	if c.Interval <= 0 || c.Interval > MaxInterval {
 		return fmt.Errorf("oracle interval must be between 0 and %s", MaxInterval)
+	}
+
+	if c.Interval >= c.MaxAge {
+		return fmt.Errorf("oracle interval must be strictly less than max age")
 	}
 
 	return nil

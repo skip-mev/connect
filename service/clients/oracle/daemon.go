@@ -15,7 +15,6 @@ import (
 var _ OracleClient = (*PriceDaemon)(nil)
 
 type PriceDaemon struct {
-	mutex  sync.Mutex
 	logger log.Logger
 
 	// config is the configuration of the daemon.
@@ -23,11 +22,9 @@ type PriceDaemon struct {
 	// client is the underlying oracle client used to fetch prices.
 	OracleClient
 	// latestResponse is the latest price response fetched by the daemon.
-	latestResponse *types.QueryPricesResponse
-	// timestamp is the time at which the latest response was fetched.
-	timestamp time.Time
+	resp ThreadSafeResponse
 	// doneCh is a channel that is closed when the daemon is stopped.
-	doneCh chan error
+	doneCh chan struct{}
 }
 
 // NewPriceDaemon creates a new price daemon with the given configuration.
@@ -52,7 +49,7 @@ func NewPriceDaemon(
 		logger:       logger.With("process", "price_daemon"),
 		config:       cfg,
 		OracleClient: client,
-		doneCh:       make(chan error),
+		doneCh:       make(chan struct{}),
 	}, nil
 }
 
@@ -61,6 +58,7 @@ func (d *PriceDaemon) Start(ctx context.Context) error {
 	if err := d.OracleClient.Start(ctx); err != nil {
 		return err
 	}
+	defer d.OracleClient.Stop()
 
 	ticker := time.NewTicker(d.config.Interval)
 	defer ticker.Stop()
@@ -68,21 +66,23 @@ func (d *PriceDaemon) Start(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			d.logger.Info("stopping price daemon")
+			d.logger.Info("stopping price daemon from context")
+			return ctx.Err()
+		case <-d.doneCh:
+			d.logger.Info("price daemon stopped")
+			close(d.doneCh)
 			return nil
-		case err := <-d.doneCh:
-			return err
 		case <-ticker.C:
-			d.fetchPrices()
+			d.fetchPrices(ctx)
 		}
 	}
 }
 
 // fetchPrices fetches the latest prices from the oracle client.
-func (d *PriceDaemon) fetchPrices() {
+func (d *PriceDaemon) fetchPrices(ctx context.Context) {
 	d.logger.Debug("fetching prices")
 
-	fetchCtx, cancel := context.WithTimeout(context.Background(), d.config.ClientTimeout)
+	fetchCtx, cancel := context.WithTimeout(ctx, d.config.ClientTimeout)
 	defer cancel()
 
 	resp, err := d.OracleClient.Prices(fetchCtx, &types.QueryPricesRequest{})
@@ -96,10 +96,9 @@ func (d *PriceDaemon) fetchPrices() {
 		return
 	}
 
-	d.mutex.Lock()
-	d.latestResponse = resp
-	d.timestamp = time.Now()
-	d.mutex.Unlock()
+	ts := time.Now()
+	d.logger.Debug("fetched prices", "timestamp", ts, "prices", resp.Prices)
+	d.resp.Update(resp)
 }
 
 // Prices returns the latest price response fetched by the daemon. If the latest response
@@ -109,23 +108,57 @@ func (d *PriceDaemon) Prices(
 	_ *types.QueryPricesRequest,
 	_ ...grpc.CallOption,
 ) (*types.QueryPricesResponse, error) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-
-	if d.latestResponse == nil {
+	latest, ts := d.resp.Get()
+	if latest == nil {
 		return nil, fmt.Errorf("no prices fetched by price daemon yet")
 	}
 
-	if time.Since(d.timestamp) > d.config.MaxAge {
-		return nil, fmt.Errorf("latest prices from the price daemon are too stale; last fetched at %s", d.timestamp.Format(time.RFC3339))
+	if time.Since(ts) > d.config.MaxAge {
+		return nil, fmt.Errorf(
+			"latest prices from the price daemon are too stale; last fetched at %s; diff %s ago",
+			ts.Format(time.RFC3339),
+			time.Since(ts).String(),
+		)
 	}
 
-	return d.latestResponse, nil
+	return latest, nil
 }
 
 // Stop stops the price daemon.
 func (d *PriceDaemon) Stop() error {
-	err := d.OracleClient.Stop()
-	d.doneCh <- err
-	return err
+	d.doneCh <- struct{}{}
+	return nil
+}
+
+// ThreadSafeResponse is a thread-safe wrapper around a QueryPricesResponse.
+type ThreadSafeResponse struct {
+	sync.Mutex
+
+	resp      *types.QueryPricesResponse
+	timestamp time.Time
+}
+
+// NewThreadSafeResponse creates a new thread-safe response with the given response.
+func NewThreadSafeResponse() *ThreadSafeResponse {
+	return &ThreadSafeResponse{
+		resp:      nil,
+		timestamp: time.Time{},
+	}
+}
+
+// Update updates the response and timestamp of the thread-safe response.
+func (r *ThreadSafeResponse) Update(resp *types.QueryPricesResponse) {
+	r.Lock()
+	defer r.Unlock()
+
+	r.resp = resp
+	r.timestamp = time.Now()
+}
+
+// Get returns the response and timestamp of the thread-safe response.
+func (r *ThreadSafeResponse) Get() (*types.QueryPricesResponse, time.Time) {
+	r.Lock()
+	defer r.Unlock()
+
+	return r.resp, r.timestamp
 }

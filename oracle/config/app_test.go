@@ -15,16 +15,36 @@ var (
 enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
+interval = "10s"
+max_age = "10s"
 `
 
 	missingAddressConfig = `
 enabled = true
 client_timeout = "10s"
+interval = "10s"
+max_age = "10s"
 `
 
 	missingTimeoutConfig = `
 enabled = true
 oracle_address = "localhost:8080"
+interval = "10s"
+max_age = "10s"
+`
+
+	missingMaxAgeConfig = `
+enabled = true
+oracle_address = "localhost:8080"
+client_timeout = "10s"
+interval = "10s"
+`
+
+	missingIntervalConfig = `
+enabled = true
+oracle_address = "localhost:8080"
+client_timeout = "10s"
+max_age = "10s"
 `
 )
 
@@ -45,6 +65,8 @@ func TestValidateBasic(t *testing.T) {
 				Enabled:       true,
 				OracleAddress: "localhost:8080",
 				ClientTimeout: time.Second,
+				Interval:      time.Second,
+				MaxAge:        time.Second,
 			},
 			expectedErr: false,
 		},
@@ -55,16 +77,8 @@ func TestValidateBasic(t *testing.T) {
 				OracleAddress:  "localhost:8080",
 				ClientTimeout:  time.Second,
 				MetricsEnabled: true,
-			},
-			expectedErr: false,
-		},
-		{
-			name: "good config with metrics",
-			config: config.AppConfig{
-				Enabled:        true,
-				OracleAddress:  "localhost:8080",
-				ClientTimeout:  time.Second,
-				MetricsEnabled: true,
+				Interval:       time.Second,
+				MaxAge:         time.Second,
 			},
 			expectedErr: false,
 		},
@@ -73,6 +87,8 @@ func TestValidateBasic(t *testing.T) {
 			config: config.AppConfig{
 				Enabled:       true,
 				ClientTimeout: time.Second,
+				Interval:      time.Second,
+				MaxAge:        time.Second,
 			},
 			expectedErr: true,
 		},
@@ -81,6 +97,39 @@ func TestValidateBasic(t *testing.T) {
 			config: config.AppConfig{
 				Enabled:       true,
 				OracleAddress: "localhost:8080",
+				Interval:      time.Second,
+				MaxAge:        time.Second,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with no max age",
+			config: config.AppConfig{
+				Enabled:       true,
+				OracleAddress: "localhost:8080",
+				ClientTimeout: time.Second,
+				Interval:      time.Second,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with no interval",
+			config: config.AppConfig{
+				Enabled:       true,
+				OracleAddress: "localhost:8080",
+				ClientTimeout: time.Second,
+				MaxAge:        time.Second,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with max age being less than interval",
+			config: config.AppConfig{
+				Enabled:       true,
+				OracleAddress: "localhost:8080",
+				ClientTimeout: time.Second,
+				Interval:      time.Second,
+				MaxAge:        time.Millisecond,
 			},
 			expectedErr: true,
 		},
@@ -115,8 +164,18 @@ func TestReadConfigFromFile(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name:        "missing field config",
+			name:        "missing timeout field config",
 			config:      missingTimeoutConfig,
+			expectedErr: true,
+		},
+		{
+			name:        "missing max age field config",
+			config:      missingMaxAgeConfig,
+			expectedErr: true,
+		},
+		{
+			name:        "missing interval field config",
+			config:      missingIntervalConfig,
 			expectedErr: true,
 		},
 	}
