@@ -100,23 +100,23 @@ func (c *AppConfig) ValidateBasic() error {
 	}
 
 	if len(c.OracleAddress) == 0 {
-		return fmt.Errorf("oracle address must not be empty")
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle address must not be empty")
 	}
 
 	if c.ClientTimeout <= 0 {
-		return fmt.Errorf("oracle client timeout must be greater than 0")
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle client timeout must be greater than 0")
 	}
 
 	if c.MaxAge <= 0 || c.MaxAge > MaxMaxAge {
-		return fmt.Errorf("oracle max age must be between 0 and %s", MaxMaxAge)
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle max age must be between 0 and %s", MaxMaxAge)
 	}
 
 	if c.Interval <= 0 || c.Interval > MaxInterval {
-		return fmt.Errorf("oracle interval must be between 0 and %s", MaxInterval)
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle interval must be between 0 and %s", MaxInterval)
 	}
 
 	if c.Interval >= c.MaxAge {
-		return fmt.Errorf("oracle interval must be strictly less than max age")
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle interval must be strictly less than max age")
 	}
 
 	return nil
