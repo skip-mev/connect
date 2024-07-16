@@ -138,7 +138,7 @@ type ThreadSafeResponse struct {
 	timestamp time.Time
 }
 
-// NewThreadSafeResponse creates a new thread-safe response with the given response.
+// NewThreadSafeResponse creates a new thread-safe response.
 func NewThreadSafeResponse() *ThreadSafeResponse {
 	return &ThreadSafeResponse{
 		resp:      nil,
