@@ -194,7 +194,7 @@ func TestPriceDaemon_Start(t *testing.T) {
 		require.Nil(t, resp)
 	})
 
-	t.Run("stops after channel recieve", func(t *testing.T) {
+	t.Run("stops after channel receive", func(t *testing.T) {
 		client := mocks.NewOracleClient(t)
 		client.On("Start", mock.Anything).Return(nil).Once()
 		client.On("Prices", mock.Anything, mock.Anything).Return(&types.QueryPricesResponse{}, nil).Maybe()
