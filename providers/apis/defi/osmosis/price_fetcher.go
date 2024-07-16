@@ -59,7 +59,7 @@ func NewAPIPriceFetcher(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
-	client, err := NewMultiClient(logger, api, apiMetrics)
+	client, err := NewMultiClientFromEndpoints(logger, api, apiMetrics)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize client: %w", err)
 	}
@@ -114,6 +114,8 @@ func (pf *APIPriceFetcher) Fetch(
 	unresolved := make(oracletypes.UnResolvedPrices)
 
 	wg := sync.WaitGroup{}
+	unresolvedMtx := sync.Mutex{}
+	resolveMtx := sync.Mutex{}
 	wg.Add(len(tickers))
 
 	for _, ticker := range tickers {
@@ -127,6 +129,8 @@ func (pf *APIPriceFetcher) Fetch(
 			if !found {
 				metadata, err = pf.metaDataPerTicker.updateMetaDataCache(ticker)
 				if err != nil {
+					unresolvedMtx.Lock()
+					defer unresolvedMtx.Unlock()
 					unresolved[ticker] = providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							NoOsmosisMetadataForTickerError(ticker.String()),
@@ -146,6 +150,8 @@ func (pf *APIPriceFetcher) Fetch(
 				metadata.QuoteTokenDenom,
 			)
 			if err != nil {
+				unresolvedMtx.Lock()
+				defer unresolvedMtx.Unlock()
 				pf.logger.Error("failed to fetch spot price", zap.Error(err))
 				unresolved[ticker] = providertypes.UnresolvedResult{
 					ErrorWithCode: providertypes.NewErrorWithCode(
@@ -168,6 +174,8 @@ func (pf *APIPriceFetcher) Fetch(
 				return
 			}
 
+			resolveMtx.Lock()
+			defer resolveMtx.Unlock()
 			resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
 		}(ticker)
 	}

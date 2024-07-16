@@ -6,20 +6,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
 	"github.com/skip-mev/slinky/providers/apis/defi/osmosis/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 // TestMultiClient tests the MultiClient.
-func TestMultiJSONRPCClient(t *testing.T) {
-	cfg := raydium.DefaultAPIConfig
+func TestMultiClient(t *testing.T) {
+	cfg := osmosis.DefaultAPIConfig
 	cfg.Endpoints = []config.Endpoint{
 		{
 			URL: "http://localhost:8899",
@@ -71,7 +69,7 @@ func TestMultiJSONRPCClient(t *testing.T) {
 	})
 
 	// test adherence to the context
-	t.Run("test failures in underlying client", func(t *testing.T) {
+	t.Run("test failures an underlying client", func(t *testing.T) {
 		var (
 			poolID        uint64 = 1
 			baseAsset            = "test1"
@@ -85,12 +83,14 @@ func TestMultiJSONRPCClient(t *testing.T) {
 		// mocks
 		client1.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
-		}, nil)
+		}, nil).Once()
+
 		client2.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
-		}, nil)
+		}, nil).Once()
+
 		client3.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{},
-			fmt.Errorf("error"))
+			fmt.Errorf("error")).Once()
 
 		resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 		require.NoError(t, err)
@@ -111,15 +111,15 @@ func TestMultiJSONRPCClient(t *testing.T) {
 		defer cancel()
 
 		// mocks
-		client1.On("GetMultipleAccountsWithOpts", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client1.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
-		}, nil)
-		client2.On("GetMultipleAccountsWithOpts", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		}, nil).Once()
+		client2.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
-		}, nil)
-		client3.On("GetMultipleAccountsWithOpts", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		}, nil).Once()
+		client3.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
-		}, nil)
+		}, nil).Once()
 
 		resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 		require.NoError(t, err)

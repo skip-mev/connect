@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"sync"
 	"time"
 
@@ -162,7 +161,7 @@ func NewMultiClientFromEndpoints(
 		return nil, fmt.Errorf("invalid config: apiMetrics is nil")
 	}
 
-	var clients []Client
+	clients := make([]Client, 0, len(api.Endpoints))
 	for _, endpoint := range api.Endpoints {
 		c, err := NewClient(api, apiMetrics, endpoint)
 		if err != nil {
@@ -223,14 +222,15 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 // filterSpotPriceResponses currently just chooses a random response as there is no way to differentiate.
 // TODO differentiate.
 func filterSpotPriceResponses(responses []SpotPriceResponse) (SpotPriceResponse, error) {
-	var bestResp SpotPriceResponse
-
 	if len(responses) == 0 {
 		return SpotPriceResponse{}, fmt.Errorf("no responses found")
 	}
 
-	idx := rand.Intn(len(responses))
-	bestResp = responses[idx]
+	for _, resp := range responses {
+		if resp.SpotPrice != "" {
+			return resp, nil
+		}
+	}
 
-	return bestResp, nil
+	return SpotPriceResponse{}, fmt.Errorf("no responses found")
 }
