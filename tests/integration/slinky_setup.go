@@ -150,6 +150,8 @@ func SetOracleConfigsOnApp(node *cosmos.ChainNode) {
 	oracleAppConfig["client_timeout"] = "1s"
 	oracleAppConfig["metrics_enabled"] = true
 	oracleAppConfig["prometheus_server_address"] = fmt.Sprintf("localhost:%s", "8081")
+	oracleAppConfig["max_age"] = "20s"
+	oracleAppConfig["interval"] = "1s"
 
 	appConfig["oracle"] = oracleAppConfig
 	bz, err = toml.Marshal(appConfig)
