@@ -104,5 +104,9 @@ func (c *Client) GetWithContext(ctx context.Context, url string, opts ...GetOpti
 		return nil, fmt.Errorf("http get: %w", err)
 	}
 
-	return resp, errors.New(http.StatusText(resp.StatusCode))
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(http.StatusText(resp.StatusCode))
+	}
+
+	return resp, nil
 }

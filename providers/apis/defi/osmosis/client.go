@@ -79,12 +79,11 @@ func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, qu
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
-	url, err := createURL(c.endpoint.URL, poolID, baseAsset, quoteAsset)
+	url, err := CreateURL(c.endpoint.URL, poolID, baseAsset, quoteAsset)
 	if err != nil {
 		return SpotPriceResponse{}, err
 	}
 
-	// T
 	resp, err := c.httpClient.GetWithContext(ctx, url)
 	if err != nil {
 		return SpotPriceResponse{}, err
@@ -187,9 +186,9 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 	var wg sync.WaitGroup
 	wg.Add(len(mc.clients))
 
-	// to do mega parallel
 	for i, client := range mc.clients {
 		url := mc.api.Endpoints[i].URL
+
 		index := i
 		go func(index int, client Client) {
 			// Observe the latency of the request.
@@ -202,7 +201,7 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 			resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 			if err != nil {
 				mc.apiMetrics.AddRPCStatusCode(mc.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeError)
-				mc.logger.Error("failed to fetch accounts", zap.String("url", url), zap.Error(err))
+				mc.logger.Error("failed to spot price in sub client", zap.String("url", url), zap.Error(err))
 				return
 			}
 

@@ -3,8 +3,8 @@ package osmosis
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -13,12 +13,21 @@ import (
 )
 
 const (
-	Name      = "osmosis_api"
-	URLSuffix = "osmosis/poolmanager/v2/pools/%s/prices\\?base_asset_denom\\=%s\\&quote_asset_denom\\=%s"
+	Name              = "osmosis_api"
+	QueryURLCharacter = "?"
+	UrlSeparator      = "/"
+	URLSuffix         = "osmosis/poolmanager/v2/pools/%s/prices%sbase_asset_denom=%s&quote_asset_denom=%s"
 )
 
-func createURL(baseURL string, poolID uint64, baseAsset, quoteAsset string) (string, error) {
-	return url.JoinPath(baseURL, fmt.Sprintf(URLSuffix, strconv.FormatUint(poolID, 10), baseAsset, quoteAsset))
+// CreateURL creates the properly formatted osmosis query URL for spot price.
+func CreateURL(baseURL string, poolID uint64, baseAsset, quoteAsset string) (string, error) {
+	return strings.Join(
+		[]string{
+			baseURL,
+			fmt.Sprintf(URLSuffix, strconv.FormatUint(poolID, 10), QueryURLCharacter, baseAsset, quoteAsset),
+		},
+		UrlSeparator,
+	), nil
 }
 
 // NoOsmosisMetadataForTickerError is returned when there is no metadata associated with a given ticker.
@@ -115,7 +124,7 @@ var DefaultAPIConfig = config.APIConfig{
 	BatchSize:        25, // maximal # of accounts in getMultipleAccounts query is 100
 	Endpoints: []config.Endpoint{
 		{
-			URL: "osmosis-grpc.polkachu.com:12590",
+			URL: "https://osmosis-api.polkachu.com",
 		},
 	},
 }

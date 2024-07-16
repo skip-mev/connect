@@ -1,6 +1,6 @@
 module github.com/skip-mev/slinky
 
-go 1.22
+go 1.22.3
 
 require (
 	cosmossdk.io/api v0.7.5

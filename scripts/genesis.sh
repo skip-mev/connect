@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -eux
 
-go run $SCRIPT_DIR/genesis.go --use-core=$USE_CORE_MARKETS --use-raydium=$USE_RAYDIUM_MARKETS --use-uniswapv3-base=$USE_UNISWAPV3_BASE_MARKETS --use-coingecko=$USE_COINGECKO_MARKETS --use-coinmarketcap=$USE_COINMARKETCAP_MARKETS --temp-file=markets.json
+go run $SCRIPT_DIR/genesis.go --use-core=$USE_CORE_MARKETS --use-raydium=$USE_RAYDIUM_MARKETS \
+--use-uniswapv3-base=$USE_UNISWAPV3_BASE_MARKETS --use-coingecko=$USE_COINGECKO_MARKETS \
+--use-coinmarketcap=$USE_COINMARKETCAP_MARKETS --use-osmosis=$USE_OSMOSIS_MARKETS --temp-file=markets.json
 MARKETS=$(cat markets.json)
 
 echo "MARKETS content: $MARKETS"

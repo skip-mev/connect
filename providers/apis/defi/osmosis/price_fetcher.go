@@ -118,6 +118,8 @@ func (pf *APIPriceFetcher) Fetch(
 	resolveMtx := sync.Mutex{}
 	wg.Add(len(tickers))
 
+	pf.logger.Info("fetching for tickers", zap.Any("tickers", tickers))
+
 	for _, ticker := range tickers {
 		go func(ticker oracletypes.ProviderTicker) {
 			var err error
