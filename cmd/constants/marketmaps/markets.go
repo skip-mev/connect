@@ -9607,125 +9607,125 @@ var (
 
 	// OsmosisMarketMapJSON is the JSON representation of OsmosisMarketMap.
 	OsmosisMarketMapJSON = `
-	{
-      "markets": {
+{
+    "markets": {
         "STARS/USD": {
-          "ticker": {
-            "currency_pair": {
-              "Base": "STARS",
-              "Quote": "USD"
+            "ticker": {
+                "currency_pair": {
+                    "Base": "STARS",
+                    "Quote": "USD"
+                },
+                "decimals": 18,
+                "min_provider_count": 1,
+                "enabled": true,
+                "metadata_JSON": "{\"reference_price\":1,\"liquidity\":0,\"aggregate_ids\":[]}"
             },
-            "decimals": 18,
+            "provider_configs": [
+                {
+                    "name": "osmosis_api",
+                    "off_chain_ticker": "STARS/OSMO",
+                    "metadata_JSON": "{\"pool_id\":1096,\"base_token_denom\":\"ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4\",\"quote_token_denom\":\"uosmo\"}",
+                    "normalize_by_pair": {
+                        "Base": "OSMO",
+                        "Quote": "USD"
+                    }
+                }
+            ]
+        }
+    },
+    "USDT/USD": {
+        "ticker": {
+            "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+            },
+            "decimals": 9,
             "min_provider_count": 1,
             "enabled": true
-            "metadata_JSON": "{\"reference_price\":1,\"liquidity\":0,\"aggregate_ids\":[]}"
-          },
-          "provider_configs": [
+        },
+        "provider_configs": [
             {
-              "name": "osmosis_api",
-              "off_chain_ticker": "STARS/OSMO",
-              "metadata_JSON": "{\"pool_id\":1096,\"base_token_denom\":\"ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4\",\"quote_token_denom\":\"uosmo\"}"
-              "normalize_by_pair": {
+                "name": "binance_ws",
+                "off_chain_ticker": "USDCUSDT",
+                "invert": true
+            },
+            {
+                "name": "bybit_ws",
+                "off_chain_ticker": "USDCUSDT",
+                "invert": true
+            },
+            {
+                "name": "coinbase_ws",
+                "off_chain_ticker": "USDT-USD"
+            },
+            {
+                "name": "huobi_ws",
+                "off_chain_ticker": "ethusdt",
+                "normalize_by_pair": {
+                    "Base": "ETH",
+                    "Quote": "USD"
+                },
+                "invert": true
+            },
+            {
+                "name": "kraken_api",
+                "off_chain_ticker": "USDTZUSD"
+            },
+            {
+                "name": "kucoin_ws",
+                "off_chain_ticker": "BTC-USDT",
+                "normalize_by_pair": {
+                    "Base": "BTC",
+                    "Quote": "USD"
+                },
+                "invert": true
+            },
+            {
+                "name": "okx_ws",
+                "off_chain_ticker": "USDC-USDT",
+                "invert": true
+            },
+            {
+                "name": "crypto_dot_com_ws",
+                "off_chain_ticker": "USDT_USD"
+            }
+        ]
+    },
+    "OSMO/USD": {
+        "ticker": {
+            "currency_pair": {
                 "Base": "OSMO",
                 "Quote": "USD"
-              }
-            }
-          ]
-        }
-      },
-      "USDT/USD": {
-        "ticker": {
-          "currency_pair": {
-            "Base": "USDT",
-            "Quote": "USD"
-          },
-          "decimals": 9,
-          "min_provider_count": 1,
-          "enabled": true
+            },
+            "decimals": 8,
+            "min_provider_count": 1,
+            "enabled": true,
+            "metadata_JSON": "{\"reference_price\":1,\"liquidity\":0,\"aggregate_ids\":[]}"
         },
         "provider_configs": [
-          {
-            "name": "binance_ws",
-            "off_chain_ticker": "USDCUSDT",
-            "invert": true
-          },
-          {
-            "name": "bybit_ws",
-            "off_chain_ticker": "USDCUSDT",
-            "invert": true
-          },
-          {
-            "name": "coinbase_ws",
-            "off_chain_ticker": "USDT-USD"
-          },
-          {
-            "name": "huobi_ws",
-            "off_chain_ticker": "ethusdt",
-            "normalize_by_pair": {
-              "Base": "ETH",
-              "Quote": "USD"
+            {
+                "name": "coinbase_ws",
+                "off_chain_ticker": "OSMO-USD"
             },
-            "invert": true
-          },
-          {
-            "name": "kraken_api",
-            "off_chain_ticker": "USDTZUSD"
-          },
-          {
-            "name": "kucoin_ws",
-            "off_chain_ticker": "BTC-USDT",
-            "normalize_by_pair": {
-              "Base": "BTC",
-              "Quote": "USD"
+            {
+                "name": "huobi_ws",
+                "off_chain_ticker": "osmousdt",
+                "normalize_by_pair": {
+                    "Base": "USDT",
+                    "Quote": "USD"
+                }
             },
-            "invert": true
-          },
-          {
-            "name": "okx_ws",
-            "off_chain_ticker": "USDC-USDT",
-            "invert": true
-          },
-          {
-            "name": "crypto_dot_com_ws",
-            "off_chain_ticker": "USDT_USD"
-          }
-        ]
-      },
-      "OSMO/USD": {
-        "ticker": {
-          "currency_pair": {
-            "Base": "OSMO",
-            "Quote": "USD"
-          },
-          "decimals": 8,
-          "min_provider_count": 1,
-          "enabled": true
-          "metadata_JSON": "{\"reference_price\":1,\"liquidity\":0,\"aggregate_ids\":[]}"
-        },
-        "provider_configs": [
-          {
-            "name": "coinbase_ws",
-            "off_chain_ticker": "OSMO-USD"
-          },
-          {
-            "name": "huobi_ws",
-            "off_chain_ticker": "osmousdt",
-            "normalize_by_pair": {
-              "Base": "USDT",
-              "Quote": "USD"
+            {
+                "name": "binance_api",
+                "off_chain_ticker": "OSMOUSDT",
+                "normalize_by_pair": {
+                    "Base": "USDT",
+                    "Quote": "USD"
+                }
             }
-          },
-          {
-            "name": "binance_api",
-            "off_chain_ticker": "OSMOUSDT",
-            "normalize_by_pair": {
-              "Base": "USDT",
-              "Quote": "USD"
-            }
-          }
         ]
-      }
     }
+}
 	`
 )
 
