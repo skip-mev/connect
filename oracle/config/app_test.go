@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -33,7 +35,7 @@ interval = "10s"
 price_ttl = "10s"
 `
 
-	missingMaxAgeConfig = `
+	missingPriceTtlConfig = `
 enabled = true
 oracle_address = "localhost:8080"
 client_timeout = "10s"
@@ -182,20 +184,20 @@ func TestReadConfigFromFile(t *testing.T) {
 		{
 			name:        "missing timeout field config",
 			config:      missingTimeoutConfig,
-			expectedErr: true,
+			expectedErr: false,
 		},
 		{
-			name:        "missing max age field config",
-			config:      missingMaxAgeConfig,
-			expectedErr: true,
+			name:        "missing price_ttl field config",
+			config:      missingPriceTtlConfig,
+			expectedErr: false,
 		},
 		{
 			name:        "missing interval field config",
 			config:      missingIntervalConfig,
-			expectedErr: true,
+			expectedErr: false,
 		},
 		{
-			name:        "invalid max age config",
+			name:        "invalid price_ttl config",
 			config:      invalidMaxAgeConfig,
 			expectedErr: true,
 		},
@@ -219,6 +221,100 @@ func TestReadConfigFromFile(t *testing.T) {
 
 			// Read config from file
 			_, err = config.ReadConfigFromFile(f.Name())
+			if tc.expectedErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestConfigFromAppOptions(t *testing.T) {
+	testCases := []struct {
+		name        string
+		config      servertypes.AppOptions
+		expectedErr bool
+	}{
+		{
+			name: "good config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"interval":       "10s",
+				"price_ttl":      "20s",
+			},
+			expectedErr: false,
+		},
+		{
+			name: "bad config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"client_timeout": "10s",
+				"interval":       "10s",
+				"price_ttl":      "20s",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "missing timeout field config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"interval":       "10s",
+				"price_ttl":      "20s",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "missing price_ttl field config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"interval":       "10s",
+			},
+			expectedErr: false,
+		},
+		{
+			name: "missing interval field config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"price_ttl":      "20s",
+			},
+			expectedErr: false,
+		},
+		{
+			name: "invalid price_ttl config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"interval":       "10s",
+				"price_ttl":      "lel",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "invalid interval config",
+			config: sims.AppOptionsMap{
+				"enabled":        true,
+				"oracle_address": "localhost:8080",
+				"client_timeout": "10s",
+				"interval":       "lel",
+				"price_ttl":      "20s",
+			},
+			expectedErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := config.ReadConfigFromAppOpts(tc.config)
 			if tc.expectedErr {
 				require.Error(t, err)
 			} else {
