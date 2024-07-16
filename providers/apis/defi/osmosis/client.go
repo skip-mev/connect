@@ -109,7 +109,39 @@ type MultiClientImpl struct {
 	clients []Client
 }
 
+// NewMultiClient creates a new Client.
 func NewMultiClient(
+	logger *zap.Logger,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+	clients []Client,
+) (Client, error) {
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("failed to validate config: %w", err)
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid config: name (%s) expected (%s)", api.Name, Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("invalid config: disabled (%v)", api.Enabled)
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("invalid config: apiMetrics is nil")
+	}
+
+	return &MultiClientImpl{
+		logger:     logger,
+		api:        api,
+		apiMetrics: apiMetrics,
+		clients:    clients,
+	}, nil
+}
+
+// NewMultiClientFromEndpoints creates a new Client from a list of endpoints.
+func NewMultiClientFromEndpoints(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
