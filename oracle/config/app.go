@@ -6,29 +6,18 @@ import (
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/spf13/cast"
-	"github.com/spf13/viper"
 )
 
 var (
-	// MaxInterval is the maximum time between each price update request.
-	MaxInterval = 1 * time.Minute
-	// DefaultInterval is the default time between each price update request.
-	DefaultInterval = 1500 * time.Millisecond
-
-	// MaxPriceTTL is the maximum maximum age of the latest price response before it is
-	// considered stale.
-	MaxPriceTTL = 1 * time.Minute
-	// DefaultPriceTTL is the default maximum age of the latest price response before it is
-	// considered stale.
-	DefaultPriceTTL = 10 * time.Second
-
-	// DefaultClientTimeout is the default time that the client is willing to wait for
-	// responses from the oracle before timing out.
-	DefaultClientTimeout = 3 * time.Second
-
-	// DefaultMetricsEnabled is the default flag that determines whether oracle metrics
-	// are enabled.
+	DefaultOracleEnabled  = true
+	DefaultOracleAddress  = "localhost:8080"
+	DefaultClientTimeout  = 3 * time.Second
 	DefaultMetricsEnabled = true
+	DefaultPriceTTL       = 10 * time.Second
+	DefaultInterval       = 1500 * time.Millisecond
+
+	MaxInterval = 1 * time.Minute
+	MaxPriceTTL = 1 * time.Minute
 )
 
 const (
@@ -72,6 +61,18 @@ price_ttl = "{{ .Oracle.PriceTTL }}"
 interval = "{{ .Oracle.Interval }}"
 `
 )
+
+// NewDefaultAppConfig returns a default application side oracle configuration.
+func NewDefaultAppConfig() AppConfig {
+	return AppConfig{
+		Enabled:        DefaultOracleEnabled,
+		OracleAddress:  DefaultOracleAddress,
+		ClientTimeout:  DefaultClientTimeout,
+		MetricsEnabled: DefaultMetricsEnabled,
+		PriceTTL:       DefaultPriceTTL,
+		Interval:       DefaultInterval,
+	}
+}
 
 const (
 	flagEnabled                 = "oracle.enabled"
@@ -137,30 +138,6 @@ func (c *AppConfig) ValidateBasic() error {
 	return nil
 }
 
-// ReadConfigFromFile reads a config from a file and returns the config.
-func ReadConfigFromFile(path string) (AppConfig, error) {
-	var config AppConfig
-
-	// read in config file
-	viper.SetConfigFile(path)
-	viper.SetConfigType("toml")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return config, err
-	}
-
-	// unmarshal config
-	if err := viper.Unmarshal(&config); err != nil {
-		return config, err
-	}
-
-	if err := config.ValidateBasic(); err != nil {
-		return config, err
-	}
-
-	return config, nil
-}
-
 // ReadConfigFromAppOpts reads the config parameters from the AppOptions and returns the config.
 func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	var (
@@ -173,6 +150,8 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.Enabled, err = cast.ToBoolE(v); err != nil {
 			return cfg, err
 		}
+	} else {
+		cfg.Enabled = DefaultOracleEnabled // set to default
 	}
 
 	// get the oracle address
@@ -180,46 +159,44 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.OracleAddress, err = cast.ToStringE(v); err != nil {
 			return cfg, err
 		}
+	} else {
+		cfg.OracleAddress = DefaultOracleAddress // set to default
 	}
 
 	// get the client timeout
 	if v := opts.Get(flagClientTimeout); v != nil {
 		if cfg.ClientTimeout, err = cast.ToDurationE(v); err != nil {
-			cfg.ClientTimeout = DefaultClientTimeout // set to default
+			return cfg, err
 		}
-
-		if cfg.ClientTimeout <= 0 {
-			cfg.ClientTimeout = DefaultClientTimeout // set to default
-		}
+	} else {
+		cfg.ClientTimeout = DefaultClientTimeout // set to default
 	}
 
 	// get the metrics enabled
 	if v := opts.Get(flagMetricsEnabled); v != nil {
 		if cfg.MetricsEnabled, err = cast.ToBoolE(v); err != nil {
-			cfg.MetricsEnabled = DefaultMetricsEnabled // set to default
+			return cfg, err
 		}
+	} else {
+		cfg.MetricsEnabled = DefaultMetricsEnabled // set to default
 	}
 
 	// get the price ttl
 	if v := opts.Get(flagPriceTTL); v != nil {
 		if cfg.PriceTTL, err = cast.ToDurationE(v); err != nil {
-			cfg.PriceTTL = DefaultPriceTTL // set to default
+			return cfg, err
 		}
-
-		if cfg.PriceTTL <= 0 {
-			cfg.PriceTTL = DefaultPriceTTL // set to default
-		}
+	} else {
+		cfg.PriceTTL = DefaultPriceTTL // set to default
 	}
 
 	// get the interval
 	if v := opts.Get(flagInterval); v != nil {
 		if cfg.Interval, err = cast.ToDurationE(v); err != nil {
-			cfg.Interval = DefaultInterval // set to default
+			return cfg, err
 		}
-
-		if cfg.Interval <= 0 {
-			cfg.Interval = DefaultInterval // set to default
-		}
+	} else {
+		cfg.Interval = DefaultInterval // set to default
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {

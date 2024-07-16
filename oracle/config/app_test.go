@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -10,60 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-)
-
-var (
-	goodConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-client_timeout = "10s"
-interval = "10s"
-price_ttl = "20s"
-`
-
-	missingAddressConfig = `
-enabled = true
-client_timeout = "10s"
-interval = "10s"
-price_ttl = "10s"
-`
-
-	missingTimeoutConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-interval = "10s"
-price_ttl = "10s"
-`
-
-	missingPriceTtlConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-client_timeout = "10s"
-interval = "10s"
-`
-
-	missingIntervalConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-client_timeout = "10s"
-price_ttl = "10s"
-`
-
-	invalidMaxAgeConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-client_timeout = "10s"
-interval = "10s"
-price_ttl = "lel"
-`
-
-	invalidIntervalConfig = `
-enabled = true
-oracle_address = "localhost:8080"
-client_timeout = "10s"
-interval = "lel"
-price_ttl = "10s"
-`
 )
 
 func TestValidateBasic(t *testing.T) {
@@ -165,160 +110,222 @@ func TestValidateBasic(t *testing.T) {
 	}
 }
 
-func TestReadConfigFromFile(t *testing.T) {
-	testCases := []struct {
-		name        string
-		config      string
-		expectedErr bool
-	}{
-		{
-			name:        "good config",
-			config:      goodConfig,
-			expectedErr: false,
-		},
-		{
-			name:        "bad config",
-			config:      missingAddressConfig,
-			expectedErr: true,
-		},
-		{
-			name:        "missing timeout field config",
-			config:      missingTimeoutConfig,
-			expectedErr: false,
-		},
-		{
-			name:        "missing price_ttl field config",
-			config:      missingPriceTtlConfig,
-			expectedErr: false,
-		},
-		{
-			name:        "missing interval field config",
-			config:      missingIntervalConfig,
-			expectedErr: false,
-		},
-		{
-			name:        "invalid price_ttl config",
-			config:      invalidMaxAgeConfig,
-			expectedErr: true,
-		},
-		{
-			name:        "invalid interval config",
-			config:      invalidIntervalConfig,
-			expectedErr: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Create temp file
-			f, err := os.CreateTemp("", "oracle_config")
-			require.NoError(t, err)
-			defer os.Remove(f.Name())
-
-			// Write the config as a toml file
-			_, err = f.WriteString(tc.config)
-			require.NoError(t, err)
-
-			// Read config from file
-			_, err = config.ReadConfigFromFile(f.Name())
-			if tc.expectedErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
 func TestConfigFromAppOptions(t *testing.T) {
 	testCases := []struct {
 		name        string
 		config      servertypes.AppOptions
+		res         config.AppConfig
 		expectedErr bool
 	}{
 		{
 			name: "good config",
 			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"interval":       "10s",
-				"price_ttl":      "20s",
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "5s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "20s",
+				"oracle.interval":        "10s",
+			},
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  "localhost:8081",
+				ClientTimeout:  5 * time.Second,
+				MetricsEnabled: true,
+				PriceTTL:       20 * time.Second,
+				Interval:       10 * time.Second,
 			},
 			expectedErr: false,
 		},
 		{
-			name: "bad config",
-			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"client_timeout": "10s",
-				"interval":       "10s",
-				"price_ttl":      "20s",
-			},
-			expectedErr: true,
+			name:        "good config with no fields configured",
+			config:      sims.AppOptionsMap{},
+			res:         config.NewDefaultAppConfig(),
+			expectedErr: false,
 		},
 		{
-			name: "missing timeout field config",
+			name: "good config with no oracle address specified",
 			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"interval":       "10s",
-				"price_ttl":      "20s",
+				"oracle.enabled":         true,
+				"oracle.client_timeout":  "5s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "20s",
+				"oracle.interval":        "10s",
 			},
-			expectedErr: true,
-		},
-		{
-			name: "missing price_ttl field config",
-			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"interval":       "10s",
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  config.DefaultOracleAddress,
+				ClientTimeout:  5 * time.Second,
+				MetricsEnabled: true,
+				PriceTTL:       20 * time.Second,
+				Interval:       10 * time.Second,
 			},
 			expectedErr: false,
 		},
 		{
-			name: "missing interval field config",
+			name: "good config with no client timeout specified",
 			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"price_ttl":      "20s",
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "20s",
+				"oracle.interval":        "10s",
+			},
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  "localhost:8081",
+				ClientTimeout:  config.DefaultClientTimeout,
+				MetricsEnabled: true,
+				PriceTTL:       20 * time.Second,
+				Interval:       10 * time.Second,
 			},
 			expectedErr: false,
 		},
 		{
-			name: "invalid price_ttl config",
+			name: "good config with no metrics enabled specified",
 			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"interval":       "10s",
-				"price_ttl":      "lel",
+				"oracle.enabled":        true,
+				"oracle.oracle_address": "localhost:8081",
+				"oracle.client_timeout": "5s",
+				"oracle.price_ttl":      "20s",
+				"oracle.interval":       "10s",
 			},
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  "localhost:8081",
+				ClientTimeout:  5 * time.Second,
+				MetricsEnabled: config.DefaultMetricsEnabled,
+				PriceTTL:       20 * time.Second,
+				Interval:       10 * time.Second,
+			},
+			expectedErr: false,
+		},
+		{
+			name: "good config with no price ttl specified",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "5s",
+				"oracle.metrics_enabled": true,
+				"oracle.interval":        "2s",
+			},
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  "localhost:8081",
+				ClientTimeout:  5 * time.Second,
+				MetricsEnabled: true,
+				PriceTTL:       config.DefaultPriceTTL,
+				Interval:       2 * time.Second,
+			},
+			expectedErr: false,
+		},
+		{
+			name: "good config with no interval specified",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "5s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "20s",
+			},
+			res: config.AppConfig{
+				Enabled:        true,
+				OracleAddress:  "localhost:8081",
+				ClientTimeout:  5 * time.Second,
+				MetricsEnabled: true,
+				PriceTTL:       20 * time.Second,
+				Interval:       config.DefaultInterval,
+			},
+			expectedErr: false,
+		},
+		{
+			name: "bad config with bad client timeout",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "mogged",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "20s",
+				"oracle.interval":        "10s",
+			},
+			res:         config.AppConfig{},
 			expectedErr: true,
 		},
 		{
-			name: "invalid interval config",
+			name: "bad config with bad price ttl",
 			config: sims.AppOptionsMap{
-				"enabled":        true,
-				"oracle_address": "localhost:8080",
-				"client_timeout": "10s",
-				"interval":       "lel",
-				"price_ttl":      "20s",
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "1s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "mogged",
+				"oracle.interval":        "10s",
 			},
+			res:         config.AppConfig{},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with bad interval",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "1s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "10s",
+				"oracle.interval":        "mogged",
+			},
+			res:         config.AppConfig{},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with price ttl < interval",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "1s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "1s",
+				"oracle.interval":        "10s",
+			},
+			res:         config.AppConfig{},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with price ttl exceeding max",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "1s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "100m",
+				"oracle.interval":        "10s",
+			},
+			res:         config.AppConfig{},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with interval exceeding max",
+			config: sims.AppOptionsMap{
+				"oracle.enabled":         true,
+				"oracle.oracle_address":  "localhost:8081",
+				"oracle.client_timeout":  "1s",
+				"oracle.metrics_enabled": true,
+				"oracle.price_ttl":       "10s",
+				"oracle.interval":        "100m",
+			},
+			res:         config.AppConfig{},
 			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := config.ReadConfigFromAppOpts(tc.config)
+			res, err := config.ReadConfigFromAppOpts(tc.config)
 			if tc.expectedErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
+				require.Equal(t, tc.res, res)
 			}
 		})
 	}
