@@ -173,7 +173,7 @@ start-app:
 # and initializes a single validator configuration. If desired, users can supplement
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
-build-and-start-app: build build-configs start-app
+build-and-start-app: build-configs start-app
 
 .PHONY: build-test-app build-configs build-and-start-app start-app delete-configs
 
