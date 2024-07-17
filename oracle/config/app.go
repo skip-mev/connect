@@ -6,7 +6,18 @@ import (
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/spf13/cast"
-	"github.com/spf13/viper"
+)
+
+var (
+	DefaultOracleEnabled  = true
+	DefaultOracleAddress  = "localhost:8080"
+	DefaultClientTimeout  = 3 * time.Second
+	DefaultMetricsEnabled = true
+	DefaultPriceTTL       = 10 * time.Second
+	DefaultInterval       = 1500 * time.Millisecond
+
+	MaxInterval = 1 * time.Minute
+	MaxPriceTTL = 1 * time.Minute
 )
 
 const (
@@ -31,15 +42,37 @@ enabled = "{{ .Oracle.Enabled }}"
 oracle_address = "{{ .Oracle.OracleAddress }}"
 
 # Client Timeout is the time that the client is willing to wait for responses from 
-# the oracle before timing out.
+# the oracle before timing out. The recommended timeout is 3 seconds (3000ms).
 client_timeout = "{{ .Oracle.ClientTimeout }}"
 
 # MetricsEnabled determines whether oracle metrics are enabled. Specifically
 # this enables instrumentation of the oracle client and the interaction between
 # the oracle and the app.
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
+
+# PriceTTL is the maximum age of the latest price response before it is considered stale. 
+# The recommended max age is 10 seconds (10s). If this is greater than 1 minute (1m), the app
+# will not start.
+price_ttl = "{{ .Oracle.PriceTTL }}"
+
+# Interval is the time between each price update request. The recommended interval
+# is the block time of the chain. Otherwise, 1.5 seconds (1500ms) is a good default. If this
+# is greater than 1 minute (1m), the app will not start.
+interval = "{{ .Oracle.Interval }}"
 `
 )
+
+// NewDefaultAppConfig returns a default application side oracle configuration.
+func NewDefaultAppConfig() AppConfig {
+	return AppConfig{
+		Enabled:        DefaultOracleEnabled,
+		OracleAddress:  DefaultOracleAddress,
+		ClientTimeout:  DefaultClientTimeout,
+		MetricsEnabled: DefaultMetricsEnabled,
+		PriceTTL:       DefaultPriceTTL,
+		Interval:       DefaultInterval,
+	}
+}
 
 const (
 	flagEnabled                 = "oracle.enabled"
@@ -47,6 +80,8 @@ const (
 	flagClientTimeout           = "oracle.client_timeout"
 	flagMetricsEnabled          = "oracle.metrics_enabled"
 	flagPrometheusServerAddress = "oracle.prometheus_server_address"
+	flagPriceTTL                = "oracle.price_ttl"
+	flagInterval                = "oracle.interval"
 )
 
 // AppConfig contains the application side oracle configurations that must
@@ -65,6 +100,13 @@ type AppConfig struct {
 
 	// MetricsEnabled is a flag that determines whether oracle metrics are enabled.
 	MetricsEnabled bool `mapstructure:"metrics_enabled" toml:"metrics_enabled"`
+
+	// PriceTTL is the maximum age of the latest price response before it is considered
+	// stale.
+	PriceTTL time.Duration `mapstructure:"price_ttl" toml:"price_ttl"`
+
+	// Interval is the time between each price update request.
+	Interval time.Duration `mapstructure:"interval" toml:"interval"`
 }
 
 // ValidateBasic performs basic validation of the app config.
@@ -74,44 +116,32 @@ func (c *AppConfig) ValidateBasic() error {
 	}
 
 	if len(c.OracleAddress) == 0 {
-		return fmt.Errorf("oracle address must not be empty")
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle address must not be empty")
 	}
 
 	if c.ClientTimeout <= 0 {
-		return fmt.Errorf("oracle client timeout must be greater than 0")
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle client timeout must be greater than 0")
+	}
+
+	if c.PriceTTL <= 0 || c.PriceTTL > MaxPriceTTL {
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle price time to live (price_ttl) must be between 0 and %s", MaxPriceTTL)
+	}
+
+	if c.Interval <= 0 || c.Interval > MaxInterval {
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle interval must be between 0 and %s", MaxInterval)
+	}
+
+	if c.Interval >= c.PriceTTL {
+		return fmt.Errorf("poorly formatted app.toml (oracle subsection): oracle interval must be strictly less than max age")
 	}
 
 	return nil
 }
 
-// ReadConfigFromFile reads a config from a file and returns the config.
-func ReadConfigFromFile(path string) (AppConfig, error) {
-	var config AppConfig
-
-	// read in config file
-	viper.SetConfigFile(path)
-	viper.SetConfigType("toml")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return config, err
-	}
-
-	// unmarshal config
-	if err := viper.Unmarshal(&config); err != nil {
-		return config, err
-	}
-
-	if err := config.ValidateBasic(); err != nil {
-		return config, err
-	}
-
-	return config, nil
-}
-
 // ReadConfigFromAppOpts reads the config parameters from the AppOptions and returns the config.
 func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	var (
-		cfg AppConfig
+		cfg = NewDefaultAppConfig()
 		err error
 	)
 
@@ -139,6 +169,20 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	// get the metrics enabled
 	if v := opts.Get(flagMetricsEnabled); v != nil {
 		if cfg.MetricsEnabled, err = cast.ToBoolE(v); err != nil {
+			return cfg, err
+		}
+	}
+
+	// get the price ttl
+	if v := opts.Get(flagPriceTTL); v != nil {
+		if cfg.PriceTTL, err = cast.ToDurationE(v); err != nil {
+			return cfg, err
+		}
+	}
+
+	// get the interval
+	if v := opts.Get(flagInterval); v != nil {
+		if cfg.Interval, err = cast.ToDurationE(v); err != nil {
 			return cfg, err
 		}
 	}
