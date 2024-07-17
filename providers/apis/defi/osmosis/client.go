@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -219,13 +220,14 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 }
 
 // filterSpotPriceResponses currently just chooses a random response as there is no way to differentiate.
-// TODO differentiate.
 func filterSpotPriceResponses(responses []SpotPriceResponse) (SpotPriceResponse, error) {
 	if len(responses) == 0 {
 		return SpotPriceResponse{}, fmt.Errorf("no responses found")
 	}
 
-	for _, resp := range responses {
+	perm := rand.Perm(len(responses))
+	for _, i := range perm {
+		resp := responses[perm[i]]
 		if resp.SpotPrice != "" {
 			return resp, nil
 		}
