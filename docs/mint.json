@@ -9,7 +9,7 @@
   "colors": {
     "primary": "#0061ff",
     "light": "#0061ff",
-    "dark": "#0061ff",
+    "dark": "#66A0FF",
     "background": {
       "dark": "#151617"
     }
@@ -47,15 +47,8 @@
         "validators/faq"
       ]
     },
-    {
-      "group": "⛓ Chain Integrations",
-      "pages": [
-        "integrations/dydx",
-        "integrations/neutron"
-      ]
-    },
       {
-        "group": "🛠️ Integrators",
+        "group": "Developers",
         "pages": [
           "using-connect/high-level",
           "using-connect/neutron-sdk"

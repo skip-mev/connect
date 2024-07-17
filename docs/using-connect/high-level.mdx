@@ -1,6 +1,7 @@
 ---
-description: 🏖️ Accessing Connect Prices
-title: 🏖️ Accessing Connect Prices
+description: Getting prices from the Connect oracle
+title: Getting Prices
+icon: tag
 ---
 
 <Note>
@@ -50,7 +51,7 @@ When calling `getPrices` via the above methods, you are returned an array of `Ge
 
 `GetPriceResponse` looks like this:
 
-```
+```protobuf query.proto
     // GetPriceResponse is the response from the GetPrice grpc method exposed from
     // the x/oracle query service.
 
@@ -77,7 +78,7 @@ Inside `QuotePrice`, you can fetch for the currency-pair:
 
 `QuotePrice` looks like this:
 
-```
+```protobuf query.proto
     // QuotePrice is the representation of the aggregated prices for a CurrencyPair,
     // where price represents the price of Base in terms of Quote
     message QuotePrice {

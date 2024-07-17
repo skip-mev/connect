@@ -28,3 +28,23 @@ v0.13.1+
 
 Connect can be used within a distributed validator setup. To do so, simply apply the same `app.toml` changes to _each_ validator node.
 Head over to [configuration](configuration#application) to see the necessary application-side configurations.
+
+
+## dYdX
+
+If you are a dydx validator, you will need some additional configurations to correctly configure your setup.
+
+### Required Connect Version
+v1.0.1+
+
+### Connect Flags
+In addition to the setup in the [quickstart](quickstart), you will need to pass some additional flags when booting up the Connect instance.
+
+```shell
+slinky <... your other flags...> --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint>
+```
+
+## Neutron
+
+### Required Connect Version
+v1.0.3+

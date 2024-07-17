@@ -14,7 +14,7 @@ Connect can be configured by both flags and environment variables.
 
 ### Env Vars
 
-Please remember to change the `oracle_address` in your application's `app.toml` if you change any of the values below.
+Please remember to change the `oracle_address` in your [application config](#application) if you change any of the env vars below.
 
 | Key                  | Default     | Description                                   |
 |----------------------|-------------|-----------------------------------------------|
@@ -27,7 +27,6 @@ Please remember to change the `oracle_address` in your application's `app.toml` 
 | Flag                             | Default Value   | Description                                                                                   |
 |----------------------------------|-----------------|-----------------------------------------------------------------------------------------------|
 | `--market-map-endpoint`          | `""`            | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint. |
-| `--marketmap-provider`           | `marketmap_api` | MarketMap provider to use (marketmap_api, dydx_api, dydx_migration_api).                      |
 | `--oracle-config`                | `""`            | Overrides the Oracle Configuration.                                                           |
 | `--run-pprof`                    | `false`         | Run pprof server.                                                                             |
 | `--pprof-port`                   | `"6060"`        | Port for the pprof server to listen on.                                                       |
@@ -54,35 +53,35 @@ Some chains include markets that require API keys to provide data for. In order 
                   "url": "https://solana.polkachu.com",
                   "authentication": {
                      "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                     "apiKey": "API KEY"
                   }
                },
                {
                   "url": "https://slinky-solana.kingnodes.com",
                   "authentication": {
                      "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                     "apiKey": "API KEY"
                   }
                },
                {
                   "url": "https://solana.lavenderfive.com",
                   "authentication": {
                      "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                     "apiKey": "API KEY"
                   }
                },
                {
                   "url": "https://solana-rpc.rhino-apis.com",
                   "authentication": {
                      "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                     "apiKey": "API KEY"
                   }
                },
                {
                   "url": "https://dydx.helius-rpc.com",
                   "authentication": {
                      "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                     "apiKey": "API KEY"
                   }
                }
             ]
