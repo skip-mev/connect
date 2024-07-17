@@ -8,9 +8,10 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
+	"google.golang.org/grpc"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
-	"google.golang.org/grpc"
 )
 
 var _ OracleClient = (*PriceDaemon)(nil)
