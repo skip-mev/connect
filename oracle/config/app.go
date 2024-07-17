@@ -141,7 +141,7 @@ func (c *AppConfig) ValidateBasic() error {
 // ReadConfigFromAppOpts reads the config parameters from the AppOptions and returns the config.
 func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	var (
-		cfg AppConfig = NewDefaultAppConfig()
+		cfg = NewDefaultAppConfig()
 		err error
 	)
 
