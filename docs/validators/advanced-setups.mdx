@@ -38,13 +38,13 @@ If you are a dydx validator, you will need some additional configurations to cor
 v1.0.1+
 
 ### Connect Flags
-In addition to the setup in the [quickstart](quickstart), you will need to pass some additional flags when booting up the Connect instance.
+In addition to the setup in the [quickstart](quickstart), you will need to pass some additional flags when booting up the Connect sidecar.
 
 ```shell
-slinky <... your other flags...> --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint>
+slinky <... your other flags...> --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint> --oracle-config config_file.json
 ```
 
-The markets dYdX provides for also require API keys. If you have not received API keys, please reach out in the relevant communication channels. Please see [API Keys](configuration#api-keys) to learn how to configure them in Connect.
+The markets dYdX provides for also require API keys. If you have not received API keys, please reach out in the relevant communication channels. See [API Keys](configuration#api-keys) to learn how to configure them in Connect.
 
 ## Neutron
 
