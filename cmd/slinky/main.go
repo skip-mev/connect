@@ -359,7 +359,8 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 }
 
 // filterToOnlyCMCMarkets is a helper function that filters out all markets that are not from CoinMarketCap. It
-// mutates the marketmap to only include CoinMarketCap markets.
+// mutates the marketmap to only include CoinMarketCap markets. Notably the CMC ID will be pricing in the base
+// asset.
 func filterToOnlyCMCMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
 	res := mmtypes.MarketMap{
 		Markets: make(map[string]mmtypes.Market),
