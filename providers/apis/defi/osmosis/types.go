@@ -116,9 +116,9 @@ func unmarshalMetadataJSON(metadata string) (TickerMetadata, error) {
 var DefaultAPIConfig = config.APIConfig{
 	Enabled:          true,
 	Name:             Name,
-	Timeout:          2 * time.Second,
-	Interval:         500 * time.Millisecond,
-	ReconnectTimeout: 2000 * time.Millisecond,
+	Timeout:          4 * time.Second,
+	Interval:         1000 * time.Millisecond,
+	ReconnectTimeout: 4 * time.Second,
 	MaxQueries:       10,
 	Atomic:           false,
 	BatchSize:        25, // maximal # of accounts in getMultipleAccounts query is 100

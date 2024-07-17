@@ -173,6 +173,8 @@ func (pf *APIPriceFetcher) Fetch(
 			price, err := calculatePrice(resp)
 			if err != nil {
 				pf.logger.Error("failed parse spot price response", zap.Error(err))
+				unresolvedMtx.Lock()
+				defer unresolvedMtx.Unlock()
 				unresolved[ticker] = providertypes.UnresolvedResult{
 					ErrorWithCode: providertypes.NewErrorWithCode(
 						err,
