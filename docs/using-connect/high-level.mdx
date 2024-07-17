@@ -22,9 +22,9 @@ Connect's market configuration is stored in the [x/marketmap](https://github.com
 
 Every chain will have a different set of supported assets. You can find out which assets are supported on your chain by either running:
 
-1. (via a local running chain): `curl http://localhost:1317/slinky/marketmap/v1/marketmap`
-2. (via chain app CLI): `appd q marketmap marketmap`
-3. (via gRPC): `grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap`
+1. (REST): `curl http://localhost:1317/slinky/marketmap/v1/marketmap`
+2. (application cli): `appd q marketmap marketmap`
+3. (gRPC): `grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap`
 
 This will return a JSON list of supported assets with associated metadata.
 
@@ -32,8 +32,8 @@ This will return a JSON list of supported assets with associated metadata.
 
 To access **all** Connect prices (as of the last committed block):
 
-1. (via a local running chain): `curl http://localhost:1317/slinky/oracle/v1/get_prices`
-2. (via gRPC): `grpcurl -plaintext localhost:9090 slinky.oracle.v1.Query/GetPrices`
+1. (REST): `curl http://localhost:1317/slinky/oracle/v1/get_prices`
+2. (gRPC): `grpcurl -plaintext localhost:9090 slinky.oracle.v1.Query/GetPrices`
 
 To get a **specific** currency pair:
 
