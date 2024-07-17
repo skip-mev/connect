@@ -10,13 +10,13 @@ icon: tag
 
 ## Summary
 
-Connect prices are stored within the [`x/oracle`](https://github.com/skip-mev/slinky/tree/main/x/oracle) module.
+Connect prices are stored within the [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) module.
 
 On very specific chains - right now only dYdX - they live in a different storage module (in dYdX's case, `x/prices`).
 
 These prices are updated on a per-block basis, when there is sufficient difference from the last block's price. They can be accessed natively by CosmWasm smart contracts, other modules, or those with access to chain state.
 
-Connect's market configuration is stored in the [`x/marketmap`](https://github.com/skip-mev/slinky/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
+Connect's market configuration is stored in the [x/marketmap](https://github.com/skip-mev/slinky/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
 
 ### Getting Supported Assets
 
