@@ -86,6 +86,12 @@ func (d *PriceDaemon) Start(ctx context.Context) error {
 
 // fetchPrices fetches the latest prices from the oracle client.
 func (d *PriceDaemon) fetchPrices(ctx context.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			d.logger.Error("recovered from panic", "err", r)
+		}
+	}()
+
 	d.logger.Debug("fetching prices")
 
 	fetchCtx, cancel := context.WithTimeout(ctx, d.config.ClientTimeout)
@@ -116,10 +122,18 @@ func (d *PriceDaemon) Prices(
 ) (*types.QueryPricesResponse, error) {
 	latest, ts := d.resp.Get()
 	if latest == nil {
+		d.logger.Error("no prices fetched by price daemon yet")
 		return nil, fmt.Errorf("no prices fetched by price daemon yet")
 	}
 
 	if time.Since(ts) > d.config.PriceTTL {
+		d.logger.Error(
+			"latest prices from the price daemon are too stale",
+			"last_fetched_at", ts.String(),
+			"diff", time.Since(ts).String(),
+			"ttl", d.config.PriceTTL.String(),
+		)
+
 		return nil, fmt.Errorf(
 			"latest prices from the price daemon are too stale; last fetched at %s; diff %s ago",
 			ts.Format(time.RFC3339),
