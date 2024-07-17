@@ -188,9 +188,11 @@ func initAppConfig() (string, interface{}) {
 	//
 	oracleConfig := oracleconfig.AppConfig{
 		Enabled:        true,
-		OracleAddress:  "oracle:8080",
+		OracleAddress:  "oracle_with_blockchain:8080",
 		ClientTimeout:  250 * time.Millisecond,
 		MetricsEnabled: true,
+		PriceTTL:       5 * time.Second,
+		Interval:       1 * time.Second,
 	}
 
 	customAppConfig := CustomAppConfig{
