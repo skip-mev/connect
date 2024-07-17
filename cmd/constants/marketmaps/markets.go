@@ -9631,8 +9631,7 @@ var (
                     }
                 }
             ]
-        }
-    },
+        },
     "USDT/USD": {
         "ticker": {
             "currency_pair": {
@@ -9659,26 +9658,8 @@ var (
                 "off_chain_ticker": "USDT-USD"
             },
             {
-                "name": "huobi_ws",
-                "off_chain_ticker": "ethusdt",
-                "normalize_by_pair": {
-                    "Base": "ETH",
-                    "Quote": "USD"
-                },
-                "invert": true
-            },
-            {
                 "name": "kraken_api",
                 "off_chain_ticker": "USDTZUSD"
-            },
-            {
-                "name": "kucoin_ws",
-                "off_chain_ticker": "BTC-USDT",
-                "normalize_by_pair": {
-                    "Base": "BTC",
-                    "Quote": "USD"
-                },
-                "invert": true
             },
             {
                 "name": "okx_ws",
