@@ -72,7 +72,6 @@ stop-sidecar-dev:
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
-	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 
 .PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
