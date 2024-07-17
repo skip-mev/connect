@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
@@ -21,10 +22,13 @@ var (
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETH_USDT",
 	}
+	mogusdt = types.DefaultProviderTicker{
+		OffChainTicker: "MOG_USDT",
+	}
 	logger = zap.NewExample()
 )
 
-func TestHandlerMessage(t *testing.T) {
+func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name          string
 		msg           func() []byte
@@ -233,15 +237,20 @@ func TestHandlerMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	batchCfg := gate.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
+			cfg:  gate.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -252,6 +261,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
+			cfg: gate.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := gate.SubscribeRequest{
 					BaseMessage: gate.BaseMessage{
@@ -276,6 +286,7 @@ func TestCreateMessage(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
+			cfg: gate.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msgs := make([]handlers.WebsocketEncodedMessage, 2)
 				for i, ticker := range []string{"BTC_USDT", "ETH_USDT"} {
@@ -298,11 +309,80 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "two currency pairs with batch config",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 1)
+				msg := gate.SubscribeRequest{
+					BaseMessage: gate.BaseMessage{
+						Time:    time.Now().Second(),
+						Channel: string(gate.ChannelTickers),
+						Event:   string(gate.EventSubscribe),
+					},
+					ID:      time.Now().Second(),
+					Payload: []string{"BTC_USDT", "ETH_USDT"},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
+		{
+			name: "three currency pairs with batch config",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				mogusdt,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				msg := gate.SubscribeRequest{
+					BaseMessage: gate.BaseMessage{
+						Time:    time.Now().Second(),
+						Channel: string(gate.ChannelTickers),
+						Event:   string(gate.EventSubscribe),
+					},
+					ID:      time.Now().Second(),
+					Payload: []string{"BTC_USDT", "ETH_USDT"},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				msg = gate.SubscribeRequest{
+					BaseMessage: gate.BaseMessage{
+						Time:    time.Now().Second(),
+						Channel: string(gate.ChannelTickers),
+						Event:   string(gate.EventSubscribe),
+					},
+					ID:      time.Now().Second(),
+					Payload: []string{"MOG_USDT"},
+				}
+
+				bz, err = json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[1] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := gate.NewWebSocketDataHandler(logger, gate.DefaultWebSocketConfig)
+			handler, err := gate.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := handler.CreateMessages(tc.cps)

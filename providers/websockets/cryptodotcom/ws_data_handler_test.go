@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
@@ -294,15 +295,20 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	batchCfg := cryptodotcom.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		msgs        []cryptodotcom.InstrumentRequestMessage
 		expectedErr bool
 	}{
 		{
 			name:        "no currency pairs",
 			cps:         []types.ProviderTicker{},
+			cfg:         cryptodotcom.DefaultWebSocketConfig,
 			msgs:        []cryptodotcom.InstrumentRequestMessage{},
 			expectedErr: true,
 		},
@@ -311,6 +317,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusd,
 			},
+			cfg: cryptodotcom.DefaultWebSocketConfig,
 			msgs: []cryptodotcom.InstrumentRequestMessage{
 				{
 					Method: "subscribe",
@@ -328,6 +335,7 @@ func TestCreateMessage(t *testing.T) {
 				ethusd,
 				solusd,
 			},
+			cfg: cryptodotcom.DefaultWebSocketConfig,
 			msgs: []cryptodotcom.InstrumentRequestMessage{
 				{
 					Method: "subscribe",
@@ -356,11 +364,60 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "multiple currency pairs with batch",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+			},
+			cfg: batchCfg,
+			msgs: []cryptodotcom.InstrumentRequestMessage{
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.BTCUSD-PERP",
+							"ticker.ETHUSD-PERP",
+						},
+					},
+				},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple currency pairs with batch and remainder",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+				solusd,
+			},
+			cfg: batchCfg,
+			msgs: []cryptodotcom.InstrumentRequestMessage{
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.BTCUSD-PERP",
+							"ticker.ETHUSD-PERP",
+						},
+					},
+				},
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.SOLUSD-PERP",
+						},
+					},
+				},
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, cryptodotcom.DefaultWebSocketConfig)
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

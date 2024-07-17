@@ -3,7 +3,9 @@ package bybit
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -21,16 +23,11 @@ type (
 const (
 	// OperationSubscribe is the operation to subscribe to a channel.
 	OperationSubscribe Operation = "subscribe"
-
-	OperationPing Operation = "ping"
-
-	OperationPong Operation = "pong"
+	OperationPing      Operation = "ping"
+	OperationPong      Operation = "pong"
 
 	// TickerChannel is the channel for spot price updates.
 	TickerChannel Channel = "tickers"
-
-	// MaxArgsPerRequest is the maximum amount of arguments that can be made for a single request to the ByBit WS API.
-	MaxArgsPerRequest = 10
 )
 
 type BaseRequest struct {
@@ -58,33 +55,36 @@ type SubscriptionRequest struct {
 
 // NewSubscriptionRequestMessage creates subscription messages corresponding to the provided tickers.
 // If the number of tickers is greater than 10, the requests will be broken into 10-ticker messages.
-func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncodedMessage, error) {
 	numTickers := len(tickers)
 	if numTickers == 0 {
 		return nil, fmt.Errorf("tickers cannot be empty")
 	}
 
-	messages := make([]handlers.WebsocketEncodedMessage, len(tickers))
+	numBatches := int(math.Ceil(float64(numTickers) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the tickers for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numTickers)
 
-	for i, ticker := range tickers {
-
+		// Create the message for the tickers.
 		bz, err := json.Marshal(
 			SubscriptionRequest{
 				BaseRequest: BaseRequest{
 					Op: string(OperationSubscribe),
 				},
-				Args: []string{ticker},
+				Args: tickers[start:end],
 			},
 		)
 		if err != nil {
-			return messages, fmt.Errorf("unable to marshal message: %w", err)
+			return msgs, fmt.Errorf("unable to marshal message: %w", err)
 		}
 
-		messages[i] = bz
-
+		msgs[i] = bz
 	}
 
-	return messages, nil
+	return msgs, nil
 }
 
 // HeartbeatPing is the ping sent to the server.

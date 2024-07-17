@@ -3,7 +3,9 @@ package cryptodotcom
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -94,17 +96,23 @@ type InstrumentParams struct {
 
 // NewInstrumentMessage returns a new InstrumentRequestMessage that can be sent to
 // the Crypto.com websocket API.
-func NewInstrumentMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+func (h *WebSocketHandler) NewInstrumentMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(InstrumentRequestMessage{
 			Method: string(InstrumentMethod),
 			Params: InstrumentParams{
-				Channels: []string{instrument},
+				Channels: instruments[start:end],
 			},
 		})
 		if err != nil {

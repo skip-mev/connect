@@ -56,6 +56,7 @@ var (
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 	}
 
 	wsCfgMultiplex = config.WebSocketConfig{
@@ -76,6 +77,7 @@ var (
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: 1,
+		MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 	}
 
 	pairs = []slinkytypes.CurrencyPair{

@@ -119,7 +119,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeRequestMessage(instruments)
+	return h.NewSubscribeRequestMessage(instruments)
 }
 
 // HeartBeatMessages is used to create the set of heartbeat messages to send to the KuCoin

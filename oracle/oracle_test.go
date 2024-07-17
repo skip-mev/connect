@@ -48,6 +48,7 @@ var (
 			WriteTimeout:                  config.DefaultWriteTimeout,
 			PingInterval:                  config.DefaultPingInterval,
 			MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+			MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 		},
 		Type: "price_provider",
 	}

@@ -20,11 +20,11 @@ require (
 	github.com/cometbft/cometbft v0.38.9
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
-	github.com/cosmos/cosmos-sdk v0.50.7
+	github.com/cosmos/cosmos-sdk v0.50.8
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/interchain-security/v5 v5.0.0
-	github.com/ethereum/go-ethereum v1.14.6
+	github.com/ethereum/go-ethereum v1.14.7
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
 	github.com/gogo/protobuf v1.3.2
@@ -46,7 +46,7 @@ require (
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842
 	golang.org/x/net v0.27.0
 	golang.org/x/sync v0.7.0
-	golang.org/x/vuln v1.1.2
+	golang.org/x/vuln v1.1.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
@@ -220,7 +220,7 @@ require (
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/hdevalence/ed25519consensus v0.1.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
-	github.com/holiman/uint256 v1.2.4 // indirect
+	github.com/holiman/uint256 v1.3.0 // indirect
 	github.com/huandu/skiplist v1.2.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
@@ -361,14 +361,14 @@ require (
 	go.uber.org/ratelimit v0.2.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
-	golang.org/x/mod v0.18.0 // indirect
+	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
 	golang.org/x/term v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.22.0 // indirect
+	golang.org/x/tools v0.23.0 // indirect
 	google.golang.org/api v0.171.0 // indirect
 	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
