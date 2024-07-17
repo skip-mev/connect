@@ -66,7 +66,12 @@ func NewClientFromConfig(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
-	return NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
+	client, err := NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPriceDaemon(logger, cfg, client)
 }
 
 // NewClient creates a new grpc client of the oracle service with the given
