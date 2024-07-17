@@ -14,6 +14,8 @@ import (
 var (
 	convertToCMC     = flag.Bool("convert-to-cmc", false, "convert to coinmarketcap markets")
 	marketFile       = flag.String("market-config-path", "", "market file to convert to coinmarketcap markets")
+	autoEnable       = flag.Bool("auto-enable", false, "auto enable markets")
+	isMMDeployment   = flag.Bool("is-mm-deployment", false, "is market map deployment")
 	useCore          = flag.Bool("use-core", false, "use core markets")
 	useRaydium       = flag.Bool("use-raydium", false, "use raydium markets")
 	useUniswapV3Base = flag.Bool("use-uniswapv3-base", false, "use uniswapv3 base markets")
@@ -27,7 +29,7 @@ func main() {
 	// If the user specifies a different market.json, we use that instead.
 	flag.Parse()
 
-	if *convertToCMC {
+	if *isMMDeployment {
 		if *marketFile == "" {
 			fmt.Fprintf(flag.CommandLine.Output(), "market map config path (market-cfg-path) cannot be empty\n")
 			panic("market map config path (market-cfg-path) cannot be empty")
@@ -39,7 +41,13 @@ func main() {
 			panic(err)
 		}
 
-		marketMap = filterToOnlyCMCMarkets(marketMap)
+		if *convertToCMC {
+			marketMap = filterToOnlyCMCMarkets(marketMap)
+		}
+
+		if *autoEnable {
+			marketMap = enableAllMarkets(marketMap)
+		}
 
 		// Write the market map back to the original file.
 		if err := mmtypes.WriteMarketMapToFile(marketMap, *marketFile); err != nil {
@@ -174,4 +182,13 @@ func filterToOnlyCMCMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
 	}
 
 	return res
+}
+
+// enableAllMarkets is a helper function that enables all markets in the market map.
+func enableAllMarkets(marketmap mmtypes.MarketMap) mmtypes.MarketMap {
+	for name, market := range marketmap.Markets {
+		market.Ticker.Enabled = true
+		marketmap.Markets[name] = market
+	}
+	return marketmap
 }
