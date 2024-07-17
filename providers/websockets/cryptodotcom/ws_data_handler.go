@@ -111,7 +111,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewInstrumentMessage(instruments)
+	return h.NewInstrumentMessage(instruments)
 }
 
 // HeartBeatMessages is not used for Crypto.com.

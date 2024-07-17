@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -19,6 +20,9 @@ var (
 	}
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETHUSDT",
+	}
+	mogusdt = types.DefaultProviderTicker{
+		OffChainTicker: "MOGUSDT",
 	}
 	logger = zap.NewExample()
 )
@@ -194,15 +198,20 @@ func TestHandlerMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	batchCfg := bybit.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() [][]byte
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
+			cfg:  bybit.DefaultWebSocketConfig,
 			expected: func() [][]byte {
 				return nil
 			},
@@ -213,6 +222,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
+			cfg: bybit.DefaultWebSocketConfig,
 			expected: func() [][]byte {
 				msg := bybit.SubscriptionRequest{
 					BaseRequest: bybit.BaseRequest{
@@ -234,6 +244,7 @@ func TestCreateMessage(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
+			cfg: bybit.DefaultWebSocketConfig,
 			expected: func() [][]byte {
 				msgs := make([][]byte, 2)
 				for i, ticker := range []string{"tickers.BTCUSDT", "tickers.ETHUSDT"} {
@@ -252,11 +263,68 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "two currency pairs with batch config",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+			},
+			cfg: batchCfg,
+			expected: func() [][]byte {
+				msgs := make([][]byte, 1)
+				msg := bybit.SubscriptionRequest{
+					BaseRequest: bybit.BaseRequest{
+						Op: string(bybit.OperationSubscribe),
+					},
+					Args: []string{"tickers.BTCUSDT", "tickers.ETHUSDT"},
+				}
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
+		{
+			name: "two currency pairs with batch config and one extra",
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				mogusdt,
+			},
+			cfg: batchCfg,
+			expected: func() [][]byte {
+				msgs := make([][]byte, 2)
+				msg1 := bybit.SubscriptionRequest{
+					BaseRequest: bybit.BaseRequest{
+						Op: string(bybit.OperationSubscribe),
+					},
+					Args: []string{"tickers.BTCUSDT", "tickers.ETHUSDT"},
+				}
+				bz, err := json.Marshal(msg1)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				msg2 := bybit.SubscriptionRequest{
+					BaseRequest: bybit.BaseRequest{
+						Op: string(bybit.OperationSubscribe),
+					},
+					Args: []string{"tickers.MOGUSDT"},
+				}
+				bz, err = json.Marshal(msg2)
+				require.NoError(t, err)
+				msgs[1] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bybit.NewWebSocketDataHandler(logger, bybit.DefaultWebSocketConfig)
+			wsHandler, err := bybit.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

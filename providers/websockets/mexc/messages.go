@@ -3,7 +3,9 @@ package mexc
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -83,16 +85,22 @@ type SubscriptionRequestMessage struct {
 }
 
 // NewSubscribeRequestMessage returns a new SubscriptionRequestMessage.
-func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("cannot subscribe to 0 instruments")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for this batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(SubscriptionRequestMessage{
 			Method: string(SubscriptionMethod),
-			Params: []string{instrument},
+			Params: instruments[start:end],
 		})
 		if err != nil {
 			return nil, err

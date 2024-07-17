@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -99,13 +101,19 @@ type SubscribeRequest struct {
 }
 
 // NewSubscribeRequest returns a new SubscribeRequest encoded message for the given symbols.
-func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(symbols) == 0 {
+func (h *WebSocketHandler) NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, error) {
+	numSymbols := len(symbols)
+	if numSymbols == 0 {
 		return nil, fmt.Errorf("cannot attach payload of 0 length")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(symbols))
-	for i, symbol := range symbols {
+	numBatches := int(math.Ceil(float64(numSymbols) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the symbols for the batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numSymbols)
+
 		bz, err := json.Marshal(SubscribeRequest{
 			BaseMessage: BaseMessage{
 				Time:    time.Now().UTC().Second(),
@@ -113,7 +121,7 @@ func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, 
 				Event:   string(EventSubscribe),
 			},
 			ID:      time.Now().UTC().Second(),
-			Payload: []string{symbol},
+			Payload: symbols[start:end],
 		})
 		if err != nil {
 			return msgs, err

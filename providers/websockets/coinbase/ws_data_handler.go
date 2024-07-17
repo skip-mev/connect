@@ -130,7 +130,7 @@ func (h *WebSocketHandler) CreateMessages(
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeRequestMessage(instruments)
+	return h.NewSubscribeRequestMessage(instruments)
 }
 
 // HeartBeatMessages is not used for Coinbase.

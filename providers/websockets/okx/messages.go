@@ -3,7 +3,9 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -27,8 +29,10 @@ const (
 )
 
 const (
-	// IndexTickersChannel is the channel for mark price updates.
-	IndexTickersChannel Channel = "index-tickers"
+	// TickersChannel is the channel for tickers. This includes the spot price of the instrument.
+	//
+	// ref: https://www.okx.com/docs-v5/en/#order-book-trading-market-data-ws-tickers-channel
+	TickersChannel Channel = "tickers"
 )
 
 const (
@@ -91,19 +95,25 @@ type SubscriptionTopic struct {
 
 // NewSubscribeToTickersRequestMessage returns a new SubscribeRequestMessage for subscribing
 // to the tickers channel.
-func NewSubscribeToTickersRequestMessage(
+func (h *WebSocketHandler) NewSubscribeToTickersRequestMessage(
 	instruments []SubscriptionTopic,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for this batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
 		bz, err := json.Marshal(
 			SubscribeRequestMessage{
 				Operation: string(OperationSubscribe),
-				Arguments: []SubscriptionTopic{instrument},
+				Arguments: instruments[start:end],
 			},
 		)
 		if err != nil {
@@ -156,32 +166,40 @@ type SubscribeResponseMessage struct {
 	Message string `json:"msg,omitempty"`
 }
 
-// IndexTickersResponseMessage is the response message for index ticker updates. This message
+// TickersResponseMessage is the response message for index ticker updates. This message
 // type is sent when the index price changes. Price changes are pushed every 100ms if there
 // is a change in price. Otherwise, the message is sent every second. The format of the message
 // is:
 //
 //	{
 //		"arg": {
-//	  		"channel": "index-tickers",
-//	  		"instId": "BTC-USDT"
+//		  "channel": "tickers",
+//		  "instId": "BTC-USDT"
 //		},
 //		"data": [
-//	  		{
-//				"instId": "BTC-USDT",
-//				"idxPx": "0.1",
-//				"high24h": "0.5",
-//				"low24h": "0.1",
-//				"open24h": "0.1",
-//				"sodUtc0": "0.1",
-//				"sodUtc8": "0.1",
-//				"ts": "1597026383085"
-//	  		}
+//		  {
+//			"instType": "SPOT",
+//			"instId": "BTC-USDT",
+//			"last": "9999.99",
+//			"lastSz": "0.1",
+//			"askPx": "9999.99",
+//			"askSz": "11",
+//			"bidPx": "8888.88",
+//			"bidSz": "5",
+//			"open24h": "9000",
+//			"high24h": "10000",
+//			"low24h": "8888.88",
+//			"volCcy24h": "2222",
+//			"vol24h": "2222",
+//			"sodUtc0": "2222",
+//			"sodUtc8": "2222",
+//			"ts": "1597026383085"
+//		  }
 //		]
 //	}
 //
 // For more information, see https://www.okx.com/docs-v5/en/?shell#public-data-websocket-index-tickers-channel
-type IndexTickersResponseMessage struct {
+type TickersResponseMessage struct {
 	// Arguments is the list of arguments for the operation.
 	Arguments SubscriptionTopic `json:"arg" validate:"required"`
 
@@ -194,6 +212,6 @@ type IndexTicker struct {
 	// ID is the instrument ID.
 	ID string `json:"instId" validate:"required"`
 
-	// IndexPrice is the index price.
-	IndexPrice string `json:"idxPx" validate:"required"`
+	// LastPrice is the last price.
+	LastPrice string `json:"last" validate:"required"`
 }

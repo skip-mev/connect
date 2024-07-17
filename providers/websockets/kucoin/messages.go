@@ -3,8 +3,11 @@ package kucoin
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+	"strings"
 	"time"
 
+	slinkymath "github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -141,16 +144,23 @@ type SubscribeRequestMessage struct {
 }
 
 // NewSubscribeRequestMessage returns a new SubscribeRequestMessage.
-func NewSubscribeRequestMessage(
+func (h *WebSocketHandler) NewSubscribeRequestMessage(
 	instruments []string,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(instruments) == 0 {
+	numInstruments := len(instruments)
+	if numInstruments == 0 {
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
-	for i, instrument := range instruments {
-		topic := fmt.Sprintf("%s%s", TickerTopic, instrument)
+	numBatches := int(math.Ceil(float64(numInstruments) / float64(h.ws.MaxSubscriptionsPerBatch)))
+	msgs := make([]handlers.WebsocketEncodedMessage, numBatches)
+	for i := 0; i < numBatches; i++ {
+		// Get the instruments for this batch.
+		start := i * h.ws.MaxSubscriptionsPerBatch
+		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+
+		// Create the topic for this batch.
+		topic := fmt.Sprintf("%s%s", TickerTopic, strings.Join(instruments[start:end], ","))
 		bz, err := json.Marshal(SubscribeRequestMessage{
 			ID:             time.Now().UTC().UnixNano(),
 			Type:           string(SubscribeMessage),

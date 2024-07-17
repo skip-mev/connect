@@ -44,4 +44,5 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 	WriteInterval:                 DefaultWriteInterval,
 	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 	MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+	MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 }

@@ -65,6 +65,7 @@ var (
 		WriteInterval:                 DefaultWriteInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 	}
 
 	// DefaultAPIConfig defines the default API config for KuCoin. This is

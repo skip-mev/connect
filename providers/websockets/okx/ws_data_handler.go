@@ -93,7 +93,7 @@ func (h *WebSocketHandler) HandleMessage(
 	case eventType == EventTickers:
 		h.logger.Debug("received ticker response message")
 
-		var tickerMessage IndexTickersResponseMessage
+		var tickerMessage TickersResponseMessage
 		if err := json.Unmarshal(message, &tickerMessage); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal ticker response message: %w", err)
 		}
@@ -118,13 +118,13 @@ func (h *WebSocketHandler) CreateMessages(
 	instruments := make([]SubscriptionTopic, 0)
 	for _, ticker := range tickers {
 		instruments = append(instruments, SubscriptionTopic{
-			Channel:      string(IndexTickersChannel),
+			Channel:      string(TickersChannel),
 			InstrumentID: ticker.GetOffChainTicker(),
 		})
 		h.cache.Add(ticker)
 	}
 
-	return NewSubscribeToTickersRequestMessage(instruments)
+	return h.NewSubscribeToTickersRequestMessage(instruments)
 }
 
 // HeartBeatMessages is not used for okx.

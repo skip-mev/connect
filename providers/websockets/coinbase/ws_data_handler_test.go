@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
@@ -23,6 +24,9 @@ var (
 	}
 	ethusd = types.DefaultProviderTicker{
 		OffChainTicker: "ETH-USD",
+	}
+	mogusd = types.DefaultProviderTicker{
+		OffChainTicker: "MOG-USD",
 	}
 	logger = zap.NewExample()
 )
@@ -322,15 +326,20 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessages(t *testing.T) {
+	batchCfg := coinbase.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs to subscribe to",
 			cps:  []types.ProviderTicker{},
+			cfg:  coinbase.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -341,6 +350,7 @@ func TestCreateMessages(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusd,
 			},
+			cfg: coinbase.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
 					Type: string(coinbase.SubscribeMessage),
@@ -366,6 +376,7 @@ func TestCreateMessages(t *testing.T) {
 				btcusd,
 				ethusd,
 			},
+			cfg: coinbase.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msgs := make([]handlers.WebsocketEncodedMessage, 2)
 				for i, ticker := range []string{"BTC-USD", "ETH-USD"} {
@@ -389,11 +400,83 @@ func TestCreateMessages(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "multiple currency pairs to subscribe to with batch config",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 1)
+				msg := coinbase.SubscribeRequestMessage{
+					Type: string(coinbase.SubscribeMessage),
+					ProductIDs: []string{
+						"BTC-USD",
+						"ETH-USD",
+					},
+					Channels: []string{
+						string(coinbase.TickerChannel),
+						string(coinbase.HeartbeatChannel),
+					},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple currency pairs to subscribe to with batch config + 1",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+				mogusd,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				msg := coinbase.SubscribeRequestMessage{
+					Type: string(coinbase.SubscribeMessage),
+					ProductIDs: []string{
+						"BTC-USD",
+						"ETH-USD",
+					},
+					Channels: []string{
+						string(coinbase.TickerChannel),
+						string(coinbase.HeartbeatChannel),
+					},
+				}
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				msg = coinbase.SubscribeRequestMessage{
+					Type: string(coinbase.SubscribeMessage),
+					ProductIDs: []string{
+						"MOG-USD",
+					},
+					Channels: []string{
+						string(coinbase.TickerChannel),
+						string(coinbase.HeartbeatChannel),
+					},
+				}
+				bz, err = json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[1] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := coinbase.NewWebSocketDataHandler(logger, coinbase.DefaultWebSocketConfig)
+			wsHandler, err := coinbase.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

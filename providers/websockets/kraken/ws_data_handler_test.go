@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
@@ -19,6 +20,9 @@ var (
 	}
 	ethusd = types.DefaultProviderTicker{
 		OffChainTicker: "ETH/USD",
+	}
+	mogusd = types.DefaultProviderTicker{
+		OffChainTicker: "MOG/USD",
 	}
 	logger = zap.NewExample()
 )
@@ -231,15 +235,20 @@ func TestHandleMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	batchCfg := kraken.DefaultWebSocketConfig
+	batchCfg.MaxSubscriptionsPerBatch = 2
+
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
+		cfg         config.WebSocketConfig
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
+			cfg:  kraken.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -250,6 +259,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusd,
 			},
+			cfg: kraken.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
 					Event: string(kraken.SubscribeEvent),
@@ -272,6 +282,7 @@ func TestCreateMessage(t *testing.T) {
 				btcusd,
 				ethusd,
 			},
+			cfg: kraken.DefaultWebSocketConfig,
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msgs := make([]handlers.WebsocketEncodedMessage, 2)
 				for i, ticker := range []string{"XBT/USD", "ETH/USD"} {
@@ -292,11 +303,74 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "multiple currency pairs with batch config",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 1)
+				msg := kraken.SubscribeRequestMessage{
+					Event: string(kraken.SubscribeEvent),
+					Pair:  []string{"XBT/USD", "ETH/USD"},
+					Subscription: kraken.Subscription{
+						Name: string(kraken.TickerChannel),
+					},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
+		{
+			name: "multiple currency pairs with batch config + remainder",
+			cps: []types.ProviderTicker{
+				btcusd,
+				ethusd,
+				mogusd,
+			},
+			cfg: batchCfg,
+			expected: func() []handlers.WebsocketEncodedMessage {
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				msg := kraken.SubscribeRequestMessage{
+					Event: string(kraken.SubscribeEvent),
+					Pair:  []string{"XBT/USD", "ETH/USD"},
+					Subscription: kraken.Subscription{
+						Name: string(kraken.TickerChannel),
+					},
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[0] = bz
+
+				msg = kraken.SubscribeRequestMessage{
+					Event: string(kraken.SubscribeEvent),
+					Pair:  []string{"MOG/USD"},
+					Subscription: kraken.Subscription{
+						Name: string(kraken.TickerChannel),
+					},
+				}
+
+				bz, err = json.Marshal(msg)
+				require.NoError(t, err)
+				msgs[1] = bz
+
+				return msgs
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kraken.NewWebSocketDataHandler(logger, kraken.DefaultWebSocketConfig)
+			handler, err := kraken.NewWebSocketDataHandler(logger, tc.cfg)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessages(tc.cps)

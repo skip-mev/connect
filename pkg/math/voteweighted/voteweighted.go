@@ -70,7 +70,7 @@ func Median(
 			// Retrieve the validator from the validator store and get its vote weight.
 			address, err := sdk.ConsAddressFromBech32(valAddress)
 			if err != nil {
-				logger.Info(
+				logger.Error(
 					"failed to parse validator address; skipping validator prices",
 					"validator_address", valAddress,
 					"err", err,
@@ -81,7 +81,7 @@ func Median(
 
 			validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
 			if err != nil {
-				logger.Info(
+				logger.Error(
 					"failed to retrieve validator from store; skipping validator prices",
 					"validator_address", valAddress,
 					"err", err,
@@ -96,7 +96,7 @@ func Median(
 			for currencyPair, price := range validatorPrices {
 				// Only include prices that are not nil.
 				if price == nil {
-					logger.Info(
+					logger.Debug(
 						"price is nil",
 						"currency_pair", currencyPair.String(),
 						"validator_address", valAddress,
@@ -139,7 +139,7 @@ func Median(
 			if percentSubmitted := math.LegacyNewDecFromInt(info.TotalWeight).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentSubmitted.GTE(threshold) {
 				prices[currencyPair] = ComputeMedian(info)
 
-				logger.Info(
+				logger.Debug(
 					"computed stake-weighted median price for currency pair",
 					"currency_pair", currencyPair.String(),
 					"percent_submitted", percentSubmitted.String(),
@@ -148,7 +148,7 @@ func Median(
 					"num_validators", len(info.Prices),
 				)
 			} else {
-				logger.Info(
+				logger.Debug(
 					"not enough voting power to compute stake-weighted median price price for currency pair",
 					"currency_pair", currencyPair.String(),
 					"threshold", threshold.String(),
