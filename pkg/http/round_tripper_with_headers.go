@@ -105,7 +105,7 @@ func (c *Client) GetWithContext(ctx context.Context, url string, opts ...GetOpti
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(http.StatusText(resp.StatusCode))
+		return nil, errors.New(resp.Status)
 	}
 
 	return resp, nil
