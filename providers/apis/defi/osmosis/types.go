@@ -15,7 +15,7 @@ import (
 const (
 	Name              = "osmosis_api"
 	QueryURLCharacter = "?"
-	UrlSeparator      = "/"
+	URLSeparator      = "/"
 	URLSuffix         = "osmosis/poolmanager/v2/pools/%s/prices%sbase_asset_denom=%s&quote_asset_denom=%s"
 )
 
@@ -26,7 +26,7 @@ func CreateURL(baseURL string, poolID uint64, baseAsset, quoteAsset string) (str
 			baseURL,
 			fmt.Sprintf(URLSuffix, strconv.FormatUint(poolID, 10), QueryURLCharacter, baseAsset, quoteAsset),
 		},
-		UrlSeparator,
+		URLSeparator,
 	), nil
 }
 
