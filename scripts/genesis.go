@@ -13,7 +13,7 @@ import (
 
 var (
 	convertToCMC     = flag.Bool("convert-to-cmc", false, "convert to coinmarketcap markets")
-	marketFile       = flag.String("market-cfg-path", "", "market file to convert to coinmarketcap markets")
+	marketFile       = flag.String("market-config-path", "", "market file to convert to coinmarketcap markets")
 	useCore          = flag.Bool("use-core", false, "use core markets")
 	useRaydium       = flag.Bool("use-raydium", false, "use raydium markets")
 	useUniswapV3Base = flag.Bool("use-uniswapv3-base", false, "use uniswapv3 base markets")
