@@ -14,6 +14,12 @@
       "dark": "#151617"
     }
   },
+  "metadata": {
+    "og:image": "/img/connect-banner.png",
+    "og:description": "Connect is an enshrined, in-protocol oracle built for high performance applications.",
+    "og:site_name": "Connect Docs",
+    "twitter:site": "@skipprotocol"
+  },
   "topbarLinks": [
     {
       "name": "Skip:Go",
