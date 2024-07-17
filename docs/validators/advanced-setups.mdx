@@ -1,0 +1,30 @@
+---
+description: Using Connect with Advanced Validator Infrastructure
+title: Advanced Setups
+icon: plug
+---
+
+## Using Remote Signers <Icon icon="key-skeleton-left-right" />
+
+Remote signers can be used with Connect, however only certain versions are compatible.
+
+### Horcrux
+
+#### Required Version
+
+v3.3.0+
+
+#### With `Horcrux-Proxy`
+
+If you are using horcrux-proxy be sure to use v1.0.0+ so that the maxReadSize can be configured in accordance with larger vote-extension payloads
+
+### TMKMS
+
+#### Required Version
+v0.13.1+
+
+
+## Using Distributed Validators <Icon icon="network-wired" />
+
+Connect can be used within a distributed validator setup. To do so, simply apply the same `app.toml` changes to _each_ validator node.
+Head over to [configuration](configuration#application) to see the necessary application-side configurations.

@@ -43,11 +43,8 @@
       "pages": [
         "validators/quickstart",
         "validators/configuration",
-        "validators/validator-app-config",
-        "validators/validator-connect-config",
-        "validators/troubleshooting",
-        "validators/rpc-providers",
-        "validators/flags-guide"
+        "validators/advanced-setups",
+        "validators/faq"
       ]
     },
     {

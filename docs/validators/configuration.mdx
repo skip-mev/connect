@@ -4,7 +4,117 @@ title: Configuration
 icon: gear
 ---
 
-# Connect Configuration
+# Configuration Reference
 
-This document will explain the ways to configure Connect.
+This document serves as a reference for Connect's configurable values.
 
+## Connect
+
+Connect can be configured by both flags and environment variables.
+
+### Env Vars
+
+Please remember to change the `oracle_address` in your application's `app.toml` if you change any of the values below.
+
+| Key                  | Default     | Description                                   |
+|----------------------|-------------|-----------------------------------------------|
+| `SLINKY_CONFIG_HOST` | `"0.0.0.0"` | The address Connect will serve requests from. |
+| `SLINKY_CONFIG_PORT` | `"8080"`    | The port Connect will serve requests from.    |
+
+### Flags
+
+
+| Flag                             | Default Value   | Description                                                                                   |
+|----------------------------------|-----------------|-----------------------------------------------------------------------------------------------|
+| `--market-map-endpoint`          | `""`            | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint. |
+| `--marketmap-provider`           | `marketmap_api` | MarketMap provider to use (marketmap_api, dydx_api, dydx_migration_api).                      |
+| `--oracle-config`                | `""`            | Overrides the Oracle Configuration.                                                           |
+| `--run-pprof`                    | `false`         | Run pprof server.                                                                             |
+| `--pprof-port`                   | `"6060"`        | Port for the pprof server to listen on.                                                       |
+| `--log-std-out-level`            | `"info"`        | Log level (debug, info, warn, error, dpanic, panic, fatal).                                   |
+| `--log-file-level`               | `"info"`        | Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).               |
+| `--log-file`                     | `"sidecar.log"` | Write logs to a file.                                                                         |
+| `--log-max-size`                 | `100`           | Maximum size in megabytes before log is rotated.                                              |
+| `--log-max-backups`              | `1`             | Maximum number of old log files to retain.                                                    |
+| `--log-max-age`                  | `3`             | Maximum number of days to retain an old log file.                                             |
+| `--log-file-disable-compression` | `false`         | Compress rotated log files.                                                                   |
+| `--log-disable-file-rotation`    | `false`         | Disable writing logs to a file.                                                               |
+
+### API Keys
+
+Some chains include markets that require API keys to provide data for. In order to do this, you will need to utilize the `--oracle-config` flag and pass in a `json` file that looks like the following:
+
+```json oracle.json
+{
+   "providers": {
+      "raydium_api": {
+         "api": {
+            "endpoints": [
+               {
+                  "url": "https://solana.polkachu.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                  }
+               },
+               {
+                  "url": "https://slinky-solana.kingnodes.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                  }
+               },
+               {
+                  "url": "https://solana.lavenderfive.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                  }
+               },
+               {
+                  "url": "https://solana-rpc.rhino-apis.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                  }
+               },
+               {
+                  "url": "https://dydx.helius-rpc.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY YOU'VE RETRIEVED FROM SLACK"
+                  }
+               }
+            ]
+         }
+      }
+   }
+}
+
+
+```
+
+## Application
+
+The blockchain application is configured under the `[oracle]` heading in your application's `app.toml` file.
+
+```toml app.toml
+# ... other sections
+
+[oracle]
+# Enabled indicates whether the oracle is enabled.
+enabled = "true"
+
+# Oracle Address is the URL of the out of process oracle sidecar. This is used to
+# connect to the oracle sidecar when the application boots up.
+oracle_address = "CONNECT_ADDRESS_HERE:8080"
+
+# Client Timeout is the time that the application is willing to wait for responses from
+# the oracle before timing out.
+client_timeout = "250ms"
+
+# MetricsEnabled determines whether oracle metrics are enabled. Specifically,
+# this enables instrumentation of the oracle client and the interaction between
+# the oracle and the app.
+metrics_enabled = "true"
+```

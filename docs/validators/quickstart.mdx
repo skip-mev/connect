@@ -4,6 +4,10 @@ title: Quickstart
 icon: space-station-moon
 ---
 
+This document will guide you through setting up and running Connect, as well as configuring your chain to receive data from Connect.
+
+Note: The following instructions assumes you are running a single validator node with a remote instance of Connect.
+
 ## Installation
 
 
@@ -30,10 +34,16 @@ slinky version
 
 ## Run Connect
 
-Running connect is done via the following command:
+<Info>
+    Is your chain providing price data for Raydium markets? Please see the [configuration](configuration) page to learn how to properly setup Connect with API keys for markets that require them.
+</Info>
+
+To run Connect, which starts the service on the default port of `8080`, enter the following command:
+
+Be sure to supply the correct gRPC address and port (defaults is 9090) for your node:
 
 ```shell
-slinky
+slinky --market-map-endpoint="<YOUR_NODE_GRPC>:PORT"
 ```
 
 ### Verify Connect
@@ -66,12 +76,16 @@ The output of the command should look similar to this:
 
 In order for the chain binary to get prices from Connect, we need to add the following lines under the `[oracle]` heading to your `app.toml`.
 
+Remember to change the `oracle_address` value to the address of your Connect instance!
+
 ```toml app.toml
+# ... other sections
+
 [oracle]
 enabled = "true"
-oracle_address = "localhost:8080"
+oracle_address = "<YOUR_CONNECT_INSTANCE>:8080"
 client_timeout = "250ms"
 metrics_enabled = "true"
 ```
 
-Then, start your chain as normal. To check that the symbiosis between Connect and the chain was successful, head over to METRICS TODO.
+Once your `app.toml` is configured, you may start your chain as normal.
