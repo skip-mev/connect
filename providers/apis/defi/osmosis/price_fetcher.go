@@ -120,27 +120,33 @@ func (pf *APIPriceFetcher) Fetch(
 
 	pf.logger.Info("fetching for tickers", zap.Any("tickers", tickers))
 
+	// make sure metadata cache is set properly
+	for _, ticker := range tickers {
+		_, found := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
+		if !found {
+			_, err := pf.metaDataPerTicker.updateMetaDataCache(ticker)
+			if err != nil {
+				pf.logger.Debug("failed to update metadata cache", zap.Error(err))
+			}
+		}
+	}
+
 	for _, ticker := range tickers {
 		go func(ticker oracletypes.ProviderTicker) {
 			var err error
 			defer wg.Done()
 
-			// get or set metadata
-			// TODO: how expensive is this ?
 			metadata, found := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
 			if !found {
-				metadata, err = pf.metaDataPerTicker.updateMetaDataCache(ticker)
-				if err != nil {
-					unresolvedMtx.Lock()
-					defer unresolvedMtx.Unlock()
-					unresolved[ticker] = providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(
-							NoOsmosisMetadataForTickerError(ticker.String()),
-							providertypes.ErrorTickerMetadataNotFound,
-						),
-					}
-					return
+				unresolvedMtx.Lock()
+				defer unresolvedMtx.Unlock()
+				unresolved[ticker] = providertypes.UnresolvedResult{
+					ErrorWithCode: providertypes.NewErrorWithCode(
+						NoOsmosisMetadataForTickerError(ticker.String()),
+						providertypes.ErrorTickerMetadataNotFound,
+					),
 				}
+				return
 			}
 
 			callCtx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
