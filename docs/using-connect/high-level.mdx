@@ -98,16 +98,3 @@ Inside `QuotePrice`, you can fetch for the currency-pair:
     uint64 block_height = 3;
     }
 ```
-
-### Connect Price Update Timing
-
-Prices within Connect committed on a one-block delay, since validators use the vote extensions from block `n-1` to securely submit their price data for block `n`.
-
-Most of the time, Connect feeds will update every single block. Price updates happen when there is a significant change in price, and over 66% of validators are correctly running the Connect sidecar.
-
-However, an individual Connect feed will not update on any given block if:
-
-1. (More common) There was not a sufficient change from last block's price to surpass the Connect `min_price_change` parameter. To save network bandwidth, the price won't update.
-2. (Less common) The market is disabled within `x/marketmap`
-3. (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run Connect, or there is a massive, widespread outage across providers.
-
