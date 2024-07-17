@@ -53,13 +53,21 @@
         "validators/faq"
       ]
     },
-      {
-        "group": "Developers",
-        "pages": [
-          "using-connect/high-level",
-          "using-connect/neutron-sdk"
-        ]
-      }
+    {
+      "group": "Learn",
+      "pages": [
+        "learn/sidecar",
+        "learn/security",
+        "learn/incentives-and-penalties"
+      ]
+    },
+    {
+      "group": "Developers",
+      "pages": [
+        "using-connect/high-level",
+        "using-connect/neutron-sdk"
+      ]
+    }
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/skipprotocol",
