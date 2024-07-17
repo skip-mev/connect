@@ -1,8 +1,9 @@
 package osmosis_test
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
 )
