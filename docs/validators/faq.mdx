@@ -13,6 +13,10 @@ icon: circle-question
         We are currently working on supporting this feature. It will be available in a future release.
     </Accordion>
 
+    <Accordion title="Does Connect store historical prices?">
+        No, prices are stored in `x/oracle` module, and only stores the most recently posted price. However, you can use blockchain indexers or inspect past blocks to see the prices committed on previous heights.
+    </Accordion>
+
 
     <Accordion title="How do I upgrade the connect binary">
         Upgrading the Connect binary can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
