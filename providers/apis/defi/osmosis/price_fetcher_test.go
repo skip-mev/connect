@@ -194,7 +194,7 @@ func TestProviderFetch(t *testing.T) {
 		},
 	}
 
-	t.Run("singe valid ticker", func(t *testing.T) {
+	t.Run("single valid ticker", func(t *testing.T) {
 		client := mocks.NewClient(t)
 		pf, err := newPriceFetcher(client)
 		require.NoError(t, err)
