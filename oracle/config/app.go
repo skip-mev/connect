@@ -141,7 +141,7 @@ func (c *AppConfig) ValidateBasic() error {
 // ReadConfigFromAppOpts reads the config parameters from the AppOptions and returns the config.
 func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	var (
-		cfg AppConfig
+		cfg AppConfig = NewDefaultAppConfig()
 		err error
 	)
 
@@ -150,8 +150,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.Enabled, err = cast.ToBoolE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.Enabled = DefaultOracleEnabled // set to default
 	}
 
 	// get the oracle address
@@ -159,8 +157,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.OracleAddress, err = cast.ToStringE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.OracleAddress = DefaultOracleAddress // set to default
 	}
 
 	// get the client timeout
@@ -168,8 +164,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.ClientTimeout, err = cast.ToDurationE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.ClientTimeout = DefaultClientTimeout // set to default
 	}
 
 	// get the metrics enabled
@@ -177,8 +171,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.MetricsEnabled, err = cast.ToBoolE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.MetricsEnabled = DefaultMetricsEnabled // set to default
 	}
 
 	// get the price ttl
@@ -186,8 +178,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.PriceTTL, err = cast.ToDurationE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.PriceTTL = DefaultPriceTTL // set to default
 	}
 
 	// get the interval
@@ -195,8 +185,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		if cfg.Interval, err = cast.ToDurationE(v); err != nil {
 			return cfg, err
 		}
-	} else {
-		cfg.Interval = DefaultInterval // set to default
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {

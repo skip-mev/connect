@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cosmossdk.io/log"
@@ -17,6 +18,8 @@ var _ OracleClient = (*PriceDaemon)(nil)
 type PriceDaemon struct {
 	logger log.Logger
 
+	// isRunning is an atomic boolean that indicates whether the daemon is running.
+	isRunning atomic.Bool
 	// config is the configuration of the daemon.
 	config config.AppConfig
 	// client is the underlying oracle client used to fetch prices.
@@ -63,6 +66,10 @@ func (d *PriceDaemon) Start(ctx context.Context) error {
 	ticker := time.NewTicker(d.config.Interval)
 	defer ticker.Stop()
 
+	d.logger.Info("starting price daemon")
+	d.isRunning.Store(true)
+	defer d.isRunning.Store(false)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -70,7 +77,6 @@ func (d *PriceDaemon) Start(ctx context.Context) error {
 			return ctx.Err()
 		case <-d.doneCh:
 			d.logger.Info("price daemon stopped")
-			close(d.doneCh)
 			return nil
 		case <-ticker.C:
 			d.fetchPrices(ctx)
@@ -126,7 +132,11 @@ func (d *PriceDaemon) Prices(
 
 // Stop stops the price daemon.
 func (d *PriceDaemon) Stop() error {
-	d.doneCh <- struct{}{}
+	if d.isRunning.Load() {
+		d.doneCh <- struct{}{}
+		close(d.doneCh)
+	}
+
 	return nil
 }
 
