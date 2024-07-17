@@ -35,60 +35,6 @@ Please remember to change the `oracle_address` in your [application config](#app
 | `--log-file-disable-compression` | `false`         | Compress rotated log files.                                                                                                                                             |
 | `--log-disable-file-rotation`    | `false`         | Disable writing logs to a file.                                                                                                                                         |
 
-### API Keys
-
-Some chains include markets that require API keys to provide data for. To set these API keys, utilize the `--oracle-config` flag and pass in a `json` file that looks like the following:
-
-Keep in mind, the `--oracle-config` flag does not require a full configuration file. The internal config will only be mutated by the fields provided in the `json` file.
-
-```json oracle.json
-{
-   "providers": {
-      "raydium_api": {
-         "api": {
-            "endpoints": [
-               {
-                  "url": "https://solana.polkachu.com",
-                  "authentication": {
-                     "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY"
-                  }
-               },
-               {
-                  "url": "https://slinky-solana.kingnodes.com",
-                  "authentication": {
-                     "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY"
-                  }
-               },
-               {
-                  "url": "https://solana.lavenderfive.com",
-                  "authentication": {
-                     "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY"
-                  }
-               },
-               {
-                  "url": "https://solana-rpc.rhino-apis.com",
-                  "authentication": {
-                     "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY"
-                  }
-               },
-               {
-                  "url": "https://dydx.helius-rpc.com",
-                  "authentication": {
-                     "apiKeyHeader": "x-api-key",
-                     "apiKey": "API KEY"
-                  }
-               }
-            ]
-         }
-      }
-   }
-}
-```
-
 ## Application
 
 The blockchain application is configured under the `[oracle]` heading in your application's `app.toml` file.

@@ -41,10 +41,60 @@ v1.0.1+
 In addition to the setup in the [quickstart](quickstart), the following flags are required for dYdX validators running the sidecar:
 
 ```shell
-slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint> --oracle-config config_file.json
+slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint> --oracle-config oracle.json
 ```
 
-Some markets in dYdX require API keys to retrieve price data. If you have not received API keys, please reach out in the relevant communication channels. See [API Keys](configuration#api-keys) to learn how to configure them in Connect.
+### API Keys
+The Raydium provider utilized by dYdX requires API keys to retrieve price data. If you have not received API keys, please reach out in the relevant communication channels.
+
+Below is the necessary file to pass to the `--oracle-config` flag.
+```json oracle.json
+{
+   "providers": {
+      "raydium_api": {
+         "api": {
+            "endpoints": [
+               {
+                  "url": "https://solana.polkachu.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY"
+                  }
+               },
+               {
+                  "url": "https://slinky-solana.kingnodes.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY"
+                  }
+               },
+               {
+                  "url": "https://solana.lavenderfive.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY"
+                  }
+               },
+               {
+                  "url": "https://solana-rpc.rhino-apis.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY"
+                  }
+               },
+               {
+                  "url": "https://dydx.helius-rpc.com",
+                  "authentication": {
+                     "apiKeyHeader": "x-api-key",
+                     "apiKey": "API KEY"
+                  }
+               }
+            ]
+         }
+      }
+   }
+}
+```
 
 ## Neutron
 
