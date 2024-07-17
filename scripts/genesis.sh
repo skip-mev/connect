@@ -21,4 +21,27 @@ MARKETS=$MARKETS; jq --arg markets "$MARKETS" '.app_state["marketmap"]["market_m
 MARKETS=$MARKETS; jq --arg markets "$MARKETS" '.app_state["oracle"]["currency_pair_genesis"] += [$markets | fromjson | .markets | values | .[].ticker.currency_pair | {"currency_pair": {"Base": .Base, "Quote": .Quote}, "currency_pair_price": null, "nonce": 0} ]' "$GENESIS" > "$GENESIS_TMP" && mv "$GENESIS_TMP" "$GENESIS"
 MARKETS=$MARKETS; jq --arg markets "$MARKETS" '.app_state["oracle"]["currency_pair_genesis"] |= (to_entries | map(.value += {id: (.key + 1)} | .value))' "$GENESIS" > "$GENESIS_TMP" && mv "$GENESIS_TMP" "$GENESIS"
 
+
+# Adding all genesis accounts to the genesis file, look for all genesis accounts to be in env variables
+# GENESIS_ACCOUNT_1, GENESIS_ACCOUNT_2, GENESIS_ACCOUNT_3, etc, and their respective balances
+# GENESIS_ACCOUNT_1_BALANCE, GENESIS_ACCOUNT_2_BALANCE, GENESIS_ACCOUNT_3_BALANCE, etc
+for i in $(env | grep -v "_BALANCE" | grep -o "GENESIS_ACCOUNT_[0-9]*" | sort -n -t _ -k 3); do
+    # get the account address
+    ACCOUNT=$(printenv $i)
+
+    # get the account balance
+    BALANCE=$(printenv ${i}_BALANCE)
+
+    # add the account to the genesis file
+    ./build/slinkyd genesis add-genesis-account $ACCOUNT $BALANCE --home "$HOMEDIR" --keyring-backend test
+done
+
+# add the MARKET_MAP_AUTHORITY environment variable address to the genesis file (if there is one)
+MARKET_MAP_AUTHORITY=$(printenv MARKET_MAP_AUTHORITY)
+if [ -n "$MARKET_MAP_AUTHORITY" ]; then
+    jq --arg authority "$MARKET_MAP_AUTHORITY" \
+    '.app_state["marketmap"]["params"]["market_authorities"] += [$authority]' \
+    "$GENESIS" > "$GENESIS_TMP" && mv "$GENESIS_TMP" "$GENESIS"
+fi
+
 rm markets.json
