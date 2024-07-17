@@ -15,6 +15,36 @@ type OracleService struct {
 	mock.Mock
 }
 
+// MarketMap provides a mock function with given fields: _a0, _a1
+func (_m *OracleService) MarketMap(_a0 context.Context, _a1 *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error) {
+	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for MarketMap")
+	}
+
+	var r0 *types.QueryMarketMapResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error)); ok {
+		return rf(_a0, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *types.QueryMarketMapRequest) *types.QueryMarketMapResponse); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.QueryMarketMapResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *types.QueryMarketMapRequest) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Prices provides a mock function with given fields: _a0, _a1
 func (_m *OracleService) Prices(_a0 context.Context, _a1 *types.QueryPricesRequest) (*types.QueryPricesResponse, error) {
 	ret := _m.Called(_a0, _a1)
