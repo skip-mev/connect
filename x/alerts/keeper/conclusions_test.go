@@ -41,7 +41,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("base", "")),
 			keeper.Negative,
 			func(_ sdk.Context) {},
-			fmt.Errorf("invalid alert: quote currency pair cannot be empty"),
+			fmt.Errorf("invalid alert: quote asset cannot be empty"),
 			types.AlertWithStatus{},
 		},
 		{
