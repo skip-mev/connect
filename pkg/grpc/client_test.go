@@ -28,9 +28,7 @@ func TestClient(t *testing.T) {
 
 	// start the server
 	go func() {
-		if err := srv.Serve(lis); err != nil {
-			t.Fatalf("failed to serve: %v", err)
-		}
+		srv.Serve(lis)
 	}()
 
 	_, port, err := net.SplitHostPort(lis.Addr().String())
