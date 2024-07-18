@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/sync/errgroup"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -113,10 +115,10 @@ func (pf *APIPriceFetcher) Fetch(
 	resolved := make(oracletypes.ResolvedPrices)
 	unresolved := make(oracletypes.UnResolvedPrices)
 
-	wg := sync.WaitGroup{}
+	g, ctx := errgroup.WithContext(ctx)
 	unresolvedMtx := sync.Mutex{}
 	resolveMtx := sync.Mutex{}
-	wg.Add(len(tickers))
+	g.SetLimit(pf.api.MaxQueries)
 
 	// setup callbacks for writing to maps in parallel
 	unresolvedTickerCallback := func(ticker oracletypes.ProviderTicker, err providertypes.ErrorWithCode) {
@@ -147,9 +149,9 @@ func (pf *APIPriceFetcher) Fetch(
 	}
 
 	for _, ticker := range tickers {
-		go func(ticker oracletypes.ProviderTicker) {
+		g.Go(func() error {
+			ticker := ticker
 			var err error
-			defer wg.Done()
 
 			metadata, found := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
 			if !found {
@@ -158,7 +160,7 @@ func (pf *APIPriceFetcher) Fetch(
 					providertypes.ErrorTickerMetadataNotFound,
 				))
 
-				return
+				return nil
 			}
 
 			callCtx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
@@ -175,7 +177,7 @@ func (pf *APIPriceFetcher) Fetch(
 					providertypes.ErrorAPIGeneral,
 				))
 
-				return
+				return nil
 			}
 
 			price, err := calculatePrice(resp)
@@ -187,14 +189,16 @@ func (pf *APIPriceFetcher) Fetch(
 					providertypes.ErrorFailedToParsePrice,
 				))
 
-				return
+				return nil
 			}
 
 			resolvedTickerCallback(ticker, price)
-		}(ticker)
+
+			return nil
+		})
 	}
 
-	wg.Wait()
+	_ = g.Wait()
 
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }

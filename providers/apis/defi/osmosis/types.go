@@ -119,9 +119,9 @@ var DefaultAPIConfig = config.APIConfig{
 	Timeout:          4 * time.Second,
 	Interval:         1000 * time.Millisecond,
 	ReconnectTimeout: 4 * time.Second,
-	MaxQueries:       10,
+	MaxQueries:       10, // only run 10 queries concurrently to prevent rate limiting
 	Atomic:           false,
-	BatchSize:        25, // maximal # of accounts in getMultipleAccounts query is 100
+	BatchSize:        1,
 	Endpoints: []config.Endpoint{
 		{
 			URL: "https://osmosis-api.polkachu.com",
