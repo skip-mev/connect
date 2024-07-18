@@ -677,7 +677,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 
 	s.Run("test price transformation failures", func() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
-		transformationError := fmt.Errorf("incorrectly formatted CurrencyPair: BTCETH")
+		transformationError := fmt.Errorf("incorrectly formatted CurrencyPair: \"BTCETH\"")
 		mockClient := mocks.NewOracleClient(s.T())
 		pamock := aggregatormocks.NewPriceApplier(s.T())
 		handler := ve.NewVoteExtensionHandler(
