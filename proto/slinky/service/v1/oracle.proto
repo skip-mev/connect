@@ -21,6 +21,12 @@ service Oracle {
   rpc MarketMap(QueryMarketMapRequest) returns (QueryMarketMapResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/marketmap";
   }
+
+  // Version defines a method for fetching the current version of the oracle
+  // service.
+  rpc Version(QueryVersionRequest) returns (QueryVersionResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/version";
+  }
 }
 
 // QueryPricesRequest defines the request type for the the Prices method.
@@ -41,4 +47,13 @@ message QueryMarketMapRequest {}
 message QueryMarketMapResponse {
   // market_map defines the current market map configuration.
   slinky.marketmap.v1.MarketMap market_map = 1;
+}
+
+// QueryVersionRequest defines the request type for the Version method.
+message QueryVersionRequest {}
+
+// QueryVersionResponse defines the response type for the Version method.
+message QueryVersionResponse {
+  // version defines the current version of the oracle service.
+  string version = 1;
 }
