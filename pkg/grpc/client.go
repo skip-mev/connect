@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"fmt"
-	"net/url"
 	"net"
+	"net/url"
 
 	grpc "google.golang.org/grpc"
 )

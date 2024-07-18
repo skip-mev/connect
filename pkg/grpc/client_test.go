@@ -1,10 +1,10 @@
 package grpc_test
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"testing"
-	"context"
 
 	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/stretchr/testify/require"
