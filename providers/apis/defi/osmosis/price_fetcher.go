@@ -125,16 +125,12 @@ func (pf *APIPriceFetcher) Fetch(
 		unresolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: err,
 		}
-
-		return
 	}
 
 	resolvedTickerCallback := func(ticker oracletypes.ProviderTicker, price *big.Float) {
 		resolveMtx.Lock()
 		defer resolveMtx.Unlock()
 		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
-
-		return
 	}
 
 	pf.logger.Info("fetching for tickers", zap.Any("tickers", tickers))
