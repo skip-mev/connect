@@ -90,12 +90,14 @@ func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, qu
 		return SpotPriceResponse{}, err
 	}
 
+	c.apiMetrics.AddHTTPStatusCode(c.api.Name, resp)
+
 	var spotPriceResponse SpotPriceResponse
 	if err := json.NewDecoder(resp.Body).Decode(&spotPriceResponse); err != nil {
 		return SpotPriceResponse{}, err
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
+	c.apiMetrics.AddHTTPStatusCode(c.api.Name, resp)
 	return spotPriceResponse, nil
 }
 
@@ -201,12 +203,10 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 
 			resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 			if err != nil {
-				mc.apiMetrics.AddRPCStatusCode(mc.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeError)
 				mc.logger.Error("failed to spot price in sub client", zap.String("url", url), zap.Error(err))
 				return
 			}
 
-			mc.apiMetrics.AddRPCStatusCode(mc.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeOK)
 			mc.logger.Debug("successfully fetched accounts", zap.String("url", url))
 
 			resps[index] = resp
