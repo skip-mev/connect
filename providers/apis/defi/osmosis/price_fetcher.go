@@ -118,6 +118,25 @@ func (pf *APIPriceFetcher) Fetch(
 	resolveMtx := sync.Mutex{}
 	wg.Add(len(tickers))
 
+	// setup callbacks for writing to maps in parallel
+	unresolvedTickerCallback := func(ticker oracletypes.ProviderTicker, err providertypes.ErrorWithCode) {
+		unresolvedMtx.Lock()
+		defer unresolvedMtx.Unlock()
+		unresolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: err,
+		}
+
+		return
+	}
+
+	resolvedTickerCallback := func(ticker oracletypes.ProviderTicker, price *big.Float) {
+		resolveMtx.Lock()
+		defer resolveMtx.Unlock()
+		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
+
+		return
+	}
+
 	pf.logger.Info("fetching for tickers", zap.Any("tickers", tickers))
 
 	// make sure metadata cache is set properly
@@ -138,14 +157,11 @@ func (pf *APIPriceFetcher) Fetch(
 
 			metadata, found := pf.metaDataPerTicker.getMetadataPerTicker(ticker)
 			if !found {
-				unresolvedMtx.Lock()
-				defer unresolvedMtx.Unlock()
-				unresolved[ticker] = providertypes.UnresolvedResult{
-					ErrorWithCode: providertypes.NewErrorWithCode(
-						NoOsmosisMetadataForTickerError(ticker.String()),
-						providertypes.ErrorTickerMetadataNotFound,
-					),
-				}
+				unresolvedTickerCallback(ticker, providertypes.NewErrorWithCode(
+					NoOsmosisMetadataForTickerError(ticker.String()),
+					providertypes.ErrorTickerMetadataNotFound,
+				))
+
 				return
 			}
 
@@ -158,35 +174,27 @@ func (pf *APIPriceFetcher) Fetch(
 				metadata.QuoteTokenDenom,
 			)
 			if err != nil {
-				unresolvedMtx.Lock()
-				defer unresolvedMtx.Unlock()
-				pf.logger.Error("failed to fetch spot price", zap.Error(err))
-				unresolved[ticker] = providertypes.UnresolvedResult{
-					ErrorWithCode: providertypes.NewErrorWithCode(
-						err,
-						providertypes.ErrorAPIGeneral,
-					),
-				}
+				unresolvedTickerCallback(ticker, providertypes.NewErrorWithCode(
+					err,
+					providertypes.ErrorAPIGeneral,
+				))
+
 				return
 			}
 
 			price, err := calculatePrice(resp)
 			if err != nil {
 				pf.logger.Error("failed parse spot price response", zap.Error(err))
-				unresolvedMtx.Lock()
-				defer unresolvedMtx.Unlock()
-				unresolved[ticker] = providertypes.UnresolvedResult{
-					ErrorWithCode: providertypes.NewErrorWithCode(
-						err,
-						providertypes.ErrorFailedToParsePrice,
-					),
-				}
+
+				unresolvedTickerCallback(ticker, providertypes.NewErrorWithCode(
+					err,
+					providertypes.ErrorFailedToParsePrice,
+				))
+
 				return
 			}
 
-			resolveMtx.Lock()
-			defer resolveMtx.Unlock()
-			resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
+			resolvedTickerCallback(ticker, price)
 		}(ticker)
 	}
 
