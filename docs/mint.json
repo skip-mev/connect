@@ -57,7 +57,8 @@
       "group": "Metrics",
       "pages": [
         "metrics/overview",
-        "metrics/usage"
+        "metrics/setup",
+        "metrics/reference"
       ]
     },
     {
