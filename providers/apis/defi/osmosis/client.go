@@ -24,7 +24,7 @@ var (
 //
 //go:generate mockery --name Client --output ./mocks/ --case underscore
 type Client interface {
-	SpotPrice(grpcCtx context.Context,
+	SpotPrice(ctx context.Context,
 		poolID uint64,
 		baseAsset,
 		quoteAsset string,
