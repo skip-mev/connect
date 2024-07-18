@@ -1,7 +1,9 @@
 package grpc
 
 import (
-	"strings"
+	"fmt"
+	"net"
+	"net/url"
 
 	grpc "google.golang.org/grpc"
 )
@@ -13,12 +15,23 @@ func NewClient(
 	target string,
 	opts ...grpc.DialOption,
 ) (conn *grpc.ClientConn, err error) {
-	// strip the scheme from the target
-	target = strings.TrimPrefix(strings.TrimPrefix(target, "http://"), "https://")
+	// check if this is a host:port URI, if so continue,
+	// otherwise, parse the URL and extract the host and port
+	host, port, err := net.SplitHostPort(target)
+	if err != nil {
+		// parse the URL
+		ip, err := url.Parse(target)
+		if err != nil {
+			return nil, err
+		}
+
+		// extract the host and port
+		host, port = ip.Hostname(), ip.Port()
+	}
 
 	// create a new client
 	return grpc.NewClient(
-		target,
+		fmt.Sprintf("%s:%s", host, port),
 		opts...,
 	)
 }
