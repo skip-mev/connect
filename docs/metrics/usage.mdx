@@ -1,0 +1,40 @@
+---
+description: How to utilize Connect metrics
+title: Usage
+icon: magnifying-glass-dollar
+---
+
+This document will guide you on how to utilize Connect's metrics.
+
+## Prerequisites
+- You have a [Prometheus](https://prometheus.io/) instance
+- You have a [Grafana](https://grafana.com/) instance
+- You've configured a data source in Grafana for your Prometheus instance
+- You have set the metrics [configuration](/validators/configuration#env-vars) in the Connect sidecar
+
+If you're not sure how to set up Prometheus and Grafana, see this [document](https://grafana.com/docs/grafana/latest/getting-started/get-started-grafana-prometheus/).
+
+## Import Dashboard
+
+Import the following this [JSON file](https://github.com/skip-mev/slinky/blob/main/grafana/provisioning/dashboards/side-car-dashboard.json) in Grafana. If you do not know how to import a Grafana dashboard, see this [document](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/import-dashboards/).
+
+## Dashboard Terminology
+
+- **Market:** Pair of assets that are traded against each other. For example, the BTC-USD market is the market where Bitcoin is traded against the US Dollar.
+- **Price Feed:** A price feed is indexed by a price provider and a market. For example, the Coinbase API provides a price feed for the BTC-USD market.
+- **Price Provider:** Service that provides price data for a given market. For example, the Coinbase API is a price provider for the Coinbase markets.
+- **Market Map Provider:** Service that supplies the markets that the side-car needs to fetch data for.
+
+## Exposed Metrics
+
+Connect also exposes metrics on the `/metrics` endpoint on port `8002` by default. These metrics are in the Prometheus format and can be scraped by any monitoring system that supports Prometheus format.
+
+### Health Metrics
+
+The following health metrics are emitted in Connect.
+
+- **side_car_health_check_system_updates_total:** Counter that increments every time the sidecar updates its internal state. This is a good indicator of the sidecar's overall health.
+- **side_car_health_check_ticker_updates_total:** Counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
+- **side_car_health_check_provider_updates_total:** Counter that increments every time the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider. Note that providers may not be responsible for every market. However, the sidecar correctly tracks the number of expected updates for each provider.
+
+To

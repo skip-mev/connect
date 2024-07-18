@@ -9,13 +9,15 @@ icon: gear
 Connect can be configured by both flags and environment variables.
 
 ### Env Vars
+The following values are read via environment variables:
 
-Please remember to change the `oracle_address` in your [application config](#application) if you change any of the env vars below.
+| Key                                             | Default     | Description                                                                                                                                        |
+|-------------------------------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SLINKY_CONFIG_HOST`                            | `"0.0.0.0"` | The address Connect will serve requests from. WARNING: changing this value requires updating the `oracle_address` in the `app.toml` configuration. |
+| `SLINKY_CONFIG_PORT`                            | `"8080"`    | The port Connect will serve requests from. WARNING: changing this value requires updating the `oracle_address` in the `app.toml` configuration.    |
+| `SLINKY_CONFIG_METRICS_ENABLED`                 | `"false"`   | Enables prometheus metrics.                                                                                                                        |
+| `SLINKY_CONFIG_METRICS_PROMETHEUSSERVERADDRESS` | `""`        | The address of your prometheus server instance.                                                                                                    |
 
-| Key                  | Default     | Description                                   |
-|----------------------|-------------|-----------------------------------------------|
-| `SLINKY_CONFIG_HOST` | `"0.0.0.0"` | The address Connect will serve requests from. |
-| `SLINKY_CONFIG_PORT` | `"8080"`    | The port Connect will serve requests from.    |
 
 ### Flags
 

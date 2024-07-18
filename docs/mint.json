@@ -54,6 +54,13 @@
       ]
     },
     {
+      "group": "Metrics",
+      "pages": [
+        "metrics/overview",
+        "metrics/usage"
+      ]
+    },
+    {
       "group": "Learn",
       "pages": [
         "learn/sidecar",
