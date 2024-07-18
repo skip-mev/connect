@@ -116,9 +116,9 @@ func unmarshalMetadataJSON(metadata string) (TickerMetadata, error) {
 var DefaultAPIConfig = config.APIConfig{
 	Enabled:          true,
 	Name:             Name,
-	Timeout:          4 * time.Second,
-	Interval:         1000 * time.Millisecond,
-	ReconnectTimeout: 4 * time.Second,
+	Timeout:          5 * time.Second,
+	Interval:         2000 * time.Millisecond, // 2s block times on osmosis
+	ReconnectTimeout: 5 * time.Second,
 	MaxQueries:       10, // only run 10 queries concurrently to prevent rate limiting
 	Atomic:           false,
 	BatchSize:        1,
