@@ -74,11 +74,11 @@ var xxx_messageInfo_QueryPricesRequest proto.InternalMessageInfo
 
 // QueryPricesResponse defines the response type for the Prices method.
 type QueryPricesResponse struct {
-	// prices defines the list of prices.
+	// Prices defines the list of prices.
 	Prices map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// timestamp defines the timestamp of the prices.
+	// Timestamp defines the timestamp of the prices.
 	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
-	// version defines the version of the oracle service that provided the prices.
+	// Version defines the version of the oracle service that provided the prices.
 	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
@@ -175,7 +175,7 @@ var xxx_messageInfo_QueryMarketMapRequest proto.InternalMessageInfo
 
 // QueryMarketMapResponse defines the response type for the MarketMap method.
 type QueryMarketMapResponse struct {
-	// market_map defines the current market map configuration.
+	// MarketMap defines the current market map configuration.
 	MarketMap *types.MarketMap `protobuf:"bytes,1,opt,name=market_map,json=marketMap,proto3" json:"market_map,omitempty"`
 }
 
@@ -258,7 +258,7 @@ var xxx_messageInfo_QueryVersionRequest proto.InternalMessageInfo
 
 // QueryVersionResponse defines the response type for the Version method.
 type QueryVersionResponse struct {
-	// version defines the current version of the oracle service.
+	// Version defines the current version of the oracle service.
 	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 }
 

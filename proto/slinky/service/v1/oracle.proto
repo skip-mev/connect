@@ -34,14 +34,14 @@ message QueryPricesRequest {}
 
 // QueryPricesResponse defines the response type for the Prices method.
 message QueryPricesResponse {
-  // prices defines the list of prices.
+  // Prices defines the list of prices.
   map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
 
-  // timestamp defines the timestamp of the prices.
+  // Timestamp defines the timestamp of the prices.
   google.protobuf.Timestamp timestamp = 2
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 
-  // version defines the version of the oracle service that provided the prices.
+  // Version defines the version of the oracle service that provided the prices.
   string version = 3;
 }
 
@@ -50,7 +50,7 @@ message QueryMarketMapRequest {}
 
 // QueryMarketMapResponse defines the response type for the MarketMap method.
 message QueryMarketMapResponse {
-  // market_map defines the current market map configuration.
+  // MarketMap defines the current market map configuration.
   slinky.marketmap.v1.MarketMap market_map = 1;
 }
 
@@ -59,6 +59,6 @@ message QueryVersionRequest {}
 
 // QueryVersionResponse defines the response type for the Version method.
 message QueryVersionResponse {
-  // version defines the current version of the oracle service.
+  // Version defines the current version of the oracle service.
   string version = 1;
 }
