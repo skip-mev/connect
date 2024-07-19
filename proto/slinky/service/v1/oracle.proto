@@ -36,8 +36,13 @@ message QueryPricesRequest {}
 message QueryPricesResponse {
   // prices defines the list of prices.
   map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
+
+  // timestamp defines the timestamp of the prices.
   google.protobuf.Timestamp timestamp = 2
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+
+  // version defines the version of the oracle service that provided the prices.
+  string version = 3;
 }
 
 // QueryMarketMapRequest defines the request type for the MarketMap method.

@@ -175,6 +175,7 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 		resCh <- &types.QueryPricesResponse{
 			Prices:    ToReqPrices(prices),
 			Timestamp: timestamp,
+			Version:   build.Build,
 		}
 	}()
 
