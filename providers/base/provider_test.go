@@ -557,7 +557,7 @@ func TestWebSocketProvider(t *testing.T) {
 			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
 		{
-			name: "updates the timestamp associated with a result if the the data is unchanged and still valid",
+			name: "updates the timestamp associated with a result if the data is unchanged and still valid",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				// First response is valid and sets the data.
 				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
