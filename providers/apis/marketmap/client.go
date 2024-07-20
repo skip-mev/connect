@@ -8,9 +8,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
-
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
