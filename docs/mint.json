@@ -41,7 +41,8 @@
     {
       "group": "General",
       "pages": [
-        "introduction"
+        "introduction",
+        "providers"
       ]
     },
     {

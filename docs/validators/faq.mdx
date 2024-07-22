@@ -18,25 +18,24 @@ icon: circle-question
     </Accordion>
 
     <Accordion title="How often are prices updated on-chain?">
-        Prices within Connect committed on a one-block delay, since validators use the vote extensions from block n-1 to securely submit their price data for block n.
+        Prices within Connect are committed on a one-block delay, since validators use the vote extensions from block n-1 to securely submit their price data for block n.
 
         Most of the time, prices will update every single block. Price updates happen when there is a significant change in price, and over 66% of validators are correctly running the Connect sidecar.
 
         Prices will not update on any given block if:
 
-        - (More common) There was not a sufficient change from last block’s price to surpass the Connect min_price_change parameter. To save network bandwidth, the price won’t update.
-        - (Less common) The market is disabled within x/marketmap
-        - (Less common) Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run Connect, or there is a massive, widespread outage across providers.
+        - The market is disabled within x/marketmap
+        - Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run Connect, or there is a massive, widespread outage across providers.
     </Accordion>
 
-    <Accordion title="How do I upgrade the connect binary">
+    <Accordion title="How do I upgrade the connect binary?">
         Upgrading the Connect binary can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
 
         If you are running the Connect sidecar in a container you can shut down the container, pull the updated container image and relaunch your container to update.
 
         If you are running the binary via systemd or other management tool, you will need to stop the process and re-launch using the newly released binary.
 
-        The dydx node will still be able to participate in consensus without the sidecar, and will begin attaching prices to blocks once Connect is available. In the worst case, an upgrade in any of these manners will cause you to miss including vote extensions for a single block which should have no negative effects on you or the network.
+        The node will still be able to participate in consensus without the sidecar, and will begin attaching prices to blocks once Connect is available. In the worst case, an upgrade in any of these manners will cause you to miss including vote extensions for a single block which should have no negative effects on you or the network.
     </Accordion>
 
     <Accordion title="Can I get slashed for running Connect?">
