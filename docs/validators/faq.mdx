@@ -20,7 +20,7 @@ icon: circle-question
     <Accordion title="How often are prices updated on-chain?">
         Prices within Connect are committed on a one-block delay, since validators use the vote extensions from block n-1 to securely submit their price data for block n.
 
-        Most of the time, prices will update every single block. Price updates happen when there is a significant change in price, and over 66% of validators are correctly running the Connect sidecar.
+        Most of the time, prices will update every single block. Price updates happen when over 2/3 of validators are correctly running the Connect sidecar.
 
         Prices will not update on any given block if:
 
@@ -39,9 +39,7 @@ icon: circle-question
     </Accordion>
 
     <Accordion title="Can I get slashed for running Connect?">
-        Not usually. If a chain uses Connect and requires oracle prices to be posted, running the Connect sidecar is the best way to avoid downtime or incorrect prices.
-
-        Many chains will reward good operation of Connect with additional validator yield. Refer to your chain's development team!
+        No.
     </Accordion>
 
     <Accordion title="Does Connect take up a lot of resources?">
