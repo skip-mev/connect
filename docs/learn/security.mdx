@@ -21,7 +21,7 @@ and allows applications to avoid having to build their own UX roadblocks to ensu
 
 ## Impact of Vote Extensions
 
-Connect updates by having over 2/3 of the validator set (by stake weight) suggest a series of prices, and then aggregates across
+Connect updates when over 2/3 of the validator set (by stake weight) suggest a series of prices, and then aggregates across
 them using a stake-weighted median. This price data is committed to the chain by validators through [vote extensions](https://docs.cosmos.network/main/build/abci/vote-extensions).
 
 Vote extensions are arbitrary metadata that is signed atomically with a validator's `PreCommit` vote. In Connect's case, that metadata is
