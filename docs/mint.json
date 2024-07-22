@@ -59,7 +59,8 @@
       "pages": [
         "metrics/overview",
         "metrics/setup",
-        "metrics/reference"
+        "metrics/oracle-reference",
+        "metrics/application-reference"
       ]
     },
     {

@@ -1,7 +1,7 @@
 ---
-description: Reference for the available metrics in Connect
-title: Reference
-icon: book
+description: Reference for the available metrics in the Connect oracle
+title: Oracle
+icon: book-sparkles
 ---
 
 ## Dashboard Terminology
@@ -22,7 +22,6 @@ The following health metrics are emitted in Connect.
 - **side_car_health_check_system_updates_total:** Counter that increments every time the sidecar updates its internal state. This is a good indicator of the sidecar's overall health.
 - **side_car_health_check_ticker_updates_total:** Counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
 - **side_car_health_check_provider_updates_total:** Counter that increments every time the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider. Note that providers may not be responsible for every market. However, the sidecar correctly tracks the number of expected updates for each provider.
-
 
 
 ### Price Metrics

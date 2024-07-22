@@ -16,5 +16,15 @@ Connect will emit the following metrics from the oracle sidecar:
 - Count for number of times a provider included a price used in aggregation
 - Connect binary build information
 
+### Metrics Emitted by Application
+- Oracle client response latency
+- Number of Oracle responses
+- ABCI method latency
+- Size of messages
+- Aggregate ticker prices written to app state
+- Prices reported by each validator
+- Status of reports from each validator
+
+
 ### Need More Metrics?
 If you find yourself wanting more observability than what is provided, please open an issue on our [GitHub repo](https://github.com/skip-mev/slinky)
