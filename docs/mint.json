@@ -64,6 +64,7 @@
     {
       "group": "Developers",
       "pages": [
+        "using-connect/integration",
         "using-connect/high-level",
         "using-connect/neutron-sdk"
       ]
