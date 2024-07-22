@@ -74,9 +74,12 @@ var xxx_messageInfo_QueryPricesRequest proto.InternalMessageInfo
 
 // QueryPricesResponse defines the response type for the Prices method.
 type QueryPricesResponse struct {
-	// prices defines the list of prices.
-	Prices    map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Timestamp time.Time         `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	// Prices defines the list of prices.
+	Prices map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Timestamp defines the timestamp of the prices.
+	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	// Version defines the version of the oracle service that provided the prices.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (m *QueryPricesResponse) Reset()         { *m = QueryPricesResponse{} }
@@ -126,6 +129,13 @@ func (m *QueryPricesResponse) GetTimestamp() time.Time {
 	return time.Time{}
 }
 
+func (m *QueryPricesResponse) GetVersion() string {
+	if m != nil {
+		return m.Version
+	}
+	return ""
+}
+
 // QueryMarketMapRequest defines the request type for the MarketMap method.
 type QueryMarketMapRequest struct {
 }
@@ -165,7 +175,7 @@ var xxx_messageInfo_QueryMarketMapRequest proto.InternalMessageInfo
 
 // QueryMarketMapResponse defines the response type for the MarketMap method.
 type QueryMarketMapResponse struct {
-	// market_map defines the current market map configuration.
+	// MarketMap defines the current market map configuration.
 	MarketMap *types.MarketMap `protobuf:"bytes,1,opt,name=market_map,json=marketMap,proto3" json:"market_map,omitempty"`
 }
 
@@ -209,49 +219,138 @@ func (m *QueryMarketMapResponse) GetMarketMap() *types.MarketMap {
 	return nil
 }
 
+// QueryVersionRequest defines the request type for the Version method.
+type QueryVersionRequest struct {
+}
+
+func (m *QueryVersionRequest) Reset()         { *m = QueryVersionRequest{} }
+func (m *QueryVersionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVersionRequest) ProtoMessage()    {}
+func (*QueryVersionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e88883d464f0f25b, []int{4}
+}
+func (m *QueryVersionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVersionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVersionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVersionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVersionRequest.Merge(m, src)
+}
+func (m *QueryVersionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVersionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVersionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVersionRequest proto.InternalMessageInfo
+
+// QueryVersionResponse defines the response type for the Version method.
+type QueryVersionResponse struct {
+	// Version defines the current version of the oracle service.
+	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+}
+
+func (m *QueryVersionResponse) Reset()         { *m = QueryVersionResponse{} }
+func (m *QueryVersionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVersionResponse) ProtoMessage()    {}
+func (*QueryVersionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e88883d464f0f25b, []int{5}
+}
+func (m *QueryVersionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVersionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVersionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVersionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVersionResponse.Merge(m, src)
+}
+func (m *QueryVersionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVersionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVersionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVersionResponse proto.InternalMessageInfo
+
+func (m *QueryVersionResponse) GetVersion() string {
+	if m != nil {
+		return m.Version
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryPricesRequest)(nil), "slinky.service.v1.QueryPricesRequest")
 	proto.RegisterType((*QueryPricesResponse)(nil), "slinky.service.v1.QueryPricesResponse")
 	proto.RegisterMapType((map[string]string)(nil), "slinky.service.v1.QueryPricesResponse.PricesEntry")
 	proto.RegisterType((*QueryMarketMapRequest)(nil), "slinky.service.v1.QueryMarketMapRequest")
 	proto.RegisterType((*QueryMarketMapResponse)(nil), "slinky.service.v1.QueryMarketMapResponse")
+	proto.RegisterType((*QueryVersionRequest)(nil), "slinky.service.v1.QueryVersionRequest")
+	proto.RegisterType((*QueryVersionResponse)(nil), "slinky.service.v1.QueryVersionResponse")
 }
 
 func init() { proto.RegisterFile("slinky/service/v1/oracle.proto", fileDescriptor_e88883d464f0f25b) }
 
 var fileDescriptor_e88883d464f0f25b = []byte{
-	// 485 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xbf, 0x8f, 0xd3, 0x30,
-	0x14, 0xc7, 0xeb, 0x1e, 0x54, 0xc4, 0x5d, 0xc0, 0x14, 0x28, 0x01, 0xd2, 0xa8, 0x08, 0x54, 0x06,
-	0x6c, 0x5d, 0x18, 0xf8, 0x21, 0xb1, 0x54, 0x62, 0x3c, 0x71, 0x17, 0x21, 0x21, 0xb1, 0x9c, 0xdc,
-	0xc8, 0x84, 0xa8, 0x75, 0x6c, 0x62, 0x27, 0x52, 0x56, 0x24, 0x26, 0x96, 0x93, 0xf8, 0xa7, 0x6e,
-	0x3c, 0x89, 0x85, 0x09, 0x50, 0x8b, 0xf8, 0x3b, 0x50, 0x6c, 0xa7, 0x07, 0x3d, 0xd0, 0x75, 0x8a,
-	0x9f, 0xbf, 0xef, 0x3d, 0x7f, 0xdf, 0xc7, 0x0e, 0x0c, 0xd4, 0x22, 0xcb, 0xe7, 0x35, 0x51, 0xac,
-	0xa8, 0xb2, 0x84, 0x91, 0x6a, 0x97, 0x88, 0x82, 0x26, 0x0b, 0x86, 0x65, 0x21, 0xb4, 0x40, 0x57,
-	0xac, 0x8e, 0x9d, 0x8e, 0xab, 0x5d, 0x7f, 0x90, 0x8a, 0x54, 0x18, 0x95, 0x34, 0x2b, 0x9b, 0xe8,
-	0xdf, 0x4e, 0x85, 0x48, 0x17, 0x8c, 0x50, 0x99, 0x11, 0x9a, 0xe7, 0x42, 0x53, 0x9d, 0x89, 0x5c,
-	0x39, 0x75, 0xe4, 0x54, 0x13, 0xcd, 0xca, 0xb7, 0x44, 0x67, 0x9c, 0x29, 0x4d, 0xb9, 0x74, 0x09,
-	0x37, 0x13, 0xa1, 0xb8, 0x50, 0x87, 0xb6, 0xaf, 0x0d, 0x9c, 0x14, 0x3a, 0x8b, 0x9c, 0x16, 0x73,
-	0xa6, 0x39, 0x95, 0x8d, 0x49, 0x1b, 0xd8, 0x8c, 0xf1, 0x00, 0xa2, 0x83, 0x92, 0x15, 0xf5, 0x7e,
-	0x91, 0x25, 0x4c, 0xc5, 0xec, 0x7d, 0xc9, 0x94, 0x1e, 0xff, 0x02, 0xf0, 0xea, 0x5f, 0xdb, 0x4a,
-	0x8a, 0x5c, 0x31, 0xb4, 0x0f, 0x7b, 0xd2, 0xec, 0x0c, 0x41, 0xb8, 0x33, 0xe9, 0x47, 0x11, 0x3e,
-	0x33, 0x23, 0xfe, 0x47, 0x1d, 0xb6, 0xe1, 0x8b, 0x5c, 0x17, 0xf5, 0xf4, 0xc2, 0xf1, 0xb7, 0x51,
-	0x27, 0x76, 0x7d, 0xd0, 0x14, 0x7a, 0xeb, 0x79, 0x86, 0xdd, 0x10, 0x4c, 0xfa, 0x91, 0x8f, 0xed,
-	0xc4, 0xb8, 0x9d, 0x18, 0xbf, 0x6a, 0x33, 0xa6, 0x97, 0x9a, 0xe2, 0xa3, 0xef, 0x23, 0x10, 0x9f,
-	0x96, 0xf9, 0x4f, 0x61, 0xff, 0x8f, 0x03, 0xd0, 0x65, 0xb8, 0x33, 0x67, 0xf5, 0x10, 0x84, 0x60,
-	0xe2, 0xc5, 0xcd, 0x12, 0x0d, 0xe0, 0xc5, 0x8a, 0x2e, 0x4a, 0x66, 0x0e, 0xf0, 0x62, 0x1b, 0x3c,
-	0xeb, 0x3e, 0x01, 0xe3, 0x1b, 0xf0, 0x9a, 0xf1, 0xbb, 0x67, 0x98, 0xec, 0x51, 0xd9, 0x12, 0x78,
-	0x0d, 0xaf, 0x6f, 0x0a, 0x8e, 0xc1, 0x73, 0x08, 0x2d, 0xc1, 0x43, 0x4e, 0xa5, 0x39, 0xa5, 0x1f,
-	0x05, 0x2d, 0x87, 0x35, 0xe8, 0x86, 0xc4, 0x69, 0xad, 0xc7, 0xdb, 0x65, 0xf4, 0xa9, 0x0b, 0x7b,
-	0x2f, 0xcd, 0x33, 0x41, 0x35, 0xec, 0x59, 0xdf, 0xe8, 0xde, 0x79, 0x1c, 0x8d, 0x29, 0xff, 0xfe,
-	0x76, 0xb8, 0xc7, 0xe1, 0x87, 0x2f, 0x3f, 0x3f, 0x77, 0x7d, 0x34, 0x24, 0xee, 0xfe, 0xed, 0xbb,
-	0x6c, 0x2e, 0xdf, 0x61, 0xff, 0x08, 0xa0, 0xb7, 0xb6, 0x87, 0x26, 0xff, 0xeb, 0xbb, 0x89, 0xc5,
-	0x7f, 0xb0, 0x45, 0xa6, 0x33, 0x71, 0xd7, 0x98, 0xb8, 0x83, 0x6e, 0x9d, 0x35, 0xb1, 0xa6, 0x34,
-	0x3d, 0x38, 0x5e, 0x06, 0xe0, 0x64, 0x19, 0x80, 0x1f, 0xcb, 0x00, 0x1c, 0xad, 0x82, 0xce, 0xc9,
-	0x2a, 0xe8, 0x7c, 0x5d, 0x05, 0x9d, 0x37, 0x8f, 0xd3, 0x4c, 0xbf, 0x2b, 0x67, 0x38, 0x11, 0x9c,
-	0xa8, 0x79, 0x26, 0x1f, 0x72, 0x56, 0x91, 0x8d, 0x3f, 0xae, 0xf9, 0xb2, 0x42, 0xb5, 0x9d, 0x75,
-	0x2d, 0x99, 0x9a, 0xf5, 0xcc, 0xb3, 0x79, 0xf4, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x54, 0x12, 0xd7,
-	0x59, 0x9f, 0x03, 0x00, 0x00,
+	// 551 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcf, 0x6f, 0xd3, 0x3e,
+	0x14, 0xaf, 0xdb, 0xef, 0xb7, 0xa3, 0xee, 0x05, 0x4c, 0x07, 0x59, 0x06, 0x69, 0x29, 0x02, 0xca,
+	0x01, 0x9b, 0x95, 0x03, 0x3f, 0x24, 0x2e, 0x95, 0x38, 0x4e, 0x6c, 0x11, 0x02, 0x89, 0xcb, 0xe4,
+	0x46, 0x26, 0x44, 0x6d, 0x62, 0x13, 0x3b, 0x91, 0x72, 0x40, 0x42, 0x48, 0x5c, 0x38, 0x4d, 0xe2,
+	0x9f, 0xda, 0x71, 0x12, 0x17, 0x4e, 0x80, 0x5a, 0xfe, 0x10, 0x14, 0xdb, 0xe9, 0xd6, 0x96, 0x69,
+	0x3b, 0xd5, 0xcf, 0xef, 0xe3, 0xf7, 0x3e, 0x9f, 0xcf, 0x7b, 0x0d, 0xf4, 0xe4, 0x34, 0x4a, 0x26,
+	0x05, 0x91, 0x2c, 0xcd, 0xa3, 0x80, 0x91, 0x7c, 0x87, 0xf0, 0x94, 0x06, 0x53, 0x86, 0x45, 0xca,
+	0x15, 0x47, 0x57, 0x4c, 0x1e, 0xdb, 0x3c, 0xce, 0x77, 0xdc, 0x4e, 0xc8, 0x43, 0xae, 0xb3, 0xa4,
+	0x3c, 0x19, 0xa0, 0x7b, 0x23, 0xe4, 0x3c, 0x9c, 0x32, 0x42, 0x45, 0x44, 0x68, 0x92, 0x70, 0x45,
+	0x55, 0xc4, 0x13, 0x69, 0xb3, 0x5d, 0x9b, 0xd5, 0xd1, 0x38, 0x7b, 0x47, 0x54, 0x14, 0x33, 0xa9,
+	0x68, 0x2c, 0x2c, 0x60, 0x2b, 0xe0, 0x32, 0xe6, 0xf2, 0xc0, 0xd4, 0x35, 0x81, 0x4d, 0xf5, 0x2c,
+	0xc5, 0x98, 0xa6, 0x13, 0xa6, 0x62, 0x2a, 0x4a, 0x92, 0x26, 0x30, 0x88, 0x7e, 0x07, 0xa2, 0xfd,
+	0x8c, 0xa5, 0xc5, 0x5e, 0x1a, 0x05, 0x4c, 0xfa, 0xec, 0x43, 0xc6, 0xa4, 0xea, 0x7f, 0xaa, 0xc3,
+	0xab, 0x4b, 0xd7, 0x52, 0xf0, 0x44, 0x32, 0xb4, 0x07, 0x9b, 0x42, 0xdf, 0x38, 0xa0, 0xd7, 0x18,
+	0xb4, 0x87, 0x43, 0xbc, 0xa6, 0x11, 0xff, 0xe3, 0x1d, 0x36, 0xe1, 0x8b, 0x44, 0xa5, 0xc5, 0xe8,
+	0xbf, 0xa3, 0x9f, 0xdd, 0x9a, 0x6f, 0xeb, 0xa0, 0x11, 0x6c, 0x2d, 0xf4, 0x38, 0xf5, 0x1e, 0x18,
+	0xb4, 0x87, 0x2e, 0x36, 0x8a, 0x71, 0xa5, 0x18, 0xbf, 0xaa, 0x10, 0xa3, 0x4b, 0xe5, 0xe3, 0xc3,
+	0x5f, 0x5d, 0xe0, 0x9f, 0x3c, 0x43, 0x0e, 0xdc, 0xc8, 0x59, 0x2a, 0x23, 0x9e, 0x38, 0x8d, 0x1e,
+	0x18, 0xb4, 0xfc, 0x2a, 0x74, 0x9f, 0xc2, 0xf6, 0xa9, 0xd6, 0xe8, 0x32, 0x6c, 0x4c, 0x58, 0xe1,
+	0x00, 0x0d, 0x2a, 0x8f, 0xa8, 0x03, 0xff, 0xcf, 0xe9, 0x34, 0x63, 0xba, 0x75, 0xcb, 0x37, 0xc1,
+	0xb3, 0xfa, 0x13, 0xd0, 0xbf, 0x0e, 0x37, 0xb5, 0x92, 0x5d, 0xed, 0xd6, 0x2e, 0x15, 0x95, 0x37,
+	0x6f, 0xe0, 0xb5, 0xd5, 0x84, 0x75, 0xe7, 0x39, 0x84, 0xc6, 0xdb, 0x83, 0x98, 0x0a, 0xdd, 0xa5,
+	0x3d, 0xf4, 0x2a, 0x87, 0x16, 0x23, 0x28, 0x3d, 0x3a, 0x79, 0xdb, 0x8a, 0xab, 0x63, 0x7f, 0xd3,
+	0x7a, 0xfe, 0xda, 0x90, 0xaf, 0xfa, 0x3d, 0x84, 0x9d, 0xe5, 0x6b, 0xdb, 0xed, 0x94, 0x6a, 0xb0,
+	0xa4, 0x7a, 0xf8, 0xb5, 0x01, 0x9b, 0x2f, 0xf5, 0x26, 0xa2, 0x02, 0x36, 0x8d, 0x01, 0xe8, 0xce,
+	0x79, 0xa3, 0xd2, 0xdd, 0xdc, 0xbb, 0x17, 0x9b, 0x68, 0xbf, 0xf7, 0xf9, 0xfb, 0x9f, 0x6f, 0x75,
+	0x17, 0x39, 0xc4, 0xae, 0x98, 0x59, 0xfd, 0x72, 0xbf, 0xec, 0x64, 0xbf, 0x00, 0xd8, 0x5a, 0xe8,
+	0x44, 0x83, 0xb3, 0xea, 0xae, 0xfa, 0xeb, 0xde, 0xbf, 0x00, 0xd2, 0x92, 0xb8, 0xad, 0x49, 0xdc,
+	0x44, 0xdb, 0xeb, 0x24, 0x16, 0x76, 0xa3, 0x8f, 0x70, 0xc3, 0x5a, 0x87, 0xce, 0x14, 0xb7, 0x6c,
+	0xb9, 0x7b, 0xef, 0x5c, 0x9c, 0x25, 0x70, 0x4b, 0x13, 0xd8, 0x46, 0x5b, 0xeb, 0x04, 0xec, 0x30,
+	0x46, 0xfb, 0x47, 0x33, 0x0f, 0x1c, 0xcf, 0x3c, 0xf0, 0x7b, 0xe6, 0x81, 0xc3, 0xb9, 0x57, 0x3b,
+	0x9e, 0x7b, 0xb5, 0x1f, 0x73, 0xaf, 0xf6, 0xf6, 0x71, 0x18, 0xa9, 0xf7, 0xd9, 0x18, 0x07, 0x3c,
+	0x26, 0x72, 0x12, 0x89, 0x07, 0x31, 0xcb, 0xc9, 0xca, 0x37, 0xa5, 0xfc, 0x65, 0xa9, 0xac, 0xea,
+	0xaa, 0x42, 0x30, 0x39, 0x6e, 0xea, 0x3f, 0xc6, 0xa3, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xa2,
+	0x99, 0x48, 0x8d, 0x81, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -271,6 +370,9 @@ type OracleClient interface {
 	// MarketMap defines a method for fetching the latest market map
 	// configuration.
 	MarketMap(ctx context.Context, in *QueryMarketMapRequest, opts ...grpc.CallOption) (*QueryMarketMapResponse, error)
+	// Version defines a method for fetching the current version of the oracle
+	// service.
+	Version(ctx context.Context, in *QueryVersionRequest, opts ...grpc.CallOption) (*QueryVersionResponse, error)
 }
 
 type oracleClient struct {
@@ -299,6 +401,15 @@ func (c *oracleClient) MarketMap(ctx context.Context, in *QueryMarketMapRequest,
 	return out, nil
 }
 
+func (c *oracleClient) Version(ctx context.Context, in *QueryVersionRequest, opts ...grpc.CallOption) (*QueryVersionResponse, error) {
+	out := new(QueryVersionResponse)
+	err := c.cc.Invoke(ctx, "/slinky.service.v1.Oracle/Version", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OracleServer is the server API for Oracle service.
 type OracleServer interface {
 	// Prices defines a method for fetching the latest prices.
@@ -306,6 +417,9 @@ type OracleServer interface {
 	// MarketMap defines a method for fetching the latest market map
 	// configuration.
 	MarketMap(context.Context, *QueryMarketMapRequest) (*QueryMarketMapResponse, error)
+	// Version defines a method for fetching the current version of the oracle
+	// service.
+	Version(context.Context, *QueryVersionRequest) (*QueryVersionResponse, error)
 }
 
 // UnimplementedOracleServer can be embedded to have forward compatible implementations.
@@ -317,6 +431,9 @@ func (*UnimplementedOracleServer) Prices(ctx context.Context, req *QueryPricesRe
 }
 func (*UnimplementedOracleServer) MarketMap(ctx context.Context, req *QueryMarketMapRequest) (*QueryMarketMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MarketMap not implemented")
+}
+func (*UnimplementedOracleServer) Version(ctx context.Context, req *QueryVersionRequest) (*QueryVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Version not implemented")
 }
 
 func RegisterOracleServer(s grpc1.Server, srv OracleServer) {
@@ -359,6 +476,24 @@ func _Oracle_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Oracle_Version_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleServer).Version(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.service.v1.Oracle/Version",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleServer).Version(ctx, req.(*QueryVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Oracle_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "slinky.service.v1.Oracle",
 	HandlerType: (*OracleServer)(nil),
@@ -370,6 +505,10 @@ var _Oracle_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarketMap",
 			Handler:    _Oracle_MarketMap_Handler,
+		},
+		{
+			MethodName: "Version",
+			Handler:    _Oracle_Version_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -419,6 +558,13 @@ func (m *QueryPricesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Version) > 0 {
+		i -= len(m.Version)
+		copy(dAtA[i:], m.Version)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Version)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
 	if err1 != nil {
 		return 0, err1
@@ -507,6 +653,59 @@ func (m *QueryMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryVersionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVersionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVersionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVersionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVersionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVersionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Version) > 0 {
+		i -= len(m.Version)
+		copy(dAtA[i:], m.Version)
+		i = encodeVarintOracle(dAtA, i, uint64(len(m.Version)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintOracle(dAtA []byte, offset int, v uint64) int {
 	offset -= sovOracle(v)
 	base := offset
@@ -543,6 +742,10 @@ func (m *QueryPricesResponse) Size() (n int) {
 	}
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovOracle(uint64(l))
+	l = len(m.Version)
+	if l > 0 {
+		n += 1 + l + sovOracle(uint64(l))
+	}
 	return n
 }
 
@@ -563,6 +766,28 @@ func (m *QueryMarketMapResponse) Size() (n int) {
 	_ = l
 	if m.MarketMap != nil {
 		l = m.MarketMap.Size()
+		n += 1 + l + sovOracle(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryVersionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryVersionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Version)
+	if l > 0 {
 		n += 1 + l + sovOracle(uint64(l))
 	}
 	return n
@@ -813,6 +1038,38 @@ func (m *QueryPricesResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Version = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipOracle(dAtA[iNdEx:])
@@ -948,6 +1205,138 @@ func (m *QueryMarketMapResponse) Unmarshal(dAtA []byte) error {
 			if err := m.MarketMap.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOracle(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVersionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOracle
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVersionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVersionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOracle(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVersionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOracle
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVersionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVersionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOracle
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthOracle
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthOracle
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Version = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
