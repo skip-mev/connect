@@ -54,3 +54,11 @@ func (c NoOpClient) MarketMap(
 ) (*types.QueryMarketMapResponse, error) {
 	return nil, nil
 }
+
+func (c NoOpClient) Version(
+	_ context.Context,
+	_ *types.QueryVersionRequest,
+	_ ...grpc.CallOption,
+) (*types.QueryVersionResponse, error) {
+	return nil, nil
+}
