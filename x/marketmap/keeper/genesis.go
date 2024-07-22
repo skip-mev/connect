@@ -62,3 +62,6 @@ func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		Params:      params,
 	}
 }
+
+// InitializeForGenesis is a no-op.
+func (k *Keeper) InitializeForGenesis(ctx sdk.Context) {}
