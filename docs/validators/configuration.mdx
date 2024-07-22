@@ -19,7 +19,6 @@ Please remember to change the `oracle_address` in your [application config](#app
 
 ### Flags
 
-
 | Flag                             | Default Value   | Description                                                                                                                                                             |
 |----------------------------------|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `--market-map-endpoint`          | `""`            | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint.                                                                           |
@@ -58,4 +57,14 @@ client_timeout = "250ms"
 # this enables instrumentation of the oracle client and the interaction between
 # the oracle and the app.
 metrics_enabled = "true"
+
+# PriceTTL is the maximum age of the latest price response before it is considered stale.
+# The recommended max age is 10 seconds (10s). If this is greater than 1 minute (1m), the app
+# will not start.
+price_ttl = "10s"
+
+# Interval is the time between each price update request. The recommended interval
+# is the block time of the chain. Otherwise, 1.5 seconds (1500ms) is a good default. If this
+# is greater than 1 minute (1m), the app will not start.
+interval = "1500ms"
 ```

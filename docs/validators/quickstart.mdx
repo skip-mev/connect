@@ -12,12 +12,12 @@ This document will guide you through setting up and running Connect, as well as 
 
 ## Installation
 
-
 ### From GitHub Releases
 
 Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and download the binary that matches your machine's architecture.
 
 ### From Source
+
 To install from source, you'll need [Git](https://git-scm.com/) and [Go](https://go.dev/).
 
 Enter the commands below to install the binary.
@@ -28,6 +28,7 @@ make install
 ```
 
 ### Verify the Installation
+
 Let's check Connect is properly installed on your machine.
 You should see the version printed in your terminal after running the following command:
 ```shell
@@ -42,7 +43,7 @@ slinky version
 
 To run Connect, which starts the service on the default port of `8080`, enter the following command:
 
-Be sure to supply the correct gRPC address and port (defaults is 9090) for your node:
+Be sure to supply the correct gRPC address and port (default is 9090) for your node:
 
 ```shell
 slinky --market-map-endpoint="<YOUR_NODE_GRPC>:PORT"
@@ -88,6 +89,8 @@ enabled = "true"
 oracle_address = "<YOUR_CONNECT_SIDECAR>:8080"
 client_timeout = "250ms"
 metrics_enabled = "true"
+interval = "1500ms"
+price_ttl = "10s"
 ```
 
 Once your `app.toml` is configured, you may start your chain as normal.

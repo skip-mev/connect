@@ -12,15 +12,16 @@ Remote signers can be used with Connect, however only certain versions are compa
 
 #### Required Version
 
-v3.3.0+
+v3.3.0+: https://github.com/strangelove-ventures/horcrux/releases
 
 #### With `Horcrux-Proxy`
 
-If you are using horcrux-proxy be sure to use v1.0.0+ so that the maxReadSize can be configured in accordance with larger vote-extension payloads
+If you are using `horcrux-proxy` be sure to use v1.0.0+ so that the maxReadSize can be configured in accordance with larger vote-extension payloads: https://github.com/strangelove-ventures/horcrux-proxy/releases
 
 ### TMKMS
 
 #### Required Version
+
 v0.13.1+
 
 
@@ -35,9 +36,11 @@ Head over to [configuration](configuration#application) to see the necessary app
 Validators for the dYdX chain will need some additional configurations for their sidecar.
 
 ### Required Connect Version
+
 v1.0.1+
 
 ### Connect Flags
+
 In addition to the setup in the [quickstart](quickstart), the following flags are required for dYdX validators running the sidecar:
 
 ```shell
@@ -45,6 +48,7 @@ slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node RE
 ```
 
 ### API Keys
+
 The Raydium provider utilized by dYdX requires API keys to retrieve price data. If you have not received API keys, please reach out in the relevant communication channels.
 
 Below is the necessary file to pass to the `--oracle-config` flag.
@@ -99,4 +103,5 @@ Below is the necessary file to pass to the `--oracle-config` flag.
 ## Neutron
 
 ### Required Connect Version
+
 v1.0.3+
