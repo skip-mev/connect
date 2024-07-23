@@ -5,7 +5,7 @@ icon: person-running-fast
 ---
 
 <Info>
-    The following instructions assumes you are running a single validator node with a remote instance of Connect.
+    The following instructions assumes you are running a single validator full node with a remote instance of Connect. If you are not running a full node, you do not need to run Connect.
 </Info>
 
 This document will guide you through setting up and running Connect, as well as configuring your node to receive data from Connect.
@@ -40,7 +40,7 @@ slinky version
 To run Connect, which starts the service on the default port of `8080`, enter the following command:
 
 ```shell
-slinky --market-map-endpoint="<YOUR_NODE_GRPC>:PORT"
+slinky --market-map-endpoint="<YOUR_NODE_GRPC_URL>:<YOUR_NODE_GRPC_PORT>"
 ```
 
 ### Verify Connect
@@ -87,7 +87,7 @@ interval = "1500ms"
 price_ttl = "10s"
 ```
 
-Once your `app.toml` is configured, you may start your chain as normal.
+Once your `app.toml` is configured, you may start your node as normal.
 
 ## Additional Steps
 
