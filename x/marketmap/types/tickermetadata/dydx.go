@@ -1,5 +1,7 @@
 package tickermetadata
 
+import "encoding/json"
+
 // DyDx is the Ticker.Metadata_JSON published to every Ticker in the x/marketmap module on dYdX.
 type DyDx struct {
 	// ReferencePrice gives a spot price for that Ticker at the point in time when the ReferencePrice was updated.
@@ -16,10 +18,65 @@ type DyDx struct {
 	AggregateIDs []AggregatorID `json:"aggregate_ids"`
 }
 
+// NewDyDx returns a new DyDx instance.
+func NewDyDx(referencePrice, liquidity uint64, aggregateIDs []AggregatorID) DyDx {
+	return DyDx{
+		ReferencePrice: referencePrice,
+		Liquidity:      liquidity,
+		AggregateIDs:   aggregateIDs,
+	}
+}
+
+// MarshalDyDx returns the JSON byte encoding of the DyDx.
+func MarshalDyDx(m DyDx) ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// DyDxFromJSONString returns a DyDx instance from a JSON string.
+func DyDxFromJSONString(jsonString string) (DyDx, error) {
+	var elem DyDx
+	err := json.Unmarshal([]byte(jsonString), &elem)
+	return elem, err
+}
+
+// DyDxFromJSONBytes returns a DyDx instance from JSON bytes.
+func DyDxFromJSONBytes(jsonBytes []byte) (DyDx, error) {
+	var elem DyDx
+	err := json.Unmarshal(jsonBytes, &elem)
+	return elem, err
+}
+
 type AggregatorID struct {
 	// Venue is the name of the aggregator for which the ID is valid.
 	// E.g. `coingecko`, `cmc`
 	Venue string `json:"venue"`
 	// ID is the string ID of the Ticker's Base denom in the aggregator.
 	ID string `json:"ID"`
+}
+
+// NewAggregatorID returns a new AggregatorID instance.
+func NewAggregatorID(venue, id string) AggregatorID {
+	return AggregatorID{
+		Venue: venue,
+		ID:    id,
+	}
+}
+
+// MarshalAggregatorID returns the JSON byte encoding of the AggregatorID.
+func MarshalAggregatorID(m AggregatorID) ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// AggregatorIDFromJSONString returns an AggregatorID instance from a JSON string.
+func AggregatorIDFromJSONString(jsonString string) (AggregatorID, error) {
+	var elem AggregatorID
+	err := json.Unmarshal([]byte(jsonString), &elem)
+	return elem, err
+}
+
+// AggregatorIDFromJSONBytes returns an AggregatorID instance from JSON bytes.
+func AggregatorIDFromJSONBytes(jsonBytes []byte) (AggregatorID, error) {
+	var elem AggregatorID
+	err := json.Unmarshal(jsonBytes, &elem)
+	return elem, err
 }
