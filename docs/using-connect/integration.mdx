@@ -22,8 +22,8 @@ This document will guide you through integrating Connect in your application.
 Integrating Connect into your Cosmos SDK application requires a few simple steps.
 
 <Steps>
-    <Step title="Add Keepers">
-        Add the `x/marketmap` and `x/oracle` keepers to your app.
+    <Step title="Add Modules">
+        Add the `x/marketmap` and `x/oracle` Modules to your app.
     </Step>
     <Step title="Setup Oracle Client">
         Set up the Oracle client the application will use to get prices from the Connect oracle.
@@ -38,7 +38,7 @@ Integrating Connect into your Cosmos SDK application requires a few simple steps
 
 ## Keepers
 
-First, add the [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the Application.
+First, add the [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
 
 ```go app.go
 package app
@@ -141,8 +141,8 @@ func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient,
 Within this method, do the following:
 
 - **Setup Proposal Handler:** This handler will be used in `PrepareProposal` and `ProcessProposal` to fill proposals with the oracle data.
-- **Set PreBlocker:** The Application's `PreBlocker` will be configured to write price data to state before transactions are executed.
-- **Set Vote Extensions:** Set the vote extension handlers on the Application that will handle adding price data to the node's consensus votes.
+- **Set PreBlocker:** The application's `PreBlocker` will be configured to write price data to state before transactions are executed.
+- **Set Vote Extensions:** Set the vote extension handlers on the application that will handle adding price data to the node's consensus votes.
 
 Start with setting up the proposal handler.
 
