@@ -291,7 +291,7 @@ func NewSimApp(
 	}
 
 	// Create the oracle service.
-	app.oracleClient, err = oracleclient.NewClientFromConfig(
+	app.oracleClient, err = oracleclient.NewPriceDaemonClientFromConfig(
 		cfg,
 		app.Logger().With("client", "oracle"),
 		oracleMetrics,
