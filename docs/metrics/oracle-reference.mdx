@@ -26,7 +26,7 @@ The following health metrics are emitted in Connect.
 
 ### Price Metrics
 
-Connect exposes various metrics related to market prices. These metrics are useful for monitoring the health of the price feeds and the aggregation process. The rate of updates for these metrics is likely going to be much greater than the health metrics. This is expected as we poll the providers much more frequently than we update all prices! As such, the metrics below are not expected to be updated at the same rate as the health metrics. However, they are greatly useful to quickly identify issues with the price feeds.
+Connect exposes various metrics related to market prices. These metrics are useful for monitoring the health of the price feeds and the aggregation process. The rate of updates for these metrics is likely going to be much greater than the health metrics. This is expected as we poll the providers much more frequently than we update all prices. As such, the metrics below are not expected to be updated at the same rate as the health metrics. However, they are greatly useful to quickly identify issues with the price feeds.
 
 - **side_car_provider_price:** The last recorded price for a given price feed.
 - **side_car_provider_last_updated_id:** The last UNIX timestamp for a given price feed.
