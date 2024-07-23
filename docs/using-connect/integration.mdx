@@ -8,11 +8,10 @@ icon: swap-arrows
     Connect is business-licensed software under the Business Source License (BSL). The source code is viewable; however, please reach out to us if you are interested in integrating. We are limiting the number of partnerships we engage with in 2024. We apologize in advance if we reach capacity and are unable to accommodate new integrations.
 </Info>
 
-
-
 This document will guide you through integrating Connect in your application.
 
 ## Requirements
+
 - Go 1.22+
 - Cosmos SDK v0.50+
 
@@ -130,14 +129,17 @@ func (app *App) initializeOracle(appOpts types.AppOptions) (oracleclient.OracleC
 }
 ```
 ## ABCI and Vote Extensions
+
 Configure the ABCI methods and vote extensions.
 
 Define a method to contain the logic where these will be configured.
+
 ```go oracle.go
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {}
 ```
 
 Within this method, do the following:
+
 - **Setup Proposal Handler:** This handler will be used in `PrepareProposal` and `ProcessProposal` to fill proposals with the oracle data.
 - **Set PreBlocker:** The Application's `PreBlocker` will be configured to write price data to state before transactions are executed.
 - **Set Vote Extensions:** Set the vote extension handlers on the Application that will handle adding price data to the node's consensus votes.
