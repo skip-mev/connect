@@ -107,7 +107,7 @@ func (app *App) initializeOracle(appOpts types.AppOptions) (oracleclient.OracleC
 	}
 
 	// Create the oracle service.
-	oracleClient, err := oracleclient.NewClientFromConfig(
+	oracleClient, err := oracleclient.NewPriceDaemonClientFromConfig(
 		cfg,
 		app.Logger().With("client", "oracle"),
 		oracleMetrics,
