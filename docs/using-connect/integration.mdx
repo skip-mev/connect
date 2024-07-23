@@ -187,7 +187,7 @@ func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient,
 Next, set up the `PreBlocker`. This involves:
 
 - **Aggregate Function:** Setting the aggregator function that combines all reported prices into one final price per currency pair.
-- **Currency Pair Strategy:** Setting the currency pair strategy. For this example, we will use the `DeltaCurrencyPairStrategy` which encodes/decodes the price as the difference between the current price and the previous price.
+- **Currency Pair Strategy:** Setting the currency pair strategy. For this example, we will use the `DeltaCurrencyPairStrategy` which encodes/decodes the price as the difference between the current price and the previous price. While other strategies are available, we recommend this one for most applications.
 - **Data Compression Codecs:** Setting the compression strategy for vote extensions and extended commits.
 
 ```go oracle.go
