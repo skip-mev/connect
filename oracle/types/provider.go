@@ -2,8 +2,11 @@ package types
 
 import (
 	"fmt"
-	"strings"
+	"math/big"
 	"sync"
+	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 type (
@@ -83,7 +86,19 @@ func (t *ProviderTickers) Add(ticker ProviderTicker) {
 	t.mut.Lock()
 	defer t.mut.Unlock()
 
-	t.cache[strings.ToLower(ticker.GetOffChainTicker())] = ticker
 	t.cache[ticker.GetOffChainTicker()] = ticker
-	t.cache[strings.ToUpper(ticker.GetOffChainTicker())] = ticker
+}
+
+// NoPriceChangeResponse is used to handle a message that indicates that the price has not changed.
+// In particular, this will update the base provider with the ResponseCodeUnchanged code for all tickers.
+func (t *ProviderTickers) NoPriceChangeResponse() PriceResponse {
+	var resolved = make(ResolvedPrices)
+	for _, ticker := range t.cache {
+		resolved[ticker] = NewPriceResultWithCode(
+			big.NewFloat(0),
+			time.Now().UTC(),
+			providertypes.ResponseCodeUnchanged,
+		)
+	}
+	return NewPriceResponse(resolved, nil)
 }
