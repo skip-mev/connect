@@ -50,9 +50,9 @@ slinky version
 
         **The minimum required version for Connect with dYdX is `v1.0.1+`.**
 
-        First, please ensure you've received your API keys for Raydium markets. If you haven't please reach out to the team in the relevant channels.
+        First, please ensure you've received your API keys for Raydium markets. If you have not received API keys, please reach out to the team in the relevant channels.
 
-        Next, place your API keys with the corresponding URL's in the following file and save the file. Keep the file location handy, as we will pass it into a flag when running Connect.
+        Next, place your API keys under their corresponding URLs in the following file and save it to your system. Keep the file path handy as we will pass it into a flag when running Connect.
         ```json oracle.json
         {
            "providers": {
@@ -100,7 +100,7 @@ slinky version
            }
         }
         ```
-        With your dydx node's REST API endpoint and the `oracle.json` file location, enter the following command to run Connect.
+        With your dYdX node's REST API endpoint and the `oracle.json` file path, enter the following command to run Connect.
 
         ```shell
         slinky --marketmap-provider dydx_api --market-map-endpoint https://<dydx-node REST API endpoint> --oracle-config path/to/oracle.json
