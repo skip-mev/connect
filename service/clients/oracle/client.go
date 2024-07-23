@@ -65,7 +65,23 @@ func NewClientFromConfig(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
-	client, err := NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
+	return NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
+}
+
+// NewPriceDaemonClientFromConfig creates a new grpc client of the oracle service with the given
+// app configuration. This returns an error if the configuration is invalid. Specifically, this
+// client will be a daemon client that has prices available in constant time.
+func NewPriceDaemonClientFromConfig(
+	cfg config.AppConfig,
+	logger log.Logger,
+	metrics metrics.Metrics,
+	opts ...Option,
+) (OracleClient, error) {
+	if !cfg.Enabled {
+		return &NoOpClient{}, nil
+	}
+
+	client, err := NewClientFromConfig(cfg, logger, metrics, opts...)
 	if err != nil {
 		return nil, err
 	}
