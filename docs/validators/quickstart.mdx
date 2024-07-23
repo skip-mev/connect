@@ -8,7 +8,7 @@ icon: person-running-fast
     The following instructions assumes you are running a single validator node with a remote instance of Connect.
 </Info>
 
-This document will guide you through setting up and running Connect, as well as configuring your chain to receive data from Connect.
+This document will guide you through setting up and running Connect, as well as configuring your node to receive data from Connect.
 
 ## Installation
 
@@ -27,7 +27,7 @@ cd slinky
 make install
 ```
 
-### Verify the Installation
+## Verify Installation
 
 Let's check Connect is properly installed on your machine.
 You should see the version printed in your terminal after running the following command:
@@ -35,15 +35,9 @@ You should see the version printed in your terminal after running the following 
 slinky version
 ```
 
-## Run Connect
-
-<Info>
-    Is your chain providing price data for Raydium markets? Please see the [configuration](configuration) page to learn how to properly setup Connect with API keys for markets that require them.
-</Info>
+## Run Connect Sidecar
 
 To run Connect, which starts the service on the default port of `8080`, enter the following command:
-
-Be sure to supply the correct gRPC address and port (default is 9090) for your node:
 
 ```shell
 slinky --market-map-endpoint="<YOUR_NODE_GRPC>:PORT"
@@ -75,7 +69,7 @@ The output of the command should look similar to this:
 
 ```
 
-## Run Application
+## Run Application Node
 
 In order for the application to get prices from Connect, we need to add the following lines under the `[oracle]` heading in the `app.toml`.
 
@@ -94,3 +88,7 @@ price_ttl = "10s"
 ```
 
 Once your `app.toml` is configured, you may start your chain as normal.
+
+## Additional Steps
+
+Using a remote signer? Check out the [advanced setups](advanced-setups) to learn how to properly configure your validator infrastructure.
