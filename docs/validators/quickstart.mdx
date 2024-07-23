@@ -4,8 +4,12 @@ title: Quickstart
 icon: person-running-fast
 ---
 
+import QuickStartSnippet from '/snippets/start-connect-snippet.mdx';
+import QuickStartDYDXSnippet from '/snippets/start-connect-dydx-snippet.mdx';
+
+
 <Info>
-    The following instructions assumes you are running a single validator node with a remote instance of Connect.
+    The following instructions assumes you are running a single validator full node with a remote instance of Connect. If you are not running a full node, you do not need to run Connect.
 </Info>
 
 This document will guide you through setting up and running Connect, as well as configuring your node to receive data from Connect.
@@ -37,11 +41,20 @@ slinky version
 
 ## Run Connect Sidecar
 
-To run Connect, which starts the service on the default port of `8080`, enter the following command:
+<Tabs>
+    <Tab title="Cosmos SDK Blockchains">
+        <QuickStartSnippet />
+    </Tab>
+    <Tab title="dYdX Blockchain">
+        <QuickStartDYDXSnippet />
+    </Tab>
+    <Tab title="Neutron Blockchain">
+        **The minimum required Connect version for the Neutron chain is `v1.0.3+`.**
+        <QuickStartSnippet />
+    </Tab>
+</Tabs>
 
-```shell
-slinky --market-map-endpoint="<YOUR_NODE_GRPC>:PORT"
-```
+
 
 ### Verify Connect
 
@@ -79,7 +92,7 @@ Remember to change the `oracle_address` value to the address of your Connect sid
 # ... other sections
 
 [oracle]
-enabled = "true"
+enabled = "true" # if you are not running a full node, set this to "false"
 oracle_address = "<YOUR_CONNECT_SIDECAR>:8080"
 client_timeout = "250ms"
 metrics_enabled = "true"
@@ -87,7 +100,7 @@ interval = "1500ms"
 price_ttl = "10s"
 ```
 
-Once your `app.toml` is configured, you may start your chain as normal.
+Once your `app.toml` is configured, you may start your node as normal.
 
 ## Additional Steps
 
