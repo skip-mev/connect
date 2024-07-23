@@ -4,7 +4,9 @@ title: Configuration
 icon: gear
 ---
 
-## Connect
+This document serves as a reference for ways to further configure the Connect sidecar, as well as in depth explanations of the application node's configuration.
+
+## Connect Sidecar
 
 Connect can be configured by both flags and environment variables.
 
@@ -34,7 +36,7 @@ Please remember to change the `oracle_address` in your [application config](#app
 | `--log-file-disable-compression` | `false`         | Compress rotated log files.                                                                                                                                             |
 | `--log-disable-file-rotation`    | `false`         | Disable writing logs to a file.                                                                                                                                         |
 
-## Application
+## Application Node
 
 The blockchain application is configured under the `[oracle]` heading in your application's `app.toml` file.
 
@@ -47,7 +49,7 @@ enabled = "true"
 
 # Oracle Address is the URL of the out of process oracle sidecar. This is used to
 # connect to the oracle sidecar when the application boots up.
-oracle_address = "CONNECT_ADDRESS_HERE:8080"
+oracle_address = "CONNECT_ADDRESS_HERE:CONNECT_PORT_HERE" # default Connect port is 8080.
 
 # Client Timeout is the time that the application is willing to wait for responses from
 # the oracle before timing out.
