@@ -84,6 +84,8 @@ Create a method to construct and return the oracle client and metrics.
 package app
 
 import (
+	"context"
+
     "github.com/cosmos/cosmos-sdk/server/types"
     oracleconfig "github.com/skip-mev/slinky/oracle/config"
     oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
@@ -118,13 +120,13 @@ func (app *App) initializeOracle(appOpts types.AppOptions) (oracleclient.OracleC
 
 	// Connect to the oracle service (default timeout of 5 seconds).
 	go func() {
+		app.Logger().Info("attempting to start oracle client...", "address", cfg.OracleAddress)
 		if err := oracleClient.Start(context.Background()); err != nil {
 			app.Logger().Error("failed to start oracle client", "err", err)
 			panic(err)
 		}
-
-		app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
 	}()
+
 	return oracleClient, oracleMetrics, nil
 }
 ```
