@@ -41,8 +41,7 @@
     {
       "group": "General",
       "pages": [
-        "introduction",
-        "providers"
+        "introduction"
       ]
     },
     {
@@ -66,7 +65,7 @@
     {
       "group": "Learn",
       "pages": [
-        "learn/sidecar",
+        "learn/architecture",
         "learn/security"
       ]
     },
@@ -74,7 +73,8 @@
       "group": "Developers",
       "pages": [
         "using-connect/high-level",
-        "using-connect/neutron-sdk"
+        "using-connect/neutron-sdk",
+        "using-connect/providers"
       ]
     }
   ],
