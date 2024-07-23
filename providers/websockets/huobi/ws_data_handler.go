@@ -90,7 +90,7 @@ func (h *WebSocketHandler) HandleMessage(
 		h.logger.Debug("received ping message")
 		updateMessage, err := NewPongMessage(pingMessage)
 
-		// The recepit of a ping message means that the connection is still alive and that all market's corresponding
+		// The receipt of a ping message means that the connection is still alive and that all market's corresponding
 		// to the tickers subscribed to are still being tracked. Therefore, the response can include a message to let
 		// the provider know that market prices are still valid.
 		return h.cache.NoPriceChangeResponse(), updateMessage, err
