@@ -211,6 +211,16 @@ func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]
 
 	current, ok := p.data[id]
 	if !ok {
+		// Deal with the case where we have no received any updates but may have received a heartbeat.
+		if result.ResponseCode == providertypes.ResponseCodeUnchanged {
+			p.logger.Debug(
+				"result is unchanged but no current data",
+				zap.String("id", fmt.Sprint(id)),
+				zap.String("result", result.String()),
+			)
+			return
+		}
+
 		p.data[id] = result
 		return
 	}
