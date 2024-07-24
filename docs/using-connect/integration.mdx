@@ -315,7 +315,7 @@ package app
 import (
 	"slices"
 
-    tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
+        tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
@@ -344,7 +344,7 @@ func (app *App) setupMarkets(ctx sdk.Context) error {
     coreMarkets := marketmaps.CoreMarketMap
     markets := coreMarkets.Markets
 
-	// sort keys so we can deterministically iterate over map items.
+    // sort keys so we can deterministically iterate over map items.
     keys := make([]string, 0, len(markets))
     for name := range markets {
         keys = append(keys, name)
@@ -365,7 +365,8 @@ func (app *App) setupMarkets(ctx sdk.Context) error {
             return err
         }
     }
-	return nil
+    
+    return nil
 }
 ```
 
@@ -373,4 +374,4 @@ With the Connect sidecar running, the application can now be started and will be
 
 ## Need Help?
 
-Did something go wrong during your integration? Feel free to reach out to us on [Discord](https://discord.gg/amAgf9Z39w).
+Having trouble with your integration? Feel free to reach out to us on [Discord](https://discord.gg/amAgf9Z39w).
