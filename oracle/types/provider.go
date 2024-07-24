@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 
@@ -65,7 +66,9 @@ func (t DefaultProviderTicker) String() string {
 func NewProviderTickers(tickers ...ProviderTicker) ProviderTickers {
 	cache := make(map[string]ProviderTicker)
 	for _, ticker := range tickers {
+		cache[strings.ToLower(ticker.GetOffChainTicker())] = ticker
 		cache[ticker.GetOffChainTicker()] = ticker
+		cache[strings.ToUpper(ticker.GetOffChainTicker())] = ticker
 	}
 	return ProviderTickers{
 		cache: cache,
@@ -86,19 +89,27 @@ func (t *ProviderTickers) Add(ticker ProviderTicker) {
 	t.mut.Lock()
 	defer t.mut.Unlock()
 
+	t.cache[strings.ToLower(ticker.GetOffChainTicker())] = ticker
 	t.cache[ticker.GetOffChainTicker()] = ticker
+	t.cache[strings.ToUpper(ticker.GetOffChainTicker())] = ticker
 }
 
 // NoPriceChangeResponse is used to handle a message that indicates that the price has not changed.
 // In particular, this will update the base provider with the ResponseCodeUnchanged code for all tickers.
 func (t *ProviderTickers) NoPriceChangeResponse() PriceResponse {
 	resolved := make(ResolvedPrices)
+	seen := make(map[ProviderTicker]struct{})
 	for _, ticker := range t.cache {
+		if _, ok := seen[ticker]; ok {
+			continue
+		}
+
 		resolved[ticker] = NewPriceResultWithCode(
 			big.NewFloat(0),
 			time.Now().UTC(),
 			providertypes.ResponseCodeUnchanged,
 		)
+		seen[ticker] = struct{}{}
 	}
 	return NewPriceResponse(resolved, nil)
 }
