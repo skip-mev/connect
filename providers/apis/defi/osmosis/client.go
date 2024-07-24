@@ -194,13 +194,6 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 
 		index := i
 		go func(index int, client Client) {
-			// Observe the latency of the request.
-			start := time.Now()
-			defer func() {
-				wg.Done()
-				mc.apiMetrics.ObserveProviderResponseLatency(mc.api.Name, metrics.RedactedEndpointURL(index), time.Since(start))
-			}()
-
 			resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 			if err != nil {
 				mc.logger.Error("failed to spot price in sub client", zap.String("url", url), zap.Error(err))
