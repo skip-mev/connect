@@ -1,6 +1,8 @@
 name: Build Slinky docker images
 on:
   push:
+    paths-ignore:
+      - docs/**
     branches:
       - main
     tags:
