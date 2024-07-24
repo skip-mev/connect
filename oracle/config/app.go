@@ -12,7 +12,7 @@ var (
 	DefaultOracleEnabled  = true
 	DefaultOracleAddress  = "localhost:8080"
 	DefaultClientTimeout  = 3 * time.Second
-	DefaultMetricsEnabled = true
+	DefaultMetricsEnabled = false
 	DefaultPriceTTL       = 10 * time.Second
 	DefaultInterval       = 1500 * time.Millisecond
 
