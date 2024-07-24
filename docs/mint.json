@@ -48,8 +48,8 @@
       "group": "Validators",
       "pages": [
         "validators/quickstart",
-        "validators/configuration",
         "validators/advanced-setups",
+        "validators/configuration",
         "validators/faq"
       ]
     },
