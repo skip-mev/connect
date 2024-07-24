@@ -1,6 +1,8 @@
 name: E2E tests
 on: 
   pull_request:
+    paths-ignore:
+      - docs/**
     branches:
       - main
   workflow_dispatch:
