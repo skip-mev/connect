@@ -306,3 +306,15 @@ deploy-dev:
 
 .PHONY: deploy-dev
 
+###############################################################################
+##                                  Docs                                     ##
+###############################################################################
+
+docs:
+	@if which mintlify > /dev/null 2>&1; then \
+		echo "Starting Mintlify dev server..."; \
+		cd docs && mintlify dev; \
+	else \
+		echo "Mintlify not found. Install at https://mintlify.com/docs/quickstart"; \
+	fi
+.PHONY: docs
