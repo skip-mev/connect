@@ -3,8 +3,9 @@ package tickermetadata_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/marketmap/types/tickermetadata"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types/tickermetadata"
 )
 
 func Test_UnmarshalDyDx(t *testing.T) {
