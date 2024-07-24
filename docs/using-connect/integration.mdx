@@ -346,7 +346,7 @@ func (app *App) setupMarkets(ctx sdk.Context) error {
     coreMarkets := marketmaps.CoreMarketMap
     markets := coreMarkets.Markets
 
-	// sort keys so we can deterministically iterate over map items.
+    // sort keys so we can deterministically iterate over map items.
     keys := make([]string, 0, len(markets))
     for name := range markets {
         keys = append(keys, name)
