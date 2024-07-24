@@ -1,17 +1,18 @@
 ---
-description: ⚛️ Connect with CosmWasm using Neutron-SDK
-title: ⚛️ Connect with CosmWasm using Neutron-SDK
+description: Querying Connect prices using CosmWasm and Neutron SDK
+title: CosmWasm
+icon: atom-simple
 ---
 
 <Note>
-**Building with Connect? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
+**Building with Connect? Join our [Discord](https://discord.gg/amAgf9Z39w)**!
 </Note>
 
 ## Summary
 
-Connect prices, since they're stored on-chain in `x/oracle`, are accessible locally via CosmWasm smart contracts. `x/marketmap` has configuration information that may also be helpful in your development.
+Connect prices are stored on-chain in `x/oracle`, enabling price data to be locally accessible via CosmWasm smart contracts. `x/marketmap` has configuration information that may also be helpful in your development.
 
-Here's a couple code snippets on how to get started:
+Here's how to get started:
 
 ## How to access Connect prices safely
 
@@ -22,15 +23,13 @@ There are a number of highly-recommended checks we suggest developers use before
 1. Check to make sure the `block_timestamp` of the last updated is **less than 20 seconds** from the most recent committed block timestamp. I.e. `current_block_timestamp - block_timestamp < 20s`
 1. Check to make sure the price is not returning `nil` (i.e. has not been initialized)
 
-Instructions on how to do these steps are outlined below.
+### Example
 
-### The complete example
-
-In the snippets below some details might be omitted. Please check out the complete smart contract [example](https://github.com/kubiklabs/neutron-dev-contracts/tree/slinky_contracts/contracts/neutron_slinky) for a complete implementation.
+The snippets below are not a complete implementation. Please check out the complete smart contract [example](https://github.com/kubiklabs/neutron-dev-contracts/tree/slinky_contracts/contracts/neutron_slinky) for a complete implementation.
 
 ### Install dependencies and import the libraries
 
-In order to start using the Connect modules, you need to install some dependencies. Add the following libraries to your dependencies section:
+Add the following libraries to your dependencies section:
 
 ```toml
 [dependencies]
@@ -42,7 +41,7 @@ cosmwasm-std = "1.3.1"
 neutron-sdk = { package = "neutron-sdk", git = "https://github.com/neutron-org/neutron-sdk", branch = "feat/sdk-50" }
 ```
 
-Now you can import the libraries:
+Import the libraries:
 
 ```rust
 use neutron_sdk::bindings::marketmap::query::{
@@ -56,7 +55,7 @@ use neutron_sdk::bindings::oracle::query::{
 };
 ```
 
-### Getting all supported markets on Connect, and checking to see if an individual market is included
+### Getting all supported markets on Connect, and ensuring an individual market is included
 
 ```rust
 // create a CurrencyPair object
@@ -87,7 +86,7 @@ if marketmap_currency_pairs_response.market_map.markets.contains_key(&base_symbo
 }
 ```
 
-### Checking to make sure a market is `enabled` within `x/marketmap`
+### Checking if a market is `enabled` within `x/marketmap`
 
 ```rust
 // fetch market for currency_pair in x/marketmap module
@@ -106,7 +105,7 @@ if marketmap_market_response.market.ticker.enabled == false {
 }
 ```
 
-### Checking to make sure `block_timestamp` is recent enough
+### Checking if `block_timestamp` is recent enough
 
 ```rust
 // get current_block_height
@@ -130,9 +129,9 @@ if (current_block_height - oracle_price_response.price.block_height) > max_block
 
 ### Nil-checking a price response
 
-Connect may sometimes return a "nil" Price if it has not been written to. This means, within the `GetPriceResponse`, the price will have `Nonce = 0`
+Connect may sometimes return a "nil" Price if it has not been written to. This means within the `GetPriceResponse`, the price will have `Nonce = 0`
 
-The safest way to check for a nil price is to check if the `Nonce == 0`, here's a code snippet below:
+To check for a nil price, see if `Nonce == 0` in the `GetPrice` response.
 
 ```rust
 // fetch price for currency_pair from x/oracle module
@@ -166,6 +165,6 @@ let market_price: Int128 = oracle_price_response.price.price;
 
 ### Fetching a set of prices
 
-Fetching multiple prices at once requires using `OracleQuery::GetPrices { currency_pair_ids: Vec<String> }` in place of `OracleQuery::GetPrice { currency_pair: CurrencyPair }`, other steps are as same as when fetching one price as shown above.
+Fetching multiple prices at once requires using `OracleQuery::GetPrices { currency_pair_ids: Vec<String> }` in place of `OracleQuery::GetPrice { currency_pair: CurrencyPair }`. Apply the same logic from the instructions above.
 
-The complete example can be found [here](https://github.com/kubiklabs/neutron-dev-contracts/blob/slinky_contracts/contracts/neutron_slinky/src/contract.rs#L140-L242).
+For a complete example see the [full example](https://github.com/kubiklabs/neutron-dev-contracts/blob/slinky_contracts/contracts/neutron_slinky/src/contract.rs#L140-L242).

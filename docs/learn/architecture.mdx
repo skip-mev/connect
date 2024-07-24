@@ -1,49 +1,17 @@
 ---
-description: Skip's In-Protocol Oracle
-title: ✨ Overview
+description: Learn how Connect works with ABCI++
+title: Architecture
+icon: cars
 ---
 
-<Frame>
-  <img src='/img/connect-banner.png' width="100%"/>
-</Frame>
-
-<Info>
-
-**Licensing**
-
-Connect is **business-licensed software** under BSL. It is source viewable, but [**reach out to us**](https://skip.money/contact) to us if you are interested in integrating! We are limiting the number of chains we work with in 2024. We apologize if we run out of capacity.
-
-Visit the GitHub repo [here](https://github.com/skip-mev/slinky).
-
-For support, [**join our discord**](https://skip.money/discord)!
-
-</Info>
-
-<Frame>
-  <img src='/img/connect-customers.png' width="100%"/>
-</Frame>
-
-## 🦾 Connect Features
-
-✅ **Runs on the chain validator set** - Connect leverages the chain’s security, giving the fastest updates possible, and removing the requirements for any 3rd party systems.
-
-✅ **Highly performant** - Connect can support over 2000 currency pairs and price feeds, allowing the launch of thousands of permissionless on-chain markets.
-
-✅ **Full operational support** - comes with a 1-day SLAs for adding new feeds, and 24/7 on-call support and maintenance by the Skip team.
-
-✅ **Better Application UX** - by leveraging new advancements in consensus like vote extensions & ABCI++, Connect guarantees a millisecond-fresh oracle update every block, allowing applications to build without sacrificing UX for safety.
-
-## 🏎️ The Connect Sidecar
-
-- The Connect sidecar is an out-of-process service that efficiently fetches prices from various data sources and runs aggregation logic
-  to combine them into a single price for each feed.
-- Validators use GRPC requests to the sidecar to fetch the latest updates to update on-chain prices from over 20+ providers.
+The Connect sidecar is an out-of-process service that efficiently fetches prices from various data sources and runs aggregation logic
+to combine them into a single price for each feed. The application uses GRPC requests to the sidecar to fetch the latest updates to update on-chain prices from over 20+ providers.
 
 ![Sidecar](/img/sidecar.svg)
 
-## ⚡️ On-chain aggregation
+## On-chain aggregation
 
-Connect uses <b>[ABCI++](https://docs.cometbft.com/v0.37/spec/abci/)</b> to separate Oracle aggregation into secure and efficient steps.
+Connect uses <b>[ABCI++](https://docs.cometbft.com/v0.38/spec/abci/)</b> to separate Oracle aggregation into secure and efficient steps.
 
 ![Connect Architecture](/img/connect-arch.png)
 
@@ -64,7 +32,7 @@ During `PrepareProposal`, the vote extensions from the previous block are aggreg
 - It also ensures that the vote extensions are valid and can be understood by the application.
 - Finally, it encodes the vote extensions and injects them into the top of the block proposal as a pseudo-transaction ignored by the chain.
 
-  ![Prepare Proposal](/img/prepare.svg)
+![Prepare Proposal](/img/prepare.svg)
 
 For more information on vote extensions in general, refer to <b>[the Cosmos SDK docs](https://docs.cosmos.network/main/build/abci/vote-extensions)</b>.
 
@@ -85,4 +53,4 @@ The end of a price's journey is in the `Preblock` step.
 ### Full Flow
 
 - This full set of steps repeats on every block resulting in a continuous stream of guaranteed prices. The oracle is enshrined in the application by the
-  validator set, and so is fundamentally equivalent to chain liveness (i.e. the oracle can't go down without the chain going down)
+validator set, and so is fundamentally equivalent to chain liveness (i.e. the oracle can't go down without the chain going down)
