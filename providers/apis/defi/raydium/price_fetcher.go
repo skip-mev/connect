@@ -22,7 +22,7 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-var _ oracletypes.PriceAPIFetcher = (*APIPriceFetcher)(nil)
+var _ oracletypes.PriceAPIFetcher = &APIPriceFetcher{}
 
 // SolanaJSONRPCClient is the expected interface for a solana JSON-RPC client according
 // to the APIPriceFetcher.
@@ -149,7 +149,7 @@ func NewAPIPriceFetcherWithClient(
 	return pf, nil
 }
 
-// FetchPrices fetches prices from the solana JSON-RPC API for the given currency-pairs. Specifically
+// Fetch fetches prices from the solana JSON-RPC API for the given currency-pairs. Specifically
 // for each currency-pair,
 //   - Query the raydium API base (coin) / quote (pc) token vault addresses
 //   - Normalize the token balances by 1e18

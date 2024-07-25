@@ -6,12 +6,13 @@ import (
 	"net"
 	"testing"
 
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	reflectionpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
+
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 )
 
 func TestClient(t *testing.T) {
