@@ -35,4 +35,9 @@ func TestMarkets(t *testing.T) {
 	var mm5 mmtypes.MarketMap
 	require.NoError(t, json.Unmarshal([]byte(marketmaps.CoinMarketCapMarketMapJSON), &mm5))
 	require.NoError(t, marketmaps.CoinMarketCapMarketMap.ValidateBasic())
+
+	// Unmarshal the OsmosisMarketMapJSON into OsmosisMarketMap.
+	var mm6 mmtypes.MarketMap
+	require.NoError(t, json.Unmarshal([]byte(marketmaps.OsmosisMarketMapJSON), &mm6))
+	require.NoError(t, marketmaps.OsmosisMarketMap.ValidateBasic())
 }
