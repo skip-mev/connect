@@ -3,9 +3,10 @@ package osmosis_test
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
