@@ -2,6 +2,7 @@ package constants
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -47,6 +48,11 @@ var (
 		{
 			Name: uniswapv3.ProviderNames[constants.BASE],
 			API:  uniswapv3.DefaultBaseAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: osmosis.Name,
+			API:  osmosis.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 

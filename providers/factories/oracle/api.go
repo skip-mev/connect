@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/skip-mev/slinky/providers/apis/bitstamp"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
+	"github.com/skip-mev/slinky/providers/apis/bitstamp"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
@@ -93,6 +93,8 @@ func APIQueryHandlerFactory(
 		requestHandler = static.NewStaticMockClient()
 	case providerName == raydium.Name:
 		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(logger, cfg.API, metrics)
+	case providerName == osmosis.Name:
+		apiPriceFetcher, err = osmosis.NewAPIPriceFetcher(logger, cfg.API, metrics)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
