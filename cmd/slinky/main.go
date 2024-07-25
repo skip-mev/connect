@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/spf13/viper"
 	"net/http"
 	"os"
 	"os/signal"
@@ -47,6 +49,13 @@ var (
 		},
 	}
 
+	// flags
+	flagMetricsEnabled           = "metrics-enabled"
+	flagMetricsPrometheusAddress = "metrics-prometheus-address"
+	flagHost                     = "host"
+	flagPort                     = "port"
+
+	// flag-bound values
 	oracleCfgPath       string
 	marketCfgPath       string
 	marketMapProvider   string
@@ -174,6 +183,39 @@ func init() {
 		"",
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
 	)
+
+	// these flags are flags that are connected to the OracleConfig.
+	rootCmd.Flags().Bool(
+		flagMetricsEnabled,
+		cmdconfig.DefaultMetricsEnabled,
+		"Enables the Oracle client metrics",
+	)
+	rootCmd.Flags().String(
+		flagMetricsPrometheusAddress,
+		cmdconfig.DefaultPrometheusServerAddress,
+		"Sets the Prometheus server address for the Oracle client metrics",
+	)
+	rootCmd.Flags().String(
+		flagHost,
+		cmdconfig.DefaultHost,
+		"The address the Oracle serve from",
+	)
+	rootCmd.Flags().String(
+		flagPort,
+		cmdconfig.DefaultPort,
+		"The port the Oracle will serve from",
+	)
+	// bind them to viper.
+	err := errors.Join(
+		viper.BindPFlag("host", rootCmd.Flags().Lookup(flagHost)),
+		viper.BindPFlag("port", rootCmd.Flags().Lookup(flagPort)),
+		viper.BindPFlag("metrics.enabled", rootCmd.Flags().Lookup(flagMetricsEnabled)),
+		viper.BindPFlag("metrics.prometheusServerAddress", rootCmd.Flags().Lookup(flagMetricsPrometheusAddress)),
+	)
+	if err != nil {
+		panic(fmt.Sprintf("failed to bind flags: %v", err))
+	}
+
 	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 	rootCmd.MarkFlagsMutuallyExclusive("market-map-endpoint", "market-config-path")
 
