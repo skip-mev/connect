@@ -3,6 +3,7 @@ package osmosis_test
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
 
@@ -81,15 +82,15 @@ func TestMultiClient(t *testing.T) {
 		defer cancel()
 
 		// mocks
-		client1.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
 		}, nil).Once()
 
-		client2.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
 		}, nil).Once()
 
-		client3.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{},
+		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{},
 			fmt.Errorf("error")).Once()
 
 		resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
@@ -111,13 +112,13 @@ func TestMultiClient(t *testing.T) {
 		defer cancel()
 
 		// mocks
-		client1.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
 		}, nil).Once()
-		client2.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
 		}, nil).Once()
-		client3.On("SpotPrice", ctx, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
+		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
 			SpotPrice: expectedPrice,
 		}, nil).Once()
 
