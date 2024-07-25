@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/spf13/viper"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/cmd/build"
@@ -49,7 +49,7 @@ var (
 		},
 	}
 
-	// flags
+	// oracle config flags.
 	flagMetricsEnabled           = "metrics-enabled"
 	flagMetricsPrometheusAddress = "metrics-prometheus-address"
 	flagHost                     = "host"
@@ -57,7 +57,7 @@ var (
 	flagUpdateInterval           = "update-interval"
 	flagMaxPriceAge              = "max-price-age"
 
-	// flag-bound values
+	// flag-bound values.
 	oracleCfgPath       string
 	marketCfgPath       string
 	marketMapProvider   string
