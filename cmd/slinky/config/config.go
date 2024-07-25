@@ -94,7 +94,7 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
-// ReadOracleConfigFromFile reads a config from a file and returns the config.
+// ReadOracleConfigWithOverrides reads a config from a file and returns the config.
 func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (config.OracleConfig, error) {
 	// if the path is non-nil read data from a file\
 	SetDefaults()
