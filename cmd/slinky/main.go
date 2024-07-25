@@ -54,6 +54,8 @@ var (
 	flagMetricsPrometheusAddress = "metrics-prometheus-address"
 	flagHost                     = "host"
 	flagPort                     = "port"
+	flagUpdateInterval           = "update-interval"
+	flagMaxPriceAge              = "max-price-age"
 
 	// flag-bound values
 	oracleCfgPath       string
@@ -205,12 +207,24 @@ func init() {
 		cmdconfig.DefaultPort,
 		"The port the Oracle will serve from",
 	)
+	rootCmd.Flags().Int(
+		flagUpdateInterval,
+		cmdconfig.DefaultUpdateInterval,
+		"The interval at which the oracle will fetch prices from providers",
+	)
+	rootCmd.Flags().Duration(
+		flagMaxPriceAge,
+		cmdconfig.DefaultMaxPriceAge,
+		"Maximum age of a price that the oracle will consider valid",
+	)
 	// bind them to viper.
 	err := errors.Join(
 		viper.BindPFlag("host", rootCmd.Flags().Lookup(flagHost)),
 		viper.BindPFlag("port", rootCmd.Flags().Lookup(flagPort)),
 		viper.BindPFlag("metrics.enabled", rootCmd.Flags().Lookup(flagMetricsEnabled)),
 		viper.BindPFlag("metrics.prometheusServerAddress", rootCmd.Flags().Lookup(flagMetricsPrometheusAddress)),
+		viper.BindPFlag("maxPriceAge", rootCmd.Flags().Lookup(flagMaxPriceAge)),
+		viper.BindPFlag("updateInterval", rootCmd.Flags().Lookup(flagUpdateInterval)),
 	)
 	if err != nil {
 		panic(fmt.Sprintf("failed to bind flags: %v", err))
