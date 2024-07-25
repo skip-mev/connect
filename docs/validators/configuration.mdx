@@ -21,20 +21,26 @@ Please remember to change the `oracle_address` in your [application config](#app
 
 ### Flags
 
-| Flag                             | Default Value   | Description                                                                                                                                                             |
-|----------------------------------|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--market-map-endpoint`          | `""`            | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint.                                                                           |
-| `--oracle-config`                | `""`            | Overrides part of the Oracle configuration. This does not override the _entire_ configuration, only the part of the configuration specified in the json file passed in. |
-| `--run-pprof`                    | `false`         | Run pprof server.                                                                                                                                                       |
-| `--pprof-port`                   | `"6060"`        | Port for the pprof server to listen on.                                                                                                                                 |
-| `--log-std-out-level`            | `"info"`        | Log level (debug, info, warn, error, dpanic, panic, fatal).                                                                                                             |
-| `--log-file-level`               | `"info"`        | Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).                                                                                         |
-| `--log-file`                     | `"sidecar.log"` | Write logs to a file.                                                                                                                                                   |
-| `--log-max-size`                 | `100`           | Maximum size in megabytes before log is rotated.                                                                                                                        |
-| `--log-max-backups`              | `1`             | Maximum number of old log files to retain.                                                                                                                              |
-| `--log-max-age`                  | `3`             | Maximum number of days to retain an old log file.                                                                                                                       |
-| `--log-file-disable-compression` | `false`         | Compress rotated log files.                                                                                                                                             |
-| `--log-disable-file-rotation`    | `false`         | Disable writing logs to a file.                                                                                                                                         |
+| Flag                             | Default Value    | Description                                                                                                                                                             |
+|----------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--market-map-endpoint`          | `""`             | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint.                                                                           |
+| `--oracle-config`                | `""`             | Overrides part of the Oracle configuration. This does not override the _entire_ configuration, only the part of the configuration specified in the json file passed in. |
+| `--run-pprof`                    | `false`          | Run pprof server.                                                                                                                                                       |
+| `--pprof-port`                   | `"6060"`         | Port for the pprof server to listen on.                                                                                                                                 |
+| `--log-std-out-level`            | `"info"`         | Log level (debug, info, warn, error, dpanic, panic, fatal).                                                                                                             |
+| `--log-file-level`               | `"info"`         | Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).                                                                                         |
+| `--log-file`                     | `"sidecar.log"`  | Write logs to a file.                                                                                                                                                   |
+| `--log-max-size`                 | `100`            | Maximum size in megabytes before log is rotated.                                                                                                                        |
+| `--log-max-backups`              | `1`              | Maximum number of old log files to retain.                                                                                                                              |
+| `--log-max-age`                  | `3`              | Maximum number of days to retain an old log file.                                                                                                                       |
+| `--log-file-disable-compression` | `false`          | Compress rotated log files.                                                                                                                                             |
+| `--log-disable-file-rotation`    | `false`          | Disable writing logs to a file.                                                                                                                                         |
+| `--metrics-enabled`              | `true`           | Enables the Oracle client metrics.                                                                                                                                      |
+| `--metrics-prometheus-address`   | `"0.0.0.0:8002"` | Sets the Prometheus server address for the Oracle client metrics.                                                                                                       |
+| `--host`                         | `"0.0.0.0"`      | The address the Oracle will serve from.                                                                                                                                 |
+| `--port`                         | `"8080"`         | The port the Oracle will serve from.                                                                                                                                    |
+| `--update-interval`              | `250000000`      | The interval at which the oracle will fetch prices from providers.                                                                                                      |
+| `--max-price-age`                | `120000000000`   | Maximum age of a price that the oracle will consider valid.                                                                                                             |
 
 ## Application Node
 
