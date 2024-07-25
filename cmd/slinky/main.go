@@ -186,7 +186,7 @@ func init() {
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
 	)
 
-	// these flags are flags that are connected to the OracleConfig.
+	// these flags are connected to the OracleConfig.
 	rootCmd.Flags().Bool(
 		flagMetricsEnabled,
 		cmdconfig.DefaultMetricsEnabled,
