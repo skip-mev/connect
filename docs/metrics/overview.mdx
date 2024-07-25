@@ -1,0 +1,34 @@
+---
+description: Overview of metrics in Connect
+title: Overview
+icon: ruler
+---
+
+The Connect sidecar is equipped to emit Prometheus metrics to provide observability into the health of the oracle sidecar.
+
+### Metrics Emitted by Connect
+
+Connect will emit the following metrics from the oracle sidecar:
+
+- Liveness counter for every update cycle
+- Counter for the number of times a market has been updated
+- Price updates per ticker per provider
+- Aggregate price updates per ticker
+- Count for number of providers used in a price aggregation
+- Count for number of times a provider included a price used in aggregation
+- Connect binary build information
+
+### Metrics Emitted by Application
+
+- Oracle client response latency
+- Number of Oracle responses
+- ABCI method latency
+- Size of messages
+- Aggregate ticker prices written to app state
+- Prices reported by each validator
+- Status of reports from each validator
+
+
+### Need More Metrics?
+
+If you find yourself wanting more observability than what is provided, please open an issue on our [GitHub repo](https://github.com/skip-mev/slinky).

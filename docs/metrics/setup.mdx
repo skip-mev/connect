@@ -1,0 +1,28 @@
+---
+description: How to set up Connect metrics
+title: Setup
+icon: shapes
+---
+
+This document will guide you on how to utilize Connect's metrics.
+
+## Prerequisites
+
+- You have a [Prometheus](https://prometheus.io/) instance
+- You have a [Grafana](https://grafana.com/) instance
+- You've configured a data source in Grafana for your Prometheus instance
+- You have set the metrics [configuration](/validators/configuration#env-vars) in the Connect sidecar
+
+If you're not sure how to set up Prometheus and Grafana, see this [guide](https://grafana.com/docs/grafana/latest/getting-started/get-started-grafana-prometheus/).
+
+## Import Dashboards
+
+Import the following dashboard JSON files to view the available metrics in Grafana. If you do not know how to import a Grafana dashboard, see this [guide](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/import-dashboards/).
+
+### Sidecar
+
+[Sidecar Dashboard JSON file](https://github.com/skip-mev/slinky/blob/main/grafana/provisioning/dashboards/side-car-dashboard.json)
+
+### Application
+
+[Application Dashboard JSON file](https://github.com/skip-mev/slinky/blob/main/grafana/provisioning/dashboards/chain-dashboard.json)
