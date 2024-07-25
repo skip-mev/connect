@@ -1,0 +1,377 @@
+---
+description: Integrating Connect with Blockchain Applications
+title: Integration
+icon: swap-arrows
+---
+
+<Info>
+    Connect is business-licensed software under the Business Source License (BSL). The source code is viewable; however, please reach out to us if you are interested in integrating. We are limiting the number of partnerships we engage with in 2024. We apologize in advance if we reach capacity and are unable to accommodate new integrations.
+</Info>
+
+This document will guide you through integrating Connect in your application.
+
+## Requirements
+
+- Go 1.22+
+- Cosmos SDK v0.50+
+
+## Integrating Connect
+
+Integrating Connect into your Cosmos SDK application requires a few simple steps.
+
+<Steps>
+    <Step title="Add Modules">
+        Add the `x/marketmap` and `x/oracle` Modules to your app.
+    </Step>
+    <Step title="Setup Oracle Client">
+        Set up the Oracle client the application will use to get prices from the Connect oracle.
+    </Step>
+    <Step title="Set ABCI Method">
+        Set the PreBlock ABCI method, which is responsible for aggregating prices and writing them to the application's state.
+    </Step>
+    <Step title="Configure Vote Extensions">
+        Configure vote extensions with compression and storage strategies.
+    </Step>
+</Steps>
+
+## Keepers
+
+First, add the [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
+
+```go app.go
+package app
+
+import (
+    // ... other imports
+
+	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
+	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+)
+
+type App struct {
+	// ... other fields
+
+	OracleKeeper     *oraclekeeper.Keeper
+	MarketMapKeeper  *marketmapkeeper.Keeper
+}
+```
+
+Then, add them to the dependency injection system.
+
+```go app.go
+	err := depinject.Inject(
+		// ... other arguments
+		&app.MarketMapKeeper,
+		&app.OracleKeeper,
+	)
+```
+
+Finally, once the app is built with the `appBuilder`, finish the initialization of the `MarketMapKeeper` by setting the hooks.
+
+```go app.go
+	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+
+	app.MarketMapKeeper.SetHooks(app.OracleKeeper.Hooks())
+```
+
+## Oracle Client
+
+Create a method to construct and return the oracle client and metrics.
+
+```go oracle.go
+package app
+
+import (
+	"context"
+
+    "github.com/cosmos/cosmos-sdk/server/types"
+    oracleconfig "github.com/skip-mev/slinky/oracle/config"
+    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+)
+
+// initializeOracle initializes the oracle client and metrics.
+func (app *App) initializeOracle(appOpts types.AppOptions) (oracleclient.OracleClient, servicemetrics.Metrics, error) {
+	// Read general config from app-opts, and construct oracle service.
+	cfg, err := oracleconfig.ReadConfigFromAppOpts(appOpts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// If app level instrumentation is enabled, then wrap the oracle service with a metrics client
+	// to get metrics on the oracle service (for ABCI++). This will allow the instrumentation to track
+	// latency in VerifyVoteExtension requests and more.
+	oracleMetrics, err := servicemetrics.NewMetricsFromConfig(cfg, app.ChainID())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Create the oracle service.
+	oracleClient, err := oracleclient.NewPriceDaemonClientFromConfig(
+		cfg,
+		app.Logger().With("client", "oracle"),
+		oracleMetrics,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Connect to the oracle service (default timeout of 5 seconds).
+	go func() {
+		app.Logger().Info("attempting to start oracle client...", "address", cfg.OracleAddress)
+		if err := oracleClient.Start(context.Background()); err != nil {
+			app.Logger().Error("failed to start oracle client", "err", err)
+			panic(err)
+		}
+	}()
+
+	return oracleClient, oracleMetrics, nil
+}
+```
+## ABCI and Vote Extensions
+
+Configure the ABCI methods and vote extensions.
+
+Define a method to contain the logic where these will be configured.
+
+```go oracle.go
+func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {}
+```
+
+Within this method, do the following:
+
+- **Setup Proposal Handler:** This handler will be used in `PrepareProposal` and `ProcessProposal` to fill proposals with the oracle data.
+- **Set PreBlocker:** The application's `PreBlocker` will be configured to write price data to state before transactions are executed.
+- **Set Vote Extensions:** Set the vote extension handlers on the application that will handle adding price data to the node's consensus votes.
+
+Start with setting up the proposal handler.
+
+```go oracle.go
+package app
+
+import (
+	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
+    "github.com/cosmos/cosmos-sdk/baseapp"
+    "github.com/skip-mev/slinky/abci/proposals"
+    compression "github.com/skip-mev/slinky/abci/strategies/codec"
+    "github.com/skip-mev/slinky/abci/strategies/currencypair"
+    "github.com/skip-mev/slinky/abci/ve"
+)
+
+func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
+    // Create the proposal handler that will be used to fill proposals with
+	// transactions and oracle data.
+	proposalHandler := proposals.NewProposalHandler(
+		app.Logger(),
+		baseapp.NoOpPrepareProposal(),
+		baseapp.NoOpProcessProposal(),
+		ve.NewDefaultValidateVoteExtensionsFn(app.StakingKeeper),
+		compression.NewCompressionVoteExtensionCodec(
+			compression.NewDefaultVoteExtensionCodec(),
+			compression.NewZLibCompressor(),
+		),
+		compression.NewCompressionExtendedCommitCodec(
+			compression.NewDefaultExtendedCommitCodec(),
+			compression.NewZStdCompressor(),
+		),
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
+		oracleMetrics,
+	)
+	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
+}
+```
+
+Next, set up the `PreBlocker`. This involves:
+
+- **Aggregate Function:** Setting the aggregator function that combines all reported prices into one final price per currency pair.
+- **Currency Pair Strategy:** Setting the currency pair strategy. For this example, we will use the `DeltaCurrencyPairStrategy` which encodes/decodes the price as the difference between the current price and the previous price. While other strategies are available, we recommend this one for most applications.
+- **Data Compression Codecs:** Setting the compression strategy for vote extensions and extended commits.
+
+```go oracle.go
+package app
+
+import (
+    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
+    oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+    compression "github.com/skip-mev/slinky/abci/strategies/codec"
+    "github.com/skip-mev/slinky/abci/strategies/currencypair"
+    "github.com/skip-mev/slinky/pkg/math/voteweighted"
+)
+
+func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
+	// ... 
+
+	// Create the aggregation function that will be used to aggregate oracle data
+	// from each validator.
+	aggregatorFn := voteweighted.MedianFromContext(
+		app.Logger(),
+		app.StakingKeeper,
+		voteweighted.DefaultPowerThreshold,
+	)
+	veCodec := compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
+	)
+	ecCodec := compression.NewCompressionExtendedCommitCodec(
+		compression.NewDefaultExtendedCommitCodec(),
+		compression.NewZStdCompressor(),
+	)
+
+	// Create the pre-finalize block hook that will be used to apply oracle data
+	// to the state before any transactions are executed (in finalize block).
+	oraclePreBlockHandler := oraclepreblock.NewOraclePreBlockHandler(
+		app.Logger(),
+		aggregatorFn,
+		app.OracleKeeper,
+		oracleMetrics,
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper), // IMPORTANT: always construct new currency pair strategy objects when functions require them as arguments.
+		veCodec,
+		ecCodec,
+	)
+
+	app.SetPreBlocker(oraclePreBlockHandler.WrappedPreBlocker(app.ModuleManager))
+}
+```
+
+Next, configure the vote extensions using the vote extension codec, extended commit codec, and aggregator function from the previous step.
+
+```go oracle.go
+package app
+
+import (
+	"time"
+
+	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
+        servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
+	"github.com/skip-mev/slinky/abci/ve"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	"github.com/skip-mev/slinky/abci/strategies/aggregator"
+)
+
+func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
+
+	// ... snip ...
+
+	// Create the vote extensions handler that will be used to extend and verify
+	// vote extensions (i.e. oracle data).
+	voteExtensionsHandler := ve.NewVoteExtensionHandler(
+		app.Logger(),
+		oracleClient,
+		time.Second, // timeout
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper), // IMPORTANT: always construct new currency pair strategy objects when functions require them as arguments.
+		veCodec,
+		aggregator.NewOraclePriceApplier(
+			aggregator.NewDefaultVoteAggregator(
+				app.Logger(),
+				aggregatorFn,
+				// we need a separate price strategy here, so that we can optimistically apply the latest prices
+				// and extend our vote based on these prices
+				currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper), // IMPORTANT: always construct new currency pair strategy objects when functions require them as arguments.
+			),
+			app.OracleKeeper,
+			veCodec,
+			ecCodec,
+			app.Logger(),
+		),
+		oracleMetrics,
+	)
+	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
+	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
+}
+```
+
+Finally, call these methods back in `app.go`, directly after setting the `x/marketmap` hooks.
+
+```go app.go
+	app.MarketMapKeeper.SetHooks(app.OracleKeeper.Hooks())
+
+	// oracle initialization
+	client, metrics, err := app.initializeOracle(appOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize oracle client and metrics: %w", err)
+	}
+
+	app.initializeABCIExtensions(client, metrics)
+```
+
+## Starting the Application
+
+In order for the application to use Connect properly, the following is required:
+
+- Set the consensus parameters to enable vote extensions
+- Initialize `x/marketmap` with initial markets
+
+The following code can be executed within an upgrade handler for chains that are already live or in `InitChainer` for new chains:
+
+```go
+package app
+
+import (
+	"slices"
+
+        tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
+)
+
+func (app *App) setupMarkets(ctx sdk.Context) error {
+	consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
+    if err != nil {
+        return err
+    }
+    consensusParams.Params.Abci = &tmtypes.ABCIParams{
+        VoteExtensionsEnableHeight: ctx.BlockHeight() + int64(10), // enables VE's at current_height + 10.
+    }
+    _, err = app.ConsensusParamsKeeper.UpdateParams(ctx, &consensustypes.MsgUpdateParams{
+        Authority: app.ConsensusParamsKeeper.GetAuthority(),
+        Block:     consensusParams.Params.Block,
+        Evidence:  consensusParams.Params.Evidence,
+        Validator: consensusParams.Params.Validator,
+        Abci:      consensusParams.Params.Abci,
+    })
+    if err != nil {
+        return err
+    }
+
+    // add core markets
+    coreMarkets := marketmaps.CoreMarketMap
+    markets := coreMarkets.Markets
+
+    // sort keys so we can deterministically iterate over map items.
+    keys := make([]string, 0, len(markets))
+    for name := range markets {
+        keys = append(keys, name)
+    }
+    slices.Sort(keys)
+
+    for _, marketName := range keys {
+        // create market
+        market := markets[marketName]
+        err = app.MarketMapKeeper.CreateMarket(ctx, market)
+        if err != nil {
+            return err
+        }
+
+        // invoke hooks. this syncs the market to x/oracle.
+        err = app.MarketMapKeeper.Hooks().AfterMarketCreated(ctx, market)
+        if err != nil {
+            return err
+        }
+    }
+    
+    return nil
+}
+```
+
+With the Connect sidecar running, the application can now be started and will begin receiving price data at the configured `VoteExtensionsEnableHeight`.
+
+## Need Help?
+
+Need help with your integration? Feel free to reach out to us on [Discord](https://discord.gg/amAgf9Z39w).
