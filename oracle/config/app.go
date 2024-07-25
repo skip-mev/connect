@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	DefaultOracleEnabled  = true
+	DefaultOracleEnabled  = false
 	DefaultOracleAddress  = "localhost:8080"
 	DefaultClientTimeout  = 3 * time.Second
 	DefaultMetricsEnabled = false
@@ -152,17 +152,33 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 		}
 	}
 
+	if !cfg.Enabled {
+		return cfg, nil
+	}
+
 	// get the oracle address
 	if v := opts.Get(flagOracleAddress); v != nil {
-		if cfg.OracleAddress, err = cast.ToStringE(v); err != nil {
-			return cfg, err
+		address, err := cast.ToStringE(v)
+		if err != nil {
+			return cfg, fmt.Errorf("oracle address must be a non-empty string")
+		}
+
+		// only update the address if it is non-empty
+		if len(address) > 0 {
+			cfg.OracleAddress = address
 		}
 	}
 
 	// get the client timeout
 	if v := opts.Get(flagClientTimeout); v != nil {
-		if cfg.ClientTimeout, err = cast.ToDurationE(v); err != nil {
-			return cfg, err
+		clientTimeout, err := cast.ToDurationE(v)
+		if err != nil {
+			return cfg, fmt.Errorf("client timeout must be a positive duration")
+		}
+
+		// only update the client timeout if it is positive
+		if clientTimeout > 0 {
+			cfg.ClientTimeout = clientTimeout
 		}
 	}
 
@@ -175,15 +191,27 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 
 	// get the price ttl
 	if v := opts.Get(flagPriceTTL); v != nil {
-		if cfg.PriceTTL, err = cast.ToDurationE(v); err != nil {
-			return cfg, err
+		priceTTL, err := cast.ToDurationE(v)
+		if err != nil {
+			return cfg, fmt.Errorf("price ttl must be a positive duration")
+		}
+
+		// only update the price ttl if it is positive
+		if priceTTL > 0 {
+			cfg.PriceTTL = priceTTL
 		}
 	}
 
 	// get the interval
 	if v := opts.Get(flagInterval); v != nil {
-		if cfg.Interval, err = cast.ToDurationE(v); err != nil {
-			return cfg, err
+		interval, err := cast.ToDurationE(v)
+		if err != nil {
+			return cfg, fmt.Errorf("interval must be a positive duration")
+		}
+
+		// only update the interval if it is positive
+		if interval > 0 {
+			cfg.Interval = interval
 		}
 	}
 
@@ -192,4 +220,16 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	}
 
 	return cfg, err
+}
+
+// String implements the stringer interface for the AppConfig.
+func (c AppConfig) String() string {
+	return fmt.Sprintf(`Oracle Config:
+  Enabled: %v
+  Oracle Address: %s
+  Client Timeout: %s
+  Metrics Enabled: %v
+  Price TTL: %s
+  Interval: %s`,
+		c.Enabled, c.OracleAddress, c.ClientTimeout, c.MetricsEnabled, c.PriceTTL, c.Interval)
 }
