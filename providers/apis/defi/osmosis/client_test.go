@@ -3,6 +3,7 @@ package osmosis_test
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
 
