@@ -1,0 +1,31 @@
+---
+description: Reference for the available metrics in the Application
+title: Application
+icon: display-code
+---
+
+## Exposed Metrics
+
+By default, Cosmos SDK application expose metrics on port `26660`. These metrics are in the [Prometheus](https://prometheus.io/docs/introduction/overview/) format and can be scraped by any monitoring system that supports Prometheus format.
+
+## Oracle Client Connection Metrics
+
+- **oracle_response_latency:** Histogram that measures the time in nanoseconds between request/response of from the Application to Oracle.
+- **oracle_responses:** Counter that measures the number of oracle responses.
+
+## ABCI Metrics
+
+The following metrics are measured in the following ABCI methods: ExtendVote, PrepareProposal, ProcessProposal, VerifyVoteExtension, FinalizeBlock.
+
+- **ABCI_method_latency:** Histogram that measures the amount of seconds ABCI method calls take.
+- **ABCI_method_status:** Counter that measures the number of ABCI requests.
+
+## VE/Price Metrics
+
+- **message_size:** Histogram that tracks the size of vote-extensions and extended commits that Connect transmits.
+- **oracle_prices:** Gauge that tracks prices written to application state.
+
+## Network Metrics
+
+- **oracle_reports_per_validator:** Gauge that tracks the prices each validator has reported for any block per ticker.
+- **oracle_report_status_per_validator:** Counter that tracks the number of reports per validator and their vote status (absent, missing_price, with_price).

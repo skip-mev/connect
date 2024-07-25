@@ -54,6 +54,15 @@
       ]
     },
     {
+      "group": "Metrics",
+      "pages": [
+        "metrics/overview",
+        "metrics/setup",
+        "metrics/oracle-reference",
+        "metrics/application-reference"
+      ]
+    },
+    {
       "group": "Learn",
       "pages": [
         "learn/architecture",
