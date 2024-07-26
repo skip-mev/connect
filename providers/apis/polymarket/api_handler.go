@@ -13,11 +13,10 @@ import (
 )
 
 const (
-	// Name is the name of the Coinbase provider.
+	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
-	// URL is the base URL of the Coinbase API. This includes the base and quote
-	// currency pairs that need to be inserted into the URL.
+	// URL is the base URL of the Polymarket CLOB API endpoint for the Price of a given token ID.
 	URL = "https://clob.polymarket.com/price?token_id=%s&side=BUY"
 )
 
