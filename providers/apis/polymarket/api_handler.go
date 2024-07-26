@@ -22,10 +22,13 @@ const (
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
+// APIHandler implements the PriceAPIDataHandler interface for Polymarket, which can be used
+// by a base provider. The handler fetches data from the `/price` endpoint.
 type APIHandler struct {
 	api config.APIConfig
 }
 
+// NewAPIHandler returns a new Polymarket PriceAPIDataHandler.
 func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
@@ -44,6 +47,9 @@ func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 	}, nil
 }
 
+// CreateURL returns the URL that is used to fetch data from the Polymarket API for the
+// given ticker. Since the price endpoint is automatically denominated in USD, only one ID is expected to be passed
+// into this method.
 func (h APIHandler) CreateURL(ids []types.ProviderTicker) (string, error) {
 	if len(ids) != 1 {
 		return "", fmt.Errorf("expected 1 ticker, got %d", len(ids))
@@ -51,10 +57,13 @@ func (h APIHandler) CreateURL(ids []types.ProviderTicker) (string, error) {
 	return fmt.Sprintf(h.api.Endpoints[0].URL, ids[0].GetOffChainTicker()), nil
 }
 
+// ResponseBody is the response structure for the `/price` endpoint of the Polymarket API.
 type ResponseBody struct {
 	Price string `json:"price"`
 }
 
+// ParseResponse parses the HTTP response from the `/price` Polymarket API endpoint and returns
+// the resulting price.
 func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Response) types.PriceResponse {
 	if len(ids) != 1 {
 		return types.NewPriceResponseWithErr(
@@ -95,7 +104,7 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 	return types.NewPriceResponse(resolved, nil)
 }
 
-// validatePrice ensures the price is between [1.00 and 0.00).
+// validatePrice ensures the price is between [1.00 and 0.00].
 func validatePrice(price *big.Float) error {
 	if sign := price.Sign(); sign == -1 {
 		return fmt.Errorf("price must be greater than 0.00")
