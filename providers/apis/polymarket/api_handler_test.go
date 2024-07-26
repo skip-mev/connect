@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	trumpWinsElection = types.DefaultProviderTicker{
+	candidateWinsElectionToken = types.DefaultProviderTicker{
 		OffChainTicker: "21742633143463906290569050155826241533067272736897614950488156847949938836455",
 	}
 )
@@ -36,17 +36,17 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "too many",
 			pts: []types.ProviderTicker{
-				trumpWinsElection,
-				trumpWinsElection,
+				candidateWinsElectionToken,
+				candidateWinsElectionToken,
 			},
 			expErr: "expected 1 ticker, got 2",
 		},
 		{
 			name: "happy case",
 			pts: []types.ProviderTicker{
-				trumpWinsElection,
+				candidateWinsElectionToken,
 			},
-			expectedURL: fmt.Sprintf(URL, trumpWinsElection),
+			expectedURL: fmt.Sprintf(URL, candidateWinsElectionToken),
 		},
 	}
 	h, err := NewAPIHandler(DefaultAPIConfig)
@@ -65,7 +65,7 @@ func TestCreateURL(t *testing.T) {
 }
 
 func TestParseResponse(t *testing.T) {
-	id := trumpWinsElection
+	id := candidateWinsElectionToken
 	handler, err := NewAPIHandler(DefaultAPIConfig)
 	require.NoError(t, err)
 	testCases := []struct {
@@ -77,7 +77,7 @@ func TestParseResponse(t *testing.T) {
 	}{
 		{
 			name:         "happy case",
-			ids:          []types.ProviderTicker{trumpWinsElection},
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
 			responseBody: `{ "price": "0.45" }`,
 			expectedResponse: types.NewPriceResponse(
@@ -89,10 +89,10 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "too many IDs",
-			ids:          []types.ProviderTicker{trumpWinsElection, trumpWinsElection},
+			ids:          []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
 			responseBody: ``,
 			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{trumpWinsElection, trumpWinsElection},
+				[]types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
 				providertypes.NewErrorWithCode(
 					fmt.Errorf("expected 1 ticker, got 2"),
 					providertypes.ErrorInvalidResponse,
@@ -101,10 +101,10 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "invalid JSON",
-			ids:          []types.ProviderTicker{trumpWinsElection},
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			responseBody: `{"price": "0fa3adk"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{trumpWinsElection},
+				[]types.ProviderTicker{candidateWinsElectionToken},
 				providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", "0fa3adk"), providertypes.ErrorFailedToDecode),
 			),
 		},
