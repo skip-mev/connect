@@ -16,8 +16,8 @@ example: `2174263314346390629056905015582624153306727273689761495048815684794993
 
 The offchain ticker is expected to be _just_ the token_id.
 
-The Provider simply calls the `/price` endpoint. There are two query paremeters:
-- token_id
-- side
+The Provider simply calls the `/price` endpoint. There are two query parameters:
+* token_id
+* side
 
 Side can be either `buy` or `sell`. For this provider, we hardcode the side to `buy`.

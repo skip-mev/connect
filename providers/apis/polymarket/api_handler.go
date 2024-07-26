@@ -96,7 +96,7 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 	return types.NewPriceResponse(resolved, nil)
 }
 
-// validatePrice ensures the price is between [1.00 and 0.00)
+// validatePrice ensures the price is between [1.00 and 0.00).
 func validatePrice(price *big.Float) error {
 	if sign := price.Sign(); sign == -1 {
 		return fmt.Errorf("price must be greater than 0.00")
