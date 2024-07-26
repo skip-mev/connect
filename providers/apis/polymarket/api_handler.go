@@ -83,9 +83,30 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 			providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", result.Price), providertypes.ErrorFailedToDecode),
 		)
 	}
+	if err := validatePrice(price); err != nil {
+		return types.NewPriceResponseWithErr(
+			ids,
+			providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+		)
+	}
 	resolved := types.ResolvedPrices{
 		ids[0]: types.NewPriceResult(price, time.Now().UTC()),
 	}
 
 	return types.NewPriceResponse(resolved, nil)
+}
+
+// validatePrice ensures the price is between [1.00 and 0.00)
+func validatePrice(price *big.Float) error {
+	if sign := price.Sign(); sign == -1 {
+		return fmt.Errorf("price must be greater than 0.00")
+	}
+
+	maxPriceFloat := 1.00
+	maxPrice := big.NewFloat(maxPriceFloat)
+	if diff := new(big.Float).Sub(maxPrice, price); diff.Sign() == -1 {
+		return fmt.Errorf("price exceeded %.2f", maxPriceFloat)
+	}
+
+	return nil
 }

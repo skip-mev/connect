@@ -106,6 +106,24 @@ func TestParseResponse(t *testing.T) {
 				providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", "0fa3adk"), providertypes.ErrorFailedToDecode),
 			),
 		},
+		{
+			name:         "bad price - max",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			responseBody: `{"price": "1.0001"}"`,
+			expectedResponse: types.NewPriceResponseWithErr(
+				[]types.ProviderTicker{candidateWinsElectionToken},
+				providertypes.NewErrorWithCode(fmt.Errorf("price exceeded 1.00"), providertypes.ErrorInvalidResponse),
+			),
+		},
+		{
+			name:         "bad price - negative",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			responseBody: `{"price": "-0.12"}"`,
+			expectedResponse: types.NewPriceResponseWithErr(
+				[]types.ProviderTicker{candidateWinsElectionToken},
+				providertypes.NewErrorWithCode(fmt.Errorf("price must be greater than 0.00"), providertypes.ErrorInvalidResponse),
+			),
+		},
 	}
 
 	for _, tc := range testCases {
