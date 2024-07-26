@@ -15,11 +15,9 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-var (
-	candidateWinsElectionToken = types.DefaultProviderTicker{
-		OffChainTicker: "21742633143463906290569050155826241533067272736897614950488156847949938836455",
-	}
-)
+var candidateWinsElectionToken = types.DefaultProviderTicker{
+	OffChainTicker: "21742633143463906290569050155826241533067272736897614950488156847949938836455",
+}
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
