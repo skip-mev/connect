@@ -189,11 +189,12 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 	var wg sync.WaitGroup
 	wg.Add(len(mc.clients))
 
-	for i, client := range mc.clients {
+	for i := range mc.clients {
 		url := mc.api.Endpoints[i].URL
 
 		index := i
 		go func(index int, client Client) {
+			defer wg.Done()
 			resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
 			if err != nil {
 				mc.logger.Error("failed to spot price in sub client", zap.String("url", url), zap.Error(err))
@@ -203,8 +204,7 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 			mc.logger.Debug("successfully fetched accounts", zap.String("url", url))
 
 			resps[index] = resp
-		}(index, client)
-
+		}(index, mc.clients[i])
 	}
 
 	wg.Wait()

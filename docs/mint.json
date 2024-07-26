@@ -54,6 +54,15 @@
       ]
     },
     {
+      "group": "Metrics",
+      "pages": [
+        "metrics/overview",
+        "metrics/setup",
+        "metrics/oracle-reference",
+        "metrics/application-reference"
+      ]
+    },
+    {
       "group": "Learn",
       "pages": [
         "learn/architecture",
@@ -63,6 +72,7 @@
     {
       "group": "Developers",
       "pages": [
+        "using-connect/integration",
         "using-connect/high-level",
         "using-connect/neutron-sdk",
         "using-connect/providers"
