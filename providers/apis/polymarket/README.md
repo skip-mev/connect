@@ -21,3 +21,65 @@ The Provider simply calls the `/price` endpoint of the CLOB API. There are two q
 * side
 
 Side can be either `buy` or `sell`. For this provider, we hardcode the side to `buy`.
+
+## Market Config
+
+Below is an example of a market config for a single Polymarket token.
+
+```json
+ {
+  "markets": {
+   "21742633143463906290569050155826241533067272736897614950488156847949938836455/USD": {
+    "ticker": {
+     "currency_pair": {
+      "Base": "21742633143463906290569050155826241533067272736897614950488156847949938836455",
+      "Quote": "USD"
+     },
+     "decimals": 3,
+     "min_provider_count": 1,
+     "enabled": true
+    },
+    "provider_configs": [
+     {
+      "name": "polymarket_api",
+      "off_chain_ticker": "21742633143463906290569050155826241533067272736897614950488156847949938836455"
+     }
+    ]
+   }
+  }
+ }
+```
+
+## Oracle Config
+
+Below is an example of an oracle config with a Polymarket provider.
+
+```json
+{
+  "providers": {
+    "polymarket_api": {
+      "name": "polymarket_api",
+      "type": "price_provider",
+      "api": {
+        "name": "polymarket_api",
+        "enabled": true,
+        "timeout": 3000000000,
+        "interval": 500000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "endpoints": [
+          {
+            "url": "https://clob.polymarket.com/price?token_id=%s&side=BUY",
+            "authentication": {
+              "apiKey": "",
+              "apiKeyHeader": ""
+            }
+          }
+        ],
+        "batchSize": 0
+      }
+    }
+  }
+}
+```
