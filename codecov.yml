@@ -4,3 +4,4 @@ ignore:
   - "**/*.mdx"
   - "**/*.pulsar.go"
   - "**/*.pb.go"
+  - "**/*.json"
