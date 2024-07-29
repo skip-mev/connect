@@ -30,7 +30,7 @@ Below is an example of a market config for a single Polymarket token.
 ```json
  {
   "markets": {
-   "will-donald-trump-win-the-2024-us-presidential-election?Yes/USD": {
+   "WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD": {
     "ticker": {
      "currency_pair": {
       "Base": "WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
