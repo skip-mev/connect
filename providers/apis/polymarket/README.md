@@ -8,13 +8,13 @@ Polymarket is a web3 based prediction market. This provider uses the Polymarket 
 
 Polymarket uses [conditional outcome tokens](https://docs.gnosis.io/conditionaltokens/), a token that represents an outcome of a specific event. All tokens in Polymarket are denominated in terms of USD.
 
-Tickers take the form of:
+Tickers take the form of the `<market_slug>?<outcome>/USD`:
 
-`<POLYMARKET_TOKEN_ID>/USD`
-
-example: `21742633143463906290569050155826241533067272736897614950488156847949938836455/USD`
+Example: `WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD`
 
 The offchain ticker is expected to be _just_ the token_id.
+
+example: `21742633143463906290569050155826241533067272736897614950488156847949938836455`
 
 The Provider simply calls the `/price` endpoint of the CLOB API. There are two query parameters:
 
@@ -30,10 +30,10 @@ Below is an example of a market config for a single Polymarket token.
 ```json
  {
   "markets": {
-   "21742633143463906290569050155826241533067272736897614950488156847949938836455/USD": {
+   "will-donald-trump-win-the-2024-us-presidential-election?Yes/USD": {
     "ticker": {
      "currency_pair": {
-      "Base": "21742633143463906290569050155826241533067272736897614950488156847949938836455",
+      "Base": "WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
       "Quote": "USD"
      },
      "decimals": 3,
