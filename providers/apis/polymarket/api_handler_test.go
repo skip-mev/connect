@@ -86,6 +86,18 @@ func TestParseResponse(t *testing.T) {
 			),
 		},
 		{
+			name:         "1.00 should resolve to 0.999",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			noError:      true,
+			responseBody: `{ "price": "1.00" }`,
+			expectedResponse: types.NewPriceResponse(
+				types.ResolvedPrices{
+					id: types.NewPriceResult(big.NewFloat(0.9999999), time.Now().UTC()),
+				},
+				nil,
+			),
+		},
+		{
 			name:         "too many IDs",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
 			responseBody: ``,

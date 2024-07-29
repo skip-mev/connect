@@ -97,6 +97,12 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 			providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
 		)
 	}
+
+	// we don't ever want to return 1.00. Set to 0.9999999 if we get that price.
+	one := big.NewFloat(1.00)
+	if one.Cmp(price) == 0 {
+		price = new(big.Float).SetFloat64(0.9999999)
+	}
 	resolved := types.ResolvedPrices{
 		ids[0]: types.NewPriceResult(price, time.Now().UTC()),
 	}
@@ -112,7 +118,8 @@ func validatePrice(price *big.Float) error {
 
 	maxPriceFloat := 1.00
 	maxPrice := big.NewFloat(maxPriceFloat)
-	if diff := new(big.Float).Sub(maxPrice, price); diff.Sign() == -1 {
+	diff := new(big.Float).Sub(maxPrice, price)
+	if diff.Sign() == -1 {
 		return fmt.Errorf("price exceeded %.2f", maxPriceFloat)
 	}
 
