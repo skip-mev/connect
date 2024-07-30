@@ -1,6 +1,7 @@
 module github.com/skip-mev/slinky
 
-go 1.22
+go 1.22.2
+
 toolchain go1.22.5
 
 require (
