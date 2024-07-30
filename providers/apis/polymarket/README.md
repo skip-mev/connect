@@ -89,6 +89,6 @@ Below is an example of an oracle config with a Polymarket provider.
 
 While not publicly available on the docs, the following information was given from a Polymarket developer regarding rate limits on the CLOB API:
 
-- In general you can't do more than 20req/s
-- You can't request orders and trades combined more than 20req/s
-- You can't do more than 10 reqs to /book per second
+* In general you can't do more than 20req/s
+* You can't request orders and trades combined more than 20req/s
+* You can't do more than 10 reqs to /book per second
