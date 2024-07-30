@@ -9734,6 +9734,57 @@ var (
                "off_chain_ticker":"95128817762909535143571435260705470642391662537976312011260538371392879420759"
             }
          ]
+      },
+      "WILL_ROBERT_F_KENNEDY_JR_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?NO/USD":{
+         "ticker":{
+            "currency_pair":{
+               "Base":"WILL_ROBERT_F_KENNEDY_JR_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?NO",
+               "Quote":"USD"
+            },
+            "decimals":3,
+            "min_provider_count":1,
+            "enabled":true
+         },
+         "provider_configs":[
+            {
+               "name":"polymarket_api",
+               "off_chain_ticker":"56404905393055211239795086916790918063008904529043139446524120756836481670648"
+            }
+         ]
+      },
+      "USA_WINS_THE_MOST_GOLD_MEDALS_IN_2024_PARIS_OLYMPICS?YES/USD":{
+         "ticker":{
+            "currency_pair":{
+               "Base":"USA_WINS_THE_MOST_GOLD_MEDALS_IN_2024_PARIS_OLYMPICS?YES",
+               "Quote":"USD"
+            },
+            "decimals":3,
+            "min_provider_count":1,
+            "enabled":true
+         },
+         "provider_configs":[
+            {
+               "name":"polymarket_api",
+               "off_chain_ticker":"21948917496837354367910826573765617012647201536430148892502780921686496760749"
+            }
+         ]
+      },
+      "WILL_INSIDE_OUT_2_GROSS_MOST_IN_2024?YES/USD":{
+         "ticker":{
+            "currency_pair":{
+               "Base":"WILL_INSIDE_OUT_2_GROSS_MOST_IN_2024?YES",
+               "Quote":"USD"
+            },
+            "decimals":3,
+            "min_provider_count":1,
+            "enabled":true
+         },
+         "provider_configs":[
+            {
+               "name":"polymarket_api",
+               "off_chain_ticker":"50107902083284751016545440401692219408556171231461347396738260657226842527986"
+            }
+         ]
       }
    }
 }`
