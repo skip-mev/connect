@@ -1,4 +1,4 @@
-FROM ghcr.io/skip-mev/slinky-dev-base as builder
+FROM ghcr.io/skip-mev/slinky-dev-base AS builder
 
 WORKDIR /src/slinky
 
