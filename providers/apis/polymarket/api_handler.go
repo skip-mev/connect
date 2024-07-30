@@ -19,7 +19,7 @@ const (
 	// URL is the base URL of the Polymarket CLOB API endpoint for the Price of a given token ID.
 	URL = "https://clob.polymarket.com/price?token_id=%s&side=BUY"
 
-	// priceAdjustment is the value the price gets set to in the event of price == 1.00
+	// priceAdjustment is the value the price gets set to in the event of price == 1.00.
 	priceAdjustment = 0.9999999
 )
 
