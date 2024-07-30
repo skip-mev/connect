@@ -10,11 +10,11 @@ Polymarket uses [conditional outcome tokens](https://docs.gnosis.io/conditionalt
 
 Tickers take the form of the `<market_slug>?<outcome>/USD`:
 
-Example: `WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD`
+Example: `WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD`
 
 The offchain ticker is expected to be _just_ the token_id.
 
-example: `21742633143463906290569050155826241533067272736897614950488156847949938836455`
+example: `95128817762909535143571435260705470642391662537976312011260538371392879420759`
 
 The Provider simply calls the `/price` endpoint of the CLOB API. There are two query parameters:
 
@@ -30,23 +30,23 @@ Below is an example of a market config for a single Polymarket token.
 ```json
  {
   "markets": {
-   "WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD": {
-    "ticker": {
-     "currency_pair": {
-      "Base": "WILL-DONALD-TRUMP-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
-      "Quote": "USD"
-     },
-     "decimals": 3,
-     "min_provider_count": 1,
-     "enabled": true
-    },
-    "provider_configs": [
-     {
-      "name": "polymarket_api",
-      "off_chain_ticker": "21742633143463906290569050155826241533067272736897614950488156847949938836455"
-     }
-    ]
-   }
+    "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
+          "Quote": "USD"
+        },
+        "decimals": 3,
+        "min_provider_count": 1,
+        "enabled": true
+      },
+      "provider_configs": [
+        {
+          "name": "polymarket_api",
+          "off_chain_ticker": "95128817762909535143571435260705470642391662537976312011260538371392879420759"
+        }
+      ]
+    }
   }
  }
 ```
