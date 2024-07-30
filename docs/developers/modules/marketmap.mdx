@@ -10,7 +10,7 @@ The `Marketmap` module is responsible for managing and storing a configuration t
 
 The `Marketmap` module's Keeper is instantiated with an `Authority` address, guarding the mutation of the `Marketmap` by a specific address. This address can be the `governance` address, allowing governance propositions to mutate the `Marketmap`.
 
-The `Authority` address can also update the Keeper's `MarketAuthorities`, allowing for additional addresses to update the `Marketmap`.
+The `Authority` of the `Marketmap` module can modify the Keeper's `MarketAuthorities`. This allows the `Authority` to add or remove addresses that are authorized to update the `Marketmap`.
 
 ## Concepts
 
