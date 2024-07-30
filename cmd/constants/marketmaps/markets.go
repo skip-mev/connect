@@ -2,8 +2,8 @@ package marketmaps
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"os"
 
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -9709,67 +9709,58 @@ var (
     }
 }
 	`
+
+	// PolymarketMarketMap is used to initialize the Polymarket market map. This only includes one prediction market
+	// with one outcome token.
+	PolymarketMarketMap mmtypes.MarketMap
+
+	// PolymarketMarketMapJSON is the JSON representation of PolymarketMarketMap.
+	PolymarketMarketMapJSON = ` 
+{
+   "markets":{
+      "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD":{
+         "ticker":{
+            "currency_pair":{
+               "Base":"WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
+               "Quote":"USD"
+            },
+            "decimals":3,
+            "min_provider_count":1,
+            "enabled":true
+         },
+         "provider_configs":[
+            {
+               "name":"polymarket_api",
+               "off_chain_ticker":"95128817762909535143571435260705470642391662537976312011260538371392879420759"
+            }
+         ]
+      }
+   }
+}`
 )
 
 func init() {
-	// Unmarshal the CoinMarketCapMarketMapJSON into CoinMarketCapMarketMap.
-	if err := json.Unmarshal([]byte(CoinMarketCapMarketMapJSON), &CoinMarketCapMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal CoinMarketCapMarketMapJSON: %v\n", err)
+	err := errors.Join(
+		unmarshalValidate("CoinMarketCap", CoinMarketCapMarketMapJSON, &CoinMarketCapMarketMap),
+		unmarshalValidate("Raydium", RaydiumMarketMapJSON, &RaydiumMarketMap),
+		unmarshalValidate("Core", CoreMarketMapJSON, &CoreMarketMap),
+		unmarshalValidate("UniswapV3Base", UniswapV3BaseMarketMapJSON, &UniswapV3BaseMarketMap),
+		unmarshalValidate("CoinGecko", CoinGeckoMarketMapJSON, &CoinGeckoMarketMap),
+		unmarshalValidate("Osmosis", OsmosisMarketMapJSON, &OsmosisMarketMap),
+		unmarshalValidate("Polymarket", PolymarketMarketMapJSON, &PolymarketMarketMap),
+	)
+	if err != nil {
 		panic(err)
 	}
+}
 
-	// Unmarshal the RaydiumMarketMapJSON into RaydiumMarketMap.
-	if err := json.Unmarshal([]byte(RaydiumMarketMapJSON), &RaydiumMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal RaydiumMarketMapJSON: %v\n", err)
-		panic(err)
+// unmarshalValidate unmarshalls data into mm and then calls ValidateBasic.
+func unmarshalValidate(name, data string, mm *mmtypes.MarketMap) error {
+	if err := json.Unmarshal([]byte(data), mm); err != nil {
+		return fmt.Errorf("failed to unmarshal %sMarketMap: %w", name, err)
 	}
-
-	if err := RaydiumMarketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to validate RaydiumMarketMap: %v\n", err)
-		panic(err)
+	if err := mm.ValidateBasic(); err != nil {
+		return fmt.Errorf("%sMarketMap failed validation: %w", name, err)
 	}
-
-	// Unmarshal the CoreMarketMapJSON into CoreMarketMap.
-	if err := json.Unmarshal([]byte(CoreMarketMapJSON), &CoreMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal CoreMarketMapJSON: %v\n", err)
-		panic(err)
-	}
-
-	if err := CoreMarketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to validate CoreMarketMap: %v\n", err)
-		panic(err)
-	}
-
-	// Unmarshal the UniswapV3BaseMarketMapJSON into UniswapV3BaseMarketMap.
-	if err := json.Unmarshal([]byte(UniswapV3BaseMarketMapJSON), &UniswapV3BaseMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal UniswapV3BaseMarketMapJSON: %v\n", err)
-		panic(err)
-	}
-
-	if err := UniswapV3BaseMarketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to validate UniswapV3BaseMarketMap: %v\n", err)
-		panic(err)
-	}
-
-	// Unmarshal the CoinGeckoMarketMapJSON into CoinGeckoMarketMap.
-	if err := json.Unmarshal([]byte(CoinGeckoMarketMapJSON), &CoinGeckoMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal CoinGeckoMarketMapJSON: %v\n", err)
-		panic(err)
-	}
-
-	if err := CoinGeckoMarketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to validate CoinGeckoMarketMap: %v\n", err)
-		panic(err)
-	}
-
-	// Unmarshal the OsmosisMarketMapJSON into OsmosisMarketMap.
-	if err := json.Unmarshal([]byte(OsmosisMarketMapJSON), &OsmosisMarketMap); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to unmarshal OsmosisMarketMapJSON: %v\n", err)
-		panic(err)
-	}
-
-	if err := OsmosisMarketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to validate OsmosisMarketMap: %v\n", err)
-		panic(err)
-	}
+	return nil
 }
