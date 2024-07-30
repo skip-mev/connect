@@ -16,7 +16,7 @@ import (
 )
 
 var candidateWinsElectionToken = types.DefaultProviderTicker{
-	OffChainTicker: "21742633143463906290569050155826241533067272736897614950488156847949938836455",
+	OffChainTicker: "95128817762909535143571435260705470642391662537976312011260538371392879420759",
 }
 
 func TestCreateURL(t *testing.T) {
@@ -86,13 +86,13 @@ func TestParseResponse(t *testing.T) {
 			),
 		},
 		{
-			name:         "1.00 should resolve to 0.999",
+			name:         "1.00 should resolve to 0.999...",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
 			responseBody: `{ "price": "1.00" }`,
 			expectedResponse: types.NewPriceResponse(
 				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(0.9999999), time.Now().UTC()),
+					id: types.NewPriceResult(big.NewFloat(priceAdjustment), time.Now().UTC()),
 				},
 				nil,
 			),
