@@ -19,8 +19,9 @@ const (
 	// URL is the base URL of the Polymarket CLOB API endpoint for the Price of a given token ID.
 	URL = "https://clob.polymarket.com/price?token_id=%s&side=BUY"
 
-	// priceAdjustment is the value the price gets set to in the event of price == 1.00.
-	priceAdjustment = 0.9999999
+	// priceAdjustmentMax is the value the price gets set to in the event of price == 1.00.
+	priceAdjustmentMax = .9999
+	priceAdjustmentMin = .00001
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
@@ -101,10 +102,15 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 		)
 	}
 
-	// we don't ever want to return 1.00. Set to priceAdjustment.
+	// set price to priceAdjustmentMax if its 1.00
 	if big.NewFloat(1.00).Cmp(price) == 0 {
-		price = new(big.Float).SetFloat64(priceAdjustment)
+		price = new(big.Float).SetFloat64(priceAdjustmentMax)
 	}
+	// switch price to priceAdjustmentMin if its 0.00.
+	if big.NewFloat(0.00).Cmp(price) == 0 {
+		price = new(big.Float).SetFloat64(priceAdjustmentMin)
+	}
+
 	resolved := types.ResolvedPrices{
 		ids[0]: types.NewPriceResult(price, time.Now().UTC()),
 	}

@@ -92,7 +92,19 @@ func TestParseResponse(t *testing.T) {
 			responseBody: `{ "price": "1.00" }`,
 			expectedResponse: types.NewPriceResponse(
 				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(priceAdjustment), time.Now().UTC()),
+					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMax), time.Now().UTC()),
+				},
+				nil,
+			),
+		},
+		{
+			name:         "0.00 should resolve to 0.00001",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			noError:      true,
+			responseBody: `{ "price": "0.00" }`,
+			expectedResponse: types.NewPriceResponse(
+				types.ResolvedPrices{
+					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMin), time.Now().UTC()),
 				},
 				nil,
 			),
