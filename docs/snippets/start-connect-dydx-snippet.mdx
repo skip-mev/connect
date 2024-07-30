@@ -12,14 +12,7 @@ We will also supply an edited configuration for the `dydx_migration_api` which f
 {
    "providers":{
       "dydx_migration_api":{
-         "name":"dydx_migration_api",
          "api":{
-            "enabled":true,
-            "timeout":20000000000,
-            "interval":10000000000,
-            "reconnectTimeout":2000000000,
-            "maxQueries":1,
-            "atomic":true,
             "endpoints":[
                {
                   "url":"http://<YOUR NODE REST API ENDPOINT>"
@@ -27,11 +20,8 @@ We will also supply an edited configuration for the `dydx_migration_api` which f
                {
                   "url":"<YOUR NODE GRPC ENDPOINT>:<YOUR NODE GRPC PORT>"
                }
-            ],
-            "batchSize":0,
-            "name":"dydx_migration_api"
-         },
-         "type":"market_map_provider"
+            ]
+         }
       },
       "raydium_api":{
          "api":{
