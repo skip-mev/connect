@@ -1,0 +1,81 @@
+---
+description: Reference document for configurable values in Connect and Applications.
+title: Configuration
+icon: gear
+---
+
+This document serves as a reference for ways to further configure the Connect sidecar, as well as in depth explanations of the application node's configuration.
+
+## Connect Sidecar
+
+Connect can be configured by both flags and environment variables.
+
+### Env Vars
+
+The following values are read via environment variables:
+
+| Key                                             | Default          | Description                                                                                                                                        |
+|-------------------------------------------------|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SLINKY_CONFIG_HOST`                            | `"0.0.0.0"`      | The address Connect will serve requests from. WARNING: changing this value requires updating the `oracle_address` in the `app.toml` configuration. |
+| `SLINKY_CONFIG_PORT`                            | `"8080"`         | The port Connect will serve requests from. WARNING: changing this value requires updating the `oracle_address` in the `app.toml` configuration.    |
+| `SLINKY_CONFIG_METRICS_ENABLED`                 | `"true"`         | Enables prometheus metrics.                                                                                                                        |
+| `SLINKY_CONFIG_METRICS_PROMETHEUSSERVERADDRESS` | `"0.0.0.0:8002"` | The address of your prometheus server instance.                                                                                                    |
+
+
+### Flags
+
+| Flag                             | Default Value    | Description                                                                                                                                                             |
+|----------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--market-map-endpoint`          | `""`             | The listen-to endpoint for market-map. This is typically the blockchain node's gRPC endpoint.                                                                           |
+| `--oracle-config`                | `""`             | Overrides part of the Oracle configuration. This does not override the _entire_ configuration, only the part of the configuration specified in the json file passed in. |
+| `--run-pprof`                    | `false`          | Run pprof server.                                                                                                                                                       |
+| `--pprof-port`                   | `"6060"`         | Port for the pprof server to listen on.                                                                                                                                 |
+| `--log-std-out-level`            | `"info"`         | Log level (debug, info, warn, error, dpanic, panic, fatal).                                                                                                             |
+| `--log-file-level`               | `"info"`         | Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).                                                                                         |
+| `--log-file`                     | `"sidecar.log"`  | Write logs to a file.                                                                                                                                                   |
+| `--log-max-size`                 | `100`            | Maximum size in megabytes before log is rotated.                                                                                                                        |
+| `--log-max-backups`              | `1`              | Maximum number of old log files to retain.                                                                                                                              |
+| `--log-max-age`                  | `3`              | Maximum number of days to retain an old log file.                                                                                                                       |
+| `--log-file-disable-compression` | `false`          | Compress rotated log files.                                                                                                                                             |
+| `--log-disable-file-rotation`    | `false`          | Disable writing logs to a file.                                                                                                                                         |
+| `--metrics-enabled`              | `true`           | Enables the Oracle client metrics.                                                                                                                                      |
+| `--metrics-prometheus-address`   | `"0.0.0.0:8002"` | Sets the Prometheus server address for the Oracle client metrics.                                                                                                       |
+| `--host`                         | `"0.0.0.0"`      | The address the Oracle will serve from.                                                                                                                                 |
+| `--port`                         | `"8080"`         | The port the Oracle will serve from.                                                                                                                                    |
+| `--update-interval`              | `250000000`      | The interval at which the oracle will fetch prices from providers.                                                                                                      |
+| `--max-price-age`                | `120000000000`   | Maximum age of a price that the oracle will consider valid.                                                                                                             |
+
+## Application Node
+
+The blockchain application is configured under the `[oracle]` heading in your application's `app.toml` file.
+
+```toml app.toml
+# ... other sections
+
+[oracle]
+# Enabled indicates whether the oracle is enabled.
+enabled = "true"
+
+# Oracle Address is the URL of the out of process oracle sidecar. This is used to
+# connect to the oracle sidecar when the application boots up.
+oracle_address = "CONNECT_ADDRESS_HERE:CONNECT_PORT_HERE" # default Connect port is 8080.
+
+# Client Timeout is the time that the application is willing to wait for responses from
+# the oracle before timing out.
+client_timeout = "250ms"
+
+# MetricsEnabled determines whether oracle metrics are enabled. Specifically,
+# this enables instrumentation of the oracle client and the interaction between
+# the oracle and the app.
+metrics_enabled = "true"
+
+# PriceTTL is the maximum age of the latest price response before it is considered stale.
+# The recommended max age is 10 seconds (10s). If this is greater than 1 minute (1m), the app
+# will not start.
+price_ttl = "10s"
+
+# Interval is the time between each price update request. The recommended interval
+# is the block time of the chain. Otherwise, 1.5 seconds (1500ms) is a good default. If this
+# is greater than 1 minute (1m), the app will not start.
+interval = "1500ms"
+```

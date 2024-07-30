@@ -1,0 +1,114 @@
+---
+description: Connect Validator Quickstart
+title: Quickstart
+icon: person-running-fast
+---
+
+import QuickStartSnippet from '/snippets/start-connect-snippet.mdx';
+import QuickStartDYDXSnippet from '/snippets/start-connect-dydx-snippet.mdx';
+
+
+<Info>
+    The following instructions assumes you are running a single validator full node with a remote instance of Connect. If you are not running a full node, you do not need to run Connect.
+</Info>
+
+This document will guide you through setting up and running Connect, as well as configuring your node to receive data from Connect.
+
+## Installation
+
+### Using Curl
+
+```bash
+curl -sSL https://raw.githubusercontent.com/skip-mev/slinky/main/scripts/install.sh | sudo bash
+```
+
+### From GitHub Releases
+
+Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and download the binary that matches your machine's architecture.
+
+### From Source
+
+To install from source, you'll need [Git](https://git-scm.com/) and [Go](https://go.dev/).
+
+Enter the commands below to install the binary.
+```shell
+git clone git@github.com:skip-mev/slinky.git
+cd slinky
+git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+make install
+```
+
+## Verify Installation
+
+Let's check Connect is properly installed on your machine.
+You should see the version printed in your terminal after running the following command:
+```shell
+slinky version
+```
+
+## Run Connect Sidecar
+
+<Tabs>
+    <Tab title="Cosmos SDK Blockchains">
+        <QuickStartSnippet />
+    </Tab>
+    <Tab title="dYdX Blockchain">
+        <QuickStartDYDXSnippet />
+    </Tab>
+    <Tab title="Neutron Blockchain">
+        **The minimum required Connect version for the Neutron chain is `v1.0.3+`.**
+        <QuickStartSnippet />
+    </Tab>
+</Tabs>
+
+
+
+### Verify Connect
+
+To verify Connect is working, run the following command:
+
+```shell
+curl 'http://localhost:8080/slinky/oracle/v1/prices' | jq .
+```
+
+The output of the command should look similar to this:
+
+```json
+{
+  "prices": {
+    "ATOM/USD": "920650000",
+    "BITCOIN/USD": "3980283250000",
+    "DYDX/USD": "273682500",
+    "ETHEREUM/BITCOIN": "5842000",
+    "ETHEREUM/USD": "232550500000",
+    "POLKADOT/USD": "638800000",
+    "SOLANA/USD": "8430350000"
+  },
+  "timestamp": "2024-01-23T01:15:09.776890Z"
+}
+
+```
+
+## Run Application Node
+
+In order for the application to get prices from Connect, we need to add the following lines under the `[oracle]` heading in the `app.toml`.
+
+Remember to change the `oracle_address` value to the address of your Connect sidecar.
+
+```toml app.toml
+# ... other sections
+
+[oracle]
+enabled = "true" # if you are not running a full node, set this to "false"
+oracle_address = "<YOUR_CONNECT_SIDECAR>:8080"
+client_timeout = "250ms"
+metrics_enabled = "true"
+interval = "1500ms"
+price_ttl = "10s"
+```
+
+Once your `app.toml` is configured, you may start your node as normal.
+
+## Additional Steps
+
+Using a remote signer? Have a distributed validator setup? Check out the [advanced setups](advanced-setups) to learn how to properly configure your validator infrastructure.

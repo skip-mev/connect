@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/skip-mev/slinky/cmd/build"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/pkg/sync"
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
@@ -174,6 +175,7 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 		resCh <- &types.QueryPricesResponse{
 			Prices:    ToReqPrices(prices),
 			Timestamp: timestamp,
+			Version:   build.Build,
 		}
 	}()
 
@@ -191,6 +193,11 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 func (os *OracleServer) MarketMap(_ context.Context, _ *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error) {
 	mm := os.o.GetMarketMap()
 	return &types.QueryMarketMapResponse{MarketMap: &mm}, nil
+}
+
+// Version returns the version of the oracle server.
+func (os *OracleServer) Version(_ context.Context, _ *types.QueryVersionRequest) (*types.QueryVersionResponse, error) {
+	return &types.QueryVersionResponse{Version: build.Build}, nil
 }
 
 // Close closes the underlying oracle server, and blocks until all open requests have been satisfied.

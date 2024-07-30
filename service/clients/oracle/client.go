@@ -11,9 +11,8 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
-
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
 	"github.com/skip-mev/slinky/service/metrics"
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
@@ -67,6 +66,27 @@ func NewClientFromConfig(
 	}
 
 	return NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
+}
+
+// NewPriceDaemonClientFromConfig creates a new grpc client of the oracle service with the given
+// app configuration. This returns an error if the configuration is invalid. Specifically, this
+// client will be a daemon client that has prices available in constant time.
+func NewPriceDaemonClientFromConfig(
+	cfg config.AppConfig,
+	logger log.Logger,
+	metrics metrics.Metrics,
+	opts ...Option,
+) (OracleClient, error) {
+	if !cfg.Enabled {
+		return &NoOpClient{}, nil
+	}
+
+	client, err := NewClientFromConfig(cfg, logger, metrics, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPriceDaemon(logger, cfg, client)
 }
 
 // NewClient creates a new grpc client of the oracle service with the given
@@ -220,4 +240,27 @@ func (c *GRPCClient) MarketMap(ctx context.Context, req *types.QueryMarketMapReq
 	}
 
 	return c.client.MarketMap(ctx, req, grpc.WaitForReady(true))
+}
+
+// Version returns the version of the oracle service.
+func (c *GRPCClient) Version(ctx context.Context, req *types.QueryVersionRequest, _ ...grpc.CallOption) (res *types.QueryVersionResponse, err error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	start := time.Now()
+	defer func() {
+		// Observe the duration of the call as well as the error.
+		c.metrics.ObserveOracleResponseLatency(time.Since(start))
+		c.metrics.AddOracleResponse(metrics.StatusFromError(err))
+	}()
+
+	// set deadline on the context
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+
+	if c.client == nil {
+		return nil, fmt.Errorf("oracle client not started")
+	}
+
+	return c.client.Version(ctx, req, grpc.WaitForReady(true))
 }

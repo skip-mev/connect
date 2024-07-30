@@ -1,0 +1,55 @@
+---
+description: Frequently asked questions about Connect.
+title: FAQs
+icon: circle-question
+---
+
+<AccordionGroup>
+    <Accordion title="Can I run Connect on the same machine as my validator?">
+        Yes, you can run it anywhere - but please defer to any chain-specific recommendations if there are any!
+    </Accordion>
+
+    <Accordion title="Can I use the same Connect sidecar for different chains?">
+        We are currently working on supporting this feature. It will be available in a future release.
+    </Accordion>
+
+    <Accordion title="Does Connect store historical prices?">
+        No. Prices are stored in `x/oracle` module, and only stores the most recently posted price. However, you can use blockchain indexers or inspect past blocks to see the prices committed on previous heights.
+    </Accordion>
+
+    <Accordion title="How often are prices updated on-chain?">
+        Prices within Connect are committed on a one-block delay, since validators use the vote extensions from block n-1 to securely submit their price data for block n.
+
+        Most of the time, prices will update every single block. Price updates happen when over 2/3 of validators are correctly running the Connect sidecar.
+
+        Prices will not update on any given block if:
+
+        - The market is disabled within x/marketmap
+        - Less than 2/3s of validators (by stake weight) contributed to a price update. This can happen if not enough validators run Connect, or there is a massive, widespread outage across providers.
+    </Accordion>
+
+    <Accordion title="How do I upgrade the connect binary?">
+        Upgrading the Connect binary can be done out of band of the chain’s binary. If you have a load balancer, CNAME, etc., in front of your sidecar you can simply start up the new version and switch out which version traffic is being directed to during live chain validation.
+
+        If you are running the Connect sidecar in a container you can shut down the container, pull the updated container image and relaunch your container to update.
+
+        If you are running the binary via systemd or other management tool, you will need to stop the process and re-launch using the newly released binary.
+
+        The node will still be able to participate in consensus without the sidecar, and will begin attaching prices to blocks once Connect is available. In the worst case, an upgrade in any of these manners will cause you to miss including vote extensions for a single block which should have no negative effects on you or the network.
+    </Accordion>
+
+    <Accordion title="Can I get slashed for running Connect?">
+        No.
+    </Accordion>
+
+    <Accordion title="Does Connect take up a lot of resources?">
+        No, it's a very lightweight binary.
+    </Accordion>
+
+    <Accordion title="What do I do if I experience trouble running Connect?">
+        If you're a validator and need help getting your infrastructure setup, head over to our [Discord](https://discord.com/invite/hFeHVAE26P) and let us know what chain you're validating for in the `#waiting-room` channel.
+    </Accordion>
+</AccordionGroup>
+
+
+If you don't see your question here, please reach out to us on [Discord](https://discord.com/invite/hFeHVAE26P).
