@@ -230,7 +230,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
@@ -242,8 +242,8 @@ require (
 	golang.org/x/tools v0.23.0 // indirect
 	google.golang.org/api v0.176.1 // indirect
 	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240709173604-40e1e62336c5 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
