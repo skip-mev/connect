@@ -10,7 +10,7 @@ Polymarket uses [conditional outcome tokens](https://docs.gnosis.io/conditionalt
 
 Tickers take the form of the `<market_slug>?<outcome>/USD`:
 
-Example: `WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD`
+Example: `WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES/USD`
 
 The offchain ticker is expected to be _just_ the token_id.
 
@@ -30,10 +30,10 @@ Below is an example of a market config for a single Polymarket token.
 ```json
  {
   "markets": {
-    "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD": {
+    "WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES/USD": {
       "ticker": {
         "currency_pair": {
-          "Base": "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
+          "Base": "WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES",
           "Quote": "USD"
         },
         "decimals": 3,

@@ -9718,10 +9718,10 @@ var (
 	PolymarketMarketMapJSON = ` 
 {
    "markets":{
-      "WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES/USD":{
+      "WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES/USD":{
          "ticker":{
             "currency_pair":{
-               "Base":"WILL-BERNIE-SANDERS-WIN-THE-2024-US-PRESIDENTIAL-ELECTION?YES",
+               "Base":"WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES",
                "Quote":"USD"
             },
             "decimals":3,
