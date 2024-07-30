@@ -21,6 +21,7 @@ var (
 	useUniswapV3Base = flag.Bool("use-uniswapv3-base", false, "use uniswapv3 base markets")
 	useCoinGecko     = flag.Bool("use-coingecko", false, "use coingecko markets")
 	useCoinMarketCap = flag.Bool("use-coinmarketcap", false, "use coinmarketcap markets")
+	useOsmosis       = flag.Bool("use-osmosis", false, "use osmosis markets")
 	tempFile         = flag.String("temp-file", "markets.json", "temporary file to store the market map")
 )
 
@@ -85,6 +86,11 @@ func main() {
 	if *useCoinMarketCap {
 		fmt.Fprintf(flag.CommandLine.Output(), "Using coinmarketcap markets\n")
 		marketMap = mergeMarketMaps(marketMap, marketmaps.CoinMarketCapMarketMap)
+	}
+
+	if *useOsmosis {
+		fmt.Fprintf(flag.CommandLine.Output(), "Using osmosis markets\n")
+		marketMap = mergeMarketMaps(marketMap, marketmaps.OsmosisMarketMap)
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {

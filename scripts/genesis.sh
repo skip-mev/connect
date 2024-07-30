@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -eux
 
-go run $SCRIPT_DIR/genesis.go --use-core=$USE_CORE_MARKETS --use-raydium=$USE_RAYDIUM_MARKETS --use-uniswapv3-base=$USE_UNISWAPV3_BASE_MARKETS --use-coingecko=$USE_COINGECKO_MARKETS --use-coinmarketcap=$USE_COINMARKETCAP_MARKETS --temp-file=markets.json
+go run $SCRIPT_DIR/genesis.go --use-core=$USE_CORE_MARKETS --use-raydium=$USE_RAYDIUM_MARKETS \
+--use-uniswapv3-base=$USE_UNISWAPV3_BASE_MARKETS --use-coingecko=$USE_COINGECKO_MARKETS \
+--use-coinmarketcap=$USE_COINMARKETCAP_MARKETS --use-osmosis=$USE_OSMOSIS_MARKETS --temp-file=markets.json
 MARKETS=$(cat markets.json)
 
 echo "MARKETS content: $MARKETS"
@@ -36,9 +38,9 @@ for i in $(env | grep -v "_BALANCE" | grep -o "GENESIS_ACCOUNT_[0-9]*" | sort -n
     ./build/slinkyd genesis add-genesis-account $ACCOUNT $BALANCE --home "$HOMEDIR" --keyring-backend test
 done
 
-# add the MARKET_MAP_AUTHORITY environment variable address to the genesis file (if there is one)
-MARKET_MAP_AUTHORITY=$(printenv MARKET_MAP_AUTHORITY)
-if [ -n "$MARKET_MAP_AUTHORITY" ]; then
+# Check if MARKET_MAP_AUTHORITY environment variable exists and is not empty
+if [ -n "${MARKET_MAP_AUTHORITY+x}" ] && [ -n "$MARKET_MAP_AUTHORITY" ]; then
+    MARKET_MAP_AUTHORITY=$(printenv MARKET_MAP_AUTHORITY)
     jq --arg authority "$MARKET_MAP_AUTHORITY" \
     '.app_state["marketmap"]["params"]["market_authorities"] += [$authority]' \
     "$GENESIS" > "$GENESIS_TMP" && mv "$GENESIS_TMP" "$GENESIS"

@@ -8,23 +8,24 @@ import (
 type ErrorCode int
 
 const (
-	OK                         ErrorCode = 0
-	ErrorRateLimitExceeded     ErrorCode = 1
-	ErrorUnknown               ErrorCode = 2
-	ErrorUnknownPair           ErrorCode = 3
-	ErrorUnableToCreateURL     ErrorCode = 4
-	ErrorWebsocketStartFail    ErrorCode = 5
-	ErrorInvalidAPIChains      ErrorCode = 6
-	ErrorNoResponse            ErrorCode = 7
-	ErrorInvalidResponse       ErrorCode = 8
-	ErrorInvalidChainID        ErrorCode = 9
-	ErrorFailedToParsePrice    ErrorCode = 10
-	ErrorInvalidWebSocketTopic ErrorCode = 11
-	ErrorFailedToDecode        ErrorCode = 12
-	ErrorAPIGeneral            ErrorCode = 13
-	ErrorWebSocketGeneral      ErrorCode = 14
-	ErrorGRPCGeneral           ErrorCode = 15
-	ErrorNoExistingPrice       ErrorCode = 16
+	OK                          ErrorCode = 0
+	ErrorRateLimitExceeded      ErrorCode = 1
+	ErrorUnknown                ErrorCode = 2
+	ErrorUnknownPair            ErrorCode = 3
+	ErrorUnableToCreateURL      ErrorCode = 4
+	ErrorWebsocketStartFail     ErrorCode = 5
+	ErrorInvalidAPIChains       ErrorCode = 6
+	ErrorNoResponse             ErrorCode = 7
+	ErrorInvalidResponse        ErrorCode = 8
+	ErrorInvalidChainID         ErrorCode = 9
+	ErrorFailedToParsePrice     ErrorCode = 10
+	ErrorInvalidWebSocketTopic  ErrorCode = 11
+	ErrorFailedToDecode         ErrorCode = 12
+	ErrorAPIGeneral             ErrorCode = 13
+	ErrorWebSocketGeneral       ErrorCode = 14
+	ErrorGRPCGeneral            ErrorCode = 15
+	ErrorNoExistingPrice        ErrorCode = 16
+	ErrorTickerMetadataNotFound ErrorCode = 17
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -57,11 +58,13 @@ func (e ErrorCode) Error() error {
 	case ErrorUnableToCreateURL:
 		return errors.New("failed to create URL for request")
 	case ErrorWebsocketStartFail:
-		return errors.New("failed to start websocker connection")
+		return errors.New("failed to start websocket connection")
 	case ErrorGRPCGeneral:
 		return errors.New("general grpc error")
 	case ErrorNoExistingPrice:
 		return errors.New("no existing price")
+	case ErrorTickerMetadataNotFound:
+		return errors.New("ticker metadata not found")
 	case ErrorUnknown:
 		fallthrough
 	default:

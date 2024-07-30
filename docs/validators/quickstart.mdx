@@ -16,6 +16,12 @@ This document will guide you through setting up and running Connect, as well as 
 
 ## Installation
 
+### Using Curl
+
+```bash
+curl -sSL https://raw.githubusercontent.com/skip-mev/slinky/main/scripts/install.sh | sudo bash
+```
+
 ### From GitHub Releases
 
 Head over to our [GitHub Releases](https://github.com/skip-mev/slinky/releases) page and download the binary that matches your machine's architecture.
@@ -28,6 +34,7 @@ Enter the commands below to install the binary.
 ```shell
 git clone git@github.com:skip-mev/slinky.git
 cd slinky
+git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
 make install
 ```
 
