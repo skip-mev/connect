@@ -1,10 +1,12 @@
 module github.com/skip-mev/slinky
 
-go 1.22
+go 1.22.2
+
+toolchain go1.22.5
 
 require (
 	cosmossdk.io/api v0.7.5
-	cosmossdk.io/client/v2 v2.0.0-beta.1
+	cosmossdk.io/client/v2 v2.0.0-beta.4
 	cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core v0.11.0
 	cosmossdk.io/depinject v1.0.0
@@ -23,7 +25,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.8
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.5.0
-	github.com/cosmos/interchain-security/v5 v5.1.0
+	github.com/cosmos/interchain-security/v5 v5.1.1
 	github.com/ethereum/go-ethereum v1.14.7
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
@@ -35,7 +37,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/klauspost/compress v1.17.9
 	github.com/prometheus/client_golang v1.19.1
-	github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
+	github.com/skip-mev/chaintestutil v0.0.0-20240514161515-056d7ba45610
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
