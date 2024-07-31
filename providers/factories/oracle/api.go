@@ -20,6 +20,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/apis/polymarket"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
@@ -95,6 +96,8 @@ func APIQueryHandlerFactory(
 		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(logger, cfg.API, metrics)
 	case providerName == osmosis.Name:
 		apiPriceFetcher, err = osmosis.NewAPIPriceFetcher(logger, cfg.API, metrics)
+	case providerName == polymarket.Name:
+		apiDataHandler, err = polymarket.NewAPIHandler(cfg.API)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
