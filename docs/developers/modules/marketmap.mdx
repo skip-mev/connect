@@ -1,0 +1,307 @@
+---
+description: Reference documentation for the Marketmap module.
+title: Marketmap
+icon: message-dollar
+---
+
+## Overview
+
+The `Marketmap` module is responsible for managing and storing a configuration that informs the Connect oracle of which markets to fetch data for, and which providers to use to fetch them.
+
+## Concepts
+
+### Authority, Admin, And MarketAuthority
+
+The `Marketmap` module contains three levels of access to interact with the module.
+
+#### Authority
+
+The `Authority` is the only account allowed to change the module's [Params](#params). By default, this account is set to the governance address. However, you may edit the configuration of the module to be any address.
+
+#### Admin
+
+The `Admin` can only _remove_ an address from the market authority list via `RemoveMarketAuthorities`.
+
+#### MarketAuthority
+
+A `MarketAuthority` is assigned by the module `Authority`. There can be any number of market authorities. The market authorities are able to create and update markets in the `Marketmap`. Specifically, only a `MarketAuthority` may send the following transactions:
+
+* CreateMarkets
+* UpdateMarkets
+* UpsertMarkets
+
+### Market
+
+A market consists of a `Ticker` (i.e. BTC/USD) and a list of `ProviderConfig`s. A `Ticker` contains data about a specific currency pair. A `ProviderConfig` contains data that informs the Oracle of how to query for the currency pair in the `Ticker`.
+
+```go
+// Market encapsulates a Ticker and its provider-specific configuration.
+type Market struct {
+	// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
+	// price feed is scaled to a number of decimal places and has a minimum number
+	// of providers required to consider the ticker valid.
+	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
+	// ProviderConfigs is the list of provider-specific configs for this Market.
+	ProviderConfigs []ProviderConfig `protobuf:"bytes,2,rep,name=provider_configs,json=providerConfigs,proto3" json:"provider_configs"`
+}
+```
+
+### ProviderConfig
+
+The `Name` field refers to one of the providers listed in the [Providers](/developers/providers) document.
+
+```go
+type ProviderConfig struct {
+	// Name corresponds to the name of the provider for which the configuration is
+	// being set.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
+	// The off-chain ticker is unique to a given provider and is used to fetch the
+	// price of the ticker from the provider.
+	OffChainTicker string `protobuf:"bytes,2,opt,name=off_chain_ticker,json=offChainTicker,proto3" json:"off_chain_ticker,omitempty"`
+	// NormalizeByPair is the currency pair for this ticker to be normalized by.
+	// For example, if the desired Ticker is BTC/USD, this market could be reached
+	// using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
+	// optional and nullable.
+	NormalizeByPair *types.CurrencyPair `protobuf:"bytes,3,opt,name=normalize_by_pair,json=normalizeByPair,proto3" json:"normalize_by_pair,omitempty"`
+	// Invert is a boolean indicating if the BASE and QUOTE of the market should
+	// be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
+	Invert bool `protobuf:"varint,4,opt,name=invert,proto3" json:"invert,omitempty"`
+	// MetadataJSON is a string of JSON that encodes any extra configuration
+	// for the given provider config.
+	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
+}
+```
+
+### Ticker
+
+```go
+// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
+// feed is scaled to a number of decimal places and has a minimum number of
+// providers required to consider the ticker valid.
+type Ticker struct {
+	// CurrencyPair is the currency pair for this ticker.
+	CurrencyPair types.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair"`
+	// Decimals is the number of decimal places for the ticker. The number of
+	// decimal places is used to convert the price to a human-readable format.
+	Decimals uint64 `protobuf:"varint,2,opt,name=decimals,proto3" json:"decimals,omitempty"`
+	// MinProviderCount is the minimum number of providers required to consider
+	// the ticker valid.
+	MinProviderCount uint64 `protobuf:"varint,3,opt,name=min_provider_count,json=minProviderCount,proto3" json:"min_provider_count,omitempty"`
+	// Enabled is the flag that denotes if the Ticker is enabled for price
+	// fetching by an oracle.
+	Enabled bool `protobuf:"varint,14,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// MetadataJSON is a string of JSON that encodes any extra configuration
+	// for the given ticker.
+	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
+}
+```
+
+### Params
+
+`Params` define the authenticated addresses that can mutate the state of the `Marketmap`.
+
+```go
+// Params defines the parameters for the x/marketmap module.
+type Params struct {
+	// MarketAuthorities is the list of authority accounts that are able to
+	// control updating the marketmap.
+	MarketAuthorities []string `protobuf:"bytes,1,rep,name=market_authorities,json=marketAuthorities,proto3" json:"market_authorities,omitempty"`
+	// Admin is an address that can remove addresses from the MarketAuthorities
+	// list. Only governance can add to the MarketAuthorities or change the Admin.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
+}
+```
+
+## Messages
+
+The following messages can be included in [transactions](https://docs.cosmos.network/main/learn/advanced/transactions) to mutate the state of the `Marketmap`.
+
+### MsgCreateMarkets
+
+`MsgCreateMarket` creates a new `Market`.
+
+```go
+// MsgCreateMarkets defines a message carrying a payload for creating markets in
+// the x/marketmap module.
+type MsgCreateMarkets struct {
+	// Authority is the signer of this transaction.  This authority must be
+	// authorized by the module to execute the message.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// CreateMarkets is the list of all markets to be created for the given
+	// transaction.
+	CreateMarkets []Market `protobuf:"bytes,2,rep,name=create_markets,json=createMarkets,proto3" json:"create_markets"`
+}
+```
+
+### MsgUpdateMarkets
+
+`MsgUpdateMarkets` updates an existing `Market`.
+
+```go
+// MsgUpdateMarkets defines a message carrying a payload for updating the
+// x/marketmap module.
+type MsgUpdateMarkets struct {
+	// Authority is the signer of this transaction.  This authority must be
+	// authorized by the module to execute the message.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// UpdateMarkets is the list of all markets to be updated for the given
+	// transaction.
+	UpdateMarkets []Market `protobuf:"bytes,2,rep,name=update_markets,json=updateMarkets,proto3" json:"update_markets"`
+}
+```
+
+### MsgUpsertMarkets
+
+`MsgUpsertMarkets` will update a `Market` if one already exists. If a `Market` does not exist, it will create one instead.
+
+```go
+// MsgUpsertMarkets defines a message carrying a payload for performing market upserts (update or
+// create if does not exist) in the x/marketmap module.
+type MsgUpsertMarkets struct {
+	// Authority is the signer of this transaction.  This authority must be
+	// authorized by the module to execute the message.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// CreateMarkets is the list of all markets to be created for the given
+	// transaction.
+	Markets []Market `protobuf:"bytes,2,rep,name=markets,proto3" json:"markets"`
+}
+```
+
+### MsgParams
+
+`MsgParams` updates the `Marketmap` parameters.
+
+```go
+// MsgParams defines the Msg/Params request type. It contains the
+// new parameters for the x/marketmap module.
+type MsgParams struct {
+	// Params defines the new parameters for the x/marketmap module.
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	// Authority defines the authority that is updating the x/marketmap module
+	// parameters.
+	Authority string `protobuf:"bytes,2,opt,name=authority,proto3" json:"authority,omitempty"`
+}
+```
+
+### MsgRemoveMarketAuthorities
+
+`MsgRemoveMarketAuthorities` removes a market authority from the `Params`.
+
+```go
+// MsgRemoveMarketAuthorities defines the Msg/RemoveMarketAuthoritiesResponse
+// request type. It contains the new addresses to remove from the list of
+// authorities
+type MsgRemoveMarketAuthorities struct {
+	// RemoveAddresses is the list of addresses to remove.
+	RemoveAddresses []string `protobuf:"bytes,1,rep,name=remove_addresses,json=removeAddresses,proto3" json:"remove_addresses,omitempty"`
+	// Admin defines the authority that is the x/marketmap
+	// Admin account.  This account is set in the module parameters.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
+}
+```
+
+## Queries
+
+The following [queries](https://tutorials.cosmos.network/academy/2-cosmos-concepts/9-queries.html) are available to retrieve data about the state of the `Marketmap`.
+
+### MarketMap
+
+The `Marketmap` query returns the full `Marketmap` in state.
+
+**Request:**
+
+```go
+// MarketMapRequest is the query request for the MarketMap query.
+// It takes no arguments.
+type MarketMapRequest struct {}
+```
+
+**Response:**
+
+```go
+// MarketMapResponse is the query response for the MarketMap query.
+type MarketMapResponse struct {
+	// MarketMap defines the global set of market configurations for all providers
+	// and markets.
+	MarketMap MarketMap `protobuf:"bytes,1,opt,name=market_map,json=marketMap,proto3" json:"market_map"`
+	// LastUpdated is the last block height that the market map was updated.
+	// This field can be used as an optimization for clients checking if there
+	// is a new update to the map.
+	LastUpdated uint64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	// ChainId is the chain identifier for the market map.
+	ChainId string `protobuf:"bytes,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+```
+
+### Market
+
+Market returns a specific `Market` from the `Marketmap`.
+
+**Request:**
+
+```go
+// MarketRequest is the query request for the Market query.
+// It takes the currency pair of the market as an argument.
+type MarketRequest struct {
+	// CurrencyPair is the currency pair associated with the market being
+	// requested.
+	CurrencyPair types.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair"`
+}
+```
+
+**Response:**
+
+```go
+// MarketResponse is the query response for the Market query.
+type MarketResponse struct {
+	// Market is the configuration of a single market to be price-fetched for.
+	Market Market `protobuf:"bytes,1,opt,name=market,proto3" json:"market"`
+}
+```
+
+### LastUpdated
+
+LastUpdated returns the height at which the `Marketmap` was last updated.
+
+**Request:**
+
+```go
+// LastUpdatedRequest is the request type for the Query/LastUpdated RPC
+// method.
+type LastUpdatedRequest struct {}
+```
+
+**Response:**
+
+```go
+// LastUpdatedResponse is the response type for the Query/LastUpdated RPC
+// method.
+type LastUpdatedResponse struct {
+	LastUpdated uint64 `protobuf:"varint,1,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+}
+```
+
+### Params
+
+Params returns the `Marketmap`'s `Params`.
+
+**Request:**
+
+```go
+// ParamsRequest is the request type for the Query/Params RPC method.
+type ParamsRequest struct {}
+```
+
+**Response:**
+
+```go
+// ParamsResponse is the response type for the Query/Params RPC method.
+type ParamsResponse struct {
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+}
+```
+
+## Proto Definitions
+
+Proto definitions for all types, queries, and messages can be found [here](https://github.com/skip-mev/slinky/tree/main/proto/slinky/marketmap).
