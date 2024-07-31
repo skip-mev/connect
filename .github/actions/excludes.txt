@@ -2,17 +2,18 @@
 # See https://github.com/check-spelling/check-spelling/wiki/Configuration-Examples:-excludes
 (?:^|/)(?i)COPYRIGHT
 (?:^|/)(?i)LICEN[CS]E
-(?:^|/)go\.sum$
-(?:^|/)go\.mod$
-(?:^|/)pb\.go$
-(?:^|/)gw\.go$
 ignore$
 \.git-blame-ignore-revs$
 \.gitattributes$
 \.gitkeep$
 \.graffle$
 \.json$
+\.yml$
 \.gz$
+\.sum$
+\.mod$
+\.gw.go$
+\.pb.go$
 \.tar$
 \.tgz$
 ^\.github/actions/spelling/
