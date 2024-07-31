@@ -15,6 +15,7 @@ services:
       "--use-coingecko=$USE_COINGECKO_MARKETS",
       "--use-coinmarketcap=$USE_COINMARKETCAP_MARKETS",
       "--use-osmosis=$USE_OSMOSIS_MARKETS",
+      "--use-polymarket=$USE_POLYMARKET_MARKETS",
       "--temp-file=data/markets.json",
     ]
     environment:
@@ -24,6 +25,7 @@ services:
       - USE_COINGECKO_MARKETS=${USE_COINGECKO_MARKETS:-false}
       - USE_COINMARKETCAP_MARKETS=${USE_COINMARKETCAP_MARKETS:-false}
       - USE_OSMOSIS_MARKETS=${USE_OSMOSIS_MARKETS:-false}
+      - USE_POLYMARKET_MARKETS=${USE_POLYMARKET_MARKETS:-false}
     volumes:
       - markets_data:/data
     networks:
