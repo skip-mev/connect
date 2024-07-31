@@ -16,3 +16,13 @@ jobs:
             cspell:cryptocurrencies/cryptocurrencies.txt
             cspell:aws/aws.txt
             cspell:node/dict/node.txt
+            cspell:python/src/common/extra.txt
+            cspell:php/dict/php.txt
+            cspell:k8s/dict/k8s.txt
+            cspell:npm/dict/npm.txt
+            cspell:mnemonics/src/mnemonics.txt
+            cspell:docker/src/docker-words.txt
+            cspell:cpp/src/ecosystem.txt
+            cspell:sql/src/sql.txt
+            cspell:sql/src/tsql.txt
+            cspell:monkeyc/src/monkeyc_keywords.txt
