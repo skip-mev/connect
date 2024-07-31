@@ -8,11 +8,28 @@ icon: message-dollar
 
 The `Marketmap` module is responsible for managing and storing a configuration that informs the Connect oracle of which markets to fetch data for, and which providers to use to fetch them.
 
-The `Marketmap` module's Keeper is instantiated with an `Authority` address, guarding the mutation of the `Marketmap` by a specific address. This address can be the `governance` address, allowing governance propositions to mutate the `Marketmap`.
-
-The `Authority` of the `Marketmap` module can modify the Keeper's `MarketAuthorities`. This allows the `Authority` to add or remove addresses that are authorized to update the `Marketmap`.
-
 ## Concepts
+
+### Authority, Admin, And MarketAuthority
+
+The `Marketmap` module contains three levels of access to interact with the module.
+
+#### Authority
+
+The `Authority` is the only account allowed to change the module's [Params](#params). By default, this account is set to the governance address. However, you may edit the configuration of the module to be any address.
+
+#### Admin
+
+The `Admin` can only _remove_ an address from the market authority list via `RemoveMarketAuthorities`.
+
+
+#### MarketAuthority
+
+A `MarketAuthority` is assigned by the module `Authority`. There can be any number of market authorities. The market authorities are able to create and update markets in the `Marketmap`. Specifically, only a `MarketAuthority` may send the following transactions:
+
+* CreateMarkets
+* UpdateMarkets
+* UpsertMarkets
 
 ### Market
 
