@@ -1,0 +1,9 @@
+(?:^|/)expect\.txt$
+(?:^|/)go\.sum$
+(?:|$^ 92.86% - excluded 13/14)^docs/img/
+[^/]\.png$
+^\Q.github/actions/allow.txt\E$
+^\Q.github/actions/expect.txt\E$
+^\Qcmd/constants/marketmaps/markets.go\E$
+^\Qdocs/favicon.ico\E$
+^\Qgo.mod\E$
