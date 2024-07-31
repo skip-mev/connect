@@ -4,10 +4,8 @@ AAQMb
 aarch
 abbf
 abcd
-abci
 abciaggregator
 abcimocks
-abcitypes
 abciv
 abeb
 abf
@@ -116,9 +114,7 @@ binanceapi
 binancews
 bip
 bitcoin
-bitfinex
 bitsets
-bitstamp
 bitstampapi
 blockheight
 BNBBTC
@@ -137,7 +133,6 @@ bto
 bts
 BUILDKIT
 buildx
-bybit
 cbf
 cca
 ccc
@@ -269,7 +264,7 @@ decred
 dedup
 demarshals
 denoms
-dependan
+dependant
 depinject
 desertbit
 Devation
@@ -292,7 +287,6 @@ durationpb
 dustin
 dva
 dvsekhvalnov
-dydx
 dydxprotocol
 dydxtypes
 dylib
@@ -353,7 +347,6 @@ felixge
 fetchdata
 ffbf
 ffd
-FFFFFF
 FFX
 FHK
 findstring
@@ -376,8 +369,6 @@ genutiltest
 genutiltypes
 getsentry
 ggdv
-gitattributes
-github
 gitops
 giuve
 glog
@@ -421,7 +412,6 @@ govulncheck
 gpvxelryemqc
 grafana
 grafanacloud
-graffle
 grocksdb
 groupcache
 groupkeeper
@@ -457,6 +447,7 @@ iancoleman
 iavl
 ibc
 icc
+ico
 ics
 icza
 IDbz
@@ -502,7 +493,6 @@ krakenapi
 KRbqh
 ktr
 kubiklabs
-kucoin
 KVs
 kwv
 laddr
@@ -515,7 +505,6 @@ levigo
 libc
 libp
 libsecret
-LICEN
 Linting
 linx
 llc
@@ -534,16 +523,15 @@ manifoldco
 mapbyte
 mapkey
 mapmsglen
-mapstructure
 mapvalue
 mapvaluetemp
 maring
 markdownlint
 marketauthority
-marketmap
 marketmapkeeper
 marketmapmodule
 marketmapmodulev
+marketmaps
 marketmaptypes
 marketmapv
 marocchino
@@ -555,7 +543,6 @@ mbm
 metricmock
 metricsmocks
 mev
-mexc
 mexcdevelop
 Mgoogle
 microtimestamp
@@ -613,7 +600,6 @@ netrc
 neuton
 nfalling
 nhooyr
-nikhil
 Nilf
 nivasan
 nocapongodskiptoonicewititshiiiiiiiii
@@ -634,7 +620,6 @@ oasisprotocol
 offchain
 ogs
 oklog
-okx
 okxbtcusd
 okxethusd
 oneof
@@ -664,7 +649,6 @@ otlptrace
 otlptracehttp
 outpkg
 outstruct
-pae
 pamock
 paramsclient
 paramskeeper
@@ -723,13 +707,15 @@ providertypes
 pruningtypes
 pubkeys
 pvks
+Qcmd
+Qdocs
+Qgo
 qpn
 qry
 queryparam
 quickstart
 Quiymppp
 Qzt
-raydium
 rcrowley
 rctx
 redelegations
@@ -755,6 +741,7 @@ RZy
 safetemp
 sagikazarmark
 sasha
+sauron
 sbase
 schnorrkel
 scm
@@ -846,7 +833,6 @@ testreporter
 testtoken
 testutil
 Tful
-tgz
 thelper
 tickermetadata
 tidwall
@@ -893,10 +879,9 @@ underperform
 unescrow
 uniswappool
 uniswapv
-unmarshal
 unmarshaling
 Unmarshall
-unmarshalling
+unmarshals
 unmashalling
 unshallow
 UPDATEINTERVAL
@@ -999,7 +984,6 @@ xfc
 xfd
 xfe
 xff
-xlink
 XResponse
 XTh
 Xuxt
@@ -1015,4 +999,3 @@ zerolog
 ZFvy
 zondax
 zstd
-zzzzzz

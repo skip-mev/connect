@@ -4,6 +4,7 @@
 [^/]\.png$
 ^\Q.github/actions/allow.txt\E$
 ^\Q.github/actions/expect.txt\E$
+^\Q.github/actions/spelling/reject.txt\E$
 ^\Qcmd/constants/marketmaps/markets.go\E$
 ^\Qdocs/favicon.ico\E$
 ^\Qgo.mod\E$
