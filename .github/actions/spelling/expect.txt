@@ -44,7 +44,6 @@ AMMIDBz
 AMMIDPk
 anypb
 anys
-apd
 apidocs
 apierrors
 apiguide
@@ -120,7 +119,6 @@ blockheight
 BNBBTC
 boltdb
 bsc
-btc
 btcd
 btcec
 btceth
@@ -130,9 +128,6 @@ btcusdt
 btcutil
 btcutilecc
 bto
-bts
-BUILDKIT
-buildx
 cbf
 cca
 ccc
@@ -163,16 +158,13 @@ circuitmodulev
 circuittypes
 cleanhttp
 cleveldb
-clob
 cloudposse
 CLPs
 clv
-cmc
 CMCAPI
 CMCID
 cmdconfig
 cmds
-cmp
 cmt
 cmtabci
 cmtcfg
@@ -200,7 +192,6 @@ cometbft
 cometproto
 Commitcodec
 commitheight
-compat
 Concluson
 conditionaltokens
 configurator
@@ -210,7 +201,6 @@ consensusmodulev
 consensustypes
 consulcatalog
 consumertypes
-containerd
 conventionalcommits
 coretypes
 Cosm
@@ -220,7 +210,6 @@ cosmwasm
 covermode
 coverprofile
 cpg
-cpuid
 cpy
 cryptocodec
 cryptodotcom
@@ -231,7 +220,6 @@ Cumulatives
 CURDIR
 currencypair
 currencypairmock
-customname
 customtype
 cve
 cvp
@@ -242,10 +230,9 @@ danieljoos
 dasel
 datacenters
 datadog
-datasource
+datasources
 davecgh
 davidterpay
-dba
 dbddb
 dbf
 dbm
@@ -358,7 +345,6 @@ fznuf
 gagliardetto
 gateio
 gax
-gcr
 geckoterminal
 genproto
 gentx
@@ -392,8 +378,6 @@ gomath
 gomock
 gomod
 goodprice
-google
-googleapis
 goproto
 gopulsar
 goreleaser
@@ -422,7 +406,6 @@ grpctypes
 grpcurl
 gsterjov
 gtank
-gzipped
 handlermocks
 hashicorp
 Hbt
@@ -453,8 +436,6 @@ icza
 IDbz
 Idxs
 ifeq
-img
-iname
 incentiveskeeper
 incentivesmodulev
 incentivestypes
@@ -485,7 +466,6 @@ JSONTo
 KBj
 keybase
 keychain
-keyring
 kingnodes
 klauspost
 KPsz
@@ -502,7 +482,6 @@ ldflags
 Lenmapkey
 Lenmapvalue
 levigo
-libc
 libp
 libsecret
 Linting
@@ -513,9 +492,7 @@ logfmt
 logr
 logtags
 logtostderr
-lru
 LTCBTC
-LTE
 lukechampine
 LVz
 magiconair
@@ -526,7 +503,6 @@ mapmsglen
 mapvalue
 mapvaluetemp
 maring
-markdownlint
 marketauthority
 marketmapkeeper
 marketmapmodule
@@ -577,6 +553,7 @@ MOGSOLPRICE
 mogtia
 mogusd
 mogusdt
+monkeyc
 msc
 msglen
 msgservice
@@ -606,7 +583,6 @@ nocapongodskiptoonicewititshiiiiiiiii
 nolint
 nolintlint
 NONINFRINGEMENT
-nop
 nostrip
 notest
 notok
@@ -625,7 +601,6 @@ okxethusd
 oneof
 ongodhecappin
 opencensus
-opencontainers
 opentelemetry
 oracleclient
 oracleconfig
@@ -640,7 +615,6 @@ oracletypes
 oraclev
 oraclevetypes
 orderedcode
-orm
 otel
 otelgrpc
 otelhttp
@@ -695,7 +669,6 @@ promptui
 promql
 promserver
 promtail
-protobuf
 protoc
 protocgen
 protoiface
@@ -726,7 +699,6 @@ remyoudompheng
 repostatus
 resps
 restaked
-rgba
 ristretto
 rizz
 RLock
@@ -754,7 +726,6 @@ servertypes
 servicemetrics
 servicemetricsmocks
 servicetypes
-shld
 simapp
 simd
 simtestutil
@@ -788,9 +759,7 @@ sortme
 sourcegraph
 soz
 spaolacci
-sqlite
 srcpkg
-srv
 srvconfig
 stakingkeeper
 stakingmodulev
@@ -803,7 +772,6 @@ storetypes
 strangelove
 strcase
 stretchr
-strftime
 strutil
 stylecheck
 stypes
@@ -812,18 +780,14 @@ submitters
 subosito
 subscribingunsubscribing
 supermajority
-svg
-Svr
 svrcmd
 Syncer
 syndtr
 tcs
 technicallyty
 technote
-templating
 tendermint
 tenv
-testapp
 testappd
 testcase
 testdatapulsar
@@ -840,7 +804,6 @@ timepicker
 timeseries
 timestamped
 timestamppb
-timezone
 Tio
 tmhash
 tmkms
@@ -855,14 +818,14 @@ tprteaching
 tpt
 traefik
 trimpath
+tsql
 tuu
 TWAP
 txconfigv
 txf
 txmodule
-txn
+Txns
 txs
-typecheck
 typesv
 TZY
 uapjvcvh
@@ -888,7 +851,7 @@ UPDATEINTERVAL
 upgradekeeper
 upgrademodulev
 upgradetypes
-upsert
+upserts
 upstreams
 USAPI
 usd
@@ -900,15 +863,11 @@ usdeth
 usdtusd
 USDTZUSD
 usestdlibvars
-utc
-uuid
-vals
 valscon
 varint
 Vcu
 VDZ
 VEbz
-Vec
 vedhavyas
 vektra
 ves
