@@ -54,44 +54,51 @@ var ProviderMapping = map[string]string{
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
-func (h *APIHandler) ConvertMarketParamsToMarketMap(
+func ConvertMarketParamsToMarketMap(
 	params dydxtypes.QueryAllMarketParamsResponse,
+	logger *zap.Logger,
 ) (mmtypes.MarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
 		Markets: make(map[string]mmtypes.Market),
 	}
 
 	for _, market := range params.MarketParams {
-		ticker, err := h.CreateTickerFromMarket(market)
+		ticker, err := CreateTickerFromMarket(market)
 		if err != nil {
-			h.logger.Debug(
-				"failed to create ticker from market",
-				zap.String("market", market.Pair),
-				zap.Error(err),
-			)
+			if logger != nil {
+				logger.Debug(
+					"failed to create ticker from market",
+					zap.String("market", market.Pair),
+					zap.Error(err),
+				)
+			}
 
 			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to create ticker from market: %w", err)
 		}
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			h.logger.Debug(
-				"failed to unmarshal exchange json config",
-				zap.String("ticker", ticker.String()),
-				zap.Error(err),
-			)
+			if logger != nil {
+				logger.Debug(
+					"failed to unmarshal exchange json config",
+					zap.String("ticker", ticker.String()),
+					zap.Error(err),
+				)
+			}
 
 			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config: %w", err)
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		providers, err := h.ConvertExchangeConfigJSON(exchangeConfigJSON)
+		providers, err := ConvertExchangeConfigJSON(exchangeConfigJSON, logger)
 		if err != nil {
-			h.logger.Debug(
-				"failed to convert exchange config json",
-				zap.String("ticker", ticker.String()),
-				zap.Error(err),
-			)
+			if logger != nil {
+				logger.Debug(
+					"failed to convert exchange config json",
+					zap.String("ticker", ticker.String()),
+					zap.Error(err),
+				)
+			}
 
 			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to convert exchange config json: %w", err)
 		}
@@ -108,8 +115,8 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 }
 
 // CreateTickerFromMarket creates a ticker from a dYdX market.
-func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error) {
-	cp, err := h.CreateCurrencyPairFromPair(market.Pair)
+func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error) {
+	cp, err := CreateCurrencyPairFromPair(market.Pair)
 	if err != nil {
 		return mmtypes.Ticker{}, err
 	}
@@ -125,7 +132,7 @@ func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtyp
 }
 
 // CreateCurrencyPairFromPair creates a currency pair from a dYdX market.
-func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
+func CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 	split := strings.Split(pair, Delimiter)
 	if len(split) != 2 {
 		return slinkytypes.CurrencyPair{}, fmt.Errorf("expected pair (%s) to have 2 elements, got %d", pair, len(split))
@@ -142,8 +149,9 @@ func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.Curren
 // ConvertExchangeConfigJSON creates a set of paths and providers for a given ticker
 // from a dYdX market. These paths represent the different ways to convert a currency
 // pair using the dYdX market.
-func (h *APIHandler) ConvertExchangeConfigJSON(
+func ConvertExchangeConfigJSON(
 	config dydxtypes.ExchangeConfigJson,
+	logger *zap.Logger,
 ) ([]mmtypes.ProviderConfig, error) {
 	var (
 		providers = make([]mmtypes.ProviderConfig, 0, len(config.Exchanges))
@@ -161,11 +169,13 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			// ignore unsupported exchanges
-			h.logger.Debug(
-				"skipping unsupported exchange",
-				zap.String("exchange", cfg.ExchangeName),
-				zap.String("ticker", cfg.Ticker),
-			)
+			if logger != nil {
+				logger.Debug(
+					"skipping unsupported exchange",
+					zap.String("exchange", cfg.ExchangeName),
+					zap.String("ticker", cfg.Ticker),
+				)
+			}
 
 			continue
 		}
@@ -173,7 +183,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		// Determine if the exchange needs to have an normalizeByPair.
 		var normalizeByPair *slinkytypes.CurrencyPair
 		if len(cfg.AdjustByMarket) > 0 {
-			temp, err := h.CreateCurrencyPairFromPair(cfg.AdjustByMarket)
+			temp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
 			if err != nil {
 				return nil, fmt.Errorf(
 					"failed to create normalize by pair for %s: %w",

@@ -68,10 +68,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
-			require.NoError(t, err)
-
-			resp, err := handler.ConvertMarketParamsToMarketMap(tc.params)
+			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params, zap.NewNop())
 			if tc.err {
 				require.Error(t, err)
 			} else {
@@ -83,12 +80,9 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 }
 
 func TestCreateCurrencyPairFromMarket(t *testing.T) {
-	handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
-	require.NoError(t, err)
-
 	t.Run("good ticker", func(t *testing.T) {
 		pair := "BTC-USD"
-		cp, err := handler.CreateCurrencyPairFromPair(pair)
+		cp, err := dydx.CreateCurrencyPairFromPair(pair)
 		require.NoError(t, err)
 		require.Equal(t, cp.Base, "BTC")
 		require.Equal(t, cp.Quote, "USD")
@@ -96,13 +90,13 @@ func TestCreateCurrencyPairFromMarket(t *testing.T) {
 
 	t.Run("bad ticker", func(t *testing.T) {
 		pair := "BTCUSD"
-		_, err := handler.CreateCurrencyPairFromPair(pair)
+		_, err := dydx.CreateCurrencyPairFromPair(pair)
 		require.Error(t, err)
 	})
 
 	t.Run("lower casing still corrects", func(t *testing.T) {
 		pair := "btc-usd"
-		cp, err := handler.CreateCurrencyPairFromPair(pair)
+		cp, err := dydx.CreateCurrencyPairFromPair(pair)
 		require.NoError(t, err)
 		require.Equal(t, cp.Base, "BTC")
 		require.Equal(t, cp.Quote, "USD")
@@ -165,10 +159,7 @@ func TestCreateTickerFromMarket(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
-			require.NoError(t, err)
-
-			ticker, err := handler.CreateTickerFromMarket(tc.market)
+			ticker, err := dydx.CreateTickerFromMarket(tc.market)
 			if tc.err {
 				require.Error(t, err)
 			} else {
@@ -401,10 +392,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
-			require.NoError(t, err)
-
-			providers, err := handler.ConvertExchangeConfigJSON(tc.config)
+			providers, err := dydx.ConvertExchangeConfigJSON(tc.config, zap.NewNop())
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
