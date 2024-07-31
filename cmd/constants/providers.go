@@ -2,8 +2,6 @@ package constants
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
-
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
@@ -11,11 +9,13 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/coinmarketcap"
+	"github.com/skip-mev/slinky/providers/apis/defi/osmosis"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
+	"github.com/skip-mev/slinky/providers/apis/polymarket"
 	"github.com/skip-mev/slinky/providers/volatile"
 	binancews "github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
@@ -153,6 +153,13 @@ var (
 			Name:      okx.Name,
 			WebSocket: okx.DefaultWebSocketConfig,
 			Type:      types.ConfigType,
+		},
+
+		// Polymarket provider
+		{
+			Name: polymarket.Name,
+			API:  polymarket.DefaultAPIConfig,
+			Type: types.ConfigType,
 		},
 
 		// MarketMap provider
