@@ -8,7 +8,7 @@ import (
 
 var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
-	Atomic:           true,
+	Atomic:           false,
 	Enabled:          true,
 	Timeout:          3 * time.Second,
 	Interval:         500 * time.Millisecond,
