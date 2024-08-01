@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"go.uber.org/zap"
-
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/bitstamp"
@@ -56,7 +54,6 @@ var ProviderMapping = map[string]string{
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
 func ConvertMarketParamsToMarketMap(
 	params dydxtypes.QueryAllMarketParamsResponse,
-	logger *zap.Logger,
 ) (mmtypes.MarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
 		Markets: make(map[string]mmtypes.Market),
@@ -65,42 +62,18 @@ func ConvertMarketParamsToMarketMap(
 	for _, market := range params.MarketParams {
 		ticker, err := CreateTickerFromMarket(market)
 		if err != nil {
-			if logger != nil {
-				logger.Debug(
-					"failed to create ticker from market",
-					zap.String("market", market.Pair),
-					zap.Error(err),
-				)
-			}
-
-			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to create ticker from market: %w", err)
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to create ticker from market %s: %w", market.Pair, err)
 		}
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			if logger != nil {
-				logger.Debug(
-					"failed to unmarshal exchange json config",
-					zap.String("ticker", ticker.String()),
-					zap.Error(err),
-				)
-			}
-
-			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config: %w", err)
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config for %s: %w", ticker.String(), err)
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		providers, err := ConvertExchangeConfigJSON(exchangeConfigJSON, logger)
+		providers, err := ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
-			if logger != nil {
-				logger.Debug(
-					"failed to convert exchange config json",
-					zap.String("ticker", ticker.String()),
-					zap.Error(err),
-				)
-			}
-
-			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to convert exchange config json: %w", err)
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
 		}
 
 		marketMap.Markets[ticker.String()] = mmtypes.Market{
@@ -151,7 +124,6 @@ func CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 // pair using the dYdX market.
 func ConvertExchangeConfigJSON(
 	config dydxtypes.ExchangeConfigJson,
-	logger *zap.Logger,
 ) ([]mmtypes.ProviderConfig, error) {
 	var (
 		providers = make([]mmtypes.ProviderConfig, 0, len(config.Exchanges))
@@ -168,15 +140,6 @@ func ConvertExchangeConfigJSON(
 		// This means we have seen an exchange that slinky cannot support.
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
-			// ignore unsupported exchanges
-			if logger != nil {
-				logger.Debug(
-					"skipping unsupported exchange",
-					zap.String("exchange", cfg.ExchangeName),
-					zap.String("ticker", cfg.Ticker),
-				)
-			}
-
 			continue
 		}
 

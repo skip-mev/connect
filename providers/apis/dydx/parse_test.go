@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"go.uber.org/zap"
-
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
@@ -68,7 +66,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params, zap.NewNop())
+			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params)
 			if tc.err {
 				require.Error(t, err)
 			} else {
@@ -392,7 +390,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			providers, err := dydx.ConvertExchangeConfigJSON(tc.config, zap.NewNop())
+			providers, err := dydx.ConvertExchangeConfigJSON(tc.config)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
