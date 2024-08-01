@@ -141,7 +141,7 @@ Copy is used to create a copy of the data handler. This is useful if the data ha
 
 ### WebSocketConnHandler
 
-WebSocketConnHandler is an interface the encapsulates the functionality of a websocket connection to a data provider.
+WebSocketConnHandler is an interface that encapsulates the functionality of a websocket connection to a data provider.
 
 ```golang
 // WebSocketConnHandler is an interface the encapsulates the functionality of a websocket
