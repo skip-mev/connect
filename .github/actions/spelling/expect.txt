@@ -886,6 +886,7 @@ wastedassign
 wbs
 websockets
 wethusdc
+wesl
 WFys
 Whyy
 wincred
