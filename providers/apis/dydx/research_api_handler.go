@@ -118,7 +118,7 @@ func (h *ResearchAPIHandler) ParseResponse(
 	}
 
 	// convert the response to a market-map
-	marketMap, err := h.ConvertMarketParamsToMarketMap(respMarketParams)
+	marketMap, err := ConvertMarketParamsToMarketMap(respMarketParams)
 	if err != nil {
 		h.logger.Error("failed to convert QueryAllMarketsParamsResponse into MarketMap", zap.Error(err))
 		return types.NewMarketMapResponseWithErr(
