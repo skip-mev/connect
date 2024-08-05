@@ -11,7 +11,7 @@ For each ticker (i.e. RAY/SOL), we query 4 accounts:
 * AMMInfo
 * OpenOrders
 
-To calculate the price, we need to get the base and quote token balances, subtract PNL feels, and finally add the value of open orders.
+To calculate the price, we need to get the base and quote token balances, subtract PNL feels, and add the value of open orders.
 
 With the above values, we calculate the price by dividing quote / base and multiplying by the scaling factor.
 
