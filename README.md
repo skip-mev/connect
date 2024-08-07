@@ -9,14 +9,14 @@
 [![Version](https://img.shields.io/github/tag/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/slinky/releases/latest)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/slinky?style=flat-square)](https://github.com/skip-mev/slinky)
 
-A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.money/slinky/overview) page for more information!
+A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.build/connect/introduction) page for more information!
 
 Slinky uses Vote Extensions to create an hyperperformant, extremely secure mechanism for aggregating off-chain data onto a blockchain. It is used by
 many of the highest-performance decentralized applications today. If you would like to integrate Slinky to power your use case, please contact us on our
 [Discord](https://discord.gg/PeBGE9jrbu).
 
 > [!NOTE]
-> Slinky is **business-licensed software** under BSL, meaning it requires a license to use or reference. It is source viewable, but [**reach out to us on Discord**](https://skip.money/discord) if you are interested in integrating! We are limiting the number of chains we work with to seven in 2024. We apologize if we run out of capacity.
+> Slinky is **business-licensed software** under BSL, meaning it requires a license to use or reference. It is source viewable, but [**reach out to us on Discord**](https://skip.build/discord) if you are interested in integrating! We are limiting the number of chains we work with to seven in 2024. We apologize if we run out of capacity.
 
 ## Install
 
@@ -38,7 +38,7 @@ The slinky repository is composed of the following core packages:
 
 ## Validator Usage
 
-To read how to run the oracle as a validator based on the chain, please reference the [validator documentation](https://docs.skip.money/slinky/integrations).
+To read how to run the oracle as a validator based on the chain, please reference the [validator documentation](https://docs.skip.build/connect/validators/quickstart).
 
 ## Developer Usage
 
@@ -60,10 +60,10 @@ After a few minutes, run the following commands to see the prices written to the
 
 ```bash
 # access the blockchain container
-$ docker exec -it slinky-blockchain-1 bash
+$ docker exec -it compose-blockchain-1 bash
 
 # query the price of bitcoin in USD on the node
-$ (slinky-blockchain-1) ./build/slinkyd q oracle price BTC USD
+$ (compose-blockchain-1) ./build/slinkyd q oracle price BTC USD
 ```
 
 Result:
