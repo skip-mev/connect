@@ -77,7 +77,7 @@ func TestParseResponse(t *testing.T) {
 			name:         "happy case",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
-			responseBody: `{ "price": "0.45" }`,
+			responseBody: `{ "mid": "0.45" }`,
 			expectedResponse: types.NewPriceResponse(
 				types.ResolvedPrices{
 					id: types.NewPriceResult(big.NewFloat(0.45), time.Now().UTC()),
@@ -89,7 +89,7 @@ func TestParseResponse(t *testing.T) {
 			name:         "1.00 should resolve to 0.999...",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
-			responseBody: `{ "price": "1.00" }`,
+			responseBody: `{ "mid": "1.00" }`,
 			expectedResponse: types.NewPriceResponse(
 				types.ResolvedPrices{
 					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMax), time.Now().UTC()),
@@ -101,7 +101,7 @@ func TestParseResponse(t *testing.T) {
 			name:         "0.00 should resolve to 0.00001",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
-			responseBody: `{ "price": "0.00" }`,
+			responseBody: `{ "mid": "0.00" }`,
 			expectedResponse: types.NewPriceResponse(
 				types.ResolvedPrices{
 					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMin), time.Now().UTC()),
@@ -124,7 +124,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name:         "invalid JSON",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "0fa3adk"}"`,
+			responseBody: `{"mid": "0fa3adk"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
 				[]types.ProviderTicker{candidateWinsElectionToken},
 				providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", "0fa3adk"), providertypes.ErrorFailedToDecode),
@@ -133,7 +133,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name:         "bad price - max",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "1.0001"}"`,
+			responseBody: `{"mid": "1.0001"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
 				[]types.ProviderTicker{candidateWinsElectionToken},
 				providertypes.NewErrorWithCode(fmt.Errorf("price exceeded 1.00"), providertypes.ErrorInvalidResponse),
@@ -142,7 +142,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name:         "bad price - negative",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "-0.12"}"`,
+			responseBody: `{"mid": "-0.12"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
 				[]types.ProviderTicker{candidateWinsElectionToken},
 				providertypes.NewErrorWithCode(fmt.Errorf("price must be greater than 0.00"), providertypes.ErrorInvalidResponse),

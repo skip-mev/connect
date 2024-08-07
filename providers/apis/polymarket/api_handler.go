@@ -16,8 +16,8 @@ const (
 	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
-	// URL is the base URL of the Polymarket CLOB API endpoint for the Price of a given token ID.
-	URL = "https://clob.polymarket.com/price?token_id=%s&side=BUY"
+	// URL is the base URL of the Polymarket CLOB API endpoint for the midpoint price of a given token ID.
+	URL = "https://clob.polymarket.com/midpoint?token_id=%s"
 
 	// priceAdjustmentMax is the value the price gets set to in the event of price == 1.00.
 	priceAdjustmentMax = .9999
@@ -27,7 +27,7 @@ const (
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
 // APIHandler implements the PriceAPIDataHandler interface for Polymarket, which can be used
-// by a base provider. The handler fetches data from the `/price` endpoint.
+// by a base provider. The handler fetches data from the `/midpoint` endpoint.
 type APIHandler struct {
 	api config.APIConfig
 }
@@ -52,7 +52,7 @@ func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 }
 
 // CreateURL returns the URL that is used to fetch data from the Polymarket API for the
-// given ticker. Since the price endpoint is automatically denominated in USD, only one ID is expected to be passed
+// given ticker. Since the midpoint endpoint is automatically denominated in USD, only one ID is expected to be passed
 // into this method.
 func (h APIHandler) CreateURL(ids []types.ProviderTicker) (string, error) {
 	if len(ids) != 1 {
@@ -61,12 +61,12 @@ func (h APIHandler) CreateURL(ids []types.ProviderTicker) (string, error) {
 	return fmt.Sprintf(h.api.Endpoints[0].URL, ids[0].GetOffChainTicker()), nil
 }
 
-// ResponseBody is the response structure for the `/price` endpoint of the Polymarket API.
+// ResponseBody is the response structure for the `/midpoint` endpoint of the Polymarket API.
 type ResponseBody struct {
-	Price string `json:"price"`
+	Mid string `json:"mid"`
 }
 
-// ParseResponse parses the HTTP response from the `/price` Polymarket API endpoint and returns
+// ParseResponse parses the HTTP response from the `/midpoint` Polymarket API endpoint and returns
 // the resulting price.
 func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Response) types.PriceResponse {
 	if len(ids) != 1 {
@@ -88,11 +88,11 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 		)
 	}
 
-	price, ok := new(big.Float).SetString(result.Price)
+	price, ok := new(big.Float).SetString(result.Mid)
 	if !ok {
 		return types.NewPriceResponseWithErr(
 			ids,
-			providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", result.Price), providertypes.ErrorFailedToDecode),
+			providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", result.Mid), providertypes.ErrorFailedToDecode),
 		)
 	}
 	if err := validatePrice(price); err != nil {
