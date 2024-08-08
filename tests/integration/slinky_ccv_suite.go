@@ -28,7 +28,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// Type SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
+// SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
 type SlinkyCCVSuite struct {
 	*SlinkyIntegrationSuite
 }
