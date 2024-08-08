@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/mock"
-
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 

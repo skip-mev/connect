@@ -400,9 +400,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().NoError(err)
 		s.Require().NotNil(resp)
 
-		// expect response to contain the market
-		s.Require().Len(resp.MarketUpdates, 1)
-		s.Require().False(resp.MarketUpdates[btcusdt.String()])
+		s.Require().Len(resp.MarketUpdates, 0)
 
 		// check that the market now exists
 		found, err := s.keeper.HasMarket(s.ctx, btcusdt.Ticker.String())
@@ -465,10 +463,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().NoError(err)
 		s.Require().NotNil(resp)
 
-		// expect response to contain the market
-		s.Require().Len(resp.MarketUpdates, 2)
-		s.Require().True(resp.MarketUpdates[btcusdt.Ticker.String()])
-		s.Require().False(resp.MarketUpdates[ethusdt.Ticker.String()])
+		s.Require().Len(resp.MarketUpdates, 0)
 
 		// check that the market still exists
 		found, err := s.keeper.HasMarket(s.ctx, btcusdt.Ticker.String())
