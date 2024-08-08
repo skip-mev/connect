@@ -17,7 +17,7 @@ const (
 	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
-	// URL is the base URL of the Polymarket CLOB API endpoint for the midpoint price of a given token ID.
+	// URL is the default base URL of the Polymarket CLOB API. It uses the midpoint endpoint with a given token ID.
 	URL = "https://clob.polymarket.com/midpoint?token_id=%s"
 
 	// priceAdjustmentMax is the value the price gets set to in the event of price == 1.00.
@@ -36,7 +36,7 @@ var (
 )
 
 // APIHandler implements the PriceAPIDataHandler interface for Polymarket, which can be used
-// by a base provider. The handler fetches data from the `/midpoint` endpoint.
+// by a base provider. The handler fetches data from either the `/midpoint` or `/price` endpoint.
 type APIHandler struct {
 	api config.APIConfig
 }
@@ -104,8 +104,8 @@ func dataFromMidpoint(reader io.ReadCloser) (string, error) {
 	return result.Mid, nil
 }
 
-// ParseResponse parses the HTTP response from the `/midpoint` Polymarket API endpoint and returns
-// the resulting price.
+// ParseResponse parses the HTTP response from either the `/price` or `/midpoint` endpoint of the Polymarket API endpoint and returns
+// the resulting data.
 func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Response) types.PriceResponse {
 	if len(ids) != 1 {
 		return types.NewPriceResponseWithErr(
