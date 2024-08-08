@@ -6,7 +6,11 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
+
+	"golang.org/x/exp/maps"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -17,6 +21,7 @@ const (
 	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
+	host = "clob.polymarket.com"
 	// URL is the default base URL of the Polymarket CLOB API. It uses the midpoint endpoint with a given token ID.
 	URL = "https://clob.polymarket.com/midpoint?token_id=%s"
 
@@ -53,6 +58,23 @@ func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 
 	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
+	}
+
+	if len(api.Endpoints) != 1 {
+		return nil, fmt.Errorf("invalid polymarket endpoint config: expected 1 endpiont got %d", len(api.Endpoints))
+	}
+
+	u, err := url.Parse(api.Endpoints[0].URL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid polymarket endpoint url %q: %w", api.Endpoints[0].URL, err)
+	}
+
+	if u.Host != host {
+		return nil, fmt.Errorf("invalid polymarket URL: expected %q got %q", host, u.Host)
+	}
+
+	if _, exists := valueExtractorFromEndpoint[u.Path]; !exists {
+		return nil, fmt.Errorf("invalid polymarket endpoint url path %s. endpoint must be one of: %s", u.Path, strings.Join(maps.Keys(valueExtractorFromEndpoint), ","))
 	}
 
 	return &APIHandler{

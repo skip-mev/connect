@@ -12,12 +12,80 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 var candidateWinsElectionToken = types.DefaultProviderTicker{
 	OffChainTicker: "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+}
+
+func TestNewAPIHandler(t *testing.T) {
+	tests := []struct {
+		name         string
+		modifyConfig func(config.APIConfig) config.APIConfig
+		expectError  bool
+		errorMsg     string
+	}{
+		{
+			name: "Valid configuration",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				return cfg // No modifications
+			},
+			expectError: false,
+		},
+		{
+			name: "Invalid name",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Name = "InvalidName"
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "expected api config name polymarket_api, got InvalidName",
+		},
+		{
+			name: "Disabled API",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Enabled = false
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "api config for polymarket_api is not enabled",
+		},
+		{
+			name: "Invalid host",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Endpoints[0].URL = "https://foobar.com/price"
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "invalid polymarket URL: expected",
+		},
+		{
+			name: "Invalid endpoint path",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Endpoints[0].URL = "https://" + host + "/foo"
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    `invalid polymarket endpoint url path /foo. endpoint must be one of: /midpoint,/price`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modifiedConfig := tt.modifyConfig(DefaultAPIConfig)
+			_, err := NewAPIHandler(modifiedConfig)
+			if tt.expectError {
+				fmt.Println(err.Error())
+				require.Error(t, err)
+				require.ErrorContains(t, err, tt.errorMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestCreateURL(t *testing.T) {
