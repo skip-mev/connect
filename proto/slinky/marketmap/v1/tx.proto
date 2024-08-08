@@ -59,7 +59,7 @@ message MsgUpsertMarketsResponse {
   // UpdatedMarkets is a map between the ticker and whether the market was
   // updated.
   // Deprecated: This field will be empty in all responses.
-  map<string, bool> market_updates = 1;
+  map<string, bool> market_updates = 1 [ deprecated = true ];
 }
 
 // MsgCreateMarkets defines a message carrying a payload for creating markets in
