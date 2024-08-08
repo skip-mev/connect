@@ -20,6 +20,7 @@
     "og:site_name": "Connect Docs",
     "twitter:site": "@skipprotocol"
   },
+  "isWhiteLabeled": true,
   "topbarLinks": [
     {
       "name": "Skip:Go",

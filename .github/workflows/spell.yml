@@ -1,0 +1,28 @@
+name: Spell checking
+on: [pull_request_target, push, issue_comment]
+
+jobs:
+  build:
+    name: Spell checking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: check-spelling/check-spelling@prerelease
+        with:
+          experimental_apply_changes_via_bot: 1
+          checkout: true
+          extra_dictionaries:
+            cspell:golang/dict/go.txt
+            cspell:software-terms/dict/softwareTerms.txt
+            cspell:cryptocurrencies/cryptocurrencies.txt
+            cspell:aws/aws.txt
+            cspell:node/dict/node.txt
+            cspell:python/src/common/extra.txt
+            cspell:php/dict/php.txt
+            cspell:k8s/dict/k8s.txt
+            cspell:npm/dict/npm.txt
+            cspell:mnemonics/src/mnemonics.txt
+            cspell:docker/src/docker-words.txt
+            cspell:cpp/src/ecosystem.txt
+            cspell:sql/src/sql.txt
+            cspell:sql/src/tsql.txt
+            cspell:monkeyc/src/monkeyc_keywords.txt

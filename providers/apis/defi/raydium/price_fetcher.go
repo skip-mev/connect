@@ -159,7 +159,11 @@ func (pf *APIPriceFetcher) Fetch(
 	tickers []oracletypes.ProviderTicker,
 ) oracletypes.PriceResponse {
 	// get the accounts to query in order of the tickers given
-	expectedNumAccounts := len(tickers) * 4
+	expectedNumAccounts := len(tickers) * 4 // for each ticker, we query 4 accounts (base, quote, amm, open orders)
+
+	// accounts is a contiguous slice of solana.PublicKey.
+	// each ticker takes up 4 slots. this is functionally equivalent to [][]solana.PubKey,
+	// however, storing in one slice allows us query without rearranging the request data (i.e. converting [][] to []).
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
 	for i, ticker := range tickers {
@@ -188,7 +192,7 @@ func (pf *APIPriceFetcher) Fetch(
 	defer cancel()
 
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
-		Commitment: rpc.CommitmentFinalized,
+		Commitment: rpc.CommitmentConfirmed,
 		// TODO(nikhil): Keep track of latest height queried as well?
 	})
 	if err != nil {
