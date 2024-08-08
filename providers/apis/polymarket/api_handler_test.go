@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"net/url"
 	"testing"
 	"time"
 
@@ -68,13 +69,15 @@ func TestParseResponse(t *testing.T) {
 	require.NoError(t, err)
 	testCases := []struct {
 		name             string
+		path             string
 		noError          bool
 		ids              []types.ProviderTicker
 		responseBody     string
 		expectedResponse types.PriceResponse
 	}{
 		{
-			name:         "happy case",
+			name:         "happy case from midpoint",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
 			responseBody: `{ "mid": "0.45" }`,
@@ -86,7 +89,31 @@ func TestParseResponse(t *testing.T) {
 			),
 		},
 		{
+			name:         "happy case from price",
+			path:         "/price",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			noError:      true,
+			responseBody: `{ "price": "0.45" }`,
+			expectedResponse: types.NewPriceResponse(
+				types.ResolvedPrices{
+					id: types.NewPriceResult(big.NewFloat(0.45), time.Now().UTC()),
+				},
+				nil,
+			),
+		},
+		{
+			name:         "bad path",
+			path:         "/foobar",
+			ids:          []types.ProviderTicker{candidateWinsElectionToken},
+			responseBody: `{"mid": "234.3"}"`,
+			expectedResponse: types.NewPriceResponseWithErr(
+				[]types.ProviderTicker{candidateWinsElectionToken},
+				providertypes.NewErrorWithCode(fmt.Errorf("unknown request path %q", "/foobar"), providertypes.ErrorFailedToDecode),
+			),
+		},
+		{
 			name:         "1.00 should resolve to 0.999...",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
 			responseBody: `{ "mid": "1.00" }`,
@@ -99,6 +126,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "0.00 should resolve to 0.00001",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			noError:      true,
 			responseBody: `{ "mid": "0.00" }`,
@@ -111,6 +139,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "too many IDs",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
 			responseBody: ``,
 			expectedResponse: types.NewPriceResponseWithErr(
@@ -123,6 +152,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "invalid JSON",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			responseBody: `{"mid": "0fa3adk"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
@@ -132,6 +162,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "bad price - max",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			responseBody: `{"mid": "1.0001"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
@@ -141,6 +172,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name:         "bad price - negative",
+			path:         "/midpoint",
 			ids:          []types.ProviderTicker{candidateWinsElectionToken},
 			responseBody: `{"mid": "-0.12"}"`,
 			expectedResponse: types.NewPriceResponseWithErr(
@@ -153,7 +185,8 @@ func TestParseResponse(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpInput := &http.Response{
-				Body: io.NopCloser(bytes.NewBufferString(tc.responseBody)),
+				Body:    io.NopCloser(bytes.NewBufferString(tc.responseBody)),
+				Request: &http.Request{URL: &url.URL{Path: tc.path}},
 			}
 			res := handler.ParseResponse(tc.ids, httpInput)
 
