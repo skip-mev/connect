@@ -54,6 +54,7 @@ message MsgUpsertMarkets {
 
 // MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the x/marketmap module.
 message MsgUpsertMarketsResponse {
+  option (gogoproto.stable_marshaler) = true;
   // UpdatedMarkets is a map between the ticker and whether the market was updated.
   map<string, bool> market_updates = 1;
 }
