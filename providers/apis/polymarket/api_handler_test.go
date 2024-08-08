@@ -45,6 +45,15 @@ func TestNewAPIHandler(t *testing.T) {
 			errorMsg:    "expected api config name polymarket_api, got InvalidName",
 		},
 		{
+			name: "Too many endpoints",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Endpoints = append(cfg.Endpoints, cfg.Endpoints...)
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "invalid polymarket endpoint config: expected 1 endpoint got 2",
+		},
+		{
 			name: "Disabled API",
 			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
 				cfg.Enabled = false

@@ -61,7 +61,7 @@ func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 	}
 
 	if len(api.Endpoints) != 1 {
-		return nil, fmt.Errorf("invalid polymarket endpoint config: expected 1 endpiont got %d", len(api.Endpoints))
+		return nil, fmt.Errorf("invalid polymarket endpoint config: expected 1 endpoint got %d", len(api.Endpoints))
 	}
 
 	u, err := url.Parse(api.Endpoints[0].URL)
