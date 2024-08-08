@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 
 	"github.com/skip-mev/slinky/cmd/constants"
@@ -132,7 +133,9 @@ func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (confi
 // oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
 func oracleConfigFromViper() (config.OracleConfig, error) {
 	var cfg config.OracleConfig
-	if err := viper.Unmarshal(&cfg); err != nil {
+	if err := viper.Unmarshal(&cfg, func(c *mapstructure.DecoderConfig) {
+		c.ErrorUnused = true
+	}); err != nil {
 		return config.OracleConfig{}, err
 	}
 
