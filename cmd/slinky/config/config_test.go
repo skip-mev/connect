@@ -359,7 +359,7 @@ func TestOracleConfigWithExtraKeys(t *testing.T) {
 
 		defer os.Remove(tmpfile.Name())
 
-		overrides := fmt.Sprintf(`
+		overrides := fmt.Sprint(`
 		{
 			"providers": {
 				"raydium_api": {
