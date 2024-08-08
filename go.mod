@@ -22,7 +22,7 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.50.8
 	github.com/cosmos/gogogateway v1.2.0
-	github.com/cosmos/gogoproto v1.5.0
+	github.com/cosmos/gogoproto v1.6.0
 	github.com/cosmos/interchain-security/v5 v5.1.1
 	github.com/ethereum/go-ethereum v1.14.7
 	github.com/gagliardetto/binary v0.8.0
