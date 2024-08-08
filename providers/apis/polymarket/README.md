@@ -16,9 +16,15 @@ The offchain ticker is expected to be _just_ the token_id.
 
 example: `95128817762909535143571435260705470642391662537976312011260538371392879420759`
 
-The Provider simply calls the `/midpoint` endpoint of the CLOB API. There are two query parameters:
+The Provider simply calls the `/midpoint` endpoint of the CLOB API.
+
+Query Parameter:
 
 * token_id
+
+Example:
+
+`https://clob.polymarket.com/midpoint?token_id=95128817762909535143571435260705470642391662537976312011260538371392879420759`
 
 ## Market Config
 
