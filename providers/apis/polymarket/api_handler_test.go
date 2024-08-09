@@ -78,13 +78,15 @@ func TestNewAPIHandler(t *testing.T) {
 				return cfg
 			},
 			expectError: true,
-			errorMsg:    `invalid polymarket endpoint url path /foo. endpoint must be one of: /midpoint,/price`,
+			errorMsg:    `invalid polymarket endpoint url path /foo`,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			modifiedConfig := tt.modifyConfig(DefaultAPIConfig)
+			cfg := DefaultAPIConfig
+			cfg.Endpoints = append([]config.Endpoint{}, DefaultAPIConfig.Endpoints...)
+			modifiedConfig := tt.modifyConfig(cfg)
 			_, err := NewAPIHandler(modifiedConfig)
 			if tt.expectError {
 				fmt.Println(err.Error())
