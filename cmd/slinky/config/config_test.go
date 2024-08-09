@@ -359,7 +359,7 @@ func TestOracleConfigWithExtraKeys(t *testing.T) {
 
 		defer os.Remove(tmpfile.Name())
 
-		overrides := fmt.Sprint(`
+		overrides := `
 		{
 			"providers": {
 				"raydium_api": {
@@ -374,8 +374,7 @@ func TestOracleConfigWithExtraKeys(t *testing.T) {
 				}
 			}
 		}
-		`,
-		)
+		`
 		tmpfile.Write([]byte(overrides))
 
 		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
