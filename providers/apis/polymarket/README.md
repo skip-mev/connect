@@ -16,12 +16,17 @@ The offchain ticker is expected to be _just_ the token_id.
 
 example: `95128817762909535143571435260705470642391662537976312011260538371392879420759`
 
-The Provider simply calls the `/price` endpoint of the CLOB API. There are two query parameters:
+The Provider can handle both the midpoint and the price endpoints. However, passing in multiple endpoints to the same provider will not yield additional data, as only the first endpoint is considered for the provider.
 
-* token_id
-* side
+Example:
 
-Side can be either `buy` or `sell`. For this provider, we hardcode the side to `buy`.
+Midpoint:
+
+`https://clob.polymarket.com/midpoint?token_id=95128817762909535143571435260705470642391662537976312011260538371392879420759`
+
+Price:
+
+`https://clob.polymarket.com/price?token_id=95128817762909535143571435260705470642391662537976312011260538371392879420759&side=BUY`
 
 ## Market Config
 
@@ -71,7 +76,7 @@ Below is an example of an oracle config with a Polymarket provider.
         "atomic": true,
         "endpoints": [
           {
-            "url": "https://clob.polymarket.com/price?token_id=%s&side=BUY",
+            "url": "https://clob.polymarket.com/midpoint?token_id=%s",
             "authentication": {
               "apiKey": "",
               "apiKeyHeader": ""
