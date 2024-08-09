@@ -39,7 +39,7 @@ Integrating Connect into your Cosmos SDK application requires a few simple steps
 
 ## Application Configuration
 
-We need to extend the template for the application node's `app.toml`, so the oracle configuration can be read into the node.
+We need to extend the configuration for the application node, so the oracle configuration can be read into the node through `app.toml`.
 
 Your application should contain a custom configuration struct with a `"github.com/cosmos/cosmos-sdk/server/config"` embedded.
 
@@ -96,7 +96,7 @@ import (
 func NewRootCmd() *cobra.Command {
 	// ....
 
-	customAppTemplate, customAppConfig := DefaultConfig() // call function from previous step
+    customAppTemplate, customAppConfig := DefaultConfig() // call function from previous step
     return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, cometConfig)
 }
 ```
