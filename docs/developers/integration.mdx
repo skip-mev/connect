@@ -20,8 +20,11 @@ This document will guide you through integrating Connect in your application.
 Integrating Connect into your Cosmos SDK application requires a few simple steps.
 
 <Steps>
+    <Step title="Add Oracle Configuration">
+        Add the oracle configuration to your application.
+    </Step>
     <Step title="Add Modules">
-        Add the `x/marketmap` and `x/oracle` Modules to your app.
+        Import and add the `x/marketmap` and `x/oracle` Modules to your app.
     </Step>
     <Step title="Setup Oracle Client">
         Set up the Oracle client the application will use to get prices from the Connect oracle.
@@ -34,9 +37,73 @@ Integrating Connect into your Cosmos SDK application requires a few simple steps
     </Step>
 </Steps>
 
+## Application Configuration
+
+We need to extend the template for the application node's `app.toml`, so the oracle configuration can be read into the node.
+
+Your application should contain a custom configuration struct with a `"github.com/cosmos/cosmos-sdk/server/config"` embedded.
+
+```go config.go
+// CustomAppConfig defines the configuration for the app.
+type CustomAppConfig struct {
+	serverconfig.Config
+	// ... other configurations
+	Oracle oracleconfig.AppConfig `mapstructure:"oracle" json:"oracle"`
+}
+```
+
+Next, append the Oracle's default config template to your custom application template.
+
+```go config.go
+func CustomConfigTemplate() string {
+	return serverconfig.DefaultConfigTemplate + oracleconfig.DefaultConfigTemplate
+}
+```
+
+Finally, add a default configuration.
+
+```go config.go
+func DefaultConfig() (string, CustomAppConfig) {
+	serverConfig := serverconfig.DefaultConfig()
+    // edit serverConfig as needed
+
+	oracleCfg := oracleconfig.AppConfig{
+		Enabled:        false,
+		OracleAddress:  "localhost:8080",
+		ClientTimeout:  time.Second * 2,
+		MetricsEnabled: false,
+	}
+	customConfig := CustomAppConfig{
+		Config: *serverConfig,
+		Oracle: oracleCfg,
+	}
+
+	return CustomConfigTemplate(), customConfig
+}
+```
+
+The template and default configuration should be passed into `server.InterceptConfigsPreRunHandler` in the application's root command.
+
+Example:
+
+```go root.go
+package cmd
+
+import (
+	// ...
+	"github.com/cosmos/cosmos-sdk/server"
+)
+func NewRootCmd() *cobra.Command {
+	// ....
+
+	customAppTemplate, customAppConfig := DefaultConfig() // call function from previous step
+    return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, cometConfig)
+}
+```
+
 ## Keepers
 
-First, add the [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
+Add [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
 
 ```go app.go
 package app
