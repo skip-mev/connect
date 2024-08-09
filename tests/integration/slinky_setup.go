@@ -12,8 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/static"
-
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/rand"
@@ -24,6 +22,7 @@ import (
 	interchaintest "github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -31,19 +30,17 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
-
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
 	oracleConfigPath = "oracle.json"
-	marketMapPath    = "market.json"
 	appConfigPath    = "config/app.toml"
 )
 
@@ -407,9 +404,9 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 }
 
 func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
-	msg := &mmtypes.MsgUpdateMarkets{
-		Authority:     s.user.FormattedAddress(),
-		UpdateMarkets: markets,
+	msg := &mmtypes.MsgUpsertMarkets{
+		Authority: s.user.FormattedAddress(),
+		Markets:   markets,
 	}
 
 	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
