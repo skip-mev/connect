@@ -351,6 +351,37 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 	})
 }
 
+func TestOracleConfigWithExtraKeys(t *testing.T) {
+	t.Run("an oracle config with extraneous keys", func(t *testing.T) {
+		// create a temp file in the current directory
+		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		require.NoError(t, err)
+
+		defer os.Remove(tmpfile.Name())
+
+		overrides := `
+		{
+			"providers": {
+				"raydium_api": {
+					"api": {
+						"endpoints": [
+							{
+								"url": "http://somewhere",
+								"some_field_that_is_not_relevant": ""
+							}
+						]
+					}
+				}
+			}
+		}
+		`
+		tmpfile.Write([]byte(overrides))
+
+		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
+		require.Error(t, err)
+	})
+}
+
 func filterMarketMapProvidersFromOracleConfig(cfg oracleconfig.OracleConfig, mmProvider string) oracleconfig.OracleConfig {
 	// filter out providers that are not in the market map
 	for name, provider := range cfg.Providers {
