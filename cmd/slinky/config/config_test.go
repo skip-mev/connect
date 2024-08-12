@@ -349,6 +349,52 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 		require.Equal(t, expectedConfig.UpdateInterval, cfg.UpdateInterval)
 		require.Equal(t, expectedConfig.Metrics.PrometheusServerAddress, cfg.Metrics.PrometheusServerAddress)
 	})
+
+	t.Run("overriding a nonexistent provider via config fails", func(t *testing.T) {
+		// create a temp file in the current directory
+		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		require.NoError(t, err)
+
+		defer os.Remove(tmpfile.Name())
+
+		overrides := fmt.Sprintf(`
+		{
+			"updateInterval": "%s",
+			"metrics": {
+				"prometheusServerAddress": "%s"
+			},
+			"providers": {
+				"aydium_api": {
+					"api": {
+						"endpoints": [
+							{
+								"url": "%s"
+							},
+							{
+								"url": "%s",
+								"authentication": {
+									"apiKey": "%s",
+									"apiKeyHeader": "%s"
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+		`,
+			updateIntervalOverride,
+			prometheusServerOverride,
+			raydium.DefaultAPIConfig.Endpoints[0].URL,
+			endpointOverride.URL,
+			endpointOverride.Authentication.APIKey,
+			endpointOverride.Authentication.APIKeyHeader,
+		)
+		tmpfile.Write([]byte(overrides))
+
+		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
+		require.Error(t, err)
+	})
 }
 
 func TestOracleConfigWithExtraKeys(t *testing.T) {

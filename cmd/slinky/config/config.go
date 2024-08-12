@@ -141,12 +141,15 @@ func oracleConfigFromViper() (config.OracleConfig, error) {
 		return config.OracleConfig{}, err
 	}
 
-	if len(unmarshalMetadata.Unset) > 0 {
-		return config.OracleConfig{}, fmt.Errorf("overridden key %s does not correspond to a known provider", unmarshalMetadata.Unset[0])
-	}
-
 	// for each api-provider, we'll have to manually fill the endpoints
 	for _, provider := range cfg.Providers {
+		// if a provider was not unmarshaled correctly, surface that error
+		if provider.Name == "" {
+			if len(unmarshalMetadata.Unset) > 0 {
+				return config.OracleConfig{}, fmt.Errorf("overridden key %s does not correspond to a known provider", unmarshalMetadata.Unset[0])
+			}
+		}
+
 		// Update API endpoints
 		for i, endpoint := range provider.API.Endpoints {
 			provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i, "api")
