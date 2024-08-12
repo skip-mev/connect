@@ -21,7 +21,7 @@ func MarshalCoreMetadata(m CoreMetadata) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-// CoreMetadataJSONString returns a CoreMetadata instance from a JSON string.
+// CoreMetadataFromJSONString returns a CoreMetadata instance from a JSON string.
 func CoreMetadataFromJSONString(jsonString string) (CoreMetadata, error) {
 	var elem CoreMetadata
 	err := json.Unmarshal([]byte(jsonString), &elem)
