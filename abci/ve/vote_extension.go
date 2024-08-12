@@ -326,7 +326,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 			continue
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"transformed oracle price",
 			"currency_pair", cp,
 			"height", ctx.BlockHeight(),
@@ -335,7 +335,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 		strategyPrices[cpID] = encodedPrice
 	}
 
-	h.logger.Info("transformed oracle prices", "prices", len(strategyPrices))
+	h.logger.Debug("transformed oracle prices", "prices", len(strategyPrices))
 
 	return types.OracleVoteExtension{
 		Prices: strategyPrices,
