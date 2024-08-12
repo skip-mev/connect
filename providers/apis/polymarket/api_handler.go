@@ -17,7 +17,6 @@ const (
 	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
-	host = "clob.polymarket.com"
 	// URL is the default base URL of the Polymarket CLOB API. It uses the midpoint endpoint with a given token ID.
 	URL = "https://clob.polymarket.com/markets/%s"
 

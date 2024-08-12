@@ -8,25 +8,21 @@ Polymarket is a web3 based prediction market. This provider uses the Polymarket 
 
 Polymarket uses [conditional outcome tokens](https://docs.gnosis.io/conditionaltokens/), a token that represents an outcome of a specific event. All tokens in Polymarket are denominated in terms of USD.
 
-Tickers take the form of the `<market_slug>?<outcome>/USD`:
+We suggest tickers take the form of the `<market_slug>?<outcome>/USD`. However, tickers are ignored by the polymarket provider, and they can be whatever arbitrary data that suits your use case. The ONLY required text is your ticker must end in `/USD`. 
 
 Example: `WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES/USD`
+Example2: `BernieBecomesPresident/USD`
 
-The offchain ticker is expected to be _just_ the token_id.
+The offchain ticker **must** be <market_id>/<token_id>
 
-example: `95128817762909535143571435260705470642391662537976312011260538371392879420759`
+example: `0x08f5fe8d0d29c08a96f0bc3dfb52f50e0caf470d94d133d95d38fa6c847e0925/95128817762909535143571435260705470642391662537976312011260538371392879420759`
 
-The Provider can handle both the midpoint and the price endpoints. However, passing in multiple endpoints to the same provider will not yield additional data, as only the first endpoint is considered for the provider.
+The Provider queries the `/markets` endpoint, and looks for the token_id in the response. The provider will throw an error if the token_id in the offchain ticker is not present in the response data.
 
 Example:
 
-Midpoint:
+`https://clob.polymarket.com/markets/0xc6485bb7ea46d7bb89beb9c91e7572ecfc72a6273789496f78bc5e989e4d1638`
 
-`https://clob.polymarket.com/midpoint?token_id=95128817762909535143571435260705470642391662537976312011260538371392879420759`
-
-Price:
-
-`https://clob.polymarket.com/price?token_id=95128817762909535143571435260705470642391662537976312011260538371392879420759&side=BUY`
 
 ## Market Config
 
@@ -48,7 +44,7 @@ Below is an example of a market config for a single Polymarket token.
       "provider_configs": [
         {
           "name": "polymarket_api",
-          "off_chain_ticker": "95128817762909535143571435260705470642391662537976312011260538371392879420759"
+          "off_chain_ticker": "0x08f5fe8d0d29c08a96f0bc3dfb52f50e0caf470d94d133d95d38fa6c847e0925/95128817762909535143571435260705470642391662537976312011260538371392879420759"
         }
       ]
     }
@@ -73,10 +69,10 @@ Below is an example of an oracle config with a Polymarket provider.
         "interval": 500000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
-        "atomic": true,
+        "atomic": false,
         "endpoints": [
           {
-            "url": "https://clob.polymarket.com/midpoint?token_id=%s",
+            "url": "https://clob.polymarket.com/markets/%s",
             "authentication": {
               "apiKey": "",
               "apiKeyHeader": ""
