@@ -393,7 +393,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 		tmpfile.Write([]byte(overrides))
 
 		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
-		require.Error(t, err)
+		require.ErrorContains(t, err, "overridden key")
 	})
 }
 
