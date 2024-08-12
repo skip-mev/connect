@@ -133,10 +133,16 @@ func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (confi
 // oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
 func oracleConfigFromViper() (config.OracleConfig, error) {
 	var cfg config.OracleConfig
+	unmarshalMetadata := mapstructure.Metadata{}
 	if err := viper.Unmarshal(&cfg, func(c *mapstructure.DecoderConfig) {
 		c.ErrorUnused = true
+		c.Metadata = &unmarshalMetadata
 	}); err != nil {
 		return config.OracleConfig{}, err
+	}
+
+	if len(unmarshalMetadata.Unset) > 0 {
+		return config.OracleConfig{}, fmt.Errorf("overridden key %s does not correspond to a known provider", unmarshalMetadata.Unset[0])
 	}
 
 	// for each api-provider, we'll have to manually fill the endpoints
