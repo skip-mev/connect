@@ -130,7 +130,7 @@ func TestParseResponse(t *testing.T) {
 		expectedPrice *big.Float
 	}{
 		"happy path": {
-			data: `{"data":[{"tokens": [{
+			data: `{"tokens": [{
           "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
           "outcome": "Yes",
           "price": 1}]}]}`,
@@ -138,28 +138,23 @@ func TestParseResponse(t *testing.T) {
 			expectedPrice: big.NewFloat(1.00),
 		},
 		"zero resolution": {
-			data: `{"data":[{"tokens": [{
+			data: `{"tokens": [{
           "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
           "outcome": "Yes",
           "price": 0}]}]}`,
 			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
 			expectedPrice: big.NewFloat(priceAdjustmentMin),
 		},
-		"non 1 or 0 values work": {
-			data: `{"data":[{"tokens": [{
+		"other values work": {
+			data: `{"tokens": [{
           "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
           "outcome": "Yes",
           "price": 0.325}]}]}`,
 			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
 			expectedPrice: big.NewFloat(0.325),
 		},
-		"got too many markets": {
-			data:        `{"data":[{}, {}]}`,
-			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
-			expectedErr: "expected 1 market in response, got 2",
-		},
 		"token not in response": {
-			data: `{"data":[{"tokens": [{
+			data: `{"tokens": [{
           "token_id": "35128817762909535143571435260705470642391662537976312011260538371392879420759",
           "outcome": "Yes",
           "price": 0.325}]}]}`,
@@ -167,7 +162,7 @@ func TestParseResponse(t *testing.T) {
 			expectedErr: "token ID 95128817762909535143571435260705470642391662537976312011260538371392879420759 not found in response",
 		},
 		"bad response data": {
-			data: `{"data":[{"tokens": [{
+			data: `{"tokens": [{
           "token_id":z,
           "outcome": "Yes",
           "price": 0.325}]}]}`,
@@ -175,10 +170,7 @@ func TestParseResponse(t *testing.T) {
 			expectedErr: "failed to decode market response",
 		},
 		"too many tickers": {
-			data: `{"data":[{"tokens": [{
-          "token_id":z,
-          "outcome": "Yes",
-          "price": 0.325}]}]}`,
+			data:        `{"tokens": []}`,
 			ticker:      []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
 			expectedErr: "expected 1 ticker, got 2",
 		},

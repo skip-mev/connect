@@ -75,31 +75,43 @@ type TokenData struct {
 	Price   float64 `json:"price"`
 }
 
-type MarketData struct {
-	ConditionID   string      `json:"condition_id"`
-	Question      string      `json:"question"`
-	MarketSlug    string      `json:"market_slug"`
-	EventSlug     string      `json:"event_slug"`
-	Image         string      `json:"image"`
-	Tokens        []TokenData `json:"tokens"`
-	RewardsConfig []struct {
-		AssetAddress string `json:"asset_address"`
-		StartDate    string `json:"start_date"`
-		EndDate      string `json:"end_date"`
-		ID           int    `json:"id"`
-		RatePerDay   int    `json:"rate_per_day"`
-		TotalRewards int    `json:"total_rewards"`
-		TotalDays    int    `json:"total_days"`
-	} `json:"rewards_config"`
-	RewardsMaxSpread float64 `json:"rewards_max_spread"`
-	RewardsMinSize   int     `json:"rewards_min_size"`
-}
-
 type MarketsResponse struct {
-	Data       []MarketData `json:"data"`
-	NextCursor string       `json:"next_cursor"`
-	Limit      int          `json:"limit"`
-	Count      int          `json:"count"`
+	EnableOrderBook         bool      `json:"enable_order_book"`
+	Active                  bool      `json:"active"`
+	Closed                  bool      `json:"closed"`
+	Archived                bool      `json:"archived"`
+	AcceptingOrders         bool      `json:"accepting_orders"`
+	AcceptingOrderTimestamp time.Time `json:"accepting_order_timestamp"`
+	MinimumOrderSize        int       `json:"minimum_order_size"`
+	MinimumTickSize         float64   `json:"minimum_tick_size"`
+	ConditionID             string    `json:"condition_id"`
+	QuestionID              string    `json:"question_id"`
+	Question                string    `json:"question"`
+	Description             string    `json:"description"`
+	MarketSlug              string    `json:"market_slug"`
+	EndDateIso              time.Time `json:"end_date_iso"`
+	GameStartTime           any       `json:"game_start_time"`
+	SecondsDelay            int       `json:"seconds_delay"`
+	Fpmm                    string    `json:"fpmm"`
+	MakerBaseFee            int       `json:"maker_base_fee"`
+	TakerBaseFee            int       `json:"taker_base_fee"`
+	NotificationsEnabled    bool      `json:"notifications_enabled"`
+	NegRisk                 bool      `json:"neg_risk"`
+	NegRiskMarketID         string    `json:"neg_risk_market_id"`
+	NegRiskRequestID        string    `json:"neg_risk_request_id"`
+	Icon                    string    `json:"icon"`
+	Image                   string    `json:"image"`
+	Rewards                 struct {
+		Rates []struct {
+			AssetAddress     string `json:"asset_address"`
+			RewardsDailyRate int    `json:"rewards_daily_rate"`
+		} `json:"rates"`
+		MinSize   int     `json:"min_size"`
+		MaxSpread float64 `json:"max_spread"`
+	} `json:"rewards"`
+	Is5050Outcome bool        `json:"is_50_50_outcome"`
+	Tokens        []TokenData `json:"tokens"`
+	Tags          []string    `json:"tags"`
 }
 
 // ParseResponse parses the HTTP response from either the `/price` or `/midpoint` endpoint of the Polymarket API endpoint and returns
@@ -114,21 +126,13 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 		return priceResponseError(ids, fmt.Errorf("failed to decode market response: %w", err), providertypes.ErrorFailedToDecode)
 	}
 
-	if len(result.Data) != 1 {
-		return priceResponseError(
-			ids,
-			fmt.Errorf("expected 1 market in response, got %d", len(result.Data)),
-			providertypes.ErrorInvalidResponse,
-		)
-	}
-
 	_, tokenID, err := getMarketAndTokenFromTicker(ids[0])
 	if err != nil {
 		return priceResponseError(ids, err, providertypes.ErrorAPIGeneral)
 	}
 
 	var tokenData *TokenData
-	for _, token := range result.Data[0].Tokens {
+	for _, token := range result.Tokens {
 		if token.TokenID == tokenID {
 			tokenData = &token
 			break
