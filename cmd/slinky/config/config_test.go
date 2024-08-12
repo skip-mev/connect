@@ -364,7 +364,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 				"prometheusServerAddress": "%s"
 			},
 			"providers": {
-				"aydium_api": {
+				"doesNotExist": {
 					"api": {
 						"endpoints": [
 							{
