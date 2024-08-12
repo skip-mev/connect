@@ -187,6 +187,7 @@ func TestParseResponse(t *testing.T) {
 			} else {
 				gotPrice := res.Resolved[tc.ticker[0]].Value
 				require.Equal(t, gotPrice.Cmp(tc.expectedPrice), 0, "expected %v, got %v", tc.expectedPrice, gotPrice)
+				require.Equal(t, len(res.Resolved), len(tc.ticker))
 			}
 		})
 	}
