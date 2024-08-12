@@ -70,10 +70,10 @@ func DefaultConfig() (string, CustomAppConfig) {
     // edit serverConfig as needed
 
 	oracleCfg := oracleconfig.AppConfig{
-		Enabled:        false,
+		Enabled:        true,
 		OracleAddress:  "localhost:8080",
 		ClientTimeout:  time.Second * 2,
-		MetricsEnabled: false,
+		MetricsEnabled: true,
 	}
 	customConfig := CustomAppConfig{
 		Config: *serverConfig,
