@@ -6,19 +6,16 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"net/url"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 var candidateWinsElectionToken = types.DefaultProviderTicker{
-	OffChainTicker: "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+	OffChainTicker: "0xc6485bb7ea46d7bb89beb9c91e7572ecfc72a6273789496f78bc5e989e4d1638/95128817762909535143571435260705470642391662537976312011260538371392879420759",
 }
 
 func TestNewAPIHandler(t *testing.T) {
@@ -62,24 +59,6 @@ func TestNewAPIHandler(t *testing.T) {
 			expectError: true,
 			errorMsg:    "api config for polymarket_api is not enabled",
 		},
-		{
-			name: "Invalid host",
-			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
-				cfg.Endpoints[0].URL = "https://foobar.com/price"
-				return cfg
-			},
-			expectError: true,
-			errorMsg:    "invalid polymarket URL: expected",
-		},
-		{
-			name: "Invalid endpoint path",
-			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
-				cfg.Endpoints[0].URL = "https://" + host + "/foo"
-				return cfg
-			},
-			expectError: true,
-			errorMsg:    `invalid polymarket endpoint url path /foo`,
-		},
 	}
 
 	for _, tt := range tests {
@@ -89,7 +68,6 @@ func TestNewAPIHandler(t *testing.T) {
 			modifiedConfig := tt.modifyConfig(cfg)
 			_, err := NewAPIHandler(modifiedConfig)
 			if tt.expectError {
-				fmt.Println(err.Error())
 				require.Error(t, err)
 				require.ErrorContains(t, err, tt.errorMsg)
 			} else {
@@ -124,7 +102,7 @@ func TestCreateURL(t *testing.T) {
 			pts: []types.ProviderTicker{
 				candidateWinsElectionToken,
 			},
-			expectedURL: fmt.Sprintf(URL, candidateWinsElectionToken),
+			expectedURL: fmt.Sprintf(URL, "0xc6485bb7ea46d7bb89beb9c91e7572ecfc72a6273789496f78bc5e989e4d1638"),
 		},
 	}
 	h, err := NewAPIHandler(DefaultAPIConfig)
@@ -143,139 +121,81 @@ func TestCreateURL(t *testing.T) {
 }
 
 func TestParseResponse(t *testing.T) {
-	id := candidateWinsElectionToken
 	handler, err := NewAPIHandler(DefaultAPIConfig)
 	require.NoError(t, err)
-	testCases := []struct {
-		name             string
-		path             string
-		noError          bool
-		ids              []types.ProviderTicker
-		responseBody     string
-		expectedResponse types.PriceResponse
+	testCases := map[string]struct {
+		data          string
+		ticker        []types.ProviderTicker
+		expectedErr   string
+		expectedPrice *big.Float
 	}{
-		{
-			name:         "happy case from midpoint",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "mid": "0.45" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(0.45), time.Now().UTC()),
-				},
-				nil,
-			),
+		"happy path": {
+			data: `{"data":[{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 1}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(1.00),
 		},
-		{
-			name:         "happy case from price",
-			path:         "/price",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "price": "0.45" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(0.45), time.Now().UTC()),
-				},
-				nil,
-			),
+		"zero resolution": {
+			data: `{"data":[{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(priceAdjustmentMin),
 		},
-		{
-			name:         "bad path",
-			path:         "/foobar",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"mid": "234.3"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("unknown request path %q", "/foobar"), providertypes.ErrorFailedToDecode),
-			),
+		"non 1 or 0 values work": {
+			data: `{"data":[{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(0.325),
 		},
-		{
-			name:         "1.00 should resolve to 0.999...",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "mid": "1.00" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMax), time.Now().UTC()),
-				},
-				nil,
-			),
+		"got too many markets": {
+			data:        `{"data":[{}, {}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
+			expectedErr: "expected 1 market in response, got 2",
 		},
-		{
-			name:         "0.00 should resolve to 0.00001",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "mid": "0.00" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMin), time.Now().UTC()),
-				},
-				nil,
-			),
+		"token not in response": {
+			data: `{"data":[{"tokens": [{
+          "token_id": "35128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
+			expectedErr: "token ID 95128817762909535143571435260705470642391662537976312011260538371392879420759 not found in response",
 		},
-		{
-			name:         "too many IDs",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
-			responseBody: ``,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(
-					fmt.Errorf("expected 1 ticker, got 2"),
-					providertypes.ErrorInvalidResponse,
-				),
-			),
+		"bad response data": {
+			data: `{"data":[{"tokens": [{
+          "token_id":z,
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
+			expectedErr: "failed to decode market response",
 		},
-		{
-			name:         "invalid JSON",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"mid": "0fa3adk"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", "0fa3adk"), providertypes.ErrorFailedToDecode),
-			),
-		},
-		{
-			name:         "bad price - max",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"mid": "1.0001"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("price exceeded 1.00"), providertypes.ErrorInvalidResponse),
-			),
-		},
-		{
-			name:         "bad price - negative",
-			path:         "/midpoint",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"mid": "-0.12"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("price must be greater than 0.00"), providertypes.ErrorInvalidResponse),
-			),
+		"too many tickers": {
+			data: `{"data":[{"tokens": [{
+          "token_id":z,
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
+			expectedErr: "expected 1 ticker, got 2",
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
 			httpInput := &http.Response{
-				Body:    io.NopCloser(bytes.NewBufferString(tc.responseBody)),
-				Request: &http.Request{URL: &url.URL{Path: tc.path}},
+				Body: io.NopCloser(bytes.NewBufferString(tc.data)),
 			}
-			res := handler.ParseResponse(tc.ids, httpInput)
-
-			// timestamps are off, repair here.
-			if tc.noError {
-				val := tc.expectedResponse.Resolved[tc.ids[0]]
-				val.Timestamp = res.Resolved[tc.ids[0]].Timestamp
-				tc.expectedResponse.Resolved[tc.ids[0]] = val
+			res := handler.ParseResponse(tc.ticker, httpInput)
+			if tc.expectedErr != "" {
+				require.Contains(t, res.UnResolved[tc.ticker[0]].Error(), tc.expectedErr)
+			} else {
+				gotPrice := res.Resolved[tc.ticker[0]].Value
+				require.Equal(t, gotPrice.Cmp(tc.expectedPrice), 0, "expected %v, got %v", tc.expectedPrice, gotPrice)
 			}
-			require.Equal(t, tc.expectedResponse.String(), res.String())
 		})
 	}
 }
