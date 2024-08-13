@@ -20,7 +20,7 @@ const (
 	// URL is the default base URL of the Polymarket CLOB API. It uses the midpoint endpoint with a given token ID.
 	URL = "https://clob.polymarket.com/markets/%s"
 
-	// priceAdjustmentMax is the value the price gets set to in the event of price == 1.00.
+	// priceAdjustmentMin is the value the price gets set to in the event of price == 0.
 	priceAdjustmentMin = 0.00001
 )
 
