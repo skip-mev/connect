@@ -17,7 +17,7 @@ const (
 	// Name is the name of the Polymarket provider.
 	Name = "polymarket_api"
 
-	// URL is the default base URL of the Polymarket CLOB API. It uses the midpoint endpoint with a given token ID.
+	// URL is the default base URL of the Polymarket CLOB API. It uses the `markets` endpoint with a given market ID.
 	URL = "https://clob.polymarket.com/markets/%s"
 
 	// priceAdjustmentMin is the value the price gets set to in the event of price == 0.
@@ -27,7 +27,7 @@ const (
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
 // APIHandler implements the PriceAPIDataHandler interface for Polymarket, which can be used
-// by a base provider. The handler fetches data from either the `/midpoint` or `/price` endpoint.
+// by a base provider. The handler fetches data from the `markets` endpoint.
 type APIHandler struct {
 	api config.APIConfig
 }
@@ -56,7 +56,7 @@ func NewAPIHandler(api config.APIConfig) (types.PriceAPIDataHandler, error) {
 }
 
 // CreateURL returns the URL that is used to fetch data from the Polymarket API for the
-// given ticker. Since the midpoint endpoint is automatically denominated in USD, only one ID is expected to be passed
+// given ticker. Since the markets endpoint's price data is automatically denominated in USD, only one ID is expected to be passed
 // into this method.
 func (h APIHandler) CreateURL(ids []types.ProviderTicker) (string, error) {
 	if len(ids) != 1 {
@@ -114,7 +114,7 @@ type MarketsResponse struct {
 	Tags          []string    `json:"tags"`
 }
 
-// ParseResponse parses the HTTP response from either the `/price` or `/midpoint` endpoint of the Polymarket API endpoint and returns
+// ParseResponse parses the HTTP response from the markets endpoint of the Polymarket API endpoint and returns
 // the resulting data.
 func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Response) types.PriceResponse {
 	if len(ids) != 1 {
