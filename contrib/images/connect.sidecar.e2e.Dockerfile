@@ -17,4 +17,4 @@ COPY --from=builder /src/connect/build/* /usr/local/bin/
 RUN apt-get update && apt-get install -y ca-certificates
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT [ "slinky" ]
+ENTRYPOINT [ "connect" ]
