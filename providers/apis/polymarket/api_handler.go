@@ -134,7 +134,7 @@ func (h APIHandler) ParseResponse(ids []types.ProviderTicker, response *http.Res
 	var tokenData *TokenData
 	for _, token := range result.Tokens {
 		if token.TokenID == tokenID {
-			tokenData = &token
+			tokenData = &token //nolint: exportloopref // this is no longer a problem in go1.22 https://go.dev/blog/loopvar-preview
 			break
 		}
 	}
