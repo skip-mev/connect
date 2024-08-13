@@ -17,7 +17,6 @@ adadfc
 adb
 adec
 adf
-adk
 aec
 aed
 afa
@@ -182,7 +181,6 @@ codecmock
 codecov
 codectypes
 codeowners
-codespell
 coinbaseapi
 coinbasebtcusd
 coinbaseethusd
@@ -232,7 +230,6 @@ datacenters
 datadog
 datasources
 davecgh
-davidterpay
 dbddb
 dbf
 dbm
@@ -256,6 +253,7 @@ depinject
 desertbit
 Devation
 dfa
+dfb
 dfd
 dfe
 dgraph
@@ -281,6 +279,7 @@ dyno
 EAB
 eaf
 ece
+ecfc
 eci
 eda
 eeba
@@ -314,7 +313,6 @@ ETHUSDTAMMID
 EUR
 eux
 evm
-exportloopref
 extendee
 fabf
 Factom
@@ -339,6 +337,7 @@ FHK
 findstring
 Finex
 flatbuffers
+fpmm
 fromjson
 fsnotify
 fznuf
@@ -539,7 +538,6 @@ mmmocks
 mms
 mmservicetypes
 mmtypes
-moby
 mocd
 mockmetrics
 mockstrategies
@@ -578,7 +576,6 @@ neuton
 nfalling
 nhooyr
 Nilf
-nivasan
 nocapongodskiptoonicewititshiiiiiiiii
 nolint
 nolintlint
@@ -618,9 +615,6 @@ orderedcode
 otel
 otelgrpc
 otelhttp
-otlp
-otlptrace
-otlptracehttp
 outpkg
 outstruct
 pamock
@@ -755,6 +749,7 @@ SMOLE
 solana
 solanago
 solusd
+sortkeys
 sortme
 sourcegraph
 soz
@@ -885,8 +880,8 @@ Warehime
 wastedassign
 wbs
 websockets
-wethusdc
 wesl
+wethusdc
 WFys
 Whyy
 wincred
@@ -959,4 +954,3 @@ zerolog
 ZFvy
 zondax
 zstd
-sortkeys
