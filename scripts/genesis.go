@@ -116,7 +116,7 @@ func main() {
 	}
 }
 
-// mergeMarketMaps merges the two market maps together. If a market already exists in one of the maps, we
+// mergeMarketMaps merges two market maps together. If a market already exists in one of the maps, we
 // merge based on the provider set.
 func mergeMarketMaps(this, other mmtypes.MarketMap) mmtypes.MarketMap {
 	for name, otherMarket := range other.Markets {
