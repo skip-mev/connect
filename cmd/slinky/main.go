@@ -33,7 +33,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:   "oracle",
-		Short: "Run the slinky oracle server.",
+		Short: "Run the connect oracle server.",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return runOracle()
