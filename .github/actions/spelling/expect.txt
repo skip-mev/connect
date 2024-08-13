@@ -196,6 +196,7 @@ Concluson
 conditionaltokens
 configurator
 confixcmd
+connectd
 consensuskeeper
 consensusmodulev
 consensustypes
