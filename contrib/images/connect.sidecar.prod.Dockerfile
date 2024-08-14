@@ -14,8 +14,6 @@ FROM gcr.io/distroless/base-debian11:debug
 EXPOSE 8080 8002
 
 COPY --from=builder /src/connect/build/* /usr/local/bin/
-COPY --from=builder /src/connect/scripts/deprecated-exec.sh /usr/local/bin/
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT [ "deprecated-exec.sh" ]
-CMD [ "slinky" ]
+CMD [ "connect" ]

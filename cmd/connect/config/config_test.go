@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
+	cmdconfig "github.com/skip-mev/slinky/cmd/connect/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"

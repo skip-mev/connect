@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/cmd/build"
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
+	cmdconfig "github.com/skip-mev/slinky/cmd/connect/config"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
@@ -33,7 +33,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:   "oracle",
-		Short: "Run the slinky oracle server.",
+		Short: "Run the connect oracle server.",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return runOracle()
