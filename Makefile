@@ -55,7 +55,7 @@ build: tidy
 	go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
 	go build -ldflags="$(BUILD_TAGS)" \
-	 -o ./build/connect ./cmd/slinky
+	 -o ./build/slinky ./cmd/connect
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -77,8 +77,8 @@ stop-sidecar-dev:
 	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile sidecar down
 
 install: tidy
-	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
-	@cp $(BIN_DIR)/slinky $(BIN_DIR)/connect
+	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/connect
+	@cp $(BIN_DIR)/connect $(BIN_DIR)/slinky
 
 .PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
