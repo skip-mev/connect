@@ -21,7 +21,7 @@ const (
 	URL = "https://clob.polymarket.com/markets/%s"
 
 	// priceAdjustmentMin is the value the price gets set to in the event of price == 0.
-	priceAdjustmentMin = 0.00001
+	priceAdjustmentMin = 0.0001
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
