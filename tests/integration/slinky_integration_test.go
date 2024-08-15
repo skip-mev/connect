@@ -23,7 +23,7 @@ import (
 
 var (
 	image = ibc.DockerImage{
-		Repository: "skip-mev/slinky-e2e",
+		Repository: "skip-mev/connect-e2e",
 		Version:    "latest",
 		UidGid:     "1000:1000",
 	}
@@ -34,7 +34,7 @@ var (
 	gasAdjustment = 1.5
 
 	oracleImage = ibc.DockerImage{
-		Repository: "skip-mev/slinky-e2e-oracle",
+		Repository: "skip-mev/connect-e2e-oracle",
 		Version:    "latest",
 		UidGid:     "1000:1000",
 	}
@@ -90,8 +90,8 @@ var (
 
 	denom = "stake"
 	spec  = &interchaintest.ChainSpec{
-		ChainName:     "slinky",
-		Name:          "slinky",
+		ChainName:     "connect",
+		Name:          "connect",
 		NumValidators: &numValidators,
 		NumFullNodes:  &numFullNodes,
 		Version:       "latest",
@@ -102,10 +102,10 @@ var (
 				image,
 			},
 			Type:           "cosmos",
-			Name:           "slinky",
+			Name:           "connect",
 			Denom:          denom,
 			ChainID:        "chain-id-0",
-			Bin:            "slinkyd",
+			Bin:            "connectd",
 			Bech32Prefix:   "cosmos",
 			CoinType:       "118",
 			GasAdjustment:  gasAdjustment,

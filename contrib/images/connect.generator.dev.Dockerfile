@@ -1,9 +1,9 @@
-# ./contrib/images/slinky.generator.dev.Dockerfile
+# ./contrib/images/connect.generator.dev.Dockerfile
 
 # Stage 1: Build the Go application
 FROM golang:1.22 AS builder
 
-WORKDIR /src/slinky
+WORKDIR /src/connect
 
 COPY go.mod .
 
@@ -15,7 +15,7 @@ RUN make build
 
 # Stage 2: Create a lightweight image for running the application
 FROM ubuntu:rolling
-COPY --from=builder /src/slinky/build/* /usr/local/bin/
+COPY --from=builder /src/connect/build/* /usr/local/bin/
 
 # Create the /data directory
 RUN mkdir -p /data

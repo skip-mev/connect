@@ -6,7 +6,7 @@ services:
   market_generator:
     build:
       context: ../..
-      dockerfile: ./contrib/images/slinky.generator.dev.Dockerfile
+      dockerfile: ./contrib/images/connect.generator.dev.Dockerfile
     entrypoint: [
       "/usr/local/bin/scripts",
       "--use-core=$USE_CORE_MARKETS",
@@ -36,11 +36,11 @@ services:
   oracle:
     build:
       context: ../..
-      dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
+      dockerfile: ./contrib/images/connect.sidecar.dev.Dockerfile
     environment:
       - SLINKY_CONFIG_UPDATEINTERVAL=${SLINKY_CONFIG_UPDATEINTERVAL:-250ms}
     entrypoint: [
-      "slinky",
+      "connect",
       "--market-config-path", "/data/markets.json",
       "--pprof-port", "6060",
       "--run-pprof",
@@ -68,7 +68,7 @@ services:
       - USE_OSMOSIS_MARKETS=${USE_OSMOSIS_MARKETS:-false}
     build:
       context: ../..
-      dockerfile: ./contrib/images/slinky.local.Dockerfile
+      dockerfile: ./contrib/images/connect.local.Dockerfile
     ports:
       - "26656:26656"
       - "26657:26657"
@@ -85,9 +85,9 @@ services:
   oracle_with_blockchain:
     build:
       context: ../..
-      dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
+      dockerfile: ./contrib/images/connect.sidecar.dev.Dockerfile
     entrypoint: [
-      "slinky",
+      "connect",
       "--update-market-config-path", "/oracle/market.json",
       "--market-map-endpoint", "blockchain:9090",
       "--pprof-port", "6060",
