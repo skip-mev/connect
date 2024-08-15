@@ -1,73 +1,113 @@
 <AccordionGroup>
     <Accordion title="dYdX v6">
 
-        **The minimum required version for Connect with dYdX v6 is `v1.0.5+`.**
+        **The minimum required version for Connect with dYdX v6 is `v1.0.10+`.**
 
-        First, please ensure you've received your **API keys** for Raydium markets. If you have not received API keys, please reach out to the team in the relevant channels.
+        First, please ensure you've received your **API keys** for the relevant providers. If you have not received API keys, please reach out to the team in the relevant communication channels.
 
-        Next, place your API keys under their corresponding URLs in the following file and save it to your system. Keep the file path handy as we will pass it into a flag when running Connect.
+        Next, place your API keys under their corresponding URLs in the following file and save it to your system. **Keep the file path handy** as we will pass it into a flag when running Connect.
 
         We will also supply an edited configuration for the `dydx_migration_api` which facilitates graceful migration from dydx's `x/prices` to `x/marketmap`.
 
-        **Make sure to fill in the URL for the REST endpoint and gRPC endpoint of your node** (in that order). The migration API will _not_ work if the REST API endpoint is not the first endpoint in the list.
+        For the `dydx_migration_api` provider, **make sure to fill in the URL for the REST endpoint and gRPC endpoint of your node** (in that order). The migration API will _not_ work unless the REST API endpoint is the **first** in the endpoints list.
 
         ```json oracle.json
         {
-           "providers":{
-              "dydx_migration_api":{
-                 "api":{
-                    "endpoints":[
-                       {
-                          "url":"http://<YOUR NODE REST API ENDPOINT>"
-                       },
-                       {
-                          "url":"<YOUR NODE GRPC ENDPOINT>:<YOUR NODE GRPC PORT>"
-                       }
-                    ]
-                 }
-              },
-              "raydium_api":{
-                 "api":{
-                    "endpoints":[
-                       {
-                          "url":"https://solana.polkachu.com",
-                          "authentication":{
-                             "apiKeyHeader":"x-api-key",
-                             "apiKey":"API KEY"
-                          }
-                       },
-                       {
-                          "url":"https://slinky-solana.kingnodes.com",
-                          "authentication":{
-                             "apiKeyHeader":"x-api-key",
-                             "apiKey":"API KEY"
-                          }
-                       },
-                       {
-                          "url":"https://solana.lavenderfive.com",
-                          "authentication":{
-                             "apiKeyHeader":"x-api-key",
-                             "apiKey":"API KEY"
-                          }
-                       },
-                       {
-                          "url":"https://solana-rpc.rhino-apis.com",
-                          "authentication":{
-                             "apiKeyHeader":"x-api-key",
-                             "apiKey":"API KEY"
-                          }
-                       },
-                       {
-                          "url":"https://dydx.helius-rpc.com",
-                          "authentication":{
-                             "apiKeyHeader":"x-api-key",
-                             "apiKey":"API KEY"
-                          }
-                       }
-                    ]
-                 }
+          "providers":{
+            "dydx_migration_api":{
+              "api":{
+                "endpoints":[
+                  {
+                    "url":"http://<YOUR NODE REST API ENDPOINT>"
+                  },
+                  {
+                    "url":"<YOUR NODE GRPC ENDPOINT>:<YOUR NODE GRPC PORT>"
+                  }
+                ]
               }
-           }
+            },
+            "raydium_api":{
+              "api":{
+                "endpoints":[
+                  {
+                    "url":"https://solana.polkachu.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://slinky-solana.kingnodes.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://solana.lavenderfive.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://solana-rpc.rhino-apis.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://dydx.helius-rpc.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  }
+                ]
+              }
+            },
+            "uniswapv3_api-ethereum": {
+              "api": {
+                "endpoints": [
+                  {
+                    "url":"https://ethereum.lavenderfive.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://ethereum-rpc.polkachu.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  },
+                  {
+                    "url":"https://eth.kingnodes.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  }
+                ]
+              }
+            },
+            "uniswapv3_api-base": {
+              "api": {
+                "endpoints": [
+                  {
+                    "url":"https://base-rpc.rhino-apis.com",
+                    "authentication":{
+                      "apiKeyHeader":"x-api-key",
+                      "apiKey":"API KEY"
+                    }
+                  }
+                ]
+              }
+            }
+          }
         }
         ```
 
