@@ -22,6 +22,10 @@ const (
 	DefaultPrometheusServerAddress = "0.0.0.0:8002"
 	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
 	DefaultMetricsEnabled = true
+	// DefaultTelemetryDisabled is the default value for disabling telemetry
+	DefaultTelemetryDisabled = false
+	// DefaultTelemetryDisabled is the default value for disabling telemetry
+	DefaultTelemetryPushAddress = "127.0.0.1:8125"
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"
 	// DefaultPort is the default for the slinky oracle server port.
@@ -40,6 +44,10 @@ func DefaultOracleConfig() config.OracleConfig {
 		Metrics: config.MetricsConfig{
 			PrometheusServerAddress: DefaultPrometheusServerAddress,
 			Enabled:                 DefaultMetricsEnabled,
+			Telemetry: config.TelemetryConfig{
+				Disabled: DefaultTelemetryDisabled,
+				PushAddress: DefaultTelemetryPushAddress,
+			},
 		},
 		Providers: make(map[string]config.ProviderConfig),
 		Host:      DefaultHost,
