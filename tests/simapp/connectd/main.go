@@ -7,7 +7,7 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	"github.com/skip-mev/slinky/tests/simapp"
-	cmd "github.com/skip-mev/slinky/tests/simapp/slinkyd/testappd"
+	cmd "github.com/skip-mev/slinky/tests/simapp/connectd/testappd"
 )
 
 func main() {
