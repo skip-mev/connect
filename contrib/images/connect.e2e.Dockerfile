@@ -1,6 +1,6 @@
-FROM ghcr.io/skip-mev/slinky-dev-base AS builder
+FROM ghcr.io/skip-mev/connect-dev-base AS builder
 
-WORKDIR /src/slinky
+WORKDIR /src/connect
 
 COPY go.mod .
 
@@ -12,11 +12,11 @@ RUN make build-test-app
 
 ## Prepare the final clear binary
 ## This will expose the tendermint and cosmos ports alongside 
-## starting up the sim app and the slinky daemon
+## starting up the sim app and the connect daemon
 FROM ubuntu:rolling
 EXPOSE 26656 26657 1317 9090 7171 26655 8081 26660
 
 RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
-ENTRYPOINT ["slinkyd", "start"]
+ENTRYPOINT ["connectd", "start"]
 
-COPY --from=builder /src/slinky/build/* /usr/local/bin/
+COPY --from=builder /src/connect/build/* /usr/local/bin/
