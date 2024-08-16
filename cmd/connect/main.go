@@ -51,8 +51,8 @@ var (
 
 	// oracle config flags.
 	flagMetricsEnabled           = "metrics-enabled"
-	flagTelemetryDisabled           = "telemetry-disabled"
-	flagTelemetryPushAddress           = "telemetry-push-address"
+	flagTelemetryDisabled        = "telemetry-disabled"
+	flagTelemetryPushAddress     = "telemetry-push-address"
 	flagMetricsPrometheusAddress = "metrics-prometheus-address"
 	flagHost                     = "host"
 	flagPort                     = "port"

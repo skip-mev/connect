@@ -20,8 +20,8 @@ func TestMetricsConfig(t *testing.T) {
 				Enabled:                 true,
 				PrometheusServerAddress: "localhost:9090",
 				Telemetry: config.TelemetryConfig{
-					Disabled: false,
-					PushAddress: "localhost:8152",
+					Disabled:    false,
+					PushAddress: "localhost:9125",
 				},
 			},
 			expectedErr: false,
@@ -37,9 +37,9 @@ func TestMetricsConfig(t *testing.T) {
 		{
 			name: "bad config with no telemetry push address",
 			config: config.MetricsConfig{
-				Enabled:                 true,
+				Enabled: true,
 				Telemetry: config.TelemetryConfig{
-					Disabled: false,
+					Disabled:    false,
 					PushAddress: "",
 				},
 			},
@@ -58,8 +58,7 @@ func TestMetricsConfig(t *testing.T) {
 			config: config.MetricsConfig{
 				Enabled:                 false,
 				PrometheusServerAddress: "",
-				Telemetry: config.TelemetryConfig{
-				},
+				Telemetry:               config.TelemetryConfig{},
 			},
 			expectedErr: false,
 		},
