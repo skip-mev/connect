@@ -55,27 +55,24 @@ func NewRootCmd() *cobra.Command {
 		legacyAmino        *codec.LegacyAmino
 		autoCliOpts        autocli.AppOptions
 		moduleBasicManager module.BasicManager
+		initClientCtx      client.Context
 	)
 
-	if err := depinject.Inject(depinject.Configs(simapp.AppConfig, depinject.Supply(log.NewNopLogger())),
+	if err := depinject.Inject(
+		depinject.Configs(
+			simapp.AppConfig,
+			depinject.Supply(log.NewNopLogger()),
+			depinject.Provide(ProvideInitClientCtx)),
 		&interfaceRegistry,
 		&appCodec,
 		&txConfig,
 		&legacyAmino,
 		&autoCliOpts,
 		&moduleBasicManager,
+		&initClientCtx,
 	); err != nil {
 		panic(err)
 	}
-
-	initClientCtx := client.Context{}.
-		WithCodec(appCodec).
-		WithInterfaceRegistry(interfaceRegistry).
-		WithLegacyAmino(legacyAmino).
-		WithInput(os.Stdin).
-		WithAccountRetriever(types.AccountRetriever{}).
-		WithHomeDir(simapp.DefaultNodeHome).
-		WithViper("") // In simapp, we don't use any prefix for env variables.
 
 	rootCmd := &cobra.Command{
 		Use:   "slinkyd",
@@ -129,6 +126,17 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	return rootCmd
+}
+
+func ProvideInitClientCtx(appCodec codec.Codec, interfaceRegistry codectypes.InterfaceRegistry, legacyAmino *codec.LegacyAmino) client.Context {
+	return client.Context{}.
+		WithCodec(appCodec).
+		WithInterfaceRegistry(interfaceRegistry).
+		WithLegacyAmino(legacyAmino).
+		WithInput(os.Stdin).
+		WithAccountRetriever(types.AccountRetriever{}).
+		WithHomeDir(simapp.DefaultNodeHome).
+		WithViper("") // In simapp, we don't use any prefix for env variables.
 }
 
 // initCometBFTConfig helps to override default CometBFT Config values.
