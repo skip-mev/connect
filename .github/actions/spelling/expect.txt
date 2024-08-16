@@ -194,6 +194,7 @@ Concluson
 conditionaltokens
 configurator
 confixcmd
+connectd
 consensuskeeper
 consensusmodulev
 consensustypes
@@ -954,3 +955,5 @@ zerolog
 ZFvy
 zondax
 zstd
+goautoneg
+munnerz

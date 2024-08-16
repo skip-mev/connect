@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}, {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
+        image: [{file: "connect.e2e.Dockerfile", name: "connect-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "connect.sidecar.prod.Dockerfile", name: "connect-sidecar"}, {file: "connect.local.Dockerfile", name: "connect-testapp"}, {file: "connect.sidecar.e2e.Dockerfile", name: "connect-e2e-sidecar"}]
     runs-on: ubuntu-latest-m
     permissions:
       contents: read
@@ -109,6 +109,6 @@ jobs:
           values_file_name: "values-dev.yaml"
           modified_values: |
             {
-              ".chain.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-testapp'] }}",
-              ".sidecar.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-e2e-sidecar'] }}",
+              ".chain.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['connect-testapp'] }}",
+              ".sidecar.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['connect-e2e-sidecar'] }}",
             }
