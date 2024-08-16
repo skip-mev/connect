@@ -26,14 +26,14 @@ func GetChainConfig() types.ChainConfig {
 		Decimals:      6,
 		NumValidators: 4,
 		NumNodes:      2,
-		BinaryName:    "slinkyd",
+		BinaryName:    "connectd",
 		Image: provider.ImageDefinition{
-			Image: "skip-mev/slinky-e2e",
+			Image: "skip-mev/connect-e2e",
 			UID:   "1000",
 			GID:   "1000",
 		},
 		SidecarImage: provider.ImageDefinition{
-			Image: "skip-mev/slinky-e2e-oracle",
+			Image: "skip-mev/connect-e2e-oracle",
 			UID:   "1000",
 			GID:   "1000",
 		},

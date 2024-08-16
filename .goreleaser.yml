@@ -8,7 +8,15 @@ release:
   prerelease: true
 
 builds:
-  - main: 'cmd/slinky/main.go'
+  - main: 'cmd/connect/main.go'
+    goos:
+    - 'linux'
+    - 'darwin'
+    binary: 'connect'
+    id: 'connect'
+    ldflags:
+      - "-X github.com/skip-mev/slinky/cmd/build.Build={{.Version}}"
+  - main: 'cmd/connect/main.go'
     goos:
     - 'linux'
     - 'darwin'
