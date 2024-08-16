@@ -955,3 +955,5 @@ zerolog
 ZFvy
 zondax
 zstd
+goautoneg
+munnerz
