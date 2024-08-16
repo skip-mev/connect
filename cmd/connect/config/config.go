@@ -22,9 +22,9 @@ const (
 	DefaultPrometheusServerAddress = "0.0.0.0:8002"
 	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
 	DefaultMetricsEnabled = true
-	// DefaultTelemetryDisabled is the default value for disabling telemetry
+	// DefaultTelemetryDisabled is the default value for disabling telemetry.
 	DefaultTelemetryDisabled = false
-	// DefaultTelemetryDisabled is the default value for disabling telemetry
+	// DefaultTelemetryDisabled is the default value for disabling telemetry.
 	DefaultTelemetryPushAddress = "127.0.0.1:9125"
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"
