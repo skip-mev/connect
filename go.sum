@@ -618,6 +618,8 @@ github.com/go-playground/universal-translator v0.18.0/go.mod h1:UvRDBj+xPUEGrFYl
 github.com/go-playground/validator/v10 v10.2.0/go.mod h1:uOYAAleCW8F/7oMFd6aG0GOhaH6EGOAJShg8Id5JGkI=
 github.com/go-playground/validator/v10 v10.11.1 h1:prmOlTVv+YjZjmRmNSF3VmspqJIxJWXmqUsHwfTRRkQ=
 github.com/go-playground/validator/v10 v10.11.1/go.mod h1:i+3WkQ1FvaUjjxh1kSvIA4dMGDBiPU55YFDl0WbKdWU=
+github.com/go-quicktest/qt v1.101.0 h1:O1K29Txy5P2OK0dGo59b7b0LR6wKfIhttaAhHUyn7eI=
+github.com/go-quicktest/qt v1.101.0/go.mod h1:14Bz/f7NwaXPtdYEgzsx46kqSxVwTbzVZsDC26tQJow=
 github.com/go-sql-driver/mysql v1.4.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=
@@ -2197,8 +2199,8 @@ honnef.co/go/tools v0.0.1-2020.1.3/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9
 honnef.co/go/tools v0.0.1-2020.1.4/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9vFzvIQ3k=
 honnef.co/go/tools v0.5.0 h1:29uoiIormS3Z6R+t56STz/oI4v+mB51TSmEOdJPgRnE=
 honnef.co/go/tools v0.5.0/go.mod h1:e9irvo83WDG9/irijV44wr3tbhcFeRnfpVlRqVwpzMs=
-mvdan.cc/gofumpt v0.6.0 h1:G3QvahNDmpD+Aek/bNOLrFR2XC6ZAdo62dZu65gmwGo=
-mvdan.cc/gofumpt v0.6.0/go.mod h1:4L0wf+kgIPZtcCWXynNS2e6bhmj73umwnuXSZarixzA=
+mvdan.cc/gofumpt v0.7.0 h1:bg91ttqXmi9y2xawvkuMXyvAA/1ZGJqYAEGjXuP0JXU=
+mvdan.cc/gofumpt v0.7.0/go.mod h1:txVFJy/Sc/mvaycET54pV8SW8gWxTlUuGHVEcncmNUo=
 mvdan.cc/unparam v0.0.0-20240528143540-8a5130ca722f h1:lMpcwN6GxNbWtbpI1+xzFLSW8XzX0u72NttUGVFjO3U=
 mvdan.cc/unparam v0.0.0-20240528143540-8a5130ca722f/go.mod h1:RSLa7mKKCNeTTMHBw5Hsy2rfJmd6O2ivt9Dw9ZqCQpQ=
 nhooyr.io/websocket v1.8.6 h1:s+C3xAMLwGmlI31Nyn/eAehUlZPwfYZu2JXM621Q5/k=
