@@ -24,7 +24,7 @@ const (
 	DefaultMetricsEnabled = true
 	// DefaultTelemetryDisabled is the default value for disabling telemetry.
 	DefaultTelemetryDisabled = false
-	// DefaultTelemetryDisabled is the default value for disabling telemetry.
+	// DefaultTelemetryPushAddress is the default value for the publication endpoint
 	DefaultTelemetryPushAddress = "127.0.0.1:9125"
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"

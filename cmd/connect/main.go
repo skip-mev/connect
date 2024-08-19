@@ -196,7 +196,7 @@ func init() {
 	rootCmd.Flags().Bool(
 		flagTelemetryDisabled,
 		cmdconfig.DefaultTelemetryDisabled,
-		"Disabled the Oracle telemetry metrics",
+		"Disables the Oracle telemetry publication",
 	)
 	rootCmd.Flags().String(
 		flagMetricsPrometheusAddress,
