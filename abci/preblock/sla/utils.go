@@ -3,9 +3,9 @@ package sla
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 // getStatuses returns the price feed status updates for each currency pair.

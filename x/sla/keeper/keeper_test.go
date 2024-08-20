@@ -10,10 +10,10 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/sla/keeper"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
-	"github.com/skip-mev/slinky/x/sla/types/mocks"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/sla/keeper"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
+	"github.com/skip-mev/connect/v2/x/sla/types/mocks"
 )
 
 type KeeperTestSuite struct {

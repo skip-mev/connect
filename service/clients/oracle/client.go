@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkygrpc "github.com/skip-mev/slinky/pkg/grpc"
-	"github.com/skip-mev/slinky/service/metrics"
-	"github.com/skip-mev/slinky/service/servers/oracle/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
+	"github.com/skip-mev/connect/v2/service/metrics"
+	"github.com/skip-mev/connect/v2/service/servers/oracle/types"
 )
 
 var _ OracleClient = (*GRPCClient)(nil)

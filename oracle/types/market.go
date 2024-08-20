@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	pkgtypes "github.com/skip-mev/connect/v2/pkg/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 // ProviderTickersFromMarketMap returns the set of provider tickers a given provider should

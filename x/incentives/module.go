@@ -15,10 +15,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
-	"github.com/skip-mev/slinky/x/incentives/client/cli"
-	"github.com/skip-mev/slinky/x/incentives/keeper"
-	"github.com/skip-mev/slinky/x/incentives/types"
+	incentivesmodulev1 "github.com/skip-mev/connect/v2/api/slinky/incentives/module/v1"
+	"github.com/skip-mev/connect/v2/x/incentives/client/cli"
+	"github.com/skip-mev/connect/v2/x/incentives/keeper"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // ConsensusVersion is the x/incentives module's current version, as modules integrate and

@@ -3,7 +3,7 @@ package arrays_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/pkg/arrays"
+	"github.com/skip-mev/connect/v2/pkg/arrays"
 )
 
 func TestCheckEntryInArray(t *testing.T) {

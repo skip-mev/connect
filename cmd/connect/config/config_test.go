@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cmdconfig "github.com/skip-mev/slinky/cmd/connect/config"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/websockets/coinbase"
-	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
+	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium"
+	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
+	"github.com/skip-mev/connect/v2/providers/websockets/coinbase"
+	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
 func TestValidateBasic(t *testing.T) {

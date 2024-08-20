@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/cmd/build"
-	"github.com/skip-mev/slinky/oracle"
-	"github.com/skip-mev/slinky/pkg/sync"
-	"github.com/skip-mev/slinky/service/servers/oracle/types"
+	"github.com/skip-mev/connect/v2/cmd/build"
+	"github.com/skip-mev/connect/v2/oracle"
+	"github.com/skip-mev/connect/v2/pkg/sync"
+	"github.com/skip-mev/connect/v2/service/servers/oracle/types"
 )
 
 const DefaultServerShutdownTimeout = 3 * time.Second

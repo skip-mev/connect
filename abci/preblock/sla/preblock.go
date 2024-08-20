@@ -6,12 +6,12 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
-	compression "github.com/skip-mev/slinky/abci/strategies/codec"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/ve"
-	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	voteaggregator "github.com/skip-mev/connect/v2/abci/strategies/aggregator"
+	compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	"github.com/skip-mev/connect/v2/abci/ve"
+	slakeeper "github.com/skip-mev/connect/v2/x/sla/keeper"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 // PreBlockHandler is responsible for aggregating information about

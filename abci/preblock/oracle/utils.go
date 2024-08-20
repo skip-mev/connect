@@ -7,8 +7,8 @@ import (
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
 
 // recordPrice records all the given prices per ticker, and reports them as a float64.

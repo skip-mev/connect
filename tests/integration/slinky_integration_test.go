@@ -13,12 +13,12 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/tests/integration"
-	"github.com/skip-mev/slinky/x/alerts"
-	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
-	"github.com/skip-mev/slinky/x/oracle"
-	"github.com/skip-mev/slinky/x/sla"
+	"github.com/skip-mev/connect/v2/tests/integration"
+	"github.com/skip-mev/connect/v2/x/alerts"
+	"github.com/skip-mev/connect/v2/x/incentives"
+	marketmapmodule "github.com/skip-mev/connect/v2/x/marketmap"
+	"github.com/skip-mev/connect/v2/x/oracle"
+	"github.com/skip-mev/connect/v2/x/sla"
 )
 
 var (

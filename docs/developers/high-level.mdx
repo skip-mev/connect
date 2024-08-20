@@ -10,13 +10,13 @@ icon: tag
 
 ## Summary
 
-Connect prices are stored within the [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) module.
+Connect prices are stored within the [x/oracle](https://github.com/skip-mev/connect/v2/tree/main/x/oracle) module.
 
 On very specific chains - right now only dYdX - they live in a different storage module (in dYdX's case, `x/prices`).
 
 These prices are updated on a per-block basis when there is a sufficient delta from the last block's price. They can be accessed natively by CosmWasm smart contracts, other modules, or those with access to chain state.
 
-Connect's market configuration is stored in the [x/marketmap](https://github.com/skip-mev/slinky/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
+Connect's market configuration is stored in the [x/marketmap](https://github.com/skip-mev/connect/v2/tree/main/x/marketmap). This module, unlike `x/oracle`, does **not** store price data. Instead, it stores which currency pairs are supported and how they are configured.
 
 ### Getting Supported Assets
 
@@ -62,8 +62,7 @@ When calling `getPrices` via the above methods, you are returned an array of `Ge
         // nonce represents the nonce for the CurrencyPair if it exists in state
         uint64 nonce = 2;
         // decimals represents the number of decimals that the quote-price is
-        // represented in. For Pairs where ETHEREUM is the quote this will be 18,
-        // otherwise it will be 8.
+        // represented in. It is used to scale the QuotePrice to its proper value.
         uint64 decimals = 3;
         // ID represents the identifier for the CurrencyPair.
         uint64 id = 4;
