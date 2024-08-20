@@ -67,18 +67,17 @@ type Metrics interface {
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
-	promMetrics  *PromMetrics
-	statsdClient *statsd.Client
+	promTicks           prometheus.Counter
+	promTickerTicks     prometheus.CounterVec
+	promPrices          prometheus.GaugeVec
+	promAggregatePrices prometheus.GaugeVec
+	promProviderTick    prometheus.CounterVec
+	promProviderCount   prometheus.GaugeVec
+	promSlinkyBuildInfo prometheus.GaugeVec
+	statsdClient        statsd.ClientInterface
 }
 
 type PromMetrics struct {
-	ticks           prometheus.Counter
-	tickerTicks     *prometheus.CounterVec
-	prices          *prometheus.GaugeVec
-	aggregatePrices *prometheus.GaugeVec
-	providerTick    *prometheus.CounterVec
-	providerCount   *prometheus.GaugeVec
-	slinkyBuildInfo *prometheus.GaugeVec
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
@@ -94,91 +93,74 @@ func NewMetricsFromConfig(config config.MetricsConfig) Metrics {
 	return NewNopMetrics()
 }
 
-func NewNopMetrics() Metrics {
-	return &OracleMetricsImpl{}
-}
-
 // NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
 func NewMetrics(telemetryPushAddress string) Metrics {
-	var statsdClient *statsd.Client
+	ret := OracleMetricsImpl{}
+
 	if telemetryPushAddress != "" {
-		statsdClient, _ = statsd.New(telemetryPushAddress)
-	}
-	promMetrics := &PromMetrics{
-		ticks: prometheus.NewCounter(prometheus.CounterOpts{
-			Namespace: OracleSubsystem,
-			Name:      TicksMetricName,
-			Help:      "Number of ticks with a successful oracle update.",
-		}),
-		tickerTicks: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: OracleSubsystem,
-			Name:      TickerTicksMetricName,
-			Help:      "Number of ticks with a successful ticker update.",
-		}, []string{PairIDLabel}),
-		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: OracleSubsystem,
-			Name:      PricesMetricName,
-			Help:      "Price gauge for a given currency pair on a provider",
-		}, []string{ProviderLabel, PairIDLabel, DecimalsLabel}),
-		aggregatePrices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: OracleSubsystem,
-			Name:      AggregatePricesMetricName,
-			Help:      "Aggregate price for a given currency pair",
-		}, []string{PairIDLabel, DecimalsLabel}),
-		providerTick: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: OracleSubsystem,
-			Name:      ProviderTickMetricName,
-			Help:      "Number of ticks with a successful provider update.",
-		}, []string{ProviderLabel, PairIDLabel, SuccessLabel}),
-		providerCount: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: ProviderCountMetricName,
-			Name:      ProviderTickMetricName,
-			Help:      "Number of providers that were utilized to calculate the final price for a given market.",
-		}, []string{PairIDLabel}),
-		slinkyBuildInfo: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: OracleSubsystem,
-			Name:      SlinkyBuildInfoMetricName,
-			Help:      "Information about the slinky build",
-		}, []string{Version}),
+		ret.statsdClient, _ = statsd.New(telemetryPushAddress)
+	} else {
+		ret.statsdClient = &statsd.NoOpClient{}
 	}
 
-	prometheus.MustRegister(promMetrics.ticks)
-	prometheus.MustRegister(promMetrics.tickerTicks)
-	prometheus.MustRegister(promMetrics.prices)
-	prometheus.MustRegister(promMetrics.aggregatePrices)
-	prometheus.MustRegister(promMetrics.providerTick)
-	prometheus.MustRegister(promMetrics.providerCount)
-	prometheus.MustRegister(promMetrics.slinkyBuildInfo)
+	prometheus.MustRegister(ret.promTicks)
+	prometheus.MustRegister(ret.promTickerTicks)
+	prometheus.MustRegister(ret.promPrices)
+	prometheus.MustRegister(ret.promAggregatePrices)
+	prometheus.MustRegister(ret.promProviderTick)
+	prometheus.MustRegister(ret.promProviderCount)
+	prometheus.MustRegister(ret.promSlinkyBuildInfo)
 
-	return &OracleMetricsImpl{
-		promMetrics,
-		statsdClient,
-	}
+	return &ret
+}
+
+type noOpOracleMetrics struct{}
+
+// NewNopMetrics returns a Metrics implementation that does nothing.
+func NewNopMetrics() Metrics {
+	return &noOpOracleMetrics{}
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
+func (m *noOpOracleMetrics) AddTick() {}
+
+// AddTickerTick increments the number of ticks for a given ticker. Specifically, this
+// is used to track the number of times a ticker was updated.
+func (m *noOpOracleMetrics) AddTickerTick(_ string) {}
+
+// UpdatePrice price updates the price for the given pairID for the provider.
+func (m *noOpOracleMetrics) UpdatePrice(_, _ string, _ uint64, _ float64) {}
+
+// UpdateAggregatePrice updates the aggregated price for the given pairID.
+func (m *noOpOracleMetrics) UpdateAggregatePrice(string, uint64, float64) {}
+
+// AddProviderTick increments the number of ticks for a given provider. Specifically,
+// this is used to track the number of times a provider included a price update that
+// was used in the aggregation.
+func (m *noOpOracleMetrics) AddProviderTick(_, _ string, _ bool) {}
+
+// AddProviderCountForMarket increments the number of providers that were utilized
+// to calculate the final price for a given market.
+func (m *noOpOracleMetrics) AddProviderCountForMarket(string, int) {}
+
+// SetSlinkyBuildInfo sets the build information for the Slinky binary.
+func (m *noOpOracleMetrics) SetSlinkyBuildInfo() {}
+
+// AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *OracleMetricsImpl) AddTick() {
-	if m.promMetrics != nil {
-		m.promMetrics.ticks.Add(1)
-	}
-	if m.statsdClient != nil {
-		m.statsdClient.Incr(TicksMetricName, []string{}, 1)
-	}
+	m.promTicks.Add(1)
+	m.statsdClient.Incr(TicksMetricName, []string{}, 1)
 }
 
 // AddTickerTick increments the number of ticks for a given ticker. Specifically, this
 // is used to track the number of times a ticker was updated.
 func (m *OracleMetricsImpl) AddTickerTick(ticker string) {
-	if m.promMetrics != nil {
-		m.promMetrics.tickerTicks.With(prometheus.Labels{
-			PairIDLabel: strings.ToLower(ticker),
-		},
-		).Add(1)
-	}
+	m.promTickerTicks.With(prometheus.Labels{
+		PairIDLabel: strings.ToLower(ticker),
+	},
+	).Add(1)
 
-	if m.statsdClient != nil {
-		m.statsdClient.Incr(TickerTicksMetricName, []string{strings.ToLower(ticker)}, 1)
-	}
+	m.statsdClient.Incr(TickerTicksMetricName, []string{strings.ToLower(ticker)}, 1)
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
@@ -187,19 +169,15 @@ func (m *OracleMetricsImpl) UpdatePrice(
 	decimals uint64,
 	price float64,
 ) {
-	if m.promMetrics != nil {
-		m.promMetrics.prices.With(prometheus.Labels{
-			ProviderLabel: strings.ToLower(providerName),
-			PairIDLabel:   strings.ToLower(pairID),
-			DecimalsLabel: fmt.Sprintf("%d", decimals),
-		},
-		).Set(price)
-	}
+	m.promPrices.With(prometheus.Labels{
+		ProviderLabel: strings.ToLower(providerName),
+		PairIDLabel:   strings.ToLower(pairID),
+		DecimalsLabel: fmt.Sprintf("%d", decimals),
+	},
+	).Set(price)
 
-	if m.statsdClient != nil {
-		metricName := strings.Join([]string{PricesMetricName, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
-		m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
-	}
+	metricName := strings.Join([]string{PricesMetricName, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
+	m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
@@ -208,66 +186,50 @@ func (m *OracleMetricsImpl) UpdateAggregatePrice(
 	decimals uint64,
 	price float64,
 ) {
-	if m.promMetrics != nil {
-		m.promMetrics.aggregatePrices.With(prometheus.Labels{
-			PairIDLabel:   strings.ToLower(pairID),
-			DecimalsLabel: fmt.Sprintf("%d", decimals),
-		},
-		).Set(price)
-	}
+	m.promAggregatePrices.With(prometheus.Labels{
+		PairIDLabel:   strings.ToLower(pairID),
+		DecimalsLabel: fmt.Sprintf("%d", decimals),
+	},
+	).Set(price)
 
-	if m.statsdClient != nil {
-		metricName := strings.Join([]string{AggregatePricesMetricName, strings.ToLower(PairIDLabel)}, ".")
-		m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
-	}
+	metricName := strings.Join([]string{AggregatePricesMetricName, strings.ToLower(PairIDLabel)}, ".")
+	m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
 }
 
 // AddProviderTick increments the number of ticks for a given provider. Specifically,
 // this is used to track the number of times a provider included a price update that
 // was used in the aggregation.
 func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string, success bool) {
-	if m.promMetrics != nil {
-		m.promMetrics.providerTick.With(prometheus.Labels{
-			ProviderLabel: strings.ToLower(providerName),
-			PairIDLabel:   strings.ToLower(pairID),
-			SuccessLabel:  fmt.Sprintf("%t", success),
-		},
-		).Add(1)
-	}
+	m.promProviderTick.With(prometheus.Labels{
+		ProviderLabel: strings.ToLower(providerName),
+		PairIDLabel:   strings.ToLower(pairID),
+		SuccessLabel:  fmt.Sprintf("%t", success),
+	},
+	).Add(1)
 
-	if m.statsdClient != nil {
-		metricName := strings.Join([]string{ProviderTickMetricName, strings.ToLower(ProviderLabel), strings.ToLower(PairIDLabel)}, ".")
-		m.statsdClient.Incr(metricName, []string{fmt.Sprintf("%t", success)}, 1)
-	}
+	metricName := strings.Join([]string{ProviderTickMetricName, strings.ToLower(ProviderLabel), strings.ToLower(PairIDLabel)}, ".")
+	m.statsdClient.Incr(metricName, []string{fmt.Sprintf("%t", success)}, 1)
 }
 
 // AddProviderCountForMarket increments the number of providers that were utilized
 // to calculate the final price for a given market.
 func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) {
-	if m.promMetrics != nil {
-		m.promMetrics.providerCount.With(prometheus.Labels{
-			PairIDLabel: strings.ToLower(market),
-		},
-		).Set(float64(count))
-	}
+	m.promProviderCount.With(prometheus.Labels{
+		PairIDLabel: strings.ToLower(market),
+	},
+	).Set(float64(count))
 
-	if m.statsdClient != nil {
-		metricName := strings.Join([]string{ProviderCountMetricName, strings.ToLower(PairIDLabel)}, ".")
-		m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
-	}
+	metricName := strings.Join([]string{ProviderCountMetricName, strings.ToLower(PairIDLabel)}, ".")
+	m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
 }
 
 // SetSlinkyBuildInfo sets the build information for the Slinky binary. The version exported
 // is determined by the build time version in accordance with the build pkg.
 func (m *OracleMetricsImpl) SetSlinkyBuildInfo() {
-	if m.promMetrics != nil {
-		m.promMetrics.slinkyBuildInfo.With(prometheus.Labels{
-			Version: build.Build,
-		}).Set(1)
-	}
+	m.promSlinkyBuildInfo.With(prometheus.Labels{
+		Version: build.Build,
+	}).Set(1)
 
-	if m.statsdClient != nil {
-		metricName := strings.Join([]string{SlinkyBuildInfoMetricName, strings.ToLower(build.Build)}, ".")
-		m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
-	}
+	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, strings.ToLower(build.Build)}, ".")
+	m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
 }
