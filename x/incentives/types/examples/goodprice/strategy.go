@@ -7,7 +7,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // BankKeeper defines the expected bank keeper interface required by

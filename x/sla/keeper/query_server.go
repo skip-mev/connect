@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 var _ slatypes.QueryServer = (*QueryServer)(nil)

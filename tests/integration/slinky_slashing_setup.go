@@ -20,9 +20,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/abci/strategies/codec"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/abci/strategies/codec"
+	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	alerttypes "github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 const gasPrice = 100

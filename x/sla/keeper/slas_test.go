@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"cosmossdk.io/math"
 
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 func (s *KeeperTestSuite) TestAddSLAs() {

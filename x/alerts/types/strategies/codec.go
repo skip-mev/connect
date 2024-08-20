@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // RegisterLegacyAminoCodec registers the necessary x/incentives interfaces (messages) on the

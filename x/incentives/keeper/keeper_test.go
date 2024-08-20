@@ -8,11 +8,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/x/incentives/keeper"
-	"github.com/skip-mev/slinky/x/incentives/types"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/badprice"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/mocks"
+	"github.com/skip-mev/connect/v2/x/incentives/keeper"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/badprice"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/goodprice"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/mocks"
 )
 
 type KeeperTestSuite struct {

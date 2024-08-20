@@ -14,10 +14,10 @@ import (
 	"github.com/skip-mev/petri/provider/v2/docker"
 	"github.com/skip-mev/petri/types/v2"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
-	"github.com/skip-mev/slinky/tests/simapp"
+	"github.com/skip-mev/connect/v2/tests/simapp"
 )
 
 func GetChainConfig() types.ChainConfig {

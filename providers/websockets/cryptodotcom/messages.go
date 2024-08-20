@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math"
 
-	slinkymath "github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	slinkymath "github.com/skip-mev/connect/v2/pkg/math"
+	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 )
 
 type (

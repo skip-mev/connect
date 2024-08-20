@@ -15,7 +15,7 @@ done
 cd ..
 
 # move proto files to the right places
-cp -r github.com/skip-mev/slinky/* ./
+cp -r github.com/skip-mev/connect/v2/* ./
 rm -rf github.com
 
 # go mod tidy --compat=1.20

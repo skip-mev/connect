@@ -21,7 +21,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/ve"
+	"github.com/skip-mev/connect/v2/abci/ve"
 )
 
 const (

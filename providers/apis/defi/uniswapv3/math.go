@@ -3,7 +3,7 @@ package uniswapv3
 import (
 	"math/big"
 
-	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/connect/v2/pkg/math"
 )
 
 // ConvertSquareRootX96Price converts the slot 0 sqrtPriceX96 value to a price. Note that this

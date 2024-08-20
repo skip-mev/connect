@@ -6,13 +6,13 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle"
-	"github.com/skip-mev/slinky/oracle/config"
-	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
-	"github.com/skip-mev/slinky/oracle/types"
-	mathtestutils "github.com/skip-mev/slinky/pkg/math/testutils"
-	"github.com/skip-mev/slinky/providers/base/testutils"
-	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
+	"github.com/skip-mev/connect/v2/oracle"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	metricmocks "github.com/skip-mev/connect/v2/oracle/metrics/mocks"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	mathtestutils "github.com/skip-mev/connect/v2/pkg/math/testutils"
+	"github.com/skip-mev/connect/v2/providers/base/testutils"
+	oraclefactory "github.com/skip-mev/connect/v2/providers/factories/oracle"
 )
 
 func (s *OracleTestSuite) TestMetrics() {

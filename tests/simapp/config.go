@@ -24,9 +24,9 @@ import (
 	"cosmossdk.io/depinject"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
-	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
-	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
+	alertmodulev1 "github.com/skip-mev/connect/v2/api/slinky/alerts/module/v1"
+	incentivesmodulev1 "github.com/skip-mev/connect/v2/api/slinky/incentives/module/v1"
+	oraclemodulev1 "github.com/skip-mev/connect/v2/api/slinky/oracle/module/v1"
 
 	_ "cosmossdk.io/x/circuit"                        // import for side-effects
 	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
@@ -44,9 +44,9 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
 
-	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
-	_ "github.com/skip-mev/slinky/x/marketmap"  // import for side-effects
-	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
+	_ "github.com/skip-mev/connect/v2/x/incentives" // import for side-effects
+	_ "github.com/skip-mev/connect/v2/x/marketmap"  // import for side-effects
+	_ "github.com/skip-mev/connect/v2/x/oracle"     // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -69,12 +69,12 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/slinky/marketmap/module/v1"
+	alerttypes "github.com/skip-mev/connect/v2/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types/strategies"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
+	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 // ProvideIncentives provides the incentive strategies for the incentive module, wrt the expected Keeper dependencies for

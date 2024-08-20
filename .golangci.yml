@@ -18,7 +18,8 @@ linters:
     - durationcheck
     - goconst
     - gocritic
-    - gofumpt
+      # re-enable this once golangci-lint has a new release
+      # - gofumpt
     - gosec
     - gosimple
     - govet

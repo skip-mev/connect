@@ -8,7 +8,7 @@ import "cosmos_proto/cosmos.proto";
 // Module is the config object of the alerts module.
 message Module {
   option (cosmos.app.v1alpha1.module) = {
-    go_import : "github.com/skip-mev/slinky/x/alerts"
+    go_import : "github.com/skip-mev/connect/v2/x/alerts"
   };
 
   // Authority defines the custom module authority. The authority will default

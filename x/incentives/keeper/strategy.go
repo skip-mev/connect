@@ -4,7 +4,7 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // ExecuteByIncentiveTypeCB is a callback function that can utilized to update all

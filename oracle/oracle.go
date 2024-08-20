@@ -9,14 +9,14 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/oracle/types"
-	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
-	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	apimetrics "github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	providermetrics "github.com/skip-mev/connect/v2/providers/base/metrics"
+	wsmetrics "github.com/skip-mev/connect/v2/providers/base/websocket/metrics"
+	mmclienttypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 var _ Oracle = (*OracleImpl)(nil)

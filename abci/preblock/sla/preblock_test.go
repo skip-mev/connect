@@ -18,17 +18,17 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/preblock/sla"
-	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
-	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
-	compression "github.com/skip-mev/slinky/abci/strategies/codec"
-	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
-	"github.com/skip-mev/slinky/abci/testutils"
-	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
-	slamocks "github.com/skip-mev/slinky/x/sla/types/mocks"
+	"github.com/skip-mev/connect/v2/abci/preblock/sla"
+	"github.com/skip-mev/connect/v2/abci/preblock/sla/mocks"
+	voteaggregator "github.com/skip-mev/connect/v2/abci/strategies/aggregator"
+	compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+	currencypairmocks "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
+	"github.com/skip-mev/connect/v2/abci/testutils"
+	oraclevetypes "github.com/skip-mev/connect/v2/abci/ve/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	slakeeper "github.com/skip-mev/connect/v2/x/sla/keeper"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
+	slamocks "github.com/skip-mev/connect/v2/x/sla/types/mocks"
 )
 
 var oneHundred = big.NewInt(100)
