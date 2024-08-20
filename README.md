@@ -1,4 +1,4 @@
-# slinky
+# Connect
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD041 -->
@@ -6,17 +6,17 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#wip)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://godoc.org/github.com/skip-mev/connect/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skip-mev/connect/v2?style=flat-square)](https://goreportcard.com/report/github.com/skip-mev/connect/v2)
-[![Version](https://img.shields.io/github/tag/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/connect/v2/releases/latest)
-[![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/slinky?style=flat-square)](https://github.com/skip-mev/connect/v2)
+[![Version](https://img.shields.io/github/tag/skip-mev/connect.svg?style=flat-square)](https://github.com/skip-mev/connect/v2/releases/latest)
+[![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/connect?style=flat-square)](https://github.com/skip-mev/connect/v2)
 
 A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.build/connect/introduction) page for more information!
 
-Slinky uses Vote Extensions to create an hyperperformant, extremely secure mechanism for aggregating off-chain data onto a blockchain. It is used by
-many of the highest-performance decentralized applications today. If you would like to integrate Slinky to power your use case, please contact us on our
+Connect uses Vote Extensions to create an hyperperformant, extremely secure mechanism for aggregating off-chain data onto a blockchain. It is used by
+many of the highest-performance decentralized applications today. If you would like to integrate Connect to power your use case, please contact us on our
 [Discord](https://discord.gg/PeBGE9jrbu).
 
 > [!NOTE]
-> Slinky is **business-licensed software** under BSL, meaning it requires a license to use or reference. It is source viewable, but [**reach out to us on Discord**](https://skip.build/discord) if you are interested in integrating! We are limiting the number of chains we work with to seven in 2024. We apologize if we run out of capacity.
+> Connect is **business-licensed software** under BSL, meaning it requires a license to use or reference. It is source viewable, but [**reach out to us on Discord**](https://skip.build/discord) if you are interested in integrating! We are limiting the number of chains we work with to seven in 2024. We apologize if we run out of capacity.
 
 ## Install
 
@@ -26,7 +26,7 @@ $ go install github.com/skip-mev/connect/v2
 
 ## Overview
 
-The slinky repository is composed of the following core packages:
+The connect repository is composed of the following core packages:
 
 * **abci** - This package contains the [vote extension](./abci/ve/README.md), [proposal](./abci/proposals/README.md), and [preblock handlers](./abci/preblock/oracle/README.md) that are used to broadcast oracle data to the network and to store it in the blockchain.
 * **oracle** - This [package](./oracle/) contains the main oracle that aggregates external data sources before broadcasting it to the network. You can reference the provider documentation [here](./providers/base/README.md) to get a high level overview of how the oracle works.
@@ -51,7 +51,7 @@ $ make start-all-dev
 This will:
 
 1. Start a blockchain with a single validator node. It may take a few minutes to build and reach a point where vote extensions can be submitted.
-2. Start the oracle side-car that will aggregate prices from external data providers and broadcast them to the network. To check the current aggregated prices on the side-car, you can run `curl localhost:8080/slinky/oracle/v1/prices`.
+2. Start the oracle side-car that will aggregate prices from external data providers and broadcast them to the network. To check the current aggregated prices on the side-car, you can run `curl localhost:8080/connect/oracle/v1/prices`.
 3. Host a prometheus instance that will scrape metrics from the oracle sidecar. Navigate to http://localhost:9091 to see all network traffic and metrics pertaining to the oracle sidecar. Navigate to http://localhost:8002 to see all application-side oracle metrics.
 4. Host a profiler that will allow you to profile the oracle side-car. Navigate to http://localhost:6060 to see the profiler.
 5. Host a grafana instance that will allow you to visualize the metrics scraped by prometheus. Navigate to http://localhost:3000 to see the grafana dashboard. The default username and password are `admin` and `admin`, respectively.
@@ -63,7 +63,7 @@ After a few minutes, run the following commands to see the prices written to the
 $ docker exec -it compose-blockchain-1 bash
 
 # query the price of bitcoin in USD on the node
-$ (compose-blockchain-1) ./build/slinkyd q oracle price BTC USD
+$ (compose-blockchain-1) ./build/connectd q oracle price BTC USD
 ```
 
 Result:
