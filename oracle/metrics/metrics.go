@@ -77,9 +77,6 @@ type OracleMetricsImpl struct {
 	statsdClient        statsd.ClientInterface
 }
 
-type PromMetrics struct {
-}
-
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
 func NewMetricsFromConfig(config config.MetricsConfig) Metrics {
