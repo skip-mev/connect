@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/providers/apis/coinbase"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 var (

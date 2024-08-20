@@ -12,14 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	handlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/websocket/metrics"
-	mockmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics/mocks"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	wserrors "github.com/skip-mev/connect/v2/providers/base/websocket/errors"
+	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
+	handlermocks "github.com/skip-mev/connect/v2/providers/base/websocket/handlers/mocks"
+	"github.com/skip-mev/connect/v2/providers/base/websocket/metrics"
+	mockmetrics "github.com/skip-mev/connect/v2/providers/base/websocket/metrics/mocks"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 var (

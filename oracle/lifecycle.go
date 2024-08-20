@@ -7,7 +7,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/connect/v2/oracle/types"
 )
 
 // Start starts the (blocking) oracle. This will initialize the oracle

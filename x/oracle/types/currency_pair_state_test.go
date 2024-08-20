@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 func TestCurrencyPairState(t *testing.T) {

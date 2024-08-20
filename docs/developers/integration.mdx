@@ -105,7 +105,7 @@ func NewRootCmd() *cobra.Command {
 
 ## Keepers
 
-Add [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
+Add [x/marketmap](https://github.com/skip-mev/connect/v2/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/connect/v2/tree/main/x/oracle) keepers to the application.
 
 ```go app.go
 package app
@@ -113,8 +113,8 @@ package app
 import (
     // ... other imports
 
-	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	marketmapkeeper "github.com/skip-mev/connect/v2/x/marketmap/keeper"
+	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
 )
 
 type App struct {
@@ -154,9 +154,9 @@ import (
 	"context"
 
     "github.com/cosmos/cosmos-sdk/server/types"
-    oracleconfig "github.com/skip-mev/slinky/oracle/config"
-    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+    oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+    oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
 
 // initializeOracle initializes the oracle client and metrics.
@@ -219,14 +219,14 @@ Start with setting up the proposal handler.
 package app
 
 import (
-	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
     "github.com/cosmos/cosmos-sdk/baseapp"
-    "github.com/skip-mev/slinky/abci/proposals"
-    compression "github.com/skip-mev/slinky/abci/strategies/codec"
-    "github.com/skip-mev/slinky/abci/strategies/currencypair"
-    "github.com/skip-mev/slinky/abci/ve"
+    "github.com/skip-mev/connect/v2/abci/proposals"
+    compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+    "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+    "github.com/skip-mev/connect/v2/abci/ve"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -263,13 +263,13 @@ Next, set up the `PreBlocker`. This involves:
 package app
 
 import (
-    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+    oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
-    oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-    compression "github.com/skip-mev/slinky/abci/strategies/codec"
-    "github.com/skip-mev/slinky/abci/strategies/currencypair"
-    "github.com/skip-mev/slinky/pkg/math/voteweighted"
+    oraclepreblock "github.com/skip-mev/connect/v2/abci/preblock/oracle"
+    compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+    "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+    "github.com/skip-mev/connect/v2/pkg/math/voteweighted"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -315,12 +315,12 @@ package app
 import (
 	"time"
 
-	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-        servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+        servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
-	"github.com/skip-mev/slinky/abci/ve"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/strategies/aggregator"
+	"github.com/skip-mev/connect/v2/abci/ve"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	"github.com/skip-mev/connect/v2/abci/strategies/aggregator"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -387,7 +387,7 @@ import (
         tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
+	"github.com/skip-mev/connect/v2/cmd/constants/marketmaps"
 )
 
 func (app *App) setupMarkets(ctx sdk.Context) error {

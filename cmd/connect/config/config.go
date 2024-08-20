@@ -8,9 +8,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 
-	"github.com/skip-mev/slinky/cmd/constants"
-	"github.com/skip-mev/slinky/oracle/config"
-	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	"github.com/skip-mev/connect/v2/cmd/constants"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
 const (
@@ -22,6 +22,8 @@ const (
 	DefaultPrometheusServerAddress = "0.0.0.0:8002"
 	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
 	DefaultMetricsEnabled = true
+	// DefaultTelemetryDisabled is the default value for disabling telemetry.
+	DefaultTelemetryDisabled = false
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"
 	// DefaultPort is the default for the slinky oracle server port.
@@ -30,6 +32,8 @@ const (
 	jsonFieldDelimiter = "."
 	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
 	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
+	// TelemetryPushAddress is the value for the publication endpoint.
+	TelemetryPushAddress = "127.0.0.1:9125"
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
@@ -40,6 +44,10 @@ func DefaultOracleConfig() config.OracleConfig {
 		Metrics: config.MetricsConfig{
 			PrometheusServerAddress: DefaultPrometheusServerAddress,
 			Enabled:                 DefaultMetricsEnabled,
+			Telemetry: config.TelemetryConfig{
+				Disabled:    DefaultTelemetryDisabled,
+				PushAddress: TelemetryPushAddress,
+			},
 		},
 		Providers: make(map[string]config.ProviderConfig),
 		Host:      DefaultHost,

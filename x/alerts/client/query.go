@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 const (

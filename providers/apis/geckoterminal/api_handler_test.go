@@ -9,10 +9,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
-	"github.com/skip-mev/slinky/providers/base/testutils"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/providers/apis/geckoterminal"
+	"github.com/skip-mev/connect/v2/providers/base/testutils"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 var (

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 // WebSocketDataHandler defines an interface that must be implemented by all providers that

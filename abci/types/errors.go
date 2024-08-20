@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
 
 // NilRequestError is an error that is returned when a nil request is given to the handler.

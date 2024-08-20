@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/badprice"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/badprice"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/goodprice"
 )
 
 func (s *KeeperTestSuite) TestInitGenesis() {

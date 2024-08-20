@@ -20,10 +20,10 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 
-	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
-	"github.com/skip-mev/slinky/x/marketmap/client/cli"
-	"github.com/skip-mev/slinky/x/marketmap/keeper"
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/slinky/marketmap/module/v1"
+	"github.com/skip-mev/connect/v2/x/marketmap/client/cli"
+	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 // ConsensusVersion is the x/marketmap module's current version, as modules integrate and updates are made, this value determines what

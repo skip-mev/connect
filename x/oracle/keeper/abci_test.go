@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 func (s *KeeperTestSuite) TestBeginBlocker() {

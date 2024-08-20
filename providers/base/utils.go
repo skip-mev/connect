@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 // createResponseCh creates the response channel for the provider.

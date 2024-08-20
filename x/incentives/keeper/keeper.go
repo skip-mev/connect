@@ -3,7 +3,7 @@ package keeper
 import (
 	storetypes "cosmossdk.io/store/types"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 type (

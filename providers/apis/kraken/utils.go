@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/config"
 )
 
 // NOTE: All documentation for this file can be located on the Kraken docs.

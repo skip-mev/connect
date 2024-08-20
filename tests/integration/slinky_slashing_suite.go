@@ -16,9 +16,9 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	alerttypes "github.com/skip-mev/connect/v2/x/alerts/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 const validatorStake = 5000000000000

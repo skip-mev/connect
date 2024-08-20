@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 // Hooks gets the hooks for x/marketmap keeper.

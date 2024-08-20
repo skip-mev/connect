@@ -8,8 +8,8 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/aggregator"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/connect/v2/aggregator"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // DefaultPowerThreshold defines the total voting power % that must be

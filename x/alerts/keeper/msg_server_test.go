@@ -14,12 +14,12 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/alerts/keeper"
-	"github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/alerts/keeper"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types/strategies"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 func (s *KeeperTestSuite) TestMsgAlert() {

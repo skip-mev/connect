@@ -10,8 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
 // MultiRPCClient implements the EVMClient interface by calling multiple underlying EVMClients and choosing

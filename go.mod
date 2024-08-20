@@ -1,4 +1,4 @@
-module github.com/skip-mev/slinky
+module github.com/skip-mev/connect/v2
 
 go 1.22.2
 
@@ -11,6 +11,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/store v1.1.0
 	cosmossdk.io/x/tx v0.13.4
+	github.com/DataDog/datadog-go v3.2.0+incompatible
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.11
@@ -67,7 +68,6 @@ require (
 	github.com/Antonboom/testifylint v1.4.3 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/Crocmagnon/fatcontext v0.4.0 // indirect
-	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.3.0 // indirect
@@ -360,5 +360,3 @@ replace (
 	github.com/GeertJohan/go.rice => github.com/GeertJohan/go.rice v1.0.3
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
-
-retract [v0.4.0, v1.0.0] // raydium provider is broken for these releases

@@ -9,7 +9,7 @@ managed:
       - buf.build/cosmos/gogo-proto
       - buf.build/cosmos/cosmos-proto
     override:
-      buf.build/skip-mev/slinky: github.com/skip-mev/slinky/api
+      buf.build/skip-mev/slinky: github.com/skip-mev/connect/v2/api
 plugins:
   - name: go-pulsar
     out: ../api

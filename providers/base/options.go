@@ -3,11 +3,11 @@ package base
 import (
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
+	providermetrics "github.com/skip-mev/connect/v2/providers/base/metrics"
+	wshandlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 // ProviderOption is a function that can be used to modify a provider.
