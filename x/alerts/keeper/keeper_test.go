@@ -15,11 +15,11 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/alerts/keeper"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/mocks"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/alerts/keeper"
+	alerttypes "github.com/skip-mev/connect/v2/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types/mocks"
+	"github.com/skip-mev/connect/v2/x/alerts/types/strategies"
 )
 
 type KeeperTestSuite struct {

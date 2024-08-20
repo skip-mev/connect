@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // BankKeeper defines the expected interface that the bank-keeper dependency must implement.

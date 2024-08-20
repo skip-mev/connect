@@ -8,10 +8,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/base/api/errors"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/base/api/errors"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 // RestAPIFetcher handles the logic of fetching prices from a REST API. This implementation

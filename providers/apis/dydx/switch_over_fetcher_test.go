@@ -11,16 +11,16 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/dydx"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
-	apihandlermocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	apimetricsmocks "github.com/skip-mev/slinky/providers/base/api/metrics/mocks"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/dydx"
+	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
+	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
+	apihandlermocks "github.com/skip-mev/connect/v2/providers/base/api/handlers/mocks"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	apimetricsmocks "github.com/skip-mev/connect/v2/providers/base/api/metrics/mocks"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
+	mmclient "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 func TestDefaultSwitchOverProvider(t *testing.T) {

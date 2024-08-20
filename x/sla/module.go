@@ -18,10 +18,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	slamodulev1 "github.com/skip-mev/slinky/api/slinky/sla/module/v1"
-	"github.com/skip-mev/slinky/x/sla/client/cli"
-	"github.com/skip-mev/slinky/x/sla/keeper"
-	"github.com/skip-mev/slinky/x/sla/types"
+	slamodulev1 "github.com/skip-mev/connect/v2/api/slinky/sla/module/v1"
+	"github.com/skip-mev/connect/v2/x/sla/client/cli"
+	"github.com/skip-mev/connect/v2/x/sla/keeper"
+	"github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 // ConsensusVersion is the x/sla module's consensus version identifier.

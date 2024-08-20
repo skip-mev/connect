@@ -1,4 +1,4 @@
-module github.com/skip-mev/slinky/tests/petri
+module github.com/skip-mev/connect/v2/tests/petri
 
 go 1.22
 
@@ -10,7 +10,7 @@ require (
 	github.com/skip-mev/petri/node/v2 v2.0.1
 	github.com/skip-mev/petri/provider/v2 v2.0.0
 	github.com/skip-mev/petri/types/v2 v2.0.1
-	github.com/skip-mev/slinky v1.0.3
+	github.com/skip-mev/connect/v2 v2.0.0
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
 )

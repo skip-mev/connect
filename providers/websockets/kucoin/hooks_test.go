@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
-	apimocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/testutils"
-	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
+	apimocks "github.com/skip-mev/connect/v2/providers/base/api/handlers/mocks"
+	"github.com/skip-mev/connect/v2/providers/base/testutils"
+	wshandlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
+	"github.com/skip-mev/connect/v2/providers/websockets/kucoin"
 )
 
 var postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)

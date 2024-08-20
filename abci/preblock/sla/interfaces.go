@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	slakeeper "github.com/skip-mev/connect/v2/x/sla/keeper"
 )
 
 // Keeper defines the interface that must be fulfilled by the SLA keeper.

@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
-	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient/mocks"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/uniswapv3"
 )
 
 var (

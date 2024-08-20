@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 // msgServer is the default implementation of the x/marketmap MsgService.

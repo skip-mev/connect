@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/pkg/math"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)

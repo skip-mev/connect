@@ -8,9 +8,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 
-	"github.com/skip-mev/slinky/cmd/constants"
-	"github.com/skip-mev/slinky/oracle/config"
-	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	"github.com/skip-mev/connect/v2/cmd/constants"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
 const (

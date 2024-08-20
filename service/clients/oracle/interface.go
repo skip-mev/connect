@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/skip-mev/slinky/service/servers/oracle/types"
+	"github.com/skip-mev/connect/v2/service/servers/oracle/types"
 )
 
 // OracleClient defines the interface that will be utilized by the application

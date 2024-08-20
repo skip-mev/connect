@@ -11,13 +11,13 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
-	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient/mocks"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/uniswapv3"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 func TestFetch(t *testing.T) {

@@ -5,11 +5,11 @@ package mocks
 import (
 	big "math/big"
 
-	aggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
+	aggregator "github.com/skip-mev/connect/v2/abci/strategies/aggregator"
 
 	mock "github.com/stretchr/testify/mock"
 
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	pkgtypes "github.com/skip-mev/connect/v2/pkg/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

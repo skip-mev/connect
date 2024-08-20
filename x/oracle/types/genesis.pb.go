@@ -10,7 +10,7 @@ import (
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
 	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
-	types "github.com/skip-mev/slinky/pkg/types"
+	types "github.com/skip-mev/connect/v2/pkg/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"

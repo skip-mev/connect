@@ -18,11 +18,11 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	alertsmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
-	alertclient "github.com/skip-mev/slinky/x/alerts/client"
-	"github.com/skip-mev/slinky/x/alerts/keeper"
-	"github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
+	alertsmodulev1 "github.com/skip-mev/connect/v2/api/slinky/alerts/module/v1"
+	alertclient "github.com/skip-mev/connect/v2/x/alerts/client"
+	"github.com/skip-mev/connect/v2/x/alerts/keeper"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types/strategies"
 )
 
 // ConsensusVersion is the x/alerts module's current version, as modules integrate and

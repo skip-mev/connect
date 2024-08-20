@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 const (

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // msgServer is the default implementation of the x/alerts MsgService.

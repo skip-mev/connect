@@ -3,12 +3,12 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/testutil"
+	"github.com/skip-mev/connect/v2/testutil"
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 func TestTicker(t *testing.T) {

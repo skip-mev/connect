@@ -9,7 +9,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	pkgtypes "github.com/skip-mev/connect/v2/pkg/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

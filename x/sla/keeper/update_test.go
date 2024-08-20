@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	slakeeper "github.com/skip-mev/connect/v2/x/sla/keeper"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 func (s *KeeperTestSuite) TestUpdatePriceFeeds() {

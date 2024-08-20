@@ -1,16 +1,16 @@
 package dydx_test
 
 import (
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/websockets/binance"
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
-	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
-	"github.com/skip-mev/slinky/providers/websockets/huobi"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	"github.com/skip-mev/slinky/providers/websockets/mexc"
-	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/providers/apis/kraken"
+	"github.com/skip-mev/connect/v2/providers/websockets/binance"
+	"github.com/skip-mev/connect/v2/providers/websockets/bybit"
+	coinbasews "github.com/skip-mev/connect/v2/providers/websockets/coinbase"
+	"github.com/skip-mev/connect/v2/providers/websockets/huobi"
+	"github.com/skip-mev/connect/v2/providers/websockets/kucoin"
+	"github.com/skip-mev/connect/v2/providers/websockets/mexc"
+	"github.com/skip-mev/connect/v2/providers/websockets/okx"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 const dYdXResponseValid = `

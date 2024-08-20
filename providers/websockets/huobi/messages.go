@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 )
 
 // Status is the status of a subscription request.

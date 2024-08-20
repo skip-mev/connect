@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 func NewCurrencyPairNotExistError(cp slinkytypes.CurrencyPair) CurrencyPairNotExistError {
