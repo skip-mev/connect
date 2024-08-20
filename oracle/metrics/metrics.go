@@ -68,12 +68,12 @@ type Metrics interface {
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
 	promTicks           prometheus.Counter
-	promTickerTicks     prometheus.CounterVec
-	promPrices          prometheus.GaugeVec
-	promAggregatePrices prometheus.GaugeVec
-	promProviderTick    prometheus.CounterVec
-	promProviderCount   prometheus.GaugeVec
-	promSlinkyBuildInfo prometheus.GaugeVec
+	promTickerTicks     *prometheus.CounterVec
+	promPrices          *prometheus.GaugeVec
+	promAggregatePrices *prometheus.GaugeVec
+	promProviderTick    *prometheus.CounterVec
+	promProviderCount   *prometheus.GaugeVec
+	promSlinkyBuildInfo *prometheus.GaugeVec
 	statsdClient        statsd.ClientInterface
 }
 
@@ -102,6 +102,43 @@ func NewMetrics(telemetryPushAddress string) Metrics {
 	} else {
 		ret.statsdClient = &statsd.NoOpClient{}
 	}
+
+	ret.promTicks = prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: OracleSubsystem,
+		Name:      "health_check_system_updates_total",
+		Help:      "Number of ticks with a successful oracle update.",
+	})
+	ret.promTickerTicks = prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: OracleSubsystem,
+			Name:      "health_check_ticker_updates_total",
+			Help:      "Number of ticks with a successful ticker update.",
+	}, []string{PairIDLabel})
+
+	ret.promPrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      "provider_price",
+		Help:      "Price gauge for a given currency pair on a provider",
+	}, []string{ProviderLabel, PairIDLabel, DecimalsLabel})
+	ret.promAggregatePrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      "aggregated_price",
+		Help:      "Aggregate price for a given currency pair",
+	}, []string{PairIDLabel, DecimalsLabel})
+	ret.promProviderTick = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: OracleSubsystem,
+		Name:      "health_check_provider_updates_total",
+		Help:      "Number of ticks with a successful provider update.",
+	}, []string{ProviderLabel, PairIDLabel, SuccessLabel})
+	ret.promProviderCount = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      "health_check_market_providers",
+		Help:      "Number of providers that were utilized to calculate the final price for a given market.",
+	}, []string{PairIDLabel})
+	ret.promSlinkyBuildInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      "slinky_build_info",
+		Help:      "Information about the slinky build",
+	}, []string{Version})
 
 	prometheus.MustRegister(ret.promTicks)
 	prometheus.MustRegister(ret.promTickerTicks)

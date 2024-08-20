@@ -24,8 +24,6 @@ const (
 	DefaultMetricsEnabled = true
 	// DefaultTelemetryDisabled is the default value for disabling telemetry.
 	DefaultTelemetryDisabled = false
-	// DefaultTelemetryPushAddress is the default value for the publication endpoint.
-	DefaultTelemetryPushAddress = "127.0.0.1:9125"
 	// DefaultHost is the default for the slinky oracle server host.
 	DefaultHost = "0.0.0.0"
 	// DefaultPort is the default for the slinky oracle server port.
@@ -34,6 +32,8 @@ const (
 	jsonFieldDelimiter = "."
 	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
 	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
+	// TelemetryPushAddress is the value for the publication endpoint.
+	TelemetryPushAddress = "127.0.0.1:9125"
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
@@ -46,7 +46,7 @@ func DefaultOracleConfig() config.OracleConfig {
 			Enabled:                 DefaultMetricsEnabled,
 			Telemetry: config.TelemetryConfig{
 				Disabled:    DefaultTelemetryDisabled,
-				PushAddress: DefaultTelemetryPushAddress,
+				PushAddress: TelemetryPushAddress,
 			},
 		},
 		Providers: make(map[string]config.ProviderConfig),
