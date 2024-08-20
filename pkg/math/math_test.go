@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/connect/v2/pkg/math"
 )
 
 func TestMin(t *testing.T) {

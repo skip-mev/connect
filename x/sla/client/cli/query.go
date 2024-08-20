@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 // GetQueryCmd returns the parent command for all x/sla cli query commands.

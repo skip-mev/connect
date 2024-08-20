@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 func TestPriceBound(t *testing.T) {

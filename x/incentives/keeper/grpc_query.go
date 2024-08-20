@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 var _ types.QueryServer = QueryServer{}

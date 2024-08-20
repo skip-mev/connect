@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 // InitGenesis initializes the module state from a GenesisState object. Specifically, this method sets the

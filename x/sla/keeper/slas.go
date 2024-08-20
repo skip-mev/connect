@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
+	slatypes "github.com/skip-mev/connect/v2/x/sla/types"
 )
 
 // PriceFeedSLACB is a callback function that is executed for each SLA in the

@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
-	"github.com/skip-mev/slinky/abci/testutils"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	mocks "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
+	"github.com/skip-mev/connect/v2/abci/testutils"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/types"
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	pkgtypes "github.com/skip-mev/connect/v2/pkg/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 func TestProviderTickersFromMarketMap(t *testing.T) {

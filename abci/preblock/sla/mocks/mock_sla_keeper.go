@@ -5,7 +5,7 @@ package mocks
 import (
 	mock "github.com/stretchr/testify/mock"
 
-	keeper "github.com/skip-mev/slinky/x/sla/keeper"
+	keeper "github.com/skip-mev/connect/v2/x/sla/keeper"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

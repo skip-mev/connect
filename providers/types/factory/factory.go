@@ -3,14 +3,14 @@ package factory
 import (
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/base"
-	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
-	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/base"
+	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
+	apimetrics "github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	providermetrics "github.com/skip-mev/connect/v2/providers/base/metrics"
+	wshandlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
+	wsmetrics "github.com/skip-mev/connect/v2/providers/base/websocket/metrics"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 type (

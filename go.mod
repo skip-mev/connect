@@ -1,4 +1,4 @@
-module github.com/skip-mev/slinky
+module github.com/skip-mev/connect/v2
 
 go 1.22.2
 
@@ -360,5 +360,3 @@ replace (
 	github.com/GeertJohan/go.rice => github.com/GeertJohan/go.rice v1.0.3
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
-
-retract [v0.4.0, v1.0.0] // raydium provider is broken for these releases

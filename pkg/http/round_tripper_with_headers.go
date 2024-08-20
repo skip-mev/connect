@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/skip-mev/slinky/cmd/build"
+	"github.com/skip-mev/connect/v2/cmd/build"
 )
 
 const (

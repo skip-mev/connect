@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 // EndBlocker is called at the end of every block. This function is a no-op if pruning is disabled

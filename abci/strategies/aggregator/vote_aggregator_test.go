@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/strategies/aggregator"
-	"github.com/skip-mev/slinky/abci/strategies/codec"
-	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
-	"github.com/skip-mev/slinky/abci/testutils"
-	"github.com/skip-mev/slinky/pkg/math/voteweighted"
-	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/connect/v2/abci/strategies/aggregator"
+	"github.com/skip-mev/connect/v2/abci/strategies/codec"
+	currencypairmocks "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
+	"github.com/skip-mev/connect/v2/abci/testutils"
+	"github.com/skip-mev/connect/v2/pkg/math/voteweighted"
+	"github.com/skip-mev/connect/v2/pkg/math/voteweighted/mocks"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 var (

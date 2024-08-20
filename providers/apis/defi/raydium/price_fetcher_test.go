@@ -20,12 +20,12 @@ import (
 
 	"github.com/gagliardetto/solana-go/programs/serum"
 
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
+	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium/mocks"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium/schema"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
 const (
