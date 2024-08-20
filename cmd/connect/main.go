@@ -51,6 +51,7 @@ var (
 
 	// oracle config flags.
 	flagMetricsEnabled           = "metrics-enabled"
+	flagTelemetryDisabled        = "disable-telemetry"
 	flagMetricsPrometheusAddress = "metrics-prometheus-address"
 	flagHost                     = "host"
 	flagPort                     = "port"
@@ -191,6 +192,11 @@ func init() {
 		flagMetricsEnabled,
 		cmdconfig.DefaultMetricsEnabled,
 		"Enables the Oracle client metrics",
+	)
+	rootCmd.Flags().Bool(
+		flagTelemetryDisabled,
+		cmdconfig.DefaultTelemetryDisabled,
+		"Disables the Oracle telemetry publication",
 	)
 	rootCmd.Flags().String(
 		flagMetricsPrometheusAddress,

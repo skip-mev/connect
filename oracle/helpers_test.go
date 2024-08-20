@@ -37,6 +37,9 @@ var (
 	oracleCfg = config.OracleConfig{
 		Metrics: config.MetricsConfig{
 			Enabled: false,
+			Telemetry: config.TelemetryConfig{
+				Disabled: true,
+			},
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
@@ -64,6 +67,9 @@ var (
 	oracleCfgWithMapper = config.OracleConfig{
 		Metrics: config.MetricsConfig{
 			Enabled: false,
+			Telemetry: config.TelemetryConfig{
+				Disabled: true,
+			},
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
@@ -93,6 +99,9 @@ var (
 	oracleCfgWithMockMapper = config.OracleConfig{
 		Metrics: config.MetricsConfig{
 			Enabled: false,
+			Telemetry: config.TelemetryConfig{
+				Disabled: true,
+			},
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
@@ -122,6 +131,9 @@ var (
 	oracleCfgWithOnlyMockMapper = config.OracleConfig{
 		Metrics: config.MetricsConfig{
 			Enabled: false,
+			Telemetry: config.TelemetryConfig{
+				Disabled: true,
+			},
 		},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
