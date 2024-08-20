@@ -13,6 +13,11 @@ RUN make build
 FROM gcr.io/distroless/base-debian11:debug
 EXPOSE 8080 8002
 
+# Create a non-root user and group
+RUN groupadd -g 1337 connect && \
+    useradd -u 1337 -g connect -m connect
+USER connect
+
 COPY --from=builder /src/connect/build/* /usr/local/bin/
 COPY --from=builder /src/connect/scripts/deprecated-exec.sh /usr/local/bin/
 
