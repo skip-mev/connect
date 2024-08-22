@@ -14,6 +14,7 @@ import (
 func (k *Keeper) ExecSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
 	// Ensure that the SLA should be checked for the current block height.
 	height := ctx.BlockHeight()
+	//nolint:gosec
 	if height == 0 || height%int64(sla.Frequency) != 0 {
 		return nil
 	}
