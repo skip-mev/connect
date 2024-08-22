@@ -10,7 +10,7 @@ OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 # Fetch the latest release information
 echo "Fetching latest release information..."
-RELEASE_INFO=$(curl -s ${SLINKY_RELEASES_URL})
+RELEASE_INFO=$(curl -Ls ${SLINKY_RELEASES_URL})
 VERSION=$(echo ${RELEASE_INFO} | grep -o '"tag_name": "v[^"]*' | cut -d'"' -f4)
 VERSION=${VERSION#v}  # Remove the 'v' prefix
 
