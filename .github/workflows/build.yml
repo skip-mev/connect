@@ -102,13 +102,13 @@ jobs:
       - name: Update the image tags
         uses: skip-mev/gitops-actions/update-values@main
         with:
-          service: "slinky"
+          service: "connect"
           app_id: ${{ vars.DEPLOYER_APP_ID }}
           app_private_key: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          manifests_repo: "slinky-manifests"
+          manifests_repo: "slinky-sensitive-manifests"
           values_file_name: "values-dev.yaml"
           modified_values: |
             {
               ".chain.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['connect-testapp'] }}",
-              ".sidecar.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['connect-e2e-sidecar'] }}",
+              ".sidecar.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['connect-sidecar'] }}",
             }
