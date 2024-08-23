@@ -87,7 +87,8 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) M
 			namespace, err := nodeClient.DeriveNodeIdentifier()
 			if err == nil { // only publish statsd data when connected to a node
 				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
-					c.Namespace = namespace
+					// Prepends all messages with ${namespace}/
+					c.Namespace = fmt.Sprintf("%s/", namespace)
 					return nil
 				})
 				if err == nil {
