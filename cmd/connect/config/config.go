@@ -221,12 +221,12 @@ func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string
 	return endpoint, endpointURL != nil || endpointAPIKey != nil || endpointAPIKeyHeader != nil
 }
 
-func GetMarketmapEndpointFromConfig(cfg config.OracleConfig, marketMapProvider string) (config.Endpoint, error) {
+func GetMarketmapEndpointFromConfig(cfg config.OracleConfig) (config.Endpoint, error) {
 	for _, provider := range cfg.Providers {
 		if provider.Type == mmtypes.ConfigType {
 			return provider.API.Endpoints[0], nil
 		}
 	}
 
-	return config.Endpoint{}, fmt.Errorf("Could not find marketmap endpoint")
+	return config.Endpoint{}, fmt.Errorf("could not find marketmap endpoint")
 }
