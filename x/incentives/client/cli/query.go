@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/skip-mev/slinky/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types"
 )
 
 // GetQueryCmd returns the parent command for all x/incentives cli query commands. The

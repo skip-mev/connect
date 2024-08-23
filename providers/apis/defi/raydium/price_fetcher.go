@@ -3,6 +3,7 @@ package raydium
 import (
 	"context"
 	"fmt"
+	gomath "math"
 	"math/big"
 	"time"
 
@@ -14,12 +15,12 @@ import (
 
 	"github.com/gagliardetto/solana-go/programs/serum"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium/schema"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	oracletypes "github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/pkg/math"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium/schema"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
 )
 
 var _ oracletypes.PriceAPIFetcher = &APIPriceFetcher{}
@@ -399,6 +400,15 @@ func calculatePrice(
 	baseTokenBalance, quoteTokenBalance *big.Int,
 	baseTokenDecimals, quoteTokenDecimals uint64,
 ) *big.Float {
+	if baseTokenDecimals > gomath.MaxInt64 {
+		baseTokenDecimals = gomath.MaxInt64
+	}
+
+	if quoteTokenDecimals > gomath.MaxInt64 {
+		quoteTokenDecimals = gomath.MaxInt64
+	}
+
+	//nolint:gosec // handled above
 	scalingFactor := math.GetScalingFactor(int64(baseTokenDecimals), int64(quoteTokenDecimals))
 
 	// calculate the price as quote / base

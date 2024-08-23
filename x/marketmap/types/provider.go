@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/skip-mev/slinky/pkg/json"
+	"github.com/skip-mev/connect/v2/pkg/json"
 )
 
 // ValidateBasic performs basic validation on a ProviderConfig.

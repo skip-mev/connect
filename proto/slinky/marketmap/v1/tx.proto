@@ -8,7 +8,7 @@ import "amino/amino.proto";
 import "slinky/marketmap/v1/market.proto";
 import "slinky/marketmap/v1/params.proto";
 
-option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
+option go_package = "github.com/skip-mev/connect/v2/x/marketmap/types";
 
 // Msg is the message service for the x/marketmap module.
 service Msg {
@@ -29,14 +29,14 @@ service Msg {
   rpc RemoveMarketAuthorities(MsgRemoveMarketAuthorities)
       returns (MsgRemoveMarketAuthoritiesResponse);
 
-  // UpsertMarkets wraps both Create / Update markets into a single message. Specifically
-  // if a market does not exist it will be created, otherwise it will be updated. The response
-  // will be a map between ticker -> updated.
+  // UpsertMarkets wraps both Create / Update markets into a single message.
+  // Specifically if a market does not exist it will be created, otherwise it
+  // will be updated. The response will be a map between ticker -> updated.
   rpc UpsertMarkets(MsgUpsertMarkets) returns (MsgUpsertMarketsResponse);
 }
 
-// MsgUpsertMarkets defines a message carrying a payload for performing market upserts (update or 
-// create if does not exist) in the x/marketmap module.
+// MsgUpsertMarkets defines a message carrying a payload for performing market
+// upserts (update or create if does not exist) in the x/marketmap module.
 message MsgUpsertMarkets {
   option (cosmos.msg.v1.signer) = "authority";
   option (amino.name) = "slinky/x/marketmap/MsgUpsertMarkets";
@@ -49,13 +49,17 @@ message MsgUpsertMarkets {
 
   // CreateMarkets is the list of all markets to be created for the given
   // transaction.
-  repeated Market markets  = 2 [ (gogoproto.nullable) = false ];
+  repeated Market markets = 2 [ (gogoproto.nullable) = false ];
 }
 
-// MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the x/marketmap module.
+// MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the
+// x/marketmap module.
 message MsgUpsertMarketsResponse {
-  // UpdatedMarkets is a map between the ticker and whether the market was updated.
-  map<string, bool> market_updates = 1;
+  option (gogoproto.stable_marshaler) = true;
+  // UpdatedMarkets is a map between the ticker and whether the market was
+  // updated.
+  // Deprecated: This field will be empty in all responses.
+  map<string, bool> market_updates = 1 [ deprecated = true ];
 }
 
 // MsgCreateMarkets defines a message carrying a payload for creating markets in

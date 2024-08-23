@@ -3,9 +3,9 @@ package keeper_test
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/alerts/keeper"
-	"github.com/skip-mev/slinky/x/alerts/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/alerts/keeper"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
 )
 
 func (s *KeeperTestSuite) TestQueryServer() {

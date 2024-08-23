@@ -7,16 +7,74 @@ import (
 	"math/big"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
 )
 
 var candidateWinsElectionToken = types.DefaultProviderTicker{
-	OffChainTicker: "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+	OffChainTicker: "0xc6485bb7ea46d7bb89beb9c91e7572ecfc72a6273789496f78bc5e989e4d1638/95128817762909535143571435260705470642391662537976312011260538371392879420759",
+}
+
+func TestNewAPIHandler(t *testing.T) {
+	tests := []struct {
+		name         string
+		modifyConfig func(config.APIConfig) config.APIConfig
+		expectError  bool
+		errorMsg     string
+	}{
+		{
+			name: "Valid configuration",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				return cfg // No modifications
+			},
+			expectError: false,
+		},
+		{
+			name: "Invalid name",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Name = "InvalidName"
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "expected api config name polymarket_api, got InvalidName",
+		},
+		{
+			name: "Too many endpoints",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Endpoints = append(cfg.Endpoints, cfg.Endpoints...)
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "invalid polymarket endpoint config: expected 1 endpoint got 2",
+		},
+		{
+			name: "Disabled API",
+			modifyConfig: func(cfg config.APIConfig) config.APIConfig {
+				cfg.Enabled = false
+				return cfg
+			},
+			expectError: true,
+			errorMsg:    "api config for polymarket_api is not enabled",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := DefaultAPIConfig
+			cfg.Endpoints = append([]config.Endpoint{}, DefaultAPIConfig.Endpoints...)
+			modifiedConfig := tt.modifyConfig(cfg)
+			_, err := NewAPIHandler(modifiedConfig)
+			if tt.expectError {
+				require.Error(t, err)
+				require.ErrorContains(t, err, tt.errorMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestCreateURL(t *testing.T) {
@@ -44,7 +102,7 @@ func TestCreateURL(t *testing.T) {
 			pts: []types.ProviderTicker{
 				candidateWinsElectionToken,
 			},
-			expectedURL: fmt.Sprintf(URL, candidateWinsElectionToken),
+			expectedURL: fmt.Sprintf(URL, "0xc6485bb7ea46d7bb89beb9c91e7572ecfc72a6273789496f78bc5e989e4d1638"),
 		},
 	}
 	h, err := NewAPIHandler(DefaultAPIConfig)
@@ -63,107 +121,74 @@ func TestCreateURL(t *testing.T) {
 }
 
 func TestParseResponse(t *testing.T) {
-	id := candidateWinsElectionToken
 	handler, err := NewAPIHandler(DefaultAPIConfig)
 	require.NoError(t, err)
-	testCases := []struct {
-		name             string
-		noError          bool
-		ids              []types.ProviderTicker
-		responseBody     string
-		expectedResponse types.PriceResponse
+	testCases := map[string]struct {
+		data          string
+		ticker        []types.ProviderTicker
+		expectedErr   string
+		expectedPrice *big.Float
 	}{
-		{
-			name:         "happy case",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "price": "0.45" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(0.45), time.Now().UTC()),
-				},
-				nil,
-			),
+		"happy path": {
+			data: `{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 1}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(1.00),
 		},
-		{
-			name:         "1.00 should resolve to 0.999...",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "price": "1.00" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMax), time.Now().UTC()),
-				},
-				nil,
-			),
+		"zero resolution": {
+			data: `{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(priceAdjustmentMin),
 		},
-		{
-			name:         "0.00 should resolve to 0.00001",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			noError:      true,
-			responseBody: `{ "price": "0.00" }`,
-			expectedResponse: types.NewPriceResponse(
-				types.ResolvedPrices{
-					id: types.NewPriceResult(big.NewFloat(priceAdjustmentMin), time.Now().UTC()),
-				},
-				nil,
-			),
+		"other values work": {
+			data: `{"tokens": [{
+          "token_id": "95128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:        []types.ProviderTicker{candidateWinsElectionToken},
+			expectedPrice: big.NewFloat(0.325),
 		},
-		{
-			name:         "too many IDs",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
-			responseBody: ``,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(
-					fmt.Errorf("expected 1 ticker, got 2"),
-					providertypes.ErrorInvalidResponse,
-				),
-			),
+		"token not in response": {
+			data: `{"tokens": [{
+          "token_id": "35128817762909535143571435260705470642391662537976312011260538371392879420759",
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
+			expectedErr: "token ID 95128817762909535143571435260705470642391662537976312011260538371392879420759 not found in response",
 		},
-		{
-			name:         "invalid JSON",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "0fa3adk"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("failed to convert %q to float", "0fa3adk"), providertypes.ErrorFailedToDecode),
-			),
+		"bad response data": {
+			data: `{"tokens": [{
+          "token_id":z,
+          "outcome": "Yes",
+          "price": 0.325}]}]}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken},
+			expectedErr: "failed to decode market response",
 		},
-		{
-			name:         "bad price - max",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "1.0001"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("price exceeded 1.00"), providertypes.ErrorInvalidResponse),
-			),
-		},
-		{
-			name:         "bad price - negative",
-			ids:          []types.ProviderTicker{candidateWinsElectionToken},
-			responseBody: `{"price": "-0.12"}"`,
-			expectedResponse: types.NewPriceResponseWithErr(
-				[]types.ProviderTicker{candidateWinsElectionToken},
-				providertypes.NewErrorWithCode(fmt.Errorf("price must be greater than 0.00"), providertypes.ErrorInvalidResponse),
-			),
+		"too many tickers": {
+			data:        `{"tokens": []}`,
+			ticker:      []types.ProviderTicker{candidateWinsElectionToken, candidateWinsElectionToken},
+			expectedErr: "expected 1 ticker, got 2",
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
 			httpInput := &http.Response{
-				Body: io.NopCloser(bytes.NewBufferString(tc.responseBody)),
+				Body: io.NopCloser(bytes.NewBufferString(tc.data)),
 			}
-			res := handler.ParseResponse(tc.ids, httpInput)
-
-			// timestamps are off, repair here.
-			if tc.noError {
-				val := tc.expectedResponse.Resolved[tc.ids[0]]
-				val.Timestamp = res.Resolved[tc.ids[0]].Timestamp
-				tc.expectedResponse.Resolved[tc.ids[0]] = val
+			res := handler.ParseResponse(tc.ticker, httpInput)
+			if tc.expectedErr != "" {
+				require.Contains(t, res.UnResolved[tc.ticker[0]].Error(), tc.expectedErr)
+			} else {
+				gotPrice := res.Resolved[tc.ticker[0]].Value
+				require.Equal(t, gotPrice.Cmp(tc.expectedPrice), 0, "expected %v, got %v", tc.expectedPrice, gotPrice)
+				require.Equal(t, len(res.Resolved), len(tc.ticker))
 			}
-			require.Equal(t, tc.expectedResponse.String(), res.String())
 		})
 	}
 }

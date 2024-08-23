@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/service/servers/prometheus"
+	"github.com/skip-mev/connect/v2/service/servers/prometheus"
 )
 
 // Test that Starting the server fails if the address is incorrect.

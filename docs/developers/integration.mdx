@@ -20,8 +20,11 @@ This document will guide you through integrating Connect in your application.
 Integrating Connect into your Cosmos SDK application requires a few simple steps.
 
 <Steps>
+    <Step title="Add Oracle Configuration">
+        Add the oracle configuration to your application.
+    </Step>
     <Step title="Add Modules">
-        Add the `x/marketmap` and `x/oracle` Modules to your app.
+        Import and add the `x/marketmap` and `x/oracle` Modules to your app.
     </Step>
     <Step title="Setup Oracle Client">
         Set up the Oracle client the application will use to get prices from the Connect oracle.
@@ -34,9 +37,75 @@ Integrating Connect into your Cosmos SDK application requires a few simple steps
     </Step>
 </Steps>
 
+## Application Configuration
+
+The application node's configuration must be extended so the oracle configuration can be read into the node through `app.toml`.
+
+The application should contain a custom configuration struct with a `"github.com/cosmos/cosmos-sdk/server/config"` embedded.
+
+Note: application function and type names may vary. The names in the following steps are arbitrary for example purposes only.
+
+```go config.go
+// CustomAppConfig defines the configuration for the app.
+type CustomAppConfig struct {
+	serverconfig.Config
+	// ... other configurations
+	Oracle oracleconfig.AppConfig `mapstructure:"oracle" json:"oracle"`
+}
+```
+
+Next, append the Oracle's default config template to the custom application template.
+
+```go config.go
+func CustomConfigTemplate() string {
+	return serverconfig.DefaultConfigTemplate + oracleconfig.DefaultConfigTemplate
+}
+```
+
+Finally, add a default configuration.
+
+```go config.go
+func DefaultConfig() (string, CustomAppConfig) {
+	serverConfig := serverconfig.DefaultConfig()
+    // edit serverConfig as needed
+
+	oracleCfg := oracleconfig.AppConfig{
+		Enabled:        true,
+		OracleAddress:  "localhost:8080",
+		ClientTimeout:  time.Second * 2,
+		MetricsEnabled: true,
+	}
+	customConfig := CustomAppConfig{
+		Config: *serverConfig,
+		Oracle: oracleCfg,
+	}
+
+	return CustomConfigTemplate(), customConfig
+}
+```
+
+The template and default configuration should be passed into `server.InterceptConfigsPreRunHandler` in the application's root command.
+
+Example:
+
+```go root.go
+package cmd
+
+import (
+	// ...
+	"github.com/cosmos/cosmos-sdk/server"
+)
+func NewRootCmd() *cobra.Command {
+	// ....
+
+    customAppTemplate, customAppConfig := DefaultConfig() // call function from previous step
+    return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, cometConfig)
+}
+```
+
 ## Keepers
 
-First, add the [x/marketmap](https://github.com/skip-mev/slinky/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/slinky/tree/main/x/oracle) keepers to the application.
+Add [x/marketmap](https://github.com/skip-mev/connect/v2/blob/main/x/marketmap/README.md) and [x/oracle](https://github.com/skip-mev/connect/v2/tree/main/x/oracle) keepers to the application.
 
 ```go app.go
 package app
@@ -44,8 +113,8 @@ package app
 import (
     // ... other imports
 
-	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	marketmapkeeper "github.com/skip-mev/connect/v2/x/marketmap/keeper"
+	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
 )
 
 type App struct {
@@ -85,9 +154,9 @@ import (
 	"context"
 
     "github.com/cosmos/cosmos-sdk/server/types"
-    oracleconfig "github.com/skip-mev/slinky/oracle/config"
-    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+    oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+    oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
 
 // initializeOracle initializes the oracle client and metrics.
@@ -150,14 +219,14 @@ Start with setting up the proposal handler.
 package app
 
 import (
-	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
     "github.com/cosmos/cosmos-sdk/baseapp"
-    "github.com/skip-mev/slinky/abci/proposals"
-    compression "github.com/skip-mev/slinky/abci/strategies/codec"
-    "github.com/skip-mev/slinky/abci/strategies/currencypair"
-    "github.com/skip-mev/slinky/abci/ve"
+    "github.com/skip-mev/connect/v2/abci/proposals"
+    compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+    "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+    "github.com/skip-mev/connect/v2/abci/ve"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -194,13 +263,13 @@ Next, set up the `PreBlocker`. This involves:
 package app
 
 import (
-    oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-    servicemetrics "github.com/skip-mev/slinky/service/metrics"
+    oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+    servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
-    oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-    compression "github.com/skip-mev/slinky/abci/strategies/codec"
-    "github.com/skip-mev/slinky/abci/strategies/currencypair"
-    "github.com/skip-mev/slinky/pkg/math/voteweighted"
+    oraclepreblock "github.com/skip-mev/connect/v2/abci/preblock/oracle"
+    compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+    "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+    "github.com/skip-mev/connect/v2/pkg/math/voteweighted"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -246,12 +315,12 @@ package app
 import (
 	"time"
 
-	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
-        servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracleclient "github.com/skip-mev/connect/v2/service/clients/oracle"
+        servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 
-	"github.com/skip-mev/slinky/abci/ve"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/strategies/aggregator"
+	"github.com/skip-mev/connect/v2/abci/ve"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	"github.com/skip-mev/connect/v2/abci/strategies/aggregator"
 )
 
 func (app *App) initializeABCIExtensions(oracleClient oracleclient.OracleClient, oracleMetrics servicemetrics.Metrics) {
@@ -318,7 +387,7 @@ import (
         tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"github.com/skip-mev/slinky/cmd/constants/marketmaps"
+	"github.com/skip-mev/connect/v2/cmd/constants/marketmaps"
 )
 
 func (app *App) setupMarkets(ctx sdk.Context) error {

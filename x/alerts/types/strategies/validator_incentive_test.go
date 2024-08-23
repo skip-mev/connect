@@ -12,13 +12,13 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/mocks"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
+	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types"
+	"github.com/skip-mev/connect/v2/x/alerts/types/mocks"
+	"github.com/skip-mev/connect/v2/x/alerts/types/strategies"
+	incentivetypes "github.com/skip-mev/connect/v2/x/incentives/types"
+	"github.com/skip-mev/connect/v2/x/incentives/types/examples/goodprice"
 )
 
 func TestValidatorAlertIncentive(t *testing.T) {

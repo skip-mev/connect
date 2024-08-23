@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // HashCurrencyPairStrategy is a strategy that uses the sha256 hash of the currency

@@ -4,13 +4,13 @@ export VERSION := $(shell echo $(shell git describe --always --match "v*") | sed
 export COMMIT := $(shell git log -1 --format='%H')
 export COMETBFT_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 
-BIN_DIR ?= $(GOPATH)/bin
+BIN_DIR ?= $(shell go env GOPATH)/bin
 BUILD_DIR ?= $(CURDIR)/build
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
-HTTPS_GIT := https://github.com/skip-mev/slinky.git
+HTTPS_GIT := https://github.com/skip-mev/connect.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
-HOMEDIR ?= $(CURDIR)/tests/.slinkyd
+HOMEDIR ?= $(CURDIR)/tests/.connectd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 APP_TOML ?= $(HOMEDIR)/config/app.toml
@@ -28,7 +28,7 @@ SCRIPT_DIR := $(CURDIR)/scripts
 DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
-NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
+NOMAD_FILE_CONNECT:=contrib/nomad/connect.nomad
 
 TAG := $(shell git describe --tags --always --dirty)
 
@@ -45,7 +45,7 @@ export USE_OSMOSIS_MARKETS ?= $(USE_OSMOSIS_MARKETS)
 export USE_POLYMARKET_MARKETS ?= $(USE_POLYMARKET_MARKETS)
 export SCRIPT_DIR := $(SCRIPT_DIR)
 
-BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
+BUILD_TAGS := -X github.com/skip-mev/connect/v2/cmd/build.Build=$(TAG)
 
 ###############################################################################
 ###                               build                                     ###
@@ -54,6 +54,8 @@ BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
 build: tidy
 	go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
+	go build -ldflags="$(BUILD_TAGS)" \
+     -o ./build/slinky ./cmd/connect
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -75,7 +77,8 @@ stop-sidecar-dev:
 	@$(DOCKER_COMPOSE) -f $(DEV_COMPOSE) --profile sidecar down
 
 install: tidy
-	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/slinky
+	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/connect
+	@cp $(BIN_DIR)/connect $(BIN_DIR)/slinky
 
 .PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
@@ -85,8 +88,8 @@ install: tidy
 
 docker-build:
 	@echo "Building E2E Docker image..."
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.dev.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/connect-e2e -f contrib/images/connect.e2e.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/connect-e2e-oracle -f contrib/images/connect.sidecar.dev.Dockerfile .
 
 .PHONY: docker-build
 
@@ -151,13 +154,13 @@ $(BUILD_DIR)/:
 	@mkdir -p $(BUILD_DIR)/
 
 delete-configs:
-	@rm -rf ./tests/.slinkyd/
+	@rm -rf ./tests/.connectd/
 
 build-market-map:
 	@echo "Building market map..."
 	@sh ./scripts/genesis.sh
 
-# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
+# build-configs builds a connect simulation application binary in the build folder (/test/.connectd)
 build-configs: delete-configs build-market-map
 	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
 	@dasel put -r toml 'rpc.laddr' -f $(CONFIG_TOML) -t string -v "tcp://0.0.0.0:26657"
@@ -167,12 +170,12 @@ build-configs: delete-configs build-market-map
 	@dasel put -r toml 'api.address' -f $(APP_TOML) -t string -v "tcp://0.0.0.0:1317"
 	@dasel put -r toml 'api.enabled-unsafe-cors' -f $(APP_TOML) -t bool -v true
 
-# start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
+# start-app starts a connect simulation application binary in the build folder (/test/.connectd)
 # this will set the environment variable for running locally
 start-app:
-	@./build/slinkyd start --log_level info --home $(HOMEDIR)
+	@./build/connectd start --log_level info --home $(HOMEDIR)
 
-# build-and-start-app builds a slinky simulation application binary in the build folder
+# build-and-start-app builds a connect simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can supplement
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
@@ -251,6 +254,7 @@ tidy:
 	@go mod tidy
 	@cd ./tests/integration && go mod tidy
 	@cd ./tests/petri && go mod tidy
+	@cd ./tests/simapp && go mod tidy
 
 .PHONY: tidy
 
@@ -294,7 +298,7 @@ gen-mocks:
 format:
 	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*/mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run mvdan.cc/gofumpt -w .
 	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*/mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run github.com/client9/misspell/cmd/misspell -w
-	@find . -name '*.go' -type f -not -path "*.git*" -not -path "/*mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run golang.org/x/tools/cmd/goimports -w -local github.com/skip-mev/slinky
+	@find . -name '*.go' -type f -not -path "*.git*" -not -path "/*mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run golang.org/x/tools/cmd/goimports -w -local github.com/skip-mev/connect/v2
 
 .PHONY: format
 
@@ -306,7 +310,7 @@ deploy-dev:
 	@touch ${LEVANT_VAR_FILE}
 	@yq e -i '.sidecar_image |= "${SIDECAR_IMAGE}"' ${LEVANT_VAR_FILE}
 	@yq e -i '.chain_image |= "${CHAIN_IMAGE}"' ${LEVANT_VAR_FILE}
-	@levant deploy -force -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
+	@levant deploy -force -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_CONNECT}
 
 .PHONY: deploy-dev
 

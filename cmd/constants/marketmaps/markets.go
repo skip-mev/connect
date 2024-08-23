@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 var (
@@ -9724,48 +9724,14 @@ var (
                "Base":"WILL_BERNIE_SANDERS_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?YES",
                "Quote":"USD"
             },
-            "decimals":3,
+            "decimals":4,
             "min_provider_count":1,
             "enabled":true
          },
          "provider_configs":[
             {
                "name":"polymarket_api",
-               "off_chain_ticker":"95128817762909535143571435260705470642391662537976312011260538371392879420759"
-            }
-         ]
-      },
-      "WILL_ROBERT_F_KENNEDY_JR_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?NO/USD":{
-         "ticker":{
-            "currency_pair":{
-               "Base":"WILL_ROBERT_F_KENNEDY_JR_WIN_THE_2024_US_PRESIDENTIAL_ELECTION?NO",
-               "Quote":"USD"
-            },
-            "decimals":3,
-            "min_provider_count":1,
-            "enabled":true
-         },
-         "provider_configs":[
-            {
-               "name":"polymarket_api",
-               "off_chain_ticker":"56404905393055211239795086916790918063008904529043139446524120756836481670648"
-            }
-         ]
-      },
-      "USA_WINS_THE_MOST_GOLD_MEDALS_IN_2024_PARIS_OLYMPICS?YES/USD":{
-         "ticker":{
-            "currency_pair":{
-               "Base":"USA_WINS_THE_MOST_GOLD_MEDALS_IN_2024_PARIS_OLYMPICS?YES",
-               "Quote":"USD"
-            },
-            "decimals":3,
-            "min_provider_count":1,
-            "enabled":true
-         },
-         "provider_configs":[
-            {
-               "name":"polymarket_api",
-               "off_chain_ticker":"21948917496837354367910826573765617012647201536430148892502780921686496760749"
+               "off_chain_ticker":"0x08f5fe8d0d29c08a96f0bc3dfb52f50e0caf470d94d133d95d38fa6c847e0925/95128817762909535143571435260705470642391662537976312011260538371392879420759"
             }
          ]
       },
@@ -9775,14 +9741,14 @@ var (
                "Base":"WILL_INSIDE_OUT_2_GROSS_MOST_IN_2024?YES",
                "Quote":"USD"
             },
-            "decimals":3,
+            "decimals":4,
             "min_provider_count":1,
             "enabled":true
          },
          "provider_configs":[
             {
                "name":"polymarket_api",
-               "off_chain_ticker":"50107902083284751016545440401692219408556171231461347396738260657226842527986"
+               "off_chain_ticker":"0x1ab07117f9f698f28490f57754d6fe5309374230c95867a7eba572892a11d710/50107902083284751016545440401692219408556171231461347396738260657226842527986"
             }
          ]
       }

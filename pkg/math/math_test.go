@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/connect/v2/pkg/math"
 )
 
 func TestMin(t *testing.T) {
@@ -41,8 +41,6 @@ func TestMin(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -78,8 +76,6 @@ func TestAbs(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			got := math.Abs(tc.val)
 			require.Equal(t, tc.expected, got)
@@ -118,8 +114,6 @@ func TestMax(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 

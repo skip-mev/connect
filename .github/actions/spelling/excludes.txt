@@ -1,4 +1,5 @@
 (?:^|/)expect\.txt$
+(?:^|/)go\.mod$
 (?:^|/)go\.sum$
 (?:|$^ 92.86% - excluded 13/14)^docs/img/
 [^/]\.png$

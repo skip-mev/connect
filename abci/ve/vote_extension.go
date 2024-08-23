@@ -11,14 +11,14 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/aggregator"
-	compression "github.com/skip-mev/slinky/abci/strategies/codec"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	slinkyabci "github.com/skip-mev/slinky/abci/types"
-	"github.com/skip-mev/slinky/abci/ve/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
+	"github.com/skip-mev/connect/v2/abci/strategies/aggregator"
+	compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
+	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
+	slinkyabci "github.com/skip-mev/connect/v2/abci/types"
+	"github.com/skip-mev/connect/v2/abci/ve/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
+	servicetypes "github.com/skip-mev/connect/v2/service/servers/oracle/types"
 )
 
 // VoteExtensionHandler is a handler that extends a vote with the oracle's
@@ -326,7 +326,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 			continue
 		}
 
-		h.logger.Info(
+		h.logger.Debug(
 			"transformed oracle price",
 			"currency_pair", cp,
 			"height", ctx.BlockHeight(),
@@ -335,7 +335,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 		strategyPrices[cpID] = encodedPrice
 	}
 
-	h.logger.Info("transformed oracle prices", "prices", len(strategyPrices))
+	h.logger.Debug("transformed oracle prices", "prices", len(strategyPrices))
 
 	return types.OracleVoteExtension{
 		Prices: strategyPrices,

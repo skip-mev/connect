@@ -7,6 +7,6 @@ import "cosmos/app/v1alpha1/module.proto";
 // Module is the config object of the incentives module.
 message Module {
   option (cosmos.app.v1alpha1.module) = {
-    go_import : "github.com/skip-mev/slinky/x/incentives"
+    go_import : "github.com/skip-mev/connect/v2/x/incentives"
   };
 }

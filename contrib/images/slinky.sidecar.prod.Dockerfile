@@ -1,6 +1,6 @@
-FROM ghcr.io/skip-mev/slinky-dev-base AS builder
+FROM ghcr.io/skip-mev/connect-dev-base AS builder
 
-WORKDIR /src/slinky
+WORKDIR /src/connect
 
 COPY go.mod .
 
@@ -13,7 +13,9 @@ RUN make build
 FROM gcr.io/distroless/base-debian11:debug
 EXPOSE 8080 8002
 
-COPY --from=builder /src/slinky/build/* /usr/local/bin/
+COPY --from=builder /src/connect/build/* /usr/local/bin/
+COPY --from=builder /src/connect/scripts/deprecated-exec.sh /usr/local/bin/
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT [ "slinky" ]
+ENTRYPOINT [ "deprecated-exec.sh" ]
+CMD [ "slinky" ]

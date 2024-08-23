@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/websockets/coinbase"
-	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
+	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium"
+	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
+	"github.com/skip-mev/connect/v2/providers/websockets/coinbase"
+	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
 func TestValidateBasic(t *testing.T) {
@@ -348,6 +348,83 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 		require.Equal(t, expectedConfig.Providers, cfg.Providers)
 		require.Equal(t, expectedConfig.UpdateInterval, cfg.UpdateInterval)
 		require.Equal(t, expectedConfig.Metrics.PrometheusServerAddress, cfg.Metrics.PrometheusServerAddress)
+	})
+
+	t.Run("overriding a nonexistent provider via config fails", func(t *testing.T) {
+		// create a temp file in the current directory
+		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		require.NoError(t, err)
+
+		defer os.Remove(tmpfile.Name())
+
+		overrides := fmt.Sprintf(`
+		{
+			"updateInterval": "%s",
+			"metrics": {
+				"prometheusServerAddress": "%s"
+			},
+			"providers": {
+				"doesNotExist": {
+					"api": {
+						"endpoints": [
+							{
+								"url": "%s"
+							},
+							{
+								"url": "%s",
+								"authentication": {
+									"apiKey": "%s",
+									"apiKeyHeader": "%s"
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+		`,
+			updateIntervalOverride,
+			prometheusServerOverride,
+			raydium.DefaultAPIConfig.Endpoints[0].URL,
+			endpointOverride.URL,
+			endpointOverride.Authentication.APIKey,
+			endpointOverride.Authentication.APIKeyHeader,
+		)
+		tmpfile.Write([]byte(overrides))
+
+		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
+		require.ErrorContains(t, err, "overridden key")
+	})
+}
+
+func TestOracleConfigWithExtraKeys(t *testing.T) {
+	t.Run("an oracle config with extraneous keys", func(t *testing.T) {
+		// create a temp file in the current directory
+		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		require.NoError(t, err)
+
+		defer os.Remove(tmpfile.Name())
+
+		overrides := `
+		{
+			"providers": {
+				"raydium_api": {
+					"api": {
+						"endpoints": [
+							{
+								"url": "http://somewhere",
+								"some_field_that_is_not_relevant": ""
+							}
+						]
+					}
+				}
+			}
+		}
+		`
+		tmpfile.Write([]byte(overrides))
+
+		_, err = cmdconfig.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
+		require.Error(t, err)
 	})
 }
 

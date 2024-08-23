@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/protobuf/proto"
 
-	alertv1 "github.com/skip-mev/slinky/api/slinky/alerts/v1"
+	alertv1 "github.com/skip-mev/connect/v2/api/slinky/alerts/v1"
 )
 
 var (

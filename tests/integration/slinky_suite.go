@@ -9,8 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
@@ -21,13 +19,14 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/static"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/oracle/types"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
+	"github.com/skip-mev/connect/v2/providers/static"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 const (
@@ -48,7 +47,7 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		HomeDir:     "/oracle",
 		Ports:       []string{"8080", "8081"},
 		StartCmd: []string{
-			"slinky",
+			"connect",
 			"--oracle-config", "/oracle/oracle.json",
 		},
 		ValidatorProcess: true,

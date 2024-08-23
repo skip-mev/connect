@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	_ "net/http/pprof" //nolint: gosec
@@ -15,25 +16,25 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/cmd/build"
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
-	"github.com/skip-mev/slinky/oracle"
-	"github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/pkg/log"
-	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
-	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
-	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/cmd/build"
+	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
+	"github.com/skip-mev/connect/v2/oracle"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
+	"github.com/skip-mev/connect/v2/pkg/log"
+	oraclemath "github.com/skip-mev/connect/v2/pkg/math/oracle"
+	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
+	oraclefactory "github.com/skip-mev/connect/v2/providers/factories/oracle"
+	mmservicetypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
+	oracleserver "github.com/skip-mev/connect/v2/service/servers/oracle"
+	promserver "github.com/skip-mev/connect/v2/service/servers/prometheus"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 var (
 	rootCmd = &cobra.Command{
 		Use:   "oracle",
-		Short: "Run the slinky oracle server.",
+		Short: "Run the connect oracle server.",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return runOracle()
@@ -51,6 +52,7 @@ var (
 
 	// oracle config flags.
 	flagMetricsEnabled           = "metrics-enabled"
+	flagTelemetryDisabled        = "disable-telemetry"
 	flagMetricsPrometheusAddress = "metrics-prometheus-address"
 	flagHost                     = "host"
 	flagPort                     = "port"
@@ -192,6 +194,11 @@ func init() {
 		cmdconfig.DefaultMetricsEnabled,
 		"Enables the Oracle client metrics",
 	)
+	rootCmd.Flags().Bool(
+		flagTelemetryDisabled,
+		cmdconfig.DefaultTelemetryDisabled,
+		"Disables the Oracle telemetry publication",
+	)
 	rootCmd.Flags().String(
 		flagMetricsPrometheusAddress,
 		cmdconfig.DefaultPrometheusServerAddress,
@@ -266,6 +273,11 @@ func runOracle() error {
 	// Build logger.
 	logger := log.NewLogger(logCfg)
 	defer logger.Sync()
+
+	// Args always include command name so this is safe
+	if filepath.Base(os.Args[0]) == "slinky" {
+		logger.Warn("the `./slinky` binary is deprecated and will be removed in a future version. please use `./connect`")
+	}
 
 	var cfg config.OracleConfig
 	var err error

@@ -13,17 +13,17 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/tests/integration"
-	"github.com/skip-mev/slinky/x/alerts"
-	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
-	"github.com/skip-mev/slinky/x/oracle"
-	"github.com/skip-mev/slinky/x/sla"
+	"github.com/skip-mev/connect/v2/tests/integration"
+	"github.com/skip-mev/connect/v2/x/alerts"
+	"github.com/skip-mev/connect/v2/x/incentives"
+	marketmapmodule "github.com/skip-mev/connect/v2/x/marketmap"
+	"github.com/skip-mev/connect/v2/x/oracle"
+	"github.com/skip-mev/connect/v2/x/sla"
 )
 
 var (
 	image = ibc.DockerImage{
-		Repository: "skip-mev/slinky-e2e",
+		Repository: "skip-mev/connect-e2e",
 		Version:    "latest",
 		UidGid:     "1000:1000",
 	}
@@ -34,7 +34,7 @@ var (
 	gasAdjustment = 1.5
 
 	oracleImage = ibc.DockerImage{
-		Repository: "skip-mev/slinky-e2e-oracle",
+		Repository: "skip-mev/connect-e2e-oracle",
 		Version:    "latest",
 		UidGid:     "1000:1000",
 	}
@@ -90,8 +90,8 @@ var (
 
 	denom = "stake"
 	spec  = &interchaintest.ChainSpec{
-		ChainName:     "slinky",
-		Name:          "slinky",
+		ChainName:     "connect",
+		Name:          "connect",
 		NumValidators: &numValidators,
 		NumFullNodes:  &numFullNodes,
 		Version:       "latest",
@@ -102,10 +102,10 @@ var (
 				image,
 			},
 			Type:           "cosmos",
-			Name:           "slinky",
+			Name:           "connect",
 			Denom:          denom,
 			ChainID:        "chain-id-0",
-			Bin:            "slinkyd",
+			Bin:            "connectd",
 			Bech32Prefix:   "cosmos",
 			CoinType:       "118",
 			GasAdjustment:  gasAdjustment,

@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 // msgServer is the default implementation of the x/marketmap MsgService.
@@ -34,10 +34,6 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
 	}
 
-	resp := &types.MsgUpsertMarketsResponse{
-		MarketUpdates: make(map[string]bool),
-	}
-
 	// iterate over all markets and either create them (if no market exists), or update them
 	for _, market := range msg.Markets {
 		// check if market exists
@@ -59,7 +55,6 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 				return nil, err
 			}
 
-			resp.MarketUpdates[market.Ticker.String()] = false
 			eventType = types.EventTypeCreateMarket
 		} else {
 			err = ms.k.UpdateMarket(ctx, market)
@@ -72,7 +67,6 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 				return nil, err
 			}
 
-			resp.MarketUpdates[market.Ticker.String()] = true
 			eventType = types.EventTypeUpdateMarket
 		}
 
@@ -91,7 +85,7 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 		return nil, err
 	}
 
-	return resp, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
+	return &types.MsgUpsertMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // CreateMarkets updates the marketmap by creating markets from the given message.  All updates are made to the market

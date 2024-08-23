@@ -28,7 +28,6 @@ linters:
     - misspell
     - nakedret
     - errorlint
-    # Checks for pointers to enclosing loop variables.
     - nolintlint
     # Finds shadowing of Go's predeclared identifiers.
     # I hear a lot of complaints from junior developers.

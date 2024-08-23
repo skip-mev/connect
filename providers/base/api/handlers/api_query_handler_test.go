@@ -16,15 +16,15 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/base/api/errors"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
-	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	mockmetrics "github.com/skip-mev/slinky/providers/base/api/metrics/mocks"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/connect/v2/oracle/config"
+	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/providers/base/api/errors"
+	"github.com/skip-mev/connect/v2/providers/base/api/handlers"
+	"github.com/skip-mev/connect/v2/providers/base/api/handlers/mocks"
+	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
+	mockmetrics "github.com/skip-mev/connect/v2/providers/base/api/metrics/mocks"
+	providertypes "github.com/skip-mev/connect/v2/providers/types"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 var (

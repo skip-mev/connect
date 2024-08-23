@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/pkg/json"
+	"github.com/skip-mev/connect/v2/pkg/json"
 )
 
 func TestIsValid(t *testing.T) {
