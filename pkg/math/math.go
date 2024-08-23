@@ -2,6 +2,7 @@ package math
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"sort"
 
@@ -67,7 +68,12 @@ func Float64ToBigInt(val float64, decimals uint64) *big.Int {
 
 // BigFloatToBigInt converts a big.Float to a big.Int.
 func BigFloatToBigInt(f *big.Float, decimals uint64) *big.Int {
+	if decimals > math.MaxInt64 {
+		decimals = math.MaxInt64
+	}
+
 	bigFloat := new(big.Float)
+	//nolint:gosec // handled above
 	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
 	bigFloat.SetInt(factor)
 
@@ -91,7 +97,12 @@ func Float64StringToBigFloat(s string) (*big.Float, error) {
 
 // ScaleBigFloat scales a big.Float by the given decimals.
 func ScaleBigFloat(f *big.Float, decimals uint64) *big.Float {
+	if decimals > math.MaxInt64 {
+		decimals = math.MaxInt64
+	}
+
 	bigFloat := new(big.Float)
+	//nolint:gosec // handled above
 	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
 	bigFloat.SetInt(factor)
 

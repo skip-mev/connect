@@ -106,9 +106,9 @@ func NewMetrics(telemetryPushAddress string) Metrics {
 		Help:      "Number of ticks with a successful oracle update.",
 	})
 	ret.promTickerTicks = prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: OracleSubsystem,
-			Name:      "health_check_ticker_updates_total",
-			Help:      "Number of ticks with a successful ticker update.",
+		Namespace: OracleSubsystem,
+		Name:      "health_check_ticker_updates_total",
+		Help:      "Number of ticks with a successful ticker update.",
 	}, []string{PairIDLabel})
 
 	ret.promPrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{

@@ -3,6 +3,7 @@ package raydium
 import (
 	"context"
 	"fmt"
+	gomath "math"
 	"math/big"
 	"time"
 
@@ -399,6 +400,15 @@ func calculatePrice(
 	baseTokenBalance, quoteTokenBalance *big.Int,
 	baseTokenDecimals, quoteTokenDecimals uint64,
 ) *big.Float {
+	if baseTokenDecimals > gomath.MaxInt64 {
+		baseTokenDecimals = gomath.MaxInt64
+	}
+
+	if quoteTokenDecimals > gomath.MaxInt64 {
+		quoteTokenDecimals = gomath.MaxInt64
+	}
+
+	//nolint:gosec // handled above
 	scalingFactor := math.GetScalingFactor(int64(baseTokenDecimals), int64(quoteTokenDecimals))
 
 	// calculate the price as quote / base
