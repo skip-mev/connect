@@ -84,11 +84,11 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) M
 		var statsdClient statsd.ClientInterface = &statsd.NoOpClient{}
 		if !config.Telemetry.Disabled && nodeClient != nil {
 			// Group these metrics into a statsd namespace
-			namespace, err := nodeClient.DeriveNodeIdentifier()
+			identifier, err := nodeClient.DeriveNodeIdentifier()
 			if err == nil { // only publish statsd data when connected to a node
 				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
-					// Prepends all messages with ${namespace}/
-					c.Namespace = fmt.Sprintf("%s/", namespace)
+					// Prepends all messages with connect.${identifier}.
+					c.Namespace = fmt.Sprintf("connect.sidecar.%s.", identifier)
 					return nil
 				})
 				if err == nil {

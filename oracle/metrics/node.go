@@ -43,7 +43,7 @@ func (nc *NodeClient) DeriveNodeIdentifier() (string, error) {
 	moniker := strings.ReplaceAll(info.DefaultNodeInfo.Moniker, " ", "-")
 	network := info.DefaultNodeInfo.Network
 
-	identifier := fmt.Sprintf("%s/%s", network, moniker)
+	identifier := fmt.Sprintf("%s.%s", network, moniker)
 
 	return identifier, nil
 }
