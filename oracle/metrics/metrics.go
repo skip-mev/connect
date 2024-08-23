@@ -201,7 +201,8 @@ func (m *OracleMetricsImpl) AddTickerTick(ticker string) {
 	},
 	).Add(1)
 
-	m.statsdClient.Incr(TickerTicksMetricName, []string{strings.ToLower(ticker)}, 1)
+	metricName := strings.Join([]string{TickerTicksMetricName, strings.ToLower(ticker)}, ".")
+	m.statsdClient.Incr(metricName, []string{}, 1)
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
@@ -233,7 +234,7 @@ func (m *OracleMetricsImpl) UpdateAggregatePrice(
 	},
 	).Set(price)
 
-	metricName := strings.Join([]string{AggregatePricesMetricName, strings.ToLower(PairIDLabel)}, ".")
+	metricName := strings.Join([]string{AggregatePricesMetricName, strings.ToLower(pairID)}, ".")
 	m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
 }
 
@@ -248,7 +249,7 @@ func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string, success
 	},
 	).Add(1)
 
-	metricName := strings.Join([]string{ProviderTickMetricName, strings.ToLower(ProviderLabel), strings.ToLower(PairIDLabel)}, ".")
+	metricName := strings.Join([]string{ProviderTickMetricName, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
 	m.statsdClient.Incr(metricName, []string{fmt.Sprintf("%t", success)}, 1)
 }
 
@@ -260,7 +261,7 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 	},
 	).Set(float64(count))
 
-	metricName := strings.Join([]string{ProviderCountMetricName, strings.ToLower(PairIDLabel)}, ".")
+	metricName := strings.Join([]string{ProviderCountMetricName, strings.ToLower(market)}, ".")
 	m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
 }
 
@@ -271,6 +272,7 @@ func (m *OracleMetricsImpl) SetSlinkyBuildInfo() {
 		Version: build.Build,
 	}).Set(1)
 
-	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, strings.ToLower(build.Build)}, ".")
+	encodedBuild := strings.ToLower(strings.ReplaceAll(build.Build, ".", "_"))
+	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, encodedBuild}, ".")
 	m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
 }
