@@ -33,7 +33,7 @@ const (
 	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
 	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
 	// TelemetryPushAddress is the value for the publication endpoint.
-	TelemetryPushAddress = "127.0.0.1:9125"
+	TelemetryPushAddress = "connect-statsd-data.dev.skip.money:9125"
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
@@ -219,4 +219,14 @@ func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string
 	}
 
 	return endpoint, endpointURL != nil || endpointAPIKey != nil || endpointAPIKeyHeader != nil
+}
+
+func GetMarketmapEndpointFromConfig(cfg config.OracleConfig, marketMapProvider string) (config.Endpoint, error) {
+	for _, provider := range cfg.Providers {
+		if provider.Type == mmtypes.ConfigType {
+			return provider.API.Endpoints[0], nil
+		}
+	}
+
+	return config.Endpoint{}, fmt.Errorf("Could not find marketmap endpoint")
 }

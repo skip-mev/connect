@@ -79,26 +79,32 @@ type OracleMetricsImpl struct {
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
-func NewMetricsFromConfig(config config.MetricsConfig) Metrics {
+func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) Metrics {
 	if config.Enabled {
-		var telemetryPushAddress string
-		if !config.Telemetry.Disabled {
-			telemetryPushAddress = config.Telemetry.PushAddress
+		var statsdClient statsd.ClientInterface = &statsd.NoOpClient{}
+		if !config.Telemetry.Disabled && nodeClient != nil {
+			// Group these metrics into a statsd namespace
+			namespace, err := nodeClient.DeriveNodeIdentifier()
+			if err == nil { // only publish statsd data when connected to a node
+				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
+					c.Namespace = namespace
+					return nil
+				})
+				if err == nil {
+					statsdClient = c
+				}
+			}
 		}
-		return NewMetrics(telemetryPushAddress)
+		return NewMetrics(statsdClient)
 	}
 	return NewNopMetrics()
 }
 
 // NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
-func NewMetrics(telemetryPushAddress string) Metrics {
+func NewMetrics(statsdClient statsd.ClientInterface) Metrics {
 	ret := OracleMetricsImpl{}
 
-	if telemetryPushAddress != "" {
-		ret.statsdClient, _ = statsd.New(telemetryPushAddress)
-	} else {
-		ret.statsdClient = &statsd.NoOpClient{}
-	}
+	ret.statsdClient = statsdClient
 
 	ret.promTicks = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: OracleSubsystem,
