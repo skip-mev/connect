@@ -11,7 +11,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/store v1.1.0
 	cosmossdk.io/x/tx v0.13.4
-	github.com/DataDog/datadog-go v3.2.0+incompatible
+	github.com/DataDog/datadog-go v4.8.3+incompatible
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.11
