@@ -16,6 +16,7 @@ linters:
     - dogsled
     # Check for two durations multiplied together.
     - durationcheck
+    - copyloopvar
     - goconst
     - gocritic
     - gofumpt
