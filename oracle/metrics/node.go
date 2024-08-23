@@ -36,7 +36,6 @@ func (nc *NodeClient) DeriveNodeIdentifier() (string, error) {
 	svcclient := cmtservice.NewServiceClient(nc.conn)
 
 	info, err := svcclient.GetNodeInfo(context.Background(), &cmtservice.GetNodeInfoRequest{})
-
 	if err != nil {
 		return "", err
 	}
