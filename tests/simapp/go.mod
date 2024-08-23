@@ -201,6 +201,7 @@ require (
 replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-20230719143845-dff6b0e26aa4
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/skip-mev/connect/v2 => ../../
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
