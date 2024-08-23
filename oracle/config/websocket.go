@@ -70,7 +70,7 @@ const (
 
 // WebSocketConfig defines a config for a websocket based data provider.
 type WebSocketConfig struct {
-	// Enabled is a flag that indicates whether the provider is websocket based.
+	// Enabled indicates if the provider is enabled.
 	Enabled bool `json:"enabled"`
 
 	// MaxBufferSize is the maximum number of messages that the provider will buffer
