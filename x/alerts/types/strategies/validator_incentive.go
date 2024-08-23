@@ -111,7 +111,9 @@ func NewValidatorAlertIncentiveStrategy(sk types.StakingKeeper, bk types.BankKee
 		infractionHeight := validatorAlertIncentive.AlertHeight - uint64(sdk.ValidatorUpdateDelay)
 
 		// slash the validator
-		amountSlashed, err := sk.Slash(ctx, ca, int64(infractionHeight), validatorAlertIncentive.Validator.Power, slashFactor)
+		//nolint:gosec
+		amountSlashed, err := sk.Slash(ctx, ca, int64(infractionHeight), validatorAlertIncentive.Validator.Power,
+			slashFactor) //nolint:gosec
 		if err != nil {
 			return nil, fmt.Errorf("failed to slash validator: %w", err)
 		}

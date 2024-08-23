@@ -16,10 +16,10 @@ linters:
     - dogsled
     # Check for two durations multiplied together.
     - durationcheck
+    - copyloopvar
     - goconst
     - gocritic
-      # re-enable this once golangci-lint has a new release
-      # - gofumpt
+    - gofumpt
     - gosec
     - gosimple
     - govet
