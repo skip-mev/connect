@@ -7,7 +7,7 @@ import (
 
 // APIConfig defines a config for an API based data provider.
 type APIConfig struct {
-	// Enabled is a flag that indicates whether the provider is API based.
+	// Enabled indicates if the provider is enabled.
 	Enabled bool `json:"enabled"`
 
 	// Timeout is the amount of time the provider should wait for a response from
