@@ -12,11 +12,7 @@ go 1.22.5
 
 require (
 	cosmossdk.io/math v1.3.0
-<<<<<<< HEAD
-	github.com/cometbft/cometbft v0.38.10
-=======
 	github.com/cometbft/cometbft v0.38.11
->>>>>>> main
 	github.com/cosmos/cosmos-sdk v0.50.9
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/skip-mev/connect/v2 v2.0.0
@@ -38,11 +34,7 @@ require (
 	cosmossdk.io/core v0.11.1 // indirect
 	cosmossdk.io/depinject v1.0.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-<<<<<<< HEAD
-	cosmossdk.io/log v1.4.0 // indirect
-=======
 	cosmossdk.io/log v1.4.1 // indirect
->>>>>>> main
 	cosmossdk.io/store v1.1.0 // indirect
 	cosmossdk.io/x/evidence v0.1.0 // indirect
 	cosmossdk.io/x/feegrant v0.1.0 // indirect
@@ -83,11 +75,7 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-<<<<<<< HEAD
-	github.com/cosmos/gogoproto v1.6.0 // indirect
-=======
 	github.com/cosmos/gogoproto v1.7.0 // indirect
->>>>>>> main
 	github.com/cosmos/iavl v1.1.3 // indirect
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
 	github.com/cosmos/ibc-go/v8 v8.3.2 // indirect
@@ -250,24 +238,15 @@ require (
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
-<<<<<<< HEAD
-	golang.org/x/oauth2 v0.22.0 // indirect
-=======
 	golang.org/x/oauth2 v0.21.0 // indirect
->>>>>>> main
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/term v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
-<<<<<<< HEAD
-	google.golang.org/api v0.192.0 // indirect
-	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf // indirect
-=======
-	google.golang.org/api v0.176.1 // indirect
-	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
->>>>>>> main
+	google.golang.org/api v0.189.0 // indirect
+	google.golang.org/genproto v0.0.0-20240722135656-d784300faade // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
