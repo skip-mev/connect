@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -26,7 +24,7 @@ type Chain struct {
 
 // String returns the string representation of the Chain schema.
 func (mms Chain) String() string {
-	return fmt.Sprintf("ChainID: %s", mms.ChainID)
+	return mms.ChainID
 }
 
 type (
