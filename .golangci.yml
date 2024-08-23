@@ -16,7 +16,7 @@ linters:
     - dogsled
     # Check for two durations multiplied together.
     - durationcheck
-    - exportloopref
+    - copyloopvar
     - goconst
     - gocritic
     - gofumpt
@@ -29,7 +29,6 @@ linters:
     - nakedret
     - errorlint
     # Checks for pointers to enclosing loop variables.
-    - exportloopref
     - nolintlint
     # Finds shadowing of Go's predeclared identifiers.
     # I hear a lot of complaints from junior developers.

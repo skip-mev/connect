@@ -314,7 +314,7 @@ ETHUSDTAMMID
 EUR
 eux
 evm
-exportloopref
+copyloopvar
 extendee
 fabf
 Factom
