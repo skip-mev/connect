@@ -172,10 +172,7 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 // verifyMarketAuthorities verifies that the msg-submitter is a market-authority
 // and returns the context for the msg, this method returns an error if the submitter is not a market
 // authority.
-func (ms msgServer) verifyMarketAuthorities(ctx sdk.Context, msg interface {
-	GetAuthority() string
-},
-) error {
+func (ms msgServer) verifyMarketAuthorities(ctx sdk.Context, msg interface{ GetAuthority() string }) error {
 	if msg == nil {
 		return fmt.Errorf("unable to process nil msg")
 	}
@@ -195,10 +192,6 @@ func (ms msgServer) verifyMarketAuthorities(ctx sdk.Context, msg interface {
 
 // UpdateParams updates the x/marketmap module's Params.
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgParams) (*types.MsgParamsResponse, error) {
-	if msg == nil {
-		return nil, fmt.Errorf("unable to process nil msg")
-	}
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if msg.Authority != ms.k.authority.String() {
@@ -213,10 +206,6 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgParams) (*
 }
 
 func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.MsgRemoveMarketAuthorities) (*types.MsgRemoveMarketAuthoritiesResponse, error) {
-	if msg == nil {
-		return nil, fmt.Errorf("unable to process nil msg")
-	}
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	params, err := ms.k.GetParams(ctx)

@@ -64,13 +64,6 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 		s.Require().Nil(resp)
 	})
 
-	// set a market in the map
-	s.Run("unable to process nil request", func() {
-		resp, err = msgServer.CreateMarkets(s.ctx, nil)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
-	})
-
 	s.Run("unable to create market that already exists", func() {
 		msg = &types.MsgCreateMarkets{
 			Authority: s.authority.String(),
@@ -153,13 +146,6 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 		s.Require().Nil(resp)
 	})
 
-	// set a market in the map
-	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.UpdateMarkets(s.ctx, nil)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
-	})
-
 	s.Run("able to update market that already exists", func() {
 		tickerUpdate := btcusdt
 		tickerUpdate.Ticker.Decimals = 1
@@ -216,12 +202,6 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 func (s *KeeperTestSuite) TestMsgServerParams() {
 	msgServer := keeper.NewMsgServer(s.keeper)
 
-	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.UpdateParams(s.ctx, nil)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
-	})
-
 	s.Run("unable to process for invalid authority", func() {
 		msg := &types.MsgParams{
 			Authority: "invalid",
@@ -260,12 +240,6 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 
 func (s *KeeperTestSuite) TestMsgServerRemoveMarketAuthorities() {
 	msgServer := keeper.NewMsgServer(s.keeper)
-
-	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, nil)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
-	})
 
 	s.Run("unable to process for invalid authority", func() {
 		msg := &types.MsgRemoveMarketAuthorities{
@@ -357,13 +331,6 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 			Authority: sdk.AccAddress("invalid").String(),
 		}
 		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
-	})
-
-	// set a market in the map
-	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.UpsertMarkets(s.ctx, nil)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})

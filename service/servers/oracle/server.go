@@ -148,12 +148,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
 // for any reason, or if the oracle errors.
-func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesRequest) (*types.QueryPricesResponse, error) {
-	// check that the request is non-nil
-	if req == nil {
-		return nil, ErrNilRequest
-	}
-
+func (os *OracleServer) Prices(ctx context.Context, _ *types.QueryPricesRequest) (*types.QueryPricesResponse, error) {
 	os.logger.Debug("received request for prices")
 
 	// check that oracle is running

@@ -38,11 +38,6 @@ func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCur
 // CurrencyPairSelector (either the stringified CurrencyPair, or the CurrencyPair itself). If the request is nil this method fails.
 // If the selector is an incorrectly formatted string this method fails. If the QuotePrice / Nonce do not exist for this CurrencyPair, this method fails.
 func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest) (_ *types.GetPriceResponse, err error) {
-	// fail on nil requests
-	if req == nil {
-		return nil, fmt.Errorf("request cannot be nil")
-	}
-
 	cp := req.CurrencyPair
 	if err := cp.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid currency pair: %w", err)
@@ -79,11 +74,6 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 // GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
 	var cp slinkytypes.CurrencyPair
-
-	// fail on nil requests
-	if req == nil {
-		return nil, fmt.Errorf("request cannot be nil")
-	}
 
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cid := range req.CurrencyPairIds {

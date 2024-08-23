@@ -90,13 +90,6 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		expectPass bool
 	}{
 		{
-			"if the request is nil, expect failure - fail",
-			func() {},
-			nil,
-			nil,
-			false,
-		},
-		{
 			"if the currency pair is empty, expect failure - fail",
 			func() {},
 			&types.GetPriceRequest{

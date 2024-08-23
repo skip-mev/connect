@@ -26,11 +26,6 @@ var _ types.MsgServer = (*msgServer)(nil)
 // currency-pairs fail to be set, if the message is invalid, or if the signer is not the authority account of the module. If any of the CurrencyPairs
 // to be added already exist in the module, they will be skipped.
 func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCurrencyPairs) (*types.MsgAddCurrencyPairsResponse, error) {
-	// check the validity of the message
-	if req == nil {
-		return nil, fmt.Errorf("message cannot be empty")
-	}
-
 	if m.k.mmKeeper != nil {
 		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
 	}
@@ -60,11 +55,6 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 // i.e `cp.String()`. For each CurrencyPair in the message, remove the Nonce / QuotePrice data for that CurrencyPair, if a CurrencyPair is
 // given that is not currently tracked, skip, and continue removing CurrencyPairs.
 func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRemoveCurrencyPairs) (*types.MsgRemoveCurrencyPairsResponse, error) {
-	// check validity of message
-	if req == nil {
-		return nil, fmt.Errorf("message cannot be empty")
-	}
-
 	if m.k.mmKeeper != nil {
 		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
 	}

@@ -21,11 +21,6 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		expectPass bool
 	}{
 		{
-			"if the request is empty - fail",
-			nil,
-			false,
-		},
-		{
 			"if the message is incorrectly formatted (authority) - fail",
 			&types.MsgAddCurrencyPairs{
 				Authority: "abc",
@@ -194,11 +189,6 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 		req        *types.MsgRemoveCurrencyPairs
 		expectPass bool
 	}{
-		{
-			"if the request is empty - fail",
-			nil,
-			false,
-		},
 		{
 			"if the message is incorrectly formatted (authority) - fail",
 			&types.MsgRemoveCurrencyPairs{

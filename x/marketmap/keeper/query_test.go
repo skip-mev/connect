@@ -10,11 +10,6 @@ func (s *KeeperTestSuite) TestMarketMap() {
 	qs := keeper.NewQueryServer(s.keeper)
 	s.ctx = s.ctx.WithChainID("test-chain")
 
-	s.Run("invalid for nil request", func() {
-		_, err := qs.MarketMap(s.ctx, nil)
-		s.Require().Error(err)
-	})
-
 	s.Run("run query with no state", func() {
 		resp, err := qs.MarketMap(s.ctx, &types.MarketMapRequest{})
 		s.Require().NoError(err)
@@ -57,11 +52,6 @@ func (s *KeeperTestSuite) TestMarketMap() {
 func (s *KeeperTestSuite) TestMarket() {
 	qs := keeper.NewQueryServer(s.keeper)
 	s.ctx = s.ctx.WithChainID("test-chain")
-
-	s.Run("invalid for nil request", func() {
-		_, err := qs.Market(s.ctx, nil)
-		s.Require().Error(err)
-	})
 
 	s.Run("run query with invalid currency pair", func() {
 		_, err := qs.Market(s.ctx, &types.MarketRequest{})
@@ -113,11 +103,6 @@ func (s *KeeperTestSuite) TestParams() {
 
 		s.Require().Equal(params, resp.Params)
 	})
-
-	s.Run("run invalid nil request", func() {
-		_, err := qs.Params(s.ctx, nil)
-		s.Require().Error(err)
-	})
 }
 
 func (s *KeeperTestSuite) TestLastUpdated() {
@@ -132,10 +117,5 @@ func (s *KeeperTestSuite) TestLastUpdated() {
 		s.Require().NoError(err)
 
 		s.Require().Equal(uint64(s.ctx.BlockHeight()), resp.LastUpdated)
-	})
-
-	s.Run("run invalid nil request", func() {
-		_, err := qs.LastUpdated(s.ctx, nil)
-		s.Require().Error(err)
 	})
 }
