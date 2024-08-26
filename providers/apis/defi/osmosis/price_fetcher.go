@@ -203,6 +203,6 @@ func (pf *APIPriceFetcher) Fetch(
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
-func calculatePrice(resp SpotPriceResponse) (*big.Float, error) {
+func calculatePrice(resp WrappedSpotPriceResponse) (*big.Float, error) {
 	return math.Float64StringToBigFloat(resp.SpotPrice)
 }
