@@ -12,6 +12,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/pkg/http"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -124,6 +125,8 @@ type MultiClientImpl struct {
 	apiMetrics metrics.APIMetrics
 
 	clients []Client
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiClient creates a new Client.

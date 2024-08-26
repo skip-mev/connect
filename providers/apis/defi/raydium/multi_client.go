@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -23,6 +24,8 @@ type MultiJSONRPCClient struct {
 
 	// underlying clients
 	clients []SolanaJSONRPCClient
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiJSONRPCClient returns a new MultiJSONRPCClient.

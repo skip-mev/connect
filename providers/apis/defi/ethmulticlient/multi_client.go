@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -23,6 +24,8 @@ type MultiRPCClient struct {
 
 	// underlying clients
 	clients []EVMClient
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiRPCClient returns a new MultiRPCClient.
@@ -173,7 +176,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 
 	filtered, err := m.filterResponses(results)
 	if err != nil {
-		return fmt.Errorf("filtering responses: %w", err)
+		return fmt.Errorf("error filtering responses: %w", err)
 	}
 
 	// copy the results from the results that had the largest height.
