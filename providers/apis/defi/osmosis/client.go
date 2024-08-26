@@ -96,7 +96,7 @@ func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, qu
 
 	c.apiMetrics.AddHTTPStatusCode(c.api.Name, resp)
 
-	blockHeight := uint64(0)
+	var blockHeight uint64
 	heightStr := resp.Header.Get(headerBlockHeight)
 	if heightStr != "" {
 		blockHeight, err = strconv.ParseUint(heightStr, 10, 64)
