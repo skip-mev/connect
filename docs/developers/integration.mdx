@@ -369,7 +369,7 @@ Finally, call these methods back in `app.go`, directly after setting the `x/mark
 	app.initializeABCIExtensions(client, metrics)
 ```
 
-## Starting the Application
+## Initializing Modules
 
 In order for the application to use Connect properly, the following is required:
 
@@ -520,6 +520,10 @@ func NewApp(
 	// ...
 }
 ```
+
+## Running the Node
+
+Once the chain is properly configured, head over to the [Quickstart](../validators/quickstart) guide to learn how to start the node with a Connect sidecar.
 
 ## Need Help?
 
