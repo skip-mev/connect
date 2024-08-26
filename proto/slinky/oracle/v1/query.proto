@@ -12,17 +12,26 @@ service Query {
   // Get all the currency pairs the x/oracle module is tracking price-data for.
   rpc GetAllCurrencyPairs(GetAllCurrencyPairsRequest)
       returns (GetAllCurrencyPairsResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/get_all_tickers";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/get_all_tickers"
+      additional_bindings : [ {get : "/slinky/oracle/v1/get_all_tickers"} ]
+    };
   };
 
   // Given a CurrencyPair (or its identifier) return the latest QuotePrice for
   // that CurrencyPair.
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/get_price";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/get_price"
+      additional_bindings : [ {get : "/slinky/oracle/v1/get_price"} ]
+    };
   };
 
   rpc GetPrices(GetPricesRequest) returns (GetPricesResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/get_prices";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/get_prices"
+      additional_bindings : [ {get : "/slinky/oracle/v1/get_prices"} ]
+    };
   }
 
   // Get the mapping of currency pair ID -> currency pair. This is useful for
@@ -30,8 +39,12 @@ service Query {
   // the underlying currency pair from it.
   rpc GetCurrencyPairMapping(GetCurrencyPairMappingRequest)
       returns (GetCurrencyPairMappingResponse) {
-    option (google.api.http).get =
-        "/slinky/oracle/v1/get_currency_pair_mapping";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/get_currency_pair_mapping"
+      additional_bindings : [
+        {get : "/slinky/oracle/v1/get_currency_pair_mapping"}
+      ]
+    };
   }
 }
 
