@@ -23,6 +23,7 @@ go.work*
 
 # Testing script folders
 /tests/.slinkyd
+/tests/.connectd
 
 # build dir
 /build/

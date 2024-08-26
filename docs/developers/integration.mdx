@@ -376,15 +376,14 @@ In order for the application to use Connect properly, the following is required:
 - Set the consensus parameters to enable vote extensions
 - Initialize `x/marketmap` with initial markets
 
-The following code can be executed within an upgrade handler for chains that are already live or in `InitChainer` for new chains:
 
-```go
+```go oracle.go
 package app
 
 import (
 	"slices"
 
-        tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/skip-mev/connect/v2/cmd/constants/marketmaps"
@@ -439,7 +438,88 @@ func (app *App) setupMarkets(ctx sdk.Context) error {
 }
 ```
 
-With the Connect sidecar running, the application can now be started and will begin receiving price data at the configured `VoteExtensionsEnableHeight`.
+For new chains, or to test the integration, the method above can be called in `InitChainer`. Connect will begin posting prices to the chain once the `VoteExtensionsEnabledHeight` is reached.
+
+```go app.go
+package app
+
+func NewApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	loadLatest bool,
+	appOpts servertypes.AppOptions,
+	baseAppOptions ...func(*baseapp.BaseApp),
+) *App {
+    // ...
+
+	// initalize the chain with markets in state.
+    app.SetInitChainer(func(ctx sdk.Context, req *types.RequestInitChain) (*types.ResponseInitChain, error) {
+		err := app.setupMarkets(ctx)
+		if err != nil {
+			return nil, err
+		}
+	})
+
+	// ...
+}
+```
+
+For live running chains, use an upgrade handler. Note: Connect will not post prices to the chain until the upgrade is executed.
+
+```go app.go
+package app
+
+func NewApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	loadLatest bool,
+	appOpts servertypes.AppOptions,
+	baseAppOptions ...func(*baseapp.BaseApp),
+) *App {
+    // ...
+
+	connectUpgradeName := "connect-upgrade" // placeholder value, use a real upgrade name.
+
+	app.UpgradeKeeper.SetUpgradeHandler(connectUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+        migrations, err := app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+        if err != nil {
+            return nil, err
+        }
+
+		// add the markets to the chain state.
+		err := app.setupMarkets(ctx)
+		if err != nil {
+			return migrations, err
+		}
+
+		return migrations, nil
+	})
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+
+	// add the x/marketmap and x/oracle stores.
+	if upgradeInfo.Name == connectUpgradeName {
+        app.SetStoreLoader(
+            upgradetypes.UpgradeStoreLoader(
+                upgradeInfo.Height,
+                &storetypes.StoreUpgrades{
+                    Added:   []string{marketmaptypes.ModuleName, oracletypes.ModuleName},
+                    Renamed: nil,
+                    Deleted: nil,
+                },
+            ),
+        )
+	}
+
+	// ...
+}
+```
 
 ## Need Help?
 
