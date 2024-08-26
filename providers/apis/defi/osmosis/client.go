@@ -153,10 +153,11 @@ func NewMultiClient(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
@@ -193,10 +194,11 @@ func NewMultiClientFromEndpoints(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 

@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"sync"
+
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -35,9 +36,10 @@ func NewMultiRPCClient(
 	clients []EVMClient,
 ) EVMClient {
 	return &MultiRPCClient{
-		logger:  logger,
-		clients: clients,
-		api:     api,
+		logger:          logger,
+		clients:         clients,
+		api:             api,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}
 }
 
@@ -84,9 +86,10 @@ func NewMultiRPCClientFromEndpoints(
 	}
 
 	return &MultiRPCClient{
-		logger:  logger.With(zap.String("multi_client", api.Name)),
-		api:     api,
-		clients: clients,
+		logger:          logger.With(zap.String("multi_client", api.Name)),
+		api:             api,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 

@@ -36,10 +36,11 @@ func NewMultiJSONRPCClient(
 	clients []SolanaJSONRPCClient,
 ) SolanaJSONRPCClient {
 	return &MultiJSONRPCClient{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}
 }
 
@@ -83,10 +84,11 @@ func NewMultiJSONRPCClientFromEndpoints(
 	}
 
 	return &MultiJSONRPCClient{
-		logger:     logger.With(zap.String("multi_client", Name)),
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger.With(zap.String("multi_client", Name)),
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 

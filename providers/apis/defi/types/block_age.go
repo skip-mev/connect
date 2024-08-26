@@ -5,7 +5,16 @@ import "time"
 // BlockAgeChecker is a utility type to check if incoming block heights are validly updating.
 // If the block heights are not increasing and the time since the last update has exceeded
 // a configurable duration, this type will report that the updates are invalid.
-type BlockAgeChecker struct {
+//
+//go:generate mockery --name BlockAgeChecker --output ./mocks/ --case underscore
+type BlockAgeChecker interface {
+	IsHeightValid(newHeight uint64) bool
+}
+
+var _ BlockAgeChecker = &BlockAgeCheckerImpl{}
+
+// BlockAgeCheckerImpl is an implementation of the BlockAgeChecker interface.
+type BlockAgeCheckerImpl struct {
 	lastHeight    uint64
 	lastTimeStamp time.Time
 	maxAge        time.Duration
@@ -13,7 +22,7 @@ type BlockAgeChecker struct {
 
 // NewBlockAgeChecker returns a zeroed BlockAgeChecker using the provided maxAge.
 func NewBlockAgeChecker(maxAge time.Duration) BlockAgeChecker {
-	return BlockAgeChecker{
+	return &BlockAgeCheckerImpl{
 		lastHeight:    0,
 		lastTimeStamp: time.Now(),
 		maxAge:        maxAge,
@@ -25,7 +34,7 @@ func NewBlockAgeChecker(maxAge time.Duration) BlockAgeChecker {
 // - the time past the last block height update is less than the configured max age
 // returns false if:
 // - the time is past the configured max age
-func (bc *BlockAgeChecker) IsHeightValid(newHeight uint64) bool {
+func (bc *BlockAgeCheckerImpl) IsHeightValid(newHeight uint64) bool {
 	now := time.Now()
 
 	if newHeight > bc.lastHeight {
