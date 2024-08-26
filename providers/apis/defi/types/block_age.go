@@ -33,7 +33,7 @@ func NewBlockAgeChecker(maxAge time.Duration) BlockAgeChecker {
 // - the new height is greater than the last height OR
 // - the time past the last block height update is less than the configured max age
 // returns false if:
-// - the time is past the configured max age
+// - the time is past the configured max age.
 func (bc *BlockAgeCheckerImpl) IsHeightValid(newHeight uint64) bool {
 	now := time.Now()
 
