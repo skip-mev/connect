@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -11,7 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -131,6 +131,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// we log the error and append to error slice.
 			if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
 				errs[i] = fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
+				results[i] = result{0, nil, errs[i]}
 				m.logger.Debug(
 					"endpoint request failed",
 					zap.Error(err),
@@ -145,6 +146,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			r, ok := req[blockNumReqIndex].Result.(*string)
 			if !ok {
 				errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
+				results[i] = result{0, nil, errs[i]}
 				m.logger.Debug(
 					"result from eth_blockNumber was not a string",
 					zap.String("url", url),
@@ -156,6 +158,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			height, err := hexutil.DecodeUint64(*r)
 			if err != nil { // if we can't decode the height, log an error.
 				errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
+				results[i] = result{0, nil, errs[i]}
 				m.logger.Debug(
 					"could not decode hex eth height",
 					zap.String("url", url),
