@@ -132,3 +132,8 @@ var DefaultAPIConfig = config.APIConfig{
 type SpotPriceResponse struct {
 	SpotPrice string `json:"spot_price"`
 }
+
+type WrappedSpotPriceResponse struct {
+	SpotPriceResponse
+	BlockHeight uint64 `json:"block_height"`
+}
