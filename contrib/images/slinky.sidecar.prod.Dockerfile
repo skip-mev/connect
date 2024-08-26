@@ -13,6 +13,8 @@ RUN make build
 FROM gcr.io/distroless/base-debian11:debug
 EXPOSE 8080 8002
 
+USER connect:connect
+
 COPY --from=builder /src/connect/build/* /usr/local/bin/
 COPY --from=builder /src/connect/scripts/deprecated-exec.sh /usr/local/bin/
 
