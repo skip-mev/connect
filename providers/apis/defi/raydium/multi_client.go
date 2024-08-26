@@ -138,11 +138,11 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	}
 
 	// filter the responses
-	return filterAccountsResponses(responses)
+	return c.filterAccountsResponses(responses)
 }
 
 // filterAccountsResponses chooses the rpc response with the highest slot number.
-func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.GetMultipleAccountsResult, error) {
+func (c *MultiJSONRPCClient) filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.GetMultipleAccountsResult, error) {
 	var (
 		maxSlot uint64
 		maxResp *rpc.GetMultipleAccountsResult

@@ -225,11 +225,11 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 
 	wg.Wait()
 
-	return filterSpotPriceResponses(resps)
+	return mc.filterSpotPriceResponses(resps)
 }
 
 // filterSpotPriceResponses chooses the response with the highest block height.
-func filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpotPriceResponse, error) {
+func (mc *MultiClientImpl) filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpotPriceResponse, error) {
 	if len(responses) == 0 {
 		return WrappedSpotPriceResponse{}, fmt.Errorf("no responses found")
 	}

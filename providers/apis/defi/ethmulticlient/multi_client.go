@@ -87,6 +87,13 @@ func NewMultiRPCClientFromEndpoints(
 	}, nil
 }
 
+// define a result struct that go routines will populate and append to a slice when they complete their request.
+type result struct {
+	height  uint64
+	results []rpc.BatchElem
+	err     error
+}
+
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
 // It returns the response that has the greatest height from the eth_blockNumber call. An error is returned
 // only when no client was able to successfully provide a height or errored when sending the BatchCall.
@@ -95,11 +102,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug("BatchCallContext called with 0 elems")
 		return nil
 	}
-	// define a result struct that go routines will populate and append to a slice when they complete their request.
-	type result struct {
-		height  uint64
-		results []rpc.BatchElem
-	}
+
 	results := make([]result, len(m.clients))
 
 	// error slice to capture errors go routines encounter.
@@ -163,17 +166,31 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.String("url", url),
 			)
 			// append the results, minus the appended eth_blockNumber request.
-			results[i] = result{height, req[:blockNumReqIndex]}
+			results[i] = result{height, req[:blockNumReqIndex], errs[i]}
 		}(clientIdx)
 	}
 	wg.Wait()
 
+	filtered, err := m.filterResponses(results)
+	if err != nil {
+		return fmt.Errorf("filtering responses: %w", err)
+	}
+
+	// copy the results from the results that had the largest height.
+	copy(batchElems, filtered)
+	return nil
+}
+
+// filterAccountsResponses chooses the rpc response with the highest block number.
+func (m *MultiRPCClient) filterResponses(responses []result) ([]rpc.BatchElem, error) {
 	// see which of the results had the largest height, and store the index of that result.
 	var (
 		maxHeight      uint64
 		maxHeightIndex int
+		errs           = make([]error, len(responses))
 	)
-	for i, res := range results {
+	for i, res := range responses {
+		errs[i] = res.err
 		if res.height > maxHeight {
 			maxHeight = res.height
 			maxHeightIndex = i
@@ -183,12 +200,12 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 	if maxHeight == 0 {
 		err := errors.Join(errs...)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		// this should never happen... but who knows. maybe something terrible happened.
-		return errors.New("no errors were encountered, however no go routine was able to report a height")
+		return nil, errors.New("no errors were encountered, however no go routine was able to report a height")
+
 	}
-	// copy the results from the results that had the largest height.
-	copy(batchElems, results[maxHeightIndex].results)
-	return nil
+
+	return responses[maxHeightIndex].results, nil
 }
