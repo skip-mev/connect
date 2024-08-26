@@ -203,8 +203,10 @@ func TestProviderFetch(t *testing.T) {
 
 		client.On("SpotPrice", mock.Anything, btcUSDTMetadata.PoolID, btcUSDTMetadata.BaseTokenDenom,
 			btcUSDTMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedBTCUSDTPrice,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{
+				SpotPrice: expectedBTCUSDTPrice,
+			},
 		}, nil).Once()
 
 		ts := defaultTickersToProviderTickers([]types.DefaultProviderTicker{tickers[0]})
@@ -223,8 +225,10 @@ func TestProviderFetch(t *testing.T) {
 
 		err = fmt.Errorf("error")
 
-		client.On("SpotPrice", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(osmosis.SpotPriceResponse{
-			SpotPrice: "",
+		client.On("SpotPrice", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{
+				SpotPrice: "",
+			},
 		}, err).Times(3)
 
 		ts := defaultTickersToProviderTickers(tickers)
@@ -273,20 +277,20 @@ func TestProviderFetch(t *testing.T) {
 
 		client.On("SpotPrice", mock.Anything, btcUSDTMetadata.PoolID, btcUSDTMetadata.BaseTokenDenom,
 			btcUSDTMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: "",
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: ""},
 		}, err).Once()
 
 		client.On("SpotPrice", mock.Anything, ethUSDTMetadata.PoolID, ethUSDTMetadata.BaseTokenDenom,
 			ethUSDTMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedETHUSDTPrice,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedETHUSDTPrice},
 		}, nil).Once()
 
 		client.On("SpotPrice", mock.Anything, mogSOLMetadata.PoolID, mogSOLMetadata.BaseTokenDenom,
 			mogSOLMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedMOGSOLPRICE,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedMOGSOLPRICE},
 		}, nil).Once()
 
 		ts := defaultTickersToProviderTickers(tickers)
@@ -310,20 +314,20 @@ func TestProviderFetch(t *testing.T) {
 
 		client.On("SpotPrice", mock.Anything, btcUSDTMetadata.PoolID, btcUSDTMetadata.BaseTokenDenom,
 			btcUSDTMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedBTCUSDTPrice,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedBTCUSDTPrice},
 		}, nil).Once()
 
 		client.On("SpotPrice", mock.Anything, ethUSDTMetadata.PoolID, ethUSDTMetadata.BaseTokenDenom,
 			ethUSDTMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedETHUSDTPrice,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedETHUSDTPrice},
 		}, nil).Once()
 
 		client.On("SpotPrice", mock.Anything, mogSOLMetadata.PoolID, mogSOLMetadata.BaseTokenDenom,
 			mogSOLMetadata.QuoteTokenDenom,
-		).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedMOGSOLPRICE,
+		).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedMOGSOLPRICE},
 		}, nil).Once()
 
 		ts := defaultTickersToProviderTickers(tickers)
