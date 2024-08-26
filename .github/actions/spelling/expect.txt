@@ -1,3 +1,6 @@
+<<<<<<<
+=======
+>>>>>>>
 aab
 aadb
 AAQMb
@@ -175,6 +178,7 @@ consensustypes
 consulcatalog
 consumertypes
 conventionalcommits
+copyloopvar
 coretypes
 Cosm
 cosmossdk
@@ -200,6 +204,7 @@ cwwv
 dac
 dasel
 datacenters
+datadog
 datasources
 dbddb
 dbf
@@ -270,10 +275,6 @@ ETHUSDTAMMID
 EUR
 eux
 evm
-<<<<<<< HEAD
-copyloopvar
-=======
->>>>>>> main
 extendee
 fabf
 FAQs
@@ -351,6 +352,7 @@ grpctypes
 grpcurl
 handlermocks
 Hbt
+HEAD
 hearb
 heatmap
 helius
@@ -415,6 +417,7 @@ llc
 logtostderr
 LTCBTC
 LVz
+main
 mapbyte
 mapkey
 mapmsglen
@@ -511,6 +514,7 @@ oraclevetypes
 outpkg
 outstruct
 pamock
+pancis
 paramsclient
 paramskeeper
 paramsmodulev
@@ -548,7 +552,6 @@ privkey
 PROMETHEUSSERVERADDRESS
 promhttp
 promlinter
-promql
 promserver
 promtail
 protoc
@@ -813,6 +816,3 @@ Yxwa
 zaptest
 ZFvy
 zstd
-goautoneg
-munnerz
-datadog
