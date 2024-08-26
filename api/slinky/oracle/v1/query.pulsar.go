@@ -4005,8 +4005,7 @@ type GetPriceResponse struct {
 	// nonce represents the nonce for the CurrencyPair if it exists in state
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
 	// decimals represents the number of decimals that the quote-price is
-	// represented in. For Pairs where ETHEREUM is the quote this will be 18,
-	// otherwise it will be 8.
+	// represented in. It is used to scale the QuotePrice to its proper value.
 	Decimals uint64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
 	// ID represents the identifier for the CurrencyPair.
 	Id uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty"`

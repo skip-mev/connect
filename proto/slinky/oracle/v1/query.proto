@@ -61,8 +61,7 @@ message GetPriceResponse {
   // nonce represents the nonce for the CurrencyPair if it exists in state
   uint64 nonce = 2;
   // decimals represents the number of decimals that the quote-price is
-  // represented in. For Pairs where ETHEREUM is the quote this will be 18,
-  // otherwise it will be 8.
+  // represented in. It is used to scale the QuotePrice to its proper value.
   uint64 decimals = 3;
   // ID represents the identifier for the CurrencyPair.
   uint64 id = 4;
