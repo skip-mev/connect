@@ -162,5 +162,10 @@ func (c *MultiJSONRPCClient) filterAccountsResponses(responses []*rpc.GetMultipl
 		}
 	}
 
+	// check the block height (slot)
+	if valid := c.blockAgeChecker.IsHeightValid(maxSlot); !valid {
+		return nil, fmt.Errorf("height %d is stale and older than %d", maxSlot, c.api.MaxBlockHeightAge)
+	}
+
 	return maxResp, nil
 }

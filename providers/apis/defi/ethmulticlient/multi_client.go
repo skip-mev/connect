@@ -213,5 +213,10 @@ func (m *MultiRPCClient) filterResponses(responses []result) ([]rpc.BatchElem, e
 
 	}
 
+	// check the block height
+	if valid := m.blockAgeChecker.IsHeightValid(maxHeight); !valid {
+		return nil, fmt.Errorf("height %d is stale and older than %d", maxHeight, m.api.MaxBlockHeightAge)
+	}
+
 	return responses[maxHeightIndex].results, nil
 }

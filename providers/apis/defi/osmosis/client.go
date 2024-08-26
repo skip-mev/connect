@@ -247,5 +247,10 @@ func (mc *MultiClientImpl) filterSpotPriceResponses(responses []WrappedSpotPrice
 		}
 	}
 
+	// check the block height
+	if valid := mc.blockAgeChecker.IsHeightValid(highestHeight); !valid {
+		return WrappedSpotPriceResponse{}, fmt.Errorf("height %d is stale and older than %d", highestHeight, mc.api.MaxBlockHeightAge)
+	}
+
 	return responses[highestHeightIndex], nil
 }
