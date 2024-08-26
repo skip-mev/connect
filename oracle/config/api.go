@@ -128,5 +128,9 @@ func (c *APIConfig) ValidateBasic() error {
 		}
 	}
 
+	if c.MaxBlockHeightAge < 0 {
+		return fmt.Errorf("max_block_height_age cannot be negative")
+	}
+
 	return nil
 }
