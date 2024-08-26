@@ -453,7 +453,7 @@ func NewApp(
 ) *App {
     // ...
 
-	// initalize the chain with markets in state.
+	// initialize the chain with markets in state.
     app.SetInitChainer(func(ctx sdk.Context, req *types.RequestInitChain) (*types.ResponseInitChain, error) {
 		err := app.setupMarkets(ctx)
 		if err != nil {
