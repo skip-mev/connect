@@ -3,6 +3,8 @@ package log
 import (
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -92,6 +94,10 @@ func NewLogger(config Config) *zap.Logger {
 		core = zapcore.NewTee(stdCore, fileCore)
 	} else {
 		core = stdCore
+	}
+	if strings.ToUpper(config.StdOutLogLevel) != zap.DebugLevel.CapitalString() && strings.ToUpper(config.FileOutLogLevel) != zap.DebugLevel.CapitalString() {
+		// If we're not in debug log level anywhere, filter any logs which have non-unique messages within a 10-second period
+		core = zapcore.NewSamplerWithOptions(core, time.Second*10, 1, 0)
 	}
 
 	return zap.New(
