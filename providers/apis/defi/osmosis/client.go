@@ -12,6 +12,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/pkg/http"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -124,6 +125,8 @@ type MultiClientImpl struct {
 	apiMetrics metrics.APIMetrics
 
 	clients []Client
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiClient creates a new Client.
@@ -150,10 +153,11 @@ func NewMultiClient(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
@@ -190,10 +194,11 @@ func NewMultiClientFromEndpoints(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
@@ -225,11 +230,11 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 
 	wg.Wait()
 
-	return filterSpotPriceResponses(resps)
+	return mc.filterSpotPriceResponses(resps)
 }
 
 // filterSpotPriceResponses chooses the response with the highest block height.
-func filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpotPriceResponse, error) {
+func (mc *MultiClientImpl) filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpotPriceResponse, error) {
 	if len(responses) == 0 {
 		return WrappedSpotPriceResponse{}, fmt.Errorf("no responses found")
 	}
@@ -242,6 +247,11 @@ func filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpot
 			highestHeight = resp.BlockHeight
 			highestHeightIndex = i
 		}
+	}
+
+	// check the block height
+	if valid := mc.blockAgeChecker.IsHeightValid(highestHeight); !valid {
+		return WrappedSpotPriceResponse{}, fmt.Errorf("height %d is stale and older than %d", highestHeight, mc.api.MaxBlockHeightAge)
 	}
 
 	return responses[highestHeightIndex], nil

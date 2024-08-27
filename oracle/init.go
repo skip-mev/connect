@@ -102,8 +102,9 @@ func (o *OracleImpl) createPriceProvider(ctx context.Context, cfg config.Provide
 	// Add the provider to the oracle.
 	o.priceProviders[provider.Name()] = state
 
+	// Add the provider name to the message here since we want these to ignore log sampling limits
 	o.logger.Info(
-		"created price provider state",
+		fmt.Sprintf("created %s provider state", provider.Name()),
 		zap.String("provider", provider.Name()),
 		zap.Int("num_tickers", len(provider.GetIDs())),
 	)
