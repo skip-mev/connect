@@ -75,20 +75,25 @@ type OracleMetricsImpl struct {
 	promProviderCount   *prometheus.GaugeVec
 	promSlinkyBuildInfo *prometheus.GaugeVec
 	statsdClient        statsd.ClientInterface
+	nodeIdentifier      string
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
 func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) Metrics {
 	if config.Enabled {
+		var err error
+
 		var statsdClient statsd.ClientInterface = &statsd.NoOpClient{}
+		identifier := ""
 		if !config.Telemetry.Disabled && nodeClient != nil {
 			// Group these metrics into a statsd namespace
-			identifier, err := nodeClient.DeriveNodeIdentifier()
+			identifier, err = nodeClient.DeriveNodeIdentifier()
 			if err == nil { // only publish statsd data when connected to a node
 				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
-					// Prepends all messages with connect.${identifier}.
-					c.Namespace = fmt.Sprintf("connect.sidecar.%s.", identifier)
+					// Prepends all messages with connect.sidecar
+					c.Namespace = fmt.Sprintf("connect.sidecar.")
+					c.Tags = []string{identifier}
 					return nil
 				})
 				if err == nil {
@@ -96,16 +101,17 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) M
 				}
 			}
 		}
-		return NewMetrics(statsdClient)
+		return NewMetrics(statsdClient, identifier)
 	}
 	return NewNopMetrics()
 }
 
 // NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
-func NewMetrics(statsdClient statsd.ClientInterface) Metrics {
+func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metrics {
 	ret := OracleMetricsImpl{}
 
 	ret.statsdClient = statsdClient
+	ret.nodeIdentifier = nodeIdentifier
 
 	ret.promTicks = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: OracleSubsystem,
@@ -201,7 +207,7 @@ func (m *OracleMetricsImpl) AddTickerTick(ticker string) {
 	},
 	).Add(1)
 
-	metricName := strings.Join([]string{TickerTicksMetricName, strings.ToLower(ticker)}, ".")
+	metricName := strings.Join([]string{TickerTicksMetricName, m.nodeIdentifier, strings.ToLower(ticker)}, ".")
 	m.statsdClient.Incr(metricName, []string{}, 1)
 }
 
@@ -218,7 +224,7 @@ func (m *OracleMetricsImpl) UpdatePrice(
 	},
 	).Set(price)
 
-	metricName := strings.Join([]string{PricesMetricName, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
+	metricName := strings.Join([]string{PricesMetricName, m.nodeIdentifier, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
 	m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
 }
 
@@ -234,7 +240,7 @@ func (m *OracleMetricsImpl) UpdateAggregatePrice(
 	},
 	).Set(price)
 
-	metricName := strings.Join([]string{AggregatePricesMetricName, strings.ToLower(pairID)}, ".")
+	metricName := strings.Join([]string{AggregatePricesMetricName, m.nodeIdentifier, strings.ToLower(pairID)}, ".")
 	m.statsdClient.Gauge(metricName, price, []string{fmt.Sprintf("%d", decimals)}, 1)
 }
 
@@ -249,7 +255,7 @@ func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string, success
 	},
 	).Add(1)
 
-	metricName := strings.Join([]string{ProviderTickMetricName, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
+	metricName := strings.Join([]string{ProviderTickMetricName, m.nodeIdentifier, strings.ToLower(providerName), strings.ToLower(pairID)}, ".")
 	m.statsdClient.Incr(metricName, []string{fmt.Sprintf("%t", success)}, 1)
 }
 
@@ -261,7 +267,7 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 	},
 	).Set(float64(count))
 
-	metricName := strings.Join([]string{ProviderCountMetricName, strings.ToLower(market)}, ".")
+	metricName := strings.Join([]string{ProviderCountMetricName, m.nodeIdentifier, strings.ToLower(market)}, ".")
 	m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
 }
 
@@ -273,6 +279,6 @@ func (m *OracleMetricsImpl) SetSlinkyBuildInfo() {
 	}).Set(1)
 
 	encodedBuild := strings.ToLower(strings.ReplaceAll(build.Build, ".", "_"))
-	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, encodedBuild}, ".")
+	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, m.nodeIdentifier, encodedBuild}, ".")
 	m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
 }
