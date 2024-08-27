@@ -11,6 +11,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/cmd/constants"
 	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/dydx"
 	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
@@ -225,12 +226,18 @@ func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string
 func GetNodeEndpointFromConfig(cfg config.OracleConfig) (config.Endpoint, error) {
 	for _, provider := range cfg.Providers {
 		if provider.Type == mmtypes.ConfigType {
-			// alternative MM providers are not grpc endpoints
 			isAlternativeMMProvider := slices.IndexFunc(constants.AlternativeMarketMapProviders, func(c config.ProviderConfig) bool {
 				return c.Name == provider.Name
 			}) >= 0
 
-			if !isAlternativeMMProvider {
+			if isAlternativeMMProvider {
+				if provider.Name == dydx.SwitchOverAPIHandlerName {
+					// grpc endpoint is always the 2nd entry in the dydx
+					// migration provider
+					return provider.API.Endpoints[1], nil
+				}
+			} else {
+				// normal mm providers are grpc endpoints
 				return provider.API.Endpoints[0], nil
 			}
 		}
