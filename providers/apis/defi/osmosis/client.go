@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,7 +12,12 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/http"
+	"github.com/skip-mev/slinky/providers/apis/defi/types"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
+)
+
+const (
+	headerBlockHeight = "grpc-metadata-x-cosmos-block-height"
 )
 
 var (
@@ -28,7 +33,7 @@ type Client interface {
 		poolID uint64,
 		baseAsset,
 		quoteAsset string,
-	) (SpotPriceResponse, error)
+	) (WrappedSpotPriceResponse, error)
 }
 
 // ClientImpl is an implementation of a client to Osmosis using a
@@ -74,7 +79,7 @@ func NewClient(
 }
 
 // SpotPrice uses the underlying x/poolmanager client to access spot prices.
-func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (SpotPriceResponse, error) {
+func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (WrappedSpotPriceResponse, error) {
 	start := time.Now()
 	defer func() {
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
@@ -82,23 +87,35 @@ func (c *ClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, qu
 
 	url, err := CreateURL(c.endpoint.URL, poolID, baseAsset, quoteAsset)
 	if err != nil {
-		return SpotPriceResponse{}, err
+		return WrappedSpotPriceResponse{}, err
 	}
 
 	resp, err := c.httpClient.GetWithContext(ctx, url)
 	if err != nil {
-		return SpotPriceResponse{}, err
+		return WrappedSpotPriceResponse{}, err
 	}
 
 	c.apiMetrics.AddHTTPStatusCode(c.api.Name, resp)
+
+	var blockHeight uint64
+	heightStr := resp.Header.Get(headerBlockHeight)
+	if heightStr != "" {
+		blockHeight, err = strconv.ParseUint(heightStr, 10, 64)
+		if err != nil {
+			return WrappedSpotPriceResponse{}, fmt.Errorf("failed to parse block height: %w", err)
+		}
+	}
 
 	var spotPriceResponse SpotPriceResponse
 	if err := json.NewDecoder(resp.Body).Decode(&spotPriceResponse); err != nil {
-		return SpotPriceResponse{}, err
+		return WrappedSpotPriceResponse{}, err
 	}
 
 	c.apiMetrics.AddHTTPStatusCode(c.api.Name, resp)
-	return spotPriceResponse, nil
+	return WrappedSpotPriceResponse{
+		SpotPriceResponse: spotPriceResponse,
+		BlockHeight:       blockHeight,
+	}, nil
 }
 
 // MultiClientImpl is an Osmosis client that wraps a set of multiple Clients.
@@ -108,6 +125,8 @@ type MultiClientImpl struct {
 	apiMetrics metrics.APIMetrics
 
 	clients []Client
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiClient creates a new Client.
@@ -134,10 +153,11 @@ func NewMultiClient(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
@@ -174,17 +194,18 @@ func NewMultiClientFromEndpoints(
 	}
 
 	return &MultiClientImpl{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
 // SpotPrice delegates the request to all underlying clients and applies a filter to the
 // set of responses.
-func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (SpotPriceResponse, error) {
-	resps := make([]SpotPriceResponse, len(mc.clients))
+func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAsset, quoteAsset string) (WrappedSpotPriceResponse, error) {
+	resps := make([]WrappedSpotPriceResponse, len(mc.clients))
 
 	var wg sync.WaitGroup
 	wg.Add(len(mc.clients))
@@ -209,22 +230,29 @@ func (mc *MultiClientImpl) SpotPrice(ctx context.Context, poolID uint64, baseAss
 
 	wg.Wait()
 
-	return filterSpotPriceResponses(resps)
+	return mc.filterSpotPriceResponses(resps)
 }
 
-// filterSpotPriceResponses currently just chooses a random response as there is no way to differentiate.
-func filterSpotPriceResponses(responses []SpotPriceResponse) (SpotPriceResponse, error) {
+// filterSpotPriceResponses chooses the response with the highest block height.
+func (mc *MultiClientImpl) filterSpotPriceResponses(responses []WrappedSpotPriceResponse) (WrappedSpotPriceResponse, error) {
 	if len(responses) == 0 {
-		return SpotPriceResponse{}, fmt.Errorf("no responses found")
+		return WrappedSpotPriceResponse{}, fmt.Errorf("no responses found")
 	}
 
-	perm := rand.Perm(len(responses))
-	for _, i := range perm {
-		resp := responses[perm[i]]
-		if resp.SpotPrice != "" {
-			return resp, nil
+	highestHeight := uint64(0)
+	highestHeightIndex := 0
+
+	for i, resp := range responses {
+		if resp.BlockHeight > highestHeight {
+			highestHeight = resp.BlockHeight
+			highestHeightIndex = i
 		}
 	}
 
-	return SpotPriceResponse{}, fmt.Errorf("no responses found")
+	// check the block height
+	if valid := mc.blockAgeChecker.IsHeightValid(highestHeight); !valid {
+		return WrappedSpotPriceResponse{}, fmt.Errorf("height %d is stale and older than %d", highestHeight, mc.api.MaxBlockHeightAge)
+	}
+
+	return responses[highestHeightIndex], nil
 }
