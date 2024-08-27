@@ -210,7 +210,7 @@ test-cover: tidy
 	@sed -i'.bak' -e '/.pb.gw.go/d' $(COVER_FILE)
 	@sed -i'.bak' -e '/mocks/d' $(COVER_FILE)
 
-.PHONY: test test-e2e test-petri-integ
+.PHONY: test test-integration test-petri-integ
 
 ###############################################################################
 ###                                Protobuf                                 ###
