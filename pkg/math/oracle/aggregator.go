@@ -77,6 +77,8 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	indexPrices := make(types.Prices)
 	scaledPrices := make(types.Prices)
 
+	var missingPrices []string
+
 	for ticker, market := range m.cfg.Markets {
 		if !market.Ticker.Enabled {
 			m.logger.Debug("skipping disabled market", zap.Any("market", market))
@@ -92,7 +94,8 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 
 		// We need to have at least the minimum number of providers to calculate the median.
 		if len(convertedPrices) < int(target.MinProviderCount) { //nolint:gosec
-			m.logger.Error(
+			missingPrices = append(missingPrices, ticker)
+			m.logger.Debug(
 				"insufficient amount of converted prices",
 				zap.String("target_ticker", ticker),
 				zap.Int("num_converted_prices", len(convertedPrices)),
@@ -127,6 +130,9 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
 	m.logger.Debug("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
+	if len(missingPrices) > 0 {
+		m.logger.Info("failed to calculate prices for price feeds", zap.Strings("missing_prices", missingPrices))
+	}
 	m.indexPrices = indexPrices
 	m.scaledPrices = scaledPrices
 }
