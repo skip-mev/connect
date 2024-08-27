@@ -13,19 +13,28 @@ option go_package = "github.com/skip-mev/connect/v2/service/servers/oracle/types
 service Oracle {
   // Prices defines a method for fetching the latest prices.
   rpc Prices(QueryPricesRequest) returns (QueryPricesResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/prices";
-  };
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/prices"
+      additional_bindings : [ {get : "/slinky/oracle/v1/prices"} ]
+    };
+  }
 
   // MarketMap defines a method for fetching the latest market map
   // configuration.
   rpc MarketMap(QueryMarketMapRequest) returns (QueryMarketMapResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/marketmap";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/marketmap"
+      additional_bindings : [ {get : "/slinky/oracle/v1/marketmap"} ]
+    };
   }
 
   // Version defines a method for fetching the current version of the oracle
   // service.
   rpc Version(QueryVersionRequest) returns (QueryVersionResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/version";
+    option (google.api.http) = {
+      get : "/connect/oracle/v1/version"
+      additional_bindings : [ {get : "/slinky/oracle/v1/version"} ]
+    };
   }
 }
 
