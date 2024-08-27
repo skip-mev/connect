@@ -24,7 +24,7 @@ import (
 
 var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
 
-// UniswapV3PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
+// PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
 // querying Uniswap V3 pool contracts and returning the price of a given ticker. The price is
 // derived from the slot 0 data of the pool contract.
 //
