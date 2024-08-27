@@ -352,7 +352,6 @@ grpctypes
 grpcurl
 handlermocks
 Hbt
-HEAD
 hearb
 heatmap
 helius
@@ -417,7 +416,7 @@ llc
 logtostderr
 LTCBTC
 LVz
-main
+Macbook
 mapbyte
 mapkey
 mapmsglen
