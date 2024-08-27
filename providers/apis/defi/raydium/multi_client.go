@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -23,6 +24,8 @@ type MultiJSONRPCClient struct {
 
 	// underlying clients
 	clients []SolanaJSONRPCClient
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiJSONRPCClient returns a new MultiJSONRPCClient.
@@ -33,10 +36,11 @@ func NewMultiJSONRPCClient(
 	clients []SolanaJSONRPCClient,
 ) SolanaJSONRPCClient {
 	return &MultiJSONRPCClient{
-		logger:     logger,
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger,
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}
 }
 
@@ -80,10 +84,11 @@ func NewMultiJSONRPCClientFromEndpoints(
 	}
 
 	return &MultiJSONRPCClient{
-		logger:     logger.With(zap.String("multi_client", Name)),
-		api:        api,
-		apiMetrics: apiMetrics,
-		clients:    clients,
+		logger:          logger.With(zap.String("multi_client", Name)),
+		api:             api,
+		apiMetrics:      apiMetrics,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
 }
 
@@ -138,11 +143,11 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	}
 
 	// filter the responses
-	return filterAccountsResponses(responses)
+	return c.filterAccountsResponses(responses)
 }
 
 // filterAccountsResponses chooses the rpc response with the highest slot number.
-func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.GetMultipleAccountsResult, error) {
+func (c *MultiJSONRPCClient) filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.GetMultipleAccountsResult, error) {
 	var (
 		maxSlot uint64
 		maxResp *rpc.GetMultipleAccountsResult
@@ -157,6 +162,11 @@ func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.G
 			maxSlot = resp.Context.Slot
 			maxResp = resp
 		}
+	}
+
+	// check the block height (slot)
+	if valid := c.blockAgeChecker.IsHeightValid(maxSlot); !valid {
+		return nil, fmt.Errorf("height %d is stale and older than %d", maxSlot, c.api.MaxBlockHeightAge)
 	}
 
 	return maxResp, nil

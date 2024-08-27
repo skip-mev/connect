@@ -127,6 +127,7 @@ var DefaultAPIConfig = config.APIConfig{
 			URL: "https://osmosis-api.polkachu.com",
 		},
 	},
+	MaxBlockHeightAge: 30 * time.Second,
 }
 
 type SpotPriceResponse struct {

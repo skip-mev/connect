@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/skip-mev/connect/v2/providers/apis/defi/types"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 	"go.uber.org/zap"
@@ -23,6 +25,8 @@ type MultiRPCClient struct {
 
 	// underlying clients
 	clients []EVMClient
+
+	blockAgeChecker types.BlockAgeChecker
 }
 
 // NewMultiRPCClient returns a new MultiRPCClient.
@@ -32,9 +36,10 @@ func NewMultiRPCClient(
 	clients []EVMClient,
 ) EVMClient {
 	return &MultiRPCClient{
-		logger:  logger,
-		clients: clients,
-		api:     api,
+		logger:          logger,
+		clients:         clients,
+		api:             api,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}
 }
 
@@ -81,10 +86,18 @@ func NewMultiRPCClientFromEndpoints(
 	}
 
 	return &MultiRPCClient{
-		logger:  logger.With(zap.String("multi_client", api.Name)),
-		api:     api,
-		clients: clients,
+		logger:          logger.With(zap.String("multi_client", api.Name)),
+		api:             api,
+		clients:         clients,
+		blockAgeChecker: types.NewBlockAgeChecker(api.MaxBlockHeightAge),
 	}, nil
+}
+
+// define a result struct that go routines will populate and append to a slice when they complete their request.
+type result struct {
+	height  uint64
+	results []rpc.BatchElem
+	err     error
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
@@ -95,15 +108,9 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug("BatchCallContext called with 0 elems")
 		return nil
 	}
-	// define a result struct that go routines will populate and append to a slice when they complete their request.
-	type result struct {
-		height  uint64
-		results []rpc.BatchElem
-	}
+
 	results := make([]result, len(m.clients))
 
-	// error slice to capture errors go routines encounter.
-	errs := make([]error, len(m.clients))
 	wg := new(sync.WaitGroup)
 	// this is the index of where we will have an eth_blockNumber call.
 	blockNumReqIndex := len(batchElems)
@@ -124,7 +131,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// if there was an error, or if the block_num request didn't have result / errored
 			// we log the error and append to error slice.
 			if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
-				errs[i] = fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
+				resultErr := fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"endpoint request failed",
 					zap.Error(err),
@@ -138,7 +146,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// try to get the block number.
 			r, ok := req[blockNumReqIndex].Result.(*string)
 			if !ok {
-				errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
+				resultErr := fmt.Errorf("result from eth_blockNumber was not a string")
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"result from eth_blockNumber was not a string",
 					zap.String("url", url),
@@ -149,7 +158,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// decode the new height
 			height, err := hexutil.DecodeUint64(*r)
 			if err != nil { // if we can't decode the height, log an error.
-				errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
+				resultErr := fmt.Errorf("could not decode hex eth height: %w", err)
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"could not decode hex eth height",
 					zap.String("url", url),
@@ -163,17 +173,31 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.String("url", url),
 			)
 			// append the results, minus the appended eth_blockNumber request.
-			results[i] = result{height, req[:blockNumReqIndex]}
+			results[i] = result{height, req[:blockNumReqIndex], nil}
 		}(clientIdx)
 	}
 	wg.Wait()
 
+	filtered, err := m.filterResponses(results)
+	if err != nil {
+		return fmt.Errorf("error filtering responses: %w", err)
+	}
+
+	// copy the results from the results that had the largest height.
+	copy(batchElems, filtered)
+	return nil
+}
+
+// filterAccountsResponses chooses the rpc response with the highest block number.
+func (m *MultiRPCClient) filterResponses(responses []result) ([]rpc.BatchElem, error) {
 	// see which of the results had the largest height, and store the index of that result.
 	var (
 		maxHeight      uint64
 		maxHeightIndex int
+		errs           = make([]error, len(responses))
 	)
-	for i, res := range results {
+	for i, res := range responses {
+		errs[i] = res.err
 		if res.height > maxHeight {
 			maxHeight = res.height
 			maxHeightIndex = i
@@ -183,12 +207,17 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 	if maxHeight == 0 {
 		err := errors.Join(errs...)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		// this should never happen... but who knows. maybe something terrible happened.
-		return errors.New("no errors were encountered, however no go routine was able to report a height")
+		return nil, errors.New("no errors were encountered, however no go routine was able to report a height")
+
 	}
-	// copy the results from the results that had the largest height.
-	copy(batchElems, results[maxHeightIndex].results)
-	return nil
+
+	// check the block height
+	if valid := m.blockAgeChecker.IsHeightValid(maxHeight); !valid {
+		return nil, fmt.Errorf("height %d is stale and older than %d", maxHeight, m.api.MaxBlockHeightAge)
+	}
+
+	return responses[maxHeightIndex].results, nil
 }
