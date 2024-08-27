@@ -10,10 +10,18 @@ COPY . .
 
 RUN make build
 
+# Create a non-root user and group
+RUN groupadd -r connectgroup && useradd -r -g connectgroup connect
+
 FROM gcr.io/distroless/base-debian11:debug
 EXPOSE 8080 8002
 
-USER connect:connect
+# Copy the user and group files from the builder stage
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+# Set the user to connect
+USER connect
 
 COPY --from=builder /src/connect/build/* /usr/local/bin/
 
