@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -221,10 +222,17 @@ func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string
 	return endpoint, endpointURL != nil || endpointAPIKey != nil || endpointAPIKeyHeader != nil
 }
 
-func GetMarketmapEndpointFromConfig(cfg config.OracleConfig) (config.Endpoint, error) {
+func GetNodeEndpointFromConfig(cfg config.OracleConfig) (config.Endpoint, error) {
 	for _, provider := range cfg.Providers {
 		if provider.Type == mmtypes.ConfigType {
-			return provider.API.Endpoints[0], nil
+			// alternative MM providers are not grpc endpoints
+			isAlternativeMMProvider := slices.IndexFunc(constants.AlternativeMarketMapProviders, func(c config.ProviderConfig) bool {
+				return c.Name == provider.Name
+			}) >= 0
+
+			if !isAlternativeMMProvider {
+				return provider.API.Endpoints[0], nil
+			}
 		}
 	}
 
