@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof" //nolint: gosec
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
-
-	_ "net/http/pprof" //nolint: gosec
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -58,6 +58,7 @@ var (
 	flagPort                     = "port"
 	flagUpdateInterval           = "update-interval"
 	flagMaxPriceAge              = "max-price-age"
+	flagModeDebugTimeout         = "mode-debug-timeout"
 
 	// flag-bound values.
 	oracleCfgPath       string
@@ -75,6 +76,7 @@ var (
 	maxAge              int
 	disableCompressLogs bool
 	disableRotatingLogs bool
+	debugTimeout        bool
 )
 
 const (
@@ -187,6 +189,13 @@ func init() {
 		"",
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
 	)
+	rootCmd.Flags().BoolVarP(
+		&debugTimeout,
+		flagModeDebugTimeout,
+		"",
+		false,
+		"Run the oracle in a debug mode for 10 minutes to collect and export metrics.",
+	)
 
 	// these flags are connected to the OracleConfig.
 	rootCmd.Flags().Bool(
@@ -258,6 +267,13 @@ func runOracle() error {
 	// create context
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	if debugTimeout {
+		go func() {
+			time.Sleep(10 * time.Second)
+			cancel()
+		}()
+	}
 
 	// Set up logging.
 	logCfg := log.NewDefaultConfig()
