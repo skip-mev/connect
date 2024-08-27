@@ -111,8 +111,6 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 
 	results := make([]result, len(m.clients))
 
-	// error slice to capture errors go routines encounter.
-	errs := make([]error, len(m.clients))
 	wg := new(sync.WaitGroup)
 	// this is the index of where we will have an eth_blockNumber call.
 	blockNumReqIndex := len(batchElems)
@@ -133,8 +131,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// if there was an error, or if the block_num request didn't have result / errored
 			// we log the error and append to error slice.
 			if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
-				errs[i] = fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
-				results[i] = result{0, nil, errs[i]}
+				resultErr := fmt.Errorf("endpoint request failed: %w, %w", err, req[blockNumReqIndex].Error)
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"endpoint request failed",
 					zap.Error(err),
@@ -148,8 +146,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// try to get the block number.
 			r, ok := req[blockNumReqIndex].Result.(*string)
 			if !ok {
-				errs[i] = fmt.Errorf("result from eth_blockNumber was not a string")
-				results[i] = result{0, nil, errs[i]}
+				resultErr := fmt.Errorf("result from eth_blockNumber was not a string")
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"result from eth_blockNumber was not a string",
 					zap.String("url", url),
@@ -160,8 +158,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			// decode the new height
 			height, err := hexutil.DecodeUint64(*r)
 			if err != nil { // if we can't decode the height, log an error.
-				errs[i] = fmt.Errorf("could not decode hex eth height: %w", err)
-				results[i] = result{0, nil, errs[i]}
+				resultErr := fmt.Errorf("could not decode hex eth height: %w", err)
+				results[i] = result{0, nil, resultErr}
 				m.logger.Debug(
 					"could not decode hex eth height",
 					zap.String("url", url),
@@ -175,7 +173,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.String("url", url),
 			)
 			// append the results, minus the appended eth_blockNumber request.
-			results[i] = result{height, req[:blockNumReqIndex], errs[i]}
+			results[i] = result{height, req[:blockNumReqIndex], nil}
 		}(clientIdx)
 	}
 	wg.Wait()
