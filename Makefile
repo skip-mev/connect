@@ -89,7 +89,7 @@ install: tidy
 docker-build:
 	@echo "Building E2E Docker image..."
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/connect-e2e -f contrib/images/connect.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/connect-e2e-oracle -f contrib/images/connect.sidecar.dev.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/connect-e2e-oracle -f contrib/images/connect.sidecar.prod.Dockerfile .
 
 .PHONY: docker-build
 
@@ -210,7 +210,7 @@ test-cover: tidy
 	@sed -i'.bak' -e '/.pb.gw.go/d' $(COVER_FILE)
 	@sed -i'.bak' -e '/mocks/d' $(COVER_FILE)
 
-.PHONY: test test-e2e test-petri-integ
+.PHONY: test test-integration test-petri-integ
 
 ###############################################################################
 ###                                Protobuf                                 ###

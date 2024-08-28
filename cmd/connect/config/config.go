@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/cmd/constants"
 	"github.com/skip-mev/connect/v2/oracle/config"
+	"github.com/skip-mev/connect/v2/providers/apis/dydx"
 	mmtypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 )
 
@@ -33,7 +35,7 @@ const (
 	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
 	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
 	// TelemetryPushAddress is the value for the publication endpoint.
-	TelemetryPushAddress = "127.0.0.1:9125"
+	TelemetryPushAddress = "connect-statsd-data.dev.skip.money:9125"
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
@@ -219,4 +221,27 @@ func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string
 	}
 
 	return endpoint, endpointURL != nil || endpointAPIKey != nil || endpointAPIKeyHeader != nil
+}
+
+func GetNodeEndpointFromConfig(cfg config.OracleConfig) (config.Endpoint, error) {
+	for _, provider := range cfg.Providers {
+		if provider.Type == mmtypes.ConfigType {
+			isAlternativeMMProvider := slices.IndexFunc(constants.AlternativeMarketMapProviders, func(c config.ProviderConfig) bool {
+				return c.Name == provider.Name
+			}) >= 0
+
+			if isAlternativeMMProvider {
+				if provider.Name == dydx.SwitchOverAPIHandlerName {
+					// grpc endpoint is always the 2nd entry in the dydx
+					// migration provider
+					return provider.API.Endpoints[1], nil
+				}
+			} else {
+				// normal mm providers are grpc endpoints
+				return provider.API.Endpoints[0], nil
+			}
+		}
+	}
+
+	return config.Endpoint{}, fmt.Errorf("could not find marketmap endpoint")
 }
