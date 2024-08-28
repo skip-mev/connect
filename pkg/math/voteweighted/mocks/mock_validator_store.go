@@ -19,6 +19,14 @@ type ValidatorStore struct {
 	mock.Mock
 }
 
+type ValidatorStore_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *ValidatorStore) EXPECT() *ValidatorStore_Expecter {
+	return &ValidatorStore_Expecter{mock: &_m.Mock}
+}
+
 // TotalBondedTokens provides a mock function with given fields: ctx
 func (_m *ValidatorStore) TotalBondedTokens(ctx context.Context) (math.Int, error) {
 	ret := _m.Called(ctx)
@@ -45,6 +53,34 @@ func (_m *ValidatorStore) TotalBondedTokens(ctx context.Context) (math.Int, erro
 	}
 
 	return r0, r1
+}
+
+// ValidatorStore_TotalBondedTokens_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TotalBondedTokens'
+type ValidatorStore_TotalBondedTokens_Call struct {
+	*mock.Call
+}
+
+// TotalBondedTokens is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *ValidatorStore_Expecter) TotalBondedTokens(ctx interface{}) *ValidatorStore_TotalBondedTokens_Call {
+	return &ValidatorStore_TotalBondedTokens_Call{Call: _e.mock.On("TotalBondedTokens", ctx)}
+}
+
+func (_c *ValidatorStore_TotalBondedTokens_Call) Run(run func(ctx context.Context)) *ValidatorStore_TotalBondedTokens_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *ValidatorStore_TotalBondedTokens_Call) Return(_a0 math.Int, _a1 error) *ValidatorStore_TotalBondedTokens_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorStore_TotalBondedTokens_Call) RunAndReturn(run func(context.Context) (math.Int, error)) *ValidatorStore_TotalBondedTokens_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // ValidatorByConsAddr provides a mock function with given fields: ctx, addr
@@ -75,6 +111,35 @@ func (_m *ValidatorStore) ValidatorByConsAddr(ctx context.Context, addr types.Co
 	}
 
 	return r0, r1
+}
+
+// ValidatorStore_ValidatorByConsAddr_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidatorByConsAddr'
+type ValidatorStore_ValidatorByConsAddr_Call struct {
+	*mock.Call
+}
+
+// ValidatorByConsAddr is a helper method to define mock.On call
+//   - ctx context.Context
+//   - addr types.ConsAddress
+func (_e *ValidatorStore_Expecter) ValidatorByConsAddr(ctx interface{}, addr interface{}) *ValidatorStore_ValidatorByConsAddr_Call {
+	return &ValidatorStore_ValidatorByConsAddr_Call{Call: _e.mock.On("ValidatorByConsAddr", ctx, addr)}
+}
+
+func (_c *ValidatorStore_ValidatorByConsAddr_Call) Run(run func(ctx context.Context, addr types.ConsAddress)) *ValidatorStore_ValidatorByConsAddr_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(types.ConsAddress))
+	})
+	return _c
+}
+
+func (_c *ValidatorStore_ValidatorByConsAddr_Call) Return(_a0 stakingtypes.ValidatorI, _a1 error) *ValidatorStore_ValidatorByConsAddr_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorStore_ValidatorByConsAddr_Call) RunAndReturn(run func(context.Context, types.ConsAddress) (stakingtypes.ValidatorI, error)) *ValidatorStore_ValidatorByConsAddr_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewValidatorStore creates a new instance of ValidatorStore. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

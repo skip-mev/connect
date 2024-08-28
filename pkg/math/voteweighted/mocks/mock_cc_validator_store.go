@@ -14,6 +14,14 @@ type CCValidatorStore struct {
 	mock.Mock
 }
 
+type CCValidatorStore_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *CCValidatorStore) EXPECT() *CCValidatorStore_Expecter {
+	return &CCValidatorStore_Expecter{mock: &_m.Mock}
+}
+
 // GetAllCCValidator provides a mock function with given fields: ctx
 func (_m *CCValidatorStore) GetAllCCValidator(ctx types.Context) []consumertypes.CrossChainValidator {
 	ret := _m.Called(ctx)
@@ -32,6 +40,34 @@ func (_m *CCValidatorStore) GetAllCCValidator(ctx types.Context) []consumertypes
 	}
 
 	return r0
+}
+
+// CCValidatorStore_GetAllCCValidator_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllCCValidator'
+type CCValidatorStore_GetAllCCValidator_Call struct {
+	*mock.Call
+}
+
+// GetAllCCValidator is a helper method to define mock.On call
+//   - ctx types.Context
+func (_e *CCValidatorStore_Expecter) GetAllCCValidator(ctx interface{}) *CCValidatorStore_GetAllCCValidator_Call {
+	return &CCValidatorStore_GetAllCCValidator_Call{Call: _e.mock.On("GetAllCCValidator", ctx)}
+}
+
+func (_c *CCValidatorStore_GetAllCCValidator_Call) Run(run func(ctx types.Context)) *CCValidatorStore_GetAllCCValidator_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context))
+	})
+	return _c
+}
+
+func (_c *CCValidatorStore_GetAllCCValidator_Call) Return(_a0 []consumertypes.CrossChainValidator) *CCValidatorStore_GetAllCCValidator_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *CCValidatorStore_GetAllCCValidator_Call) RunAndReturn(run func(types.Context) []consumertypes.CrossChainValidator) *CCValidatorStore_GetAllCCValidator_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetCCValidator provides a mock function with given fields: ctx, addr
@@ -60,6 +96,35 @@ func (_m *CCValidatorStore) GetCCValidator(ctx types.Context, addr []byte) (cons
 	}
 
 	return r0, r1
+}
+
+// CCValidatorStore_GetCCValidator_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCCValidator'
+type CCValidatorStore_GetCCValidator_Call struct {
+	*mock.Call
+}
+
+// GetCCValidator is a helper method to define mock.On call
+//   - ctx types.Context
+//   - addr []byte
+func (_e *CCValidatorStore_Expecter) GetCCValidator(ctx interface{}, addr interface{}) *CCValidatorStore_GetCCValidator_Call {
+	return &CCValidatorStore_GetCCValidator_Call{Call: _e.mock.On("GetCCValidator", ctx, addr)}
+}
+
+func (_c *CCValidatorStore_GetCCValidator_Call) Run(run func(ctx types.Context, addr []byte)) *CCValidatorStore_GetCCValidator_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].([]byte))
+	})
+	return _c
+}
+
+func (_c *CCValidatorStore_GetCCValidator_Call) Return(_a0 consumertypes.CrossChainValidator, _a1 bool) *CCValidatorStore_GetCCValidator_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CCValidatorStore_GetCCValidator_Call) RunAndReturn(run func(types.Context, []byte) (consumertypes.CrossChainValidator, bool)) *CCValidatorStore_GetCCValidator_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewCCValidatorStore creates a new instance of CCValidatorStore. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
