@@ -270,7 +270,7 @@ func runOracle() error {
 
 	if debugTimeout {
 		go func() {
-			time.Sleep(10 * time.Second)
+			time.Sleep(10 * time.Minute)
 			cancel()
 		}()
 	}

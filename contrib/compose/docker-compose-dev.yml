@@ -44,6 +44,7 @@ services:
       "--market-config-path", "/data/markets.json",
       "--pprof-port", "6060",
       "--run-pprof",
+      "--mode-debug-timeout"
     ]
     ports:
       - "8080:8080" # main oracle port
