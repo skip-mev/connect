@@ -5,19 +5,32 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/skip-mev/connect/v2/oracle/config"
+	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 )
 
-type NodeClient struct {
+//go:generate mockery --name NodeClient --filename mock_node_client.go
+type NodeClient interface {
+	DeriveNodeIdentifier() (string, error)
+}
+
+type NodeClientImpl struct {
 	conn *grpc.ClientConn
 }
 
-func NewNodeClient(endpoint config.Endpoint) (*NodeClient, error) {
+// no-op client for testing
+type NoopNodeClient struct{}
+
+func (n *NoopNodeClient) DeriveNodeIdentifier() (string, error) {
+	return "noop", nil
+}
+
+func NewNodeClient(endpoint config.Endpoint) (NodeClient, error) {
 	conn, err := slinkygrpc.NewClient(
 		endpoint.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -27,12 +40,12 @@ func NewNodeClient(endpoint config.Endpoint) (*NodeClient, error) {
 		return nil, err
 	}
 
-	return &NodeClient{
+	return &NodeClientImpl{
 		conn,
 	}, nil
 }
 
-func (nc *NodeClient) DeriveNodeIdentifier() (string, error) {
+func (nc *NodeClientImpl) DeriveNodeIdentifier() (string, error) {
 	svcclient := cmtservice.NewServiceClient(nc.conn)
 
 	info, err := svcclient.GetNodeInfo(context.Background(), &cmtservice.GetNodeInfoRequest{})

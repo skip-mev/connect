@@ -80,7 +80,7 @@ type OracleMetricsImpl struct {
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
-func NewMetricsFromConfig(config config.MetricsConfig, nodeClient *NodeClient) Metrics {
+func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Metrics {
 	if config.Enabled {
 		var err error
 
