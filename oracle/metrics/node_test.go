@@ -15,12 +15,12 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// mocks a remote sdk grpc service
+// mocks a remote sdk grpc service.
 type mockServiceServer struct {
 	cmtservice.ServiceServer
 }
 
-func (m *mockServiceServer) GetNodeInfo(ctx context.Context, req *cmtservice.GetNodeInfoRequest) (*cmtservice.GetNodeInfoResponse, error) {
+func (m *mockServiceServer) GetNodeInfo(_ context.Context, _ *cmtservice.GetNodeInfoRequest) (*cmtservice.GetNodeInfoResponse, error) {
 	return &cmtservice.GetNodeInfoResponse{
 		DefaultNodeInfo: &p2p.DefaultNodeInfo{
 			Network: "neutron-1",

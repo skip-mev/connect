@@ -92,7 +92,7 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Me
 			if err == nil { // only publish statsd data when connected to a node
 				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
 					// Prepends all messages with connect.sidecar
-					c.Namespace = fmt.Sprintf("connect.sidecar.")
+					c.Namespace = "connect.sidecar."
 					c.Tags = []string{identifier}
 					return nil
 				})
