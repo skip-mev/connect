@@ -57,8 +57,8 @@ func (s *OracleTestSuite) TestMetrics() {
 		}
 	}()
 
-	metrics.On("SetSlinkyBuildInfo").Return()
-	metrics.On("AddTick").Return()
+	metrics.EXPECT().SetConnectBuildInfo().Return()
+	metrics.EXPECT().AddTick().Return()
 
 	time.Sleep(2 * cfg.UpdateInterval)
 	testOracle.Stop() // block on the oracle actually closing

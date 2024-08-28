@@ -60,7 +60,7 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	// Start price fetch loop.
 	ticker := time.NewTicker(o.cfg.UpdateInterval)
 	defer ticker.Stop()
-	o.metrics.SetSlinkyBuildInfo()
+	o.metrics.SetConnectBuildInfo()
 
 	for {
 		select {

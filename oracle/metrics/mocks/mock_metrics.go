@@ -151,34 +151,34 @@ func (_c *Metrics_AddTickerTick_Call) RunAndReturn(run func(string)) *Metrics_Ad
 	return _c
 }
 
-// SetSlinkyBuildInfo provides a mock function with given fields:
-func (_m *Metrics) SetSlinkyBuildInfo() {
+// SetConnectBuildInfo provides a mock function with given fields:
+func (_m *Metrics) SetConnectBuildInfo() {
 	_m.Called()
 }
 
-// Metrics_SetSlinkyBuildInfo_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetSlinkyBuildInfo'
-type Metrics_SetSlinkyBuildInfo_Call struct {
+// Metrics_SetConnectBuildInfo_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetConnectBuildInfo'
+type Metrics_SetConnectBuildInfo_Call struct {
 	*mock.Call
 }
 
-// SetSlinkyBuildInfo is a helper method to define mock.On call
-func (_e *Metrics_Expecter) SetSlinkyBuildInfo() *Metrics_SetSlinkyBuildInfo_Call {
-	return &Metrics_SetSlinkyBuildInfo_Call{Call: _e.mock.On("SetSlinkyBuildInfo")}
+// SetConnectBuildInfo is a helper method to define mock.On call
+func (_e *Metrics_Expecter) SetConnectBuildInfo() *Metrics_SetConnectBuildInfo_Call {
+	return &Metrics_SetConnectBuildInfo_Call{Call: _e.mock.On("SetConnectBuildInfo")}
 }
 
-func (_c *Metrics_SetSlinkyBuildInfo_Call) Run(run func()) *Metrics_SetSlinkyBuildInfo_Call {
+func (_c *Metrics_SetConnectBuildInfo_Call) Run(run func()) *Metrics_SetConnectBuildInfo_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run()
 	})
 	return _c
 }
 
-func (_c *Metrics_SetSlinkyBuildInfo_Call) Return() *Metrics_SetSlinkyBuildInfo_Call {
+func (_c *Metrics_SetConnectBuildInfo_Call) Return() *Metrics_SetConnectBuildInfo_Call {
 	_c.Call.Return()
 	return _c
 }
 
-func (_c *Metrics_SetSlinkyBuildInfo_Call) RunAndReturn(run func()) *Metrics_SetSlinkyBuildInfo_Call {
+func (_c *Metrics_SetConnectBuildInfo_Call) RunAndReturn(run func()) *Metrics_SetConnectBuildInfo_Call {
 	_c.Call.Return(run)
 	return _c
 }
