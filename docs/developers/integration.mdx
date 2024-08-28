@@ -390,24 +390,6 @@ import (
 )
 
 func (app *App) setupMarkets(ctx sdk.Context) error {
-	consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
-    if err != nil {
-        return err
-    }
-    consensusParams.Params.Abci = &tmtypes.ABCIParams{
-        VoteExtensionsEnableHeight: ctx.BlockHeight() + int64(10), // enables VE's at current_height + 10.
-    }
-    _, err = app.ConsensusParamsKeeper.UpdateParams(ctx, &consensustypes.MsgUpdateParams{
-        Authority: app.ConsensusParamsKeeper.GetAuthority(),
-        Block:     consensusParams.Params.Block,
-        Evidence:  consensusParams.Params.Evidence,
-        Validator: consensusParams.Params.Validator,
-        Abci:      consensusParams.Params.Abci,
-    })
-    if err != nil {
-        return err
-    }
-
     // add core markets
     coreMarkets := marketmaps.CoreMarketMap
     markets := coreMarkets.Markets
@@ -422,7 +404,7 @@ func (app *App) setupMarkets(ctx sdk.Context) error {
     for _, marketName := range keys {
         // create market
         market := markets[marketName]
-        err = app.MarketMapKeeper.CreateMarket(ctx, market)
+        err := app.MarketMapKeeper.CreateMarket(ctx, market)
         if err != nil {
             return err
         }
@@ -459,6 +441,8 @@ func NewApp(
 		if err != nil {
 			return nil, err
 		}
+		req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2
+		return app.App.InitChainer(ctx, req)
 	})
 
 	// ...
@@ -484,6 +468,24 @@ func NewApp(
 
 	app.UpgradeKeeper.SetUpgradeHandler(connectUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
         migrations, err := app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+        if err != nil {
+            return nil, err
+        }
+
+		consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
+        if err != nil {
+            return nil, err
+        }
+        consensusParams.Params.Abci = &tmtypes.ABCIParams{
+            VoteExtensionsEnableHeight: ctx.BlockHeight() + int64(10), // enables VE's at current_height + 10.
+        }
+        _, err = app.ConsensusParamsKeeper.UpdateParams(ctx, &consensustypes.MsgUpdateParams{
+            Authority: app.ConsensusParamsKeeper.GetAuthority(),
+            Block:     consensusParams.Params.Block,
+            Evidence:  consensusParams.Params.Evidence,
+            Validator: consensusParams.Params.Validator,
+            Abci:      consensusParams.Params.Abci,
+        })
         if err != nil {
             return nil, err
         }
