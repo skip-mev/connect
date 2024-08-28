@@ -309,7 +309,15 @@ func runOracle() error {
 		zap.String("market_config_path", marketCfgPath),
 	)
 
-	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
+	// Connect to node over grpc using the marketmap endpoint (for metrics)
+	var nodeClient oraclemetrics.NodeClient
+	nodeEndpoint, err := cmdconfig.GetNodeEndpointFromConfig(cfg)
+	if err == nil {
+		nodeClient, _ = oraclemetrics.NewNodeClient(nodeEndpoint)
+	}
+
+	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient)
+
 	aggregator, err := oraclemath.NewIndexPriceAggregator(
 		logger,
 		marketCfg,
