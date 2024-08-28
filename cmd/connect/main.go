@@ -310,7 +310,7 @@ func runOracle() error {
 	)
 
 	// Connect to node over grpc using the marketmap endpoint (for metrics)
-	var nodeClient *oraclemetrics.NodeClient
+	var nodeClient oraclemetrics.NodeClient
 	nodeEndpoint, err := cmdconfig.GetNodeEndpointFromConfig(cfg)
 	if err == nil {
 		nodeClient, _ = oraclemetrics.NewNodeClient(nodeEndpoint)
