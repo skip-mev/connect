@@ -5,6 +5,7 @@ ssh
 ubuntu
 workarounds
 unmarshalling
+Macbook
 dydx
 abci
 abcitypes
