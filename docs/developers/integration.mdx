@@ -472,7 +472,7 @@ func NewApp(
             return nil, err
         }
 
-		consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
+        consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
         if err != nil {
             return nil, err
         }
