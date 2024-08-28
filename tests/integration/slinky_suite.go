@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"testing"
 	"time"
 
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,6 +19,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
@@ -38,6 +41,7 @@ const (
 	deposit               = 1000000
 	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
+	gasPrice              = 100
 )
 
 func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
@@ -161,6 +165,42 @@ func WithChainConstructor(cc ChainConstructor) Option {
 	return func(s *SlinkyIntegrationSuite) {
 		s.cc = cc
 	}
+}
+
+// CreateTx creates a new transaction to be signed by the given user, including a provided set of messages
+func CreateTx(t *testing.T, chain *cosmos.CosmosChain, user cosmos.User, GasPrice int64, msgs ...sdk.Msg) []byte {
+	bc := cosmos.NewBroadcaster(t, chain)
+
+	ctx := context.Background()
+	// create tx factory + Client Context
+	txf, err := bc.GetFactory(ctx, user)
+	require.NoError(t, err)
+
+	cc, err := bc.GetClientContext(ctx, user)
+	require.NoError(t, err)
+
+	txf = txf.WithSimulateAndExecute(true)
+
+	txf, err = txf.Prepare(cc)
+	require.NoError(t, err)
+
+	// get gas for tx
+	txf.WithGas(25000000)
+
+	// update sequence number
+	txf = txf.WithSequence(txf.Sequence())
+	txf = txf.WithGasPrices(sdk.NewDecCoins(sdk.NewDecCoin(chain.Config().Denom, math.NewInt(GasPrice))).String())
+
+	// sign the tx
+	txBuilder, err := txf.BuildUnsignedTx(msgs...)
+	require.NoError(t, err)
+
+	require.NoError(t, tx.Sign(cc.CmdContext, txf, cc.GetFromName(), txBuilder, true))
+
+	// encode and return
+	bz, err := cc.TxConfig.TxEncoder()(txBuilder.GetTx())
+	require.NoError(t, err)
+	return bz
 }
 
 func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *SlinkyIntegrationSuite {
