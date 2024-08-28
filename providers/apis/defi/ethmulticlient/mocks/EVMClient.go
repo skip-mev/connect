@@ -15,6 +15,14 @@ type EVMClient struct {
 	mock.Mock
 }
 
+type EVMClient_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *EVMClient) EXPECT() *EVMClient_Expecter {
+	return &EVMClient_Expecter{mock: &_m.Mock}
+}
+
 // BatchCallContext provides a mock function with given fields: ctx, calls
 func (_m *EVMClient) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
 	ret := _m.Called(ctx, calls)
@@ -31,6 +39,35 @@ func (_m *EVMClient) BatchCallContext(ctx context.Context, calls []rpc.BatchElem
 	}
 
 	return r0
+}
+
+// EVMClient_BatchCallContext_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BatchCallContext'
+type EVMClient_BatchCallContext_Call struct {
+	*mock.Call
+}
+
+// BatchCallContext is a helper method to define mock.On call
+//   - ctx context.Context
+//   - calls []rpc.BatchElem
+func (_e *EVMClient_Expecter) BatchCallContext(ctx interface{}, calls interface{}) *EVMClient_BatchCallContext_Call {
+	return &EVMClient_BatchCallContext_Call{Call: _e.mock.On("BatchCallContext", ctx, calls)}
+}
+
+func (_c *EVMClient_BatchCallContext_Call) Run(run func(ctx context.Context, calls []rpc.BatchElem)) *EVMClient_BatchCallContext_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].([]rpc.BatchElem))
+	})
+	return _c
+}
+
+func (_c *EVMClient_BatchCallContext_Call) Return(_a0 error) *EVMClient_BatchCallContext_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *EVMClient_BatchCallContext_Call) RunAndReturn(run func(context.Context, []rpc.BatchElem) error) *EVMClient_BatchCallContext_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewEVMClient creates a new instance of EVMClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

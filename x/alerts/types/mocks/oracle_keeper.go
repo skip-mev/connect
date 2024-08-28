@@ -15,6 +15,14 @@ type OracleKeeper struct {
 	mock.Mock
 }
 
+type OracleKeeper_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *OracleKeeper) EXPECT() *OracleKeeper_Expecter {
+	return &OracleKeeper_Expecter{mock: &_m.Mock}
+}
+
 // HasCurrencyPair provides a mock function with given fields: ctx, cp
 func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp pkgtypes.CurrencyPair) bool {
 	ret := _m.Called(ctx, cp)
@@ -31,6 +39,35 @@ func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp pkgtypes.CurrencyP
 	}
 
 	return r0
+}
+
+// OracleKeeper_HasCurrencyPair_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'HasCurrencyPair'
+type OracleKeeper_HasCurrencyPair_Call struct {
+	*mock.Call
+}
+
+// HasCurrencyPair is a helper method to define mock.On call
+//   - ctx types.Context
+//   - cp pkgtypes.CurrencyPair
+func (_e *OracleKeeper_Expecter) HasCurrencyPair(ctx interface{}, cp interface{}) *OracleKeeper_HasCurrencyPair_Call {
+	return &OracleKeeper_HasCurrencyPair_Call{Call: _e.mock.On("HasCurrencyPair", ctx, cp)}
+}
+
+func (_c *OracleKeeper_HasCurrencyPair_Call) Run(run func(ctx types.Context, cp pkgtypes.CurrencyPair)) *OracleKeeper_HasCurrencyPair_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(pkgtypes.CurrencyPair))
+	})
+	return _c
+}
+
+func (_c *OracleKeeper_HasCurrencyPair_Call) Return(_a0 bool) *OracleKeeper_HasCurrencyPair_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *OracleKeeper_HasCurrencyPair_Call) RunAndReturn(run func(types.Context, pkgtypes.CurrencyPair) bool) *OracleKeeper_HasCurrencyPair_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewOracleKeeper creates a new instance of OracleKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

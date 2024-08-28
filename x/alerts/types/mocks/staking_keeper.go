@@ -18,6 +18,14 @@ type StakingKeeper struct {
 	mock.Mock
 }
 
+type StakingKeeper_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *StakingKeeper) EXPECT() *StakingKeeper_Expecter {
+	return &StakingKeeper_Expecter{mock: &_m.Mock}
+}
+
 // BondDenom provides a mock function with given fields: ctx
 func (_m *StakingKeeper) BondDenom(ctx context.Context) (string, error) {
 	ret := _m.Called(ctx)
@@ -44,6 +52,34 @@ func (_m *StakingKeeper) BondDenom(ctx context.Context) (string, error) {
 	}
 
 	return r0, r1
+}
+
+// StakingKeeper_BondDenom_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BondDenom'
+type StakingKeeper_BondDenom_Call struct {
+	*mock.Call
+}
+
+// BondDenom is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *StakingKeeper_Expecter) BondDenom(ctx interface{}) *StakingKeeper_BondDenom_Call {
+	return &StakingKeeper_BondDenom_Call{Call: _e.mock.On("BondDenom", ctx)}
+}
+
+func (_c *StakingKeeper_BondDenom_Call) Run(run func(ctx context.Context)) *StakingKeeper_BondDenom_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_BondDenom_Call) Return(_a0 string, _a1 error) *StakingKeeper_BondDenom_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *StakingKeeper_BondDenom_Call) RunAndReturn(run func(context.Context) (string, error)) *StakingKeeper_BondDenom_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetValidatorByConsAddr provides a mock function with given fields: ctx, consAddr
@@ -74,6 +110,35 @@ func (_m *StakingKeeper) GetValidatorByConsAddr(ctx context.Context, consAddr co
 	return r0, r1
 }
 
+// StakingKeeper_GetValidatorByConsAddr_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetValidatorByConsAddr'
+type StakingKeeper_GetValidatorByConsAddr_Call struct {
+	*mock.Call
+}
+
+// GetValidatorByConsAddr is a helper method to define mock.On call
+//   - ctx context.Context
+//   - consAddr cosmos_sdktypes.ConsAddress
+func (_e *StakingKeeper_Expecter) GetValidatorByConsAddr(ctx interface{}, consAddr interface{}) *StakingKeeper_GetValidatorByConsAddr_Call {
+	return &StakingKeeper_GetValidatorByConsAddr_Call{Call: _e.mock.On("GetValidatorByConsAddr", ctx, consAddr)}
+}
+
+func (_c *StakingKeeper_GetValidatorByConsAddr_Call) Run(run func(ctx context.Context, consAddr cosmos_sdktypes.ConsAddress)) *StakingKeeper_GetValidatorByConsAddr_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(cosmos_sdktypes.ConsAddress))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_GetValidatorByConsAddr_Call) Return(validator stakingtypes.Validator, err error) *StakingKeeper_GetValidatorByConsAddr_Call {
+	_c.Call.Return(validator, err)
+	return _c
+}
+
+func (_c *StakingKeeper_GetValidatorByConsAddr_Call) RunAndReturn(run func(context.Context, cosmos_sdktypes.ConsAddress) (stakingtypes.Validator, error)) *StakingKeeper_GetValidatorByConsAddr_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Slash provides a mock function with given fields: ctx, consAddr, infractionHeight, power, slashFactor
 func (_m *StakingKeeper) Slash(ctx context.Context, consAddr cosmos_sdktypes.ConsAddress, infractionHeight int64, power int64, slashFactor math.LegacyDec) (math.Int, error) {
 	ret := _m.Called(ctx, consAddr, infractionHeight, power, slashFactor)
@@ -100,6 +165,38 @@ func (_m *StakingKeeper) Slash(ctx context.Context, consAddr cosmos_sdktypes.Con
 	}
 
 	return r0, r1
+}
+
+// StakingKeeper_Slash_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Slash'
+type StakingKeeper_Slash_Call struct {
+	*mock.Call
+}
+
+// Slash is a helper method to define mock.On call
+//   - ctx context.Context
+//   - consAddr cosmos_sdktypes.ConsAddress
+//   - infractionHeight int64
+//   - power int64
+//   - slashFactor math.LegacyDec
+func (_e *StakingKeeper_Expecter) Slash(ctx interface{}, consAddr interface{}, infractionHeight interface{}, power interface{}, slashFactor interface{}) *StakingKeeper_Slash_Call {
+	return &StakingKeeper_Slash_Call{Call: _e.mock.On("Slash", ctx, consAddr, infractionHeight, power, slashFactor)}
+}
+
+func (_c *StakingKeeper_Slash_Call) Run(run func(ctx context.Context, consAddr cosmos_sdktypes.ConsAddress, infractionHeight int64, power int64, slashFactor math.LegacyDec)) *StakingKeeper_Slash_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(cosmos_sdktypes.ConsAddress), args[2].(int64), args[3].(int64), args[4].(math.LegacyDec))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_Slash_Call) Return(_a0 math.Int, _a1 error) *StakingKeeper_Slash_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *StakingKeeper_Slash_Call) RunAndReturn(run func(context.Context, cosmos_sdktypes.ConsAddress, int64, int64, math.LegacyDec) (math.Int, error)) *StakingKeeper_Slash_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewStakingKeeper creates a new instance of StakingKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

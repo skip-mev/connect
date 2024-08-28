@@ -13,6 +13,14 @@ type StakingKeeper struct {
 	mock.Mock
 }
 
+type StakingKeeper_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *StakingKeeper) EXPECT() *StakingKeeper_Expecter {
+	return &StakingKeeper_Expecter{mock: &_m.Mock}
+}
+
 // GetValidatorStake provides a mock function with given fields: ctx, val
 func (_m *StakingKeeper) GetValidatorStake(ctx types.Context, val types.ValAddress) (math.Int, bool) {
 	ret := _m.Called(ctx, val)
@@ -41,6 +49,35 @@ func (_m *StakingKeeper) GetValidatorStake(ctx types.Context, val types.ValAddre
 	return r0, r1
 }
 
+// StakingKeeper_GetValidatorStake_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetValidatorStake'
+type StakingKeeper_GetValidatorStake_Call struct {
+	*mock.Call
+}
+
+// GetValidatorStake is a helper method to define mock.On call
+//   - ctx types.Context
+//   - val types.ValAddress
+func (_e *StakingKeeper_Expecter) GetValidatorStake(ctx interface{}, val interface{}) *StakingKeeper_GetValidatorStake_Call {
+	return &StakingKeeper_GetValidatorStake_Call{Call: _e.mock.On("GetValidatorStake", ctx, val)}
+}
+
+func (_c *StakingKeeper_GetValidatorStake_Call) Run(run func(ctx types.Context, val types.ValAddress)) *StakingKeeper_GetValidatorStake_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(types.ValAddress))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_GetValidatorStake_Call) Return(stake math.Int, found bool) *StakingKeeper_GetValidatorStake_Call {
+	_c.Call.Return(stake, found)
+	return _c
+}
+
+func (_c *StakingKeeper_GetValidatorStake_Call) RunAndReturn(run func(types.Context, types.ValAddress) (math.Int, bool)) *StakingKeeper_GetValidatorStake_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Slash provides a mock function with given fields: ctx, val, amount
 func (_m *StakingKeeper) Slash(ctx types.Context, val types.ValAddress, amount math.Int) error {
 	ret := _m.Called(ctx, val, amount)
@@ -57,6 +94,36 @@ func (_m *StakingKeeper) Slash(ctx types.Context, val types.ValAddress, amount m
 	}
 
 	return r0
+}
+
+// StakingKeeper_Slash_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Slash'
+type StakingKeeper_Slash_Call struct {
+	*mock.Call
+}
+
+// Slash is a helper method to define mock.On call
+//   - ctx types.Context
+//   - val types.ValAddress
+//   - amount math.Int
+func (_e *StakingKeeper_Expecter) Slash(ctx interface{}, val interface{}, amount interface{}) *StakingKeeper_Slash_Call {
+	return &StakingKeeper_Slash_Call{Call: _e.mock.On("Slash", ctx, val, amount)}
+}
+
+func (_c *StakingKeeper_Slash_Call) Run(run func(ctx types.Context, val types.ValAddress, amount math.Int)) *StakingKeeper_Slash_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(types.ValAddress), args[2].(math.Int))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_Slash_Call) Return(_a0 error) *StakingKeeper_Slash_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *StakingKeeper_Slash_Call) RunAndReturn(run func(types.Context, types.ValAddress, math.Int) error) *StakingKeeper_Slash_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewStakingKeeper creates a new instance of StakingKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

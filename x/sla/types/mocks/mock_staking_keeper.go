@@ -15,6 +15,14 @@ type StakingKeeper struct {
 	mock.Mock
 }
 
+type StakingKeeper_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *StakingKeeper) EXPECT() *StakingKeeper_Expecter {
+	return &StakingKeeper_Expecter{mock: &_m.Mock}
+}
+
 // GetLastValidatorPower provides a mock function with given fields: ctx, operator
 func (_m *StakingKeeper) GetLastValidatorPower(ctx context.Context, operator types.ValAddress) (int64, error) {
 	ret := _m.Called(ctx, operator)
@@ -41,6 +49,35 @@ func (_m *StakingKeeper) GetLastValidatorPower(ctx context.Context, operator typ
 	}
 
 	return r0, r1
+}
+
+// StakingKeeper_GetLastValidatorPower_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetLastValidatorPower'
+type StakingKeeper_GetLastValidatorPower_Call struct {
+	*mock.Call
+}
+
+// GetLastValidatorPower is a helper method to define mock.On call
+//   - ctx context.Context
+//   - operator types.ValAddress
+func (_e *StakingKeeper_Expecter) GetLastValidatorPower(ctx interface{}, operator interface{}) *StakingKeeper_GetLastValidatorPower_Call {
+	return &StakingKeeper_GetLastValidatorPower_Call{Call: _e.mock.On("GetLastValidatorPower", ctx, operator)}
+}
+
+func (_c *StakingKeeper_GetLastValidatorPower_Call) Run(run func(ctx context.Context, operator types.ValAddress)) *StakingKeeper_GetLastValidatorPower_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(types.ValAddress))
+	})
+	return _c
+}
+
+func (_c *StakingKeeper_GetLastValidatorPower_Call) Return(power int64, err error) *StakingKeeper_GetLastValidatorPower_Call {
+	_c.Call.Return(power, err)
+	return _c
+}
+
+func (_c *StakingKeeper_GetLastValidatorPower_Call) RunAndReturn(run func(context.Context, types.ValAddress) (int64, error)) *StakingKeeper_GetLastValidatorPower_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewStakingKeeper creates a new instance of StakingKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
