@@ -15,14 +15,6 @@ type WebSocketDataHandler[K types.ResponseKey, V types.ResponseValue] struct {
 	mock.Mock
 }
 
-type WebSocketDataHandler_Expecter[K types.ResponseKey, V types.ResponseValue] struct {
-	mock *mock.Mock
-}
-
-func (_m *WebSocketDataHandler[K, V]) EXPECT() *WebSocketDataHandler_Expecter[K, V] {
-	return &WebSocketDataHandler_Expecter[K, V]{mock: &_m.Mock}
-}
-
 // Copy provides a mock function with given fields:
 func (_m *WebSocketDataHandler[K, V]) Copy() handlers.WebSocketDataHandler[K, V] {
 	ret := _m.Called()
@@ -41,33 +33,6 @@ func (_m *WebSocketDataHandler[K, V]) Copy() handlers.WebSocketDataHandler[K, V]
 	}
 
 	return r0
-}
-
-// WebSocketDataHandler_Copy_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Copy'
-type WebSocketDataHandler_Copy_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// Copy is a helper method to define mock.On call
-func (_e *WebSocketDataHandler_Expecter[K, V]) Copy() *WebSocketDataHandler_Copy_Call[K, V] {
-	return &WebSocketDataHandler_Copy_Call[K, V]{Call: _e.mock.On("Copy")}
-}
-
-func (_c *WebSocketDataHandler_Copy_Call[K, V]) Run(run func()) *WebSocketDataHandler_Copy_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run()
-	})
-	return _c
-}
-
-func (_c *WebSocketDataHandler_Copy_Call[K, V]) Return(_a0 handlers.WebSocketDataHandler[K, V]) *WebSocketDataHandler_Copy_Call[K, V] {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *WebSocketDataHandler_Copy_Call[K, V]) RunAndReturn(run func() handlers.WebSocketDataHandler[K, V]) *WebSocketDataHandler_Copy_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
 }
 
 // CreateMessages provides a mock function with given fields: ids
@@ -98,34 +63,6 @@ func (_m *WebSocketDataHandler[K, V]) CreateMessages(ids []K) ([]handlers.Websoc
 	}
 
 	return r0, r1
-}
-
-// WebSocketDataHandler_CreateMessages_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateMessages'
-type WebSocketDataHandler_CreateMessages_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// CreateMessages is a helper method to define mock.On call
-//   - ids []K
-func (_e *WebSocketDataHandler_Expecter[K, V]) CreateMessages(ids interface{}) *WebSocketDataHandler_CreateMessages_Call[K, V] {
-	return &WebSocketDataHandler_CreateMessages_Call[K, V]{Call: _e.mock.On("CreateMessages", ids)}
-}
-
-func (_c *WebSocketDataHandler_CreateMessages_Call[K, V]) Run(run func(ids []K)) *WebSocketDataHandler_CreateMessages_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]K))
-	})
-	return _c
-}
-
-func (_c *WebSocketDataHandler_CreateMessages_Call[K, V]) Return(_a0 []handlers.WebsocketEncodedMessage, _a1 error) *WebSocketDataHandler_CreateMessages_Call[K, V] {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *WebSocketDataHandler_CreateMessages_Call[K, V]) RunAndReturn(run func([]K) ([]handlers.WebsocketEncodedMessage, error)) *WebSocketDataHandler_CreateMessages_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
 }
 
 // HandleMessage provides a mock function with given fields: message
@@ -165,34 +102,6 @@ func (_m *WebSocketDataHandler[K, V]) HandleMessage(message []byte) (types.GetRe
 	return r0, r1, r2
 }
 
-// WebSocketDataHandler_HandleMessage_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'HandleMessage'
-type WebSocketDataHandler_HandleMessage_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// HandleMessage is a helper method to define mock.On call
-//   - message []byte
-func (_e *WebSocketDataHandler_Expecter[K, V]) HandleMessage(message interface{}) *WebSocketDataHandler_HandleMessage_Call[K, V] {
-	return &WebSocketDataHandler_HandleMessage_Call[K, V]{Call: _e.mock.On("HandleMessage", message)}
-}
-
-func (_c *WebSocketDataHandler_HandleMessage_Call[K, V]) Run(run func(message []byte)) *WebSocketDataHandler_HandleMessage_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]byte))
-	})
-	return _c
-}
-
-func (_c *WebSocketDataHandler_HandleMessage_Call[K, V]) Return(response types.GetResponse[K, V], updateMessages []handlers.WebsocketEncodedMessage, err error) *WebSocketDataHandler_HandleMessage_Call[K, V] {
-	_c.Call.Return(response, updateMessages, err)
-	return _c
-}
-
-func (_c *WebSocketDataHandler_HandleMessage_Call[K, V]) RunAndReturn(run func([]byte) (types.GetResponse[K, V], []handlers.WebsocketEncodedMessage, error)) *WebSocketDataHandler_HandleMessage_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
-}
-
 // HeartBeatMessages provides a mock function with given fields:
 func (_m *WebSocketDataHandler[K, V]) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	ret := _m.Called()
@@ -221,33 +130,6 @@ func (_m *WebSocketDataHandler[K, V]) HeartBeatMessages() ([]handlers.WebsocketE
 	}
 
 	return r0, r1
-}
-
-// WebSocketDataHandler_HeartBeatMessages_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'HeartBeatMessages'
-type WebSocketDataHandler_HeartBeatMessages_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// HeartBeatMessages is a helper method to define mock.On call
-func (_e *WebSocketDataHandler_Expecter[K, V]) HeartBeatMessages() *WebSocketDataHandler_HeartBeatMessages_Call[K, V] {
-	return &WebSocketDataHandler_HeartBeatMessages_Call[K, V]{Call: _e.mock.On("HeartBeatMessages")}
-}
-
-func (_c *WebSocketDataHandler_HeartBeatMessages_Call[K, V]) Run(run func()) *WebSocketDataHandler_HeartBeatMessages_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run()
-	})
-	return _c
-}
-
-func (_c *WebSocketDataHandler_HeartBeatMessages_Call[K, V]) Return(_a0 []handlers.WebsocketEncodedMessage, _a1 error) *WebSocketDataHandler_HeartBeatMessages_Call[K, V] {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *WebSocketDataHandler_HeartBeatMessages_Call[K, V]) RunAndReturn(run func() ([]handlers.WebsocketEncodedMessage, error)) *WebSocketDataHandler_HeartBeatMessages_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewWebSocketDataHandler creates a new instance of WebSocketDataHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

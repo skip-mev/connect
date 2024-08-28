@@ -13,14 +13,6 @@ type VoteExtensionCodec struct {
 	mock.Mock
 }
 
-type VoteExtensionCodec_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *VoteExtensionCodec) EXPECT() *VoteExtensionCodec_Expecter {
-	return &VoteExtensionCodec_Expecter{mock: &_m.Mock}
-}
-
 // Decode provides a mock function with given fields: _a0
 func (_m *VoteExtensionCodec) Decode(_a0 []byte) (types.OracleVoteExtension, error) {
 	ret := _m.Called(_a0)
@@ -47,34 +39,6 @@ func (_m *VoteExtensionCodec) Decode(_a0 []byte) (types.OracleVoteExtension, err
 	}
 
 	return r0, r1
-}
-
-// VoteExtensionCodec_Decode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Decode'
-type VoteExtensionCodec_Decode_Call struct {
-	*mock.Call
-}
-
-// Decode is a helper method to define mock.On call
-//   - _a0 []byte
-func (_e *VoteExtensionCodec_Expecter) Decode(_a0 interface{}) *VoteExtensionCodec_Decode_Call {
-	return &VoteExtensionCodec_Decode_Call{Call: _e.mock.On("Decode", _a0)}
-}
-
-func (_c *VoteExtensionCodec_Decode_Call) Run(run func(_a0 []byte)) *VoteExtensionCodec_Decode_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]byte))
-	})
-	return _c
-}
-
-func (_c *VoteExtensionCodec_Decode_Call) Return(_a0 types.OracleVoteExtension, _a1 error) *VoteExtensionCodec_Decode_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *VoteExtensionCodec_Decode_Call) RunAndReturn(run func([]byte) (types.OracleVoteExtension, error)) *VoteExtensionCodec_Decode_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // Encode provides a mock function with given fields: ve
@@ -105,34 +69,6 @@ func (_m *VoteExtensionCodec) Encode(ve types.OracleVoteExtension) ([]byte, erro
 	}
 
 	return r0, r1
-}
-
-// VoteExtensionCodec_Encode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Encode'
-type VoteExtensionCodec_Encode_Call struct {
-	*mock.Call
-}
-
-// Encode is a helper method to define mock.On call
-//   - ve types.OracleVoteExtension
-func (_e *VoteExtensionCodec_Expecter) Encode(ve interface{}) *VoteExtensionCodec_Encode_Call {
-	return &VoteExtensionCodec_Encode_Call{Call: _e.mock.On("Encode", ve)}
-}
-
-func (_c *VoteExtensionCodec_Encode_Call) Run(run func(ve types.OracleVoteExtension)) *VoteExtensionCodec_Encode_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(types.OracleVoteExtension))
-	})
-	return _c
-}
-
-func (_c *VoteExtensionCodec_Encode_Call) Return(_a0 []byte, _a1 error) *VoteExtensionCodec_Encode_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *VoteExtensionCodec_Encode_Call) RunAndReturn(run func(types.OracleVoteExtension) ([]byte, error)) *VoteExtensionCodec_Encode_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewVoteExtensionCodec creates a new instance of VoteExtensionCodec. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

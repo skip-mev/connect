@@ -15,14 +15,6 @@ type MarketMapKeeper struct {
 	mock.Mock
 }
 
-type MarketMapKeeper_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *MarketMapKeeper) EXPECT() *MarketMapKeeper_Expecter {
-	return &MarketMapKeeper_Expecter{mock: &_m.Mock}
-}
-
 // GetMarket provides a mock function with given fields: ctx, tickerStr
 func (_m *MarketMapKeeper) GetMarket(ctx types.Context, tickerStr string) (marketmaptypes.Market, error) {
 	ret := _m.Called(ctx, tickerStr)
@@ -49,35 +41,6 @@ func (_m *MarketMapKeeper) GetMarket(ctx types.Context, tickerStr string) (marke
 	}
 
 	return r0, r1
-}
-
-// MarketMapKeeper_GetMarket_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMarket'
-type MarketMapKeeper_GetMarket_Call struct {
-	*mock.Call
-}
-
-// GetMarket is a helper method to define mock.On call
-//   - ctx types.Context
-//   - tickerStr string
-func (_e *MarketMapKeeper_Expecter) GetMarket(ctx interface{}, tickerStr interface{}) *MarketMapKeeper_GetMarket_Call {
-	return &MarketMapKeeper_GetMarket_Call{Call: _e.mock.On("GetMarket", ctx, tickerStr)}
-}
-
-func (_c *MarketMapKeeper_GetMarket_Call) Run(run func(ctx types.Context, tickerStr string)) *MarketMapKeeper_GetMarket_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(types.Context), args[1].(string))
-	})
-	return _c
-}
-
-func (_c *MarketMapKeeper_GetMarket_Call) Return(_a0 marketmaptypes.Market, _a1 error) *MarketMapKeeper_GetMarket_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *MarketMapKeeper_GetMarket_Call) RunAndReturn(run func(types.Context, string) (marketmaptypes.Market, error)) *MarketMapKeeper_GetMarket_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewMarketMapKeeper creates a new instance of MarketMapKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

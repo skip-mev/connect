@@ -15,14 +15,6 @@ type IncentiveKeeper struct {
 	mock.Mock
 }
 
-type IncentiveKeeper_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *IncentiveKeeper) EXPECT() *IncentiveKeeper_Expecter {
-	return &IncentiveKeeper_Expecter{mock: &_m.Mock}
-}
-
 // AddIncentives provides a mock function with given fields: ctx, incentives
 func (_m *IncentiveKeeper) AddIncentives(ctx types.Context, incentives []incentivestypes.Incentive) error {
 	ret := _m.Called(ctx, incentives)
@@ -39,35 +31,6 @@ func (_m *IncentiveKeeper) AddIncentives(ctx types.Context, incentives []incenti
 	}
 
 	return r0
-}
-
-// IncentiveKeeper_AddIncentives_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddIncentives'
-type IncentiveKeeper_AddIncentives_Call struct {
-	*mock.Call
-}
-
-// AddIncentives is a helper method to define mock.On call
-//   - ctx types.Context
-//   - incentives []incentivestypes.Incentive
-func (_e *IncentiveKeeper_Expecter) AddIncentives(ctx interface{}, incentives interface{}) *IncentiveKeeper_AddIncentives_Call {
-	return &IncentiveKeeper_AddIncentives_Call{Call: _e.mock.On("AddIncentives", ctx, incentives)}
-}
-
-func (_c *IncentiveKeeper_AddIncentives_Call) Run(run func(ctx types.Context, incentives []incentivestypes.Incentive)) *IncentiveKeeper_AddIncentives_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(types.Context), args[1].([]incentivestypes.Incentive))
-	})
-	return _c
-}
-
-func (_c *IncentiveKeeper_AddIncentives_Call) Return(_a0 error) *IncentiveKeeper_AddIncentives_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *IncentiveKeeper_AddIncentives_Call) RunAndReturn(run func(types.Context, []incentivestypes.Incentive) error) *IncentiveKeeper_AddIncentives_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewIncentiveKeeper creates a new instance of IncentiveKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

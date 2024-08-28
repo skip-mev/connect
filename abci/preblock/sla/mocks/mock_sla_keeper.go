@@ -15,14 +15,6 @@ type Keeper struct {
 	mock.Mock
 }
 
-type Keeper_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *Keeper) EXPECT() *Keeper_Expecter {
-	return &Keeper_Expecter{mock: &_m.Mock}
-}
-
 // UpdatePriceFeeds provides a mock function with given fields: ctx, updates
 func (_m *Keeper) UpdatePriceFeeds(ctx types.Context, updates keeper.PriceFeedUpdates) error {
 	ret := _m.Called(ctx, updates)
@@ -39,35 +31,6 @@ func (_m *Keeper) UpdatePriceFeeds(ctx types.Context, updates keeper.PriceFeedUp
 	}
 
 	return r0
-}
-
-// Keeper_UpdatePriceFeeds_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdatePriceFeeds'
-type Keeper_UpdatePriceFeeds_Call struct {
-	*mock.Call
-}
-
-// UpdatePriceFeeds is a helper method to define mock.On call
-//   - ctx types.Context
-//   - updates keeper.PriceFeedUpdates
-func (_e *Keeper_Expecter) UpdatePriceFeeds(ctx interface{}, updates interface{}) *Keeper_UpdatePriceFeeds_Call {
-	return &Keeper_UpdatePriceFeeds_Call{Call: _e.mock.On("UpdatePriceFeeds", ctx, updates)}
-}
-
-func (_c *Keeper_UpdatePriceFeeds_Call) Run(run func(ctx types.Context, updates keeper.PriceFeedUpdates)) *Keeper_UpdatePriceFeeds_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(types.Context), args[1].(keeper.PriceFeedUpdates))
-	})
-	return _c
-}
-
-func (_c *Keeper_UpdatePriceFeeds_Call) Return(_a0 error) *Keeper_UpdatePriceFeeds_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *Keeper_UpdatePriceFeeds_Call) RunAndReturn(run func(types.Context, keeper.PriceFeedUpdates) error) *Keeper_UpdatePriceFeeds_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewKeeper creates a new instance of Keeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

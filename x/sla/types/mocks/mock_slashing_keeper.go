@@ -17,14 +17,6 @@ type SlashingKeeper struct {
 	mock.Mock
 }
 
-type SlashingKeeper_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *SlashingKeeper) EXPECT() *SlashingKeeper_Expecter {
-	return &SlashingKeeper_Expecter{mock: &_m.Mock}
-}
-
 // Slash provides a mock function with given fields: ctx, consAddr, infractionHeight, power, slashFactor
 func (_m *SlashingKeeper) Slash(ctx context.Context, consAddr types.ConsAddress, infractionHeight int64, power int64, slashFactor math.LegacyDec) (math.Int, error) {
 	ret := _m.Called(ctx, consAddr, infractionHeight, power, slashFactor)
@@ -51,38 +43,6 @@ func (_m *SlashingKeeper) Slash(ctx context.Context, consAddr types.ConsAddress,
 	}
 
 	return r0, r1
-}
-
-// SlashingKeeper_Slash_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Slash'
-type SlashingKeeper_Slash_Call struct {
-	*mock.Call
-}
-
-// Slash is a helper method to define mock.On call
-//   - ctx context.Context
-//   - consAddr types.ConsAddress
-//   - infractionHeight int64
-//   - power int64
-//   - slashFactor math.LegacyDec
-func (_e *SlashingKeeper_Expecter) Slash(ctx interface{}, consAddr interface{}, infractionHeight interface{}, power interface{}, slashFactor interface{}) *SlashingKeeper_Slash_Call {
-	return &SlashingKeeper_Slash_Call{Call: _e.mock.On("Slash", ctx, consAddr, infractionHeight, power, slashFactor)}
-}
-
-func (_c *SlashingKeeper_Slash_Call) Run(run func(ctx context.Context, consAddr types.ConsAddress, infractionHeight int64, power int64, slashFactor math.LegacyDec)) *SlashingKeeper_Slash_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(types.ConsAddress), args[2].(int64), args[3].(int64), args[4].(math.LegacyDec))
-	})
-	return _c
-}
-
-func (_c *SlashingKeeper_Slash_Call) Return(amount math.Int, err error) *SlashingKeeper_Slash_Call {
-	_c.Call.Return(amount, err)
-	return _c
-}
-
-func (_c *SlashingKeeper_Slash_Call) RunAndReturn(run func(context.Context, types.ConsAddress, int64, int64, math.LegacyDec) (math.Int, error)) *SlashingKeeper_Slash_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewSlashingKeeper creates a new instance of SlashingKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

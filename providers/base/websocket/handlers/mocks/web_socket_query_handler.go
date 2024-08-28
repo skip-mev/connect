@@ -17,14 +17,6 @@ type WebSocketQueryHandler[K types.ResponseKey, V types.ResponseValue] struct {
 	mock.Mock
 }
 
-type WebSocketQueryHandler_Expecter[K types.ResponseKey, V types.ResponseValue] struct {
-	mock *mock.Mock
-}
-
-func (_m *WebSocketQueryHandler[K, V]) EXPECT() *WebSocketQueryHandler_Expecter[K, V] {
-	return &WebSocketQueryHandler_Expecter[K, V]{mock: &_m.Mock}
-}
-
 // Copy provides a mock function with given fields:
 func (_m *WebSocketQueryHandler[K, V]) Copy() handlers.WebSocketQueryHandler[K, V] {
 	ret := _m.Called()
@@ -45,33 +37,6 @@ func (_m *WebSocketQueryHandler[K, V]) Copy() handlers.WebSocketQueryHandler[K, 
 	return r0
 }
 
-// WebSocketQueryHandler_Copy_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Copy'
-type WebSocketQueryHandler_Copy_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// Copy is a helper method to define mock.On call
-func (_e *WebSocketQueryHandler_Expecter[K, V]) Copy() *WebSocketQueryHandler_Copy_Call[K, V] {
-	return &WebSocketQueryHandler_Copy_Call[K, V]{Call: _e.mock.On("Copy")}
-}
-
-func (_c *WebSocketQueryHandler_Copy_Call[K, V]) Run(run func()) *WebSocketQueryHandler_Copy_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run()
-	})
-	return _c
-}
-
-func (_c *WebSocketQueryHandler_Copy_Call[K, V]) Return(_a0 handlers.WebSocketQueryHandler[K, V]) *WebSocketQueryHandler_Copy_Call[K, V] {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *WebSocketQueryHandler_Copy_Call[K, V]) RunAndReturn(run func() handlers.WebSocketQueryHandler[K, V]) *WebSocketQueryHandler_Copy_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Start provides a mock function with given fields: ctx, ids, responseCh
 func (_m *WebSocketQueryHandler[K, V]) Start(ctx context.Context, ids []K, responseCh chan<- types.GetResponse[K, V]) error {
 	ret := _m.Called(ctx, ids, responseCh)
@@ -88,36 +53,6 @@ func (_m *WebSocketQueryHandler[K, V]) Start(ctx context.Context, ids []K, respo
 	}
 
 	return r0
-}
-
-// WebSocketQueryHandler_Start_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Start'
-type WebSocketQueryHandler_Start_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// Start is a helper method to define mock.On call
-//   - ctx context.Context
-//   - ids []K
-//   - responseCh chan<- types.GetResponse[K,V]
-func (_e *WebSocketQueryHandler_Expecter[K, V]) Start(ctx interface{}, ids interface{}, responseCh interface{}) *WebSocketQueryHandler_Start_Call[K, V] {
-	return &WebSocketQueryHandler_Start_Call[K, V]{Call: _e.mock.On("Start", ctx, ids, responseCh)}
-}
-
-func (_c *WebSocketQueryHandler_Start_Call[K, V]) Run(run func(ctx context.Context, ids []K, responseCh chan<- types.GetResponse[K, V])) *WebSocketQueryHandler_Start_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].([]K), args[2].(chan<- types.GetResponse[K, V]))
-	})
-	return _c
-}
-
-func (_c *WebSocketQueryHandler_Start_Call[K, V]) Return(_a0 error) *WebSocketQueryHandler_Start_Call[K, V] {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *WebSocketQueryHandler_Start_Call[K, V]) RunAndReturn(run func(context.Context, []K, chan<- types.GetResponse[K, V]) error) *WebSocketQueryHandler_Start_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewWebSocketQueryHandler creates a new instance of WebSocketQueryHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

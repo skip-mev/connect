@@ -15,14 +15,6 @@ type RequestHandler struct {
 	mock.Mock
 }
 
-type RequestHandler_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *RequestHandler) EXPECT() *RequestHandler_Expecter {
-	return &RequestHandler_Expecter{mock: &_m.Mock}
-}
-
 // Do provides a mock function with given fields: ctx, url
 func (_m *RequestHandler) Do(ctx context.Context, url string) (*http.Response, error) {
 	ret := _m.Called(ctx, url)
@@ -53,35 +45,6 @@ func (_m *RequestHandler) Do(ctx context.Context, url string) (*http.Response, e
 	return r0, r1
 }
 
-// RequestHandler_Do_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Do'
-type RequestHandler_Do_Call struct {
-	*mock.Call
-}
-
-// Do is a helper method to define mock.On call
-//   - ctx context.Context
-//   - url string
-func (_e *RequestHandler_Expecter) Do(ctx interface{}, url interface{}) *RequestHandler_Do_Call {
-	return &RequestHandler_Do_Call{Call: _e.mock.On("Do", ctx, url)}
-}
-
-func (_c *RequestHandler_Do_Call) Run(run func(ctx context.Context, url string)) *RequestHandler_Do_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string))
-	})
-	return _c
-}
-
-func (_c *RequestHandler_Do_Call) Return(_a0 *http.Response, _a1 error) *RequestHandler_Do_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *RequestHandler_Do_Call) RunAndReturn(run func(context.Context, string) (*http.Response, error)) *RequestHandler_Do_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Type provides a mock function with given fields:
 func (_m *RequestHandler) Type() string {
 	ret := _m.Called()
@@ -98,33 +61,6 @@ func (_m *RequestHandler) Type() string {
 	}
 
 	return r0
-}
-
-// RequestHandler_Type_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Type'
-type RequestHandler_Type_Call struct {
-	*mock.Call
-}
-
-// Type is a helper method to define mock.On call
-func (_e *RequestHandler_Expecter) Type() *RequestHandler_Type_Call {
-	return &RequestHandler_Type_Call{Call: _e.mock.On("Type")}
-}
-
-func (_c *RequestHandler_Type_Call) Run(run func()) *RequestHandler_Type_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run()
-	})
-	return _c
-}
-
-func (_c *RequestHandler_Type_Call) Return(_a0 string) *RequestHandler_Type_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *RequestHandler_Type_Call) RunAndReturn(run func() string) *RequestHandler_Type_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewRequestHandler creates a new instance of RequestHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

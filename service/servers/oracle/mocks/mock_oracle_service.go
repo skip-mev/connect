@@ -15,14 +15,6 @@ type OracleService struct {
 	mock.Mock
 }
 
-type OracleService_Expecter struct {
-	mock *mock.Mock
-}
-
-func (_m *OracleService) EXPECT() *OracleService_Expecter {
-	return &OracleService_Expecter{mock: &_m.Mock}
-}
-
 // MarketMap provides a mock function with given fields: _a0, _a1
 func (_m *OracleService) MarketMap(_a0 context.Context, _a1 *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error) {
 	ret := _m.Called(_a0, _a1)
@@ -51,35 +43,6 @@ func (_m *OracleService) MarketMap(_a0 context.Context, _a1 *types.QueryMarketMa
 	}
 
 	return r0, r1
-}
-
-// OracleService_MarketMap_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MarketMap'
-type OracleService_MarketMap_Call struct {
-	*mock.Call
-}
-
-// MarketMap is a helper method to define mock.On call
-//   - _a0 context.Context
-//   - _a1 *types.QueryMarketMapRequest
-func (_e *OracleService_Expecter) MarketMap(_a0 interface{}, _a1 interface{}) *OracleService_MarketMap_Call {
-	return &OracleService_MarketMap_Call{Call: _e.mock.On("MarketMap", _a0, _a1)}
-}
-
-func (_c *OracleService_MarketMap_Call) Run(run func(_a0 context.Context, _a1 *types.QueryMarketMapRequest)) *OracleService_MarketMap_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*types.QueryMarketMapRequest))
-	})
-	return _c
-}
-
-func (_c *OracleService_MarketMap_Call) Return(_a0 *types.QueryMarketMapResponse, _a1 error) *OracleService_MarketMap_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *OracleService_MarketMap_Call) RunAndReturn(run func(context.Context, *types.QueryMarketMapRequest) (*types.QueryMarketMapResponse, error)) *OracleService_MarketMap_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // Prices provides a mock function with given fields: _a0, _a1
@@ -112,35 +75,6 @@ func (_m *OracleService) Prices(_a0 context.Context, _a1 *types.QueryPricesReque
 	return r0, r1
 }
 
-// OracleService_Prices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Prices'
-type OracleService_Prices_Call struct {
-	*mock.Call
-}
-
-// Prices is a helper method to define mock.On call
-//   - _a0 context.Context
-//   - _a1 *types.QueryPricesRequest
-func (_e *OracleService_Expecter) Prices(_a0 interface{}, _a1 interface{}) *OracleService_Prices_Call {
-	return &OracleService_Prices_Call{Call: _e.mock.On("Prices", _a0, _a1)}
-}
-
-func (_c *OracleService_Prices_Call) Run(run func(_a0 context.Context, _a1 *types.QueryPricesRequest)) *OracleService_Prices_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*types.QueryPricesRequest))
-	})
-	return _c
-}
-
-func (_c *OracleService_Prices_Call) Return(_a0 *types.QueryPricesResponse, _a1 error) *OracleService_Prices_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *OracleService_Prices_Call) RunAndReturn(run func(context.Context, *types.QueryPricesRequest) (*types.QueryPricesResponse, error)) *OracleService_Prices_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Start provides a mock function with given fields: _a0
 func (_m *OracleService) Start(_a0 context.Context) error {
 	ret := _m.Called(_a0)
@@ -159,34 +93,6 @@ func (_m *OracleService) Start(_a0 context.Context) error {
 	return r0
 }
 
-// OracleService_Start_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Start'
-type OracleService_Start_Call struct {
-	*mock.Call
-}
-
-// Start is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *OracleService_Expecter) Start(_a0 interface{}) *OracleService_Start_Call {
-	return &OracleService_Start_Call{Call: _e.mock.On("Start", _a0)}
-}
-
-func (_c *OracleService_Start_Call) Run(run func(_a0 context.Context)) *OracleService_Start_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
-	})
-	return _c
-}
-
-func (_c *OracleService_Start_Call) Return(_a0 error) *OracleService_Start_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *OracleService_Start_Call) RunAndReturn(run func(context.Context) error) *OracleService_Start_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Stop provides a mock function with given fields: _a0
 func (_m *OracleService) Stop(_a0 context.Context) error {
 	ret := _m.Called(_a0)
@@ -203,34 +109,6 @@ func (_m *OracleService) Stop(_a0 context.Context) error {
 	}
 
 	return r0
-}
-
-// OracleService_Stop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Stop'
-type OracleService_Stop_Call struct {
-	*mock.Call
-}
-
-// Stop is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *OracleService_Expecter) Stop(_a0 interface{}) *OracleService_Stop_Call {
-	return &OracleService_Stop_Call{Call: _e.mock.On("Stop", _a0)}
-}
-
-func (_c *OracleService_Stop_Call) Run(run func(_a0 context.Context)) *OracleService_Stop_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
-	})
-	return _c
-}
-
-func (_c *OracleService_Stop_Call) Return(_a0 error) *OracleService_Stop_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *OracleService_Stop_Call) RunAndReturn(run func(context.Context) error) *OracleService_Stop_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // Version provides a mock function with given fields: _a0, _a1
@@ -261,35 +139,6 @@ func (_m *OracleService) Version(_a0 context.Context, _a1 *types.QueryVersionReq
 	}
 
 	return r0, r1
-}
-
-// OracleService_Version_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Version'
-type OracleService_Version_Call struct {
-	*mock.Call
-}
-
-// Version is a helper method to define mock.On call
-//   - _a0 context.Context
-//   - _a1 *types.QueryVersionRequest
-func (_e *OracleService_Expecter) Version(_a0 interface{}, _a1 interface{}) *OracleService_Version_Call {
-	return &OracleService_Version_Call{Call: _e.mock.On("Version", _a0, _a1)}
-}
-
-func (_c *OracleService_Version_Call) Run(run func(_a0 context.Context, _a1 *types.QueryVersionRequest)) *OracleService_Version_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*types.QueryVersionRequest))
-	})
-	return _c
-}
-
-func (_c *OracleService_Version_Call) Return(_a0 *types.QueryVersionResponse, _a1 error) *OracleService_Version_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *OracleService_Version_Call) RunAndReturn(run func(context.Context, *types.QueryVersionRequest) (*types.QueryVersionResponse, error)) *OracleService_Version_Call {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewOracleService creates a new instance of OracleService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

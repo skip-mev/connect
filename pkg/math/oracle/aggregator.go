@@ -5,13 +5,12 @@ import (
 	"math/big"
 	"sync"
 
-	"go.uber.org/zap"
-
 	"github.com/skip-mev/connect/v2/oracle"
 	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
 	"github.com/skip-mev/connect/v2/oracle/types"
 	"github.com/skip-mev/connect/v2/pkg/math"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	"go.uber.org/zap"
 )
 
 var _ oracle.PriceAggregator = &IndexPriceAggregator{}

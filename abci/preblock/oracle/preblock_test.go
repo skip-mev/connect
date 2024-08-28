@@ -292,7 +292,7 @@ func (s *PreBlockTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		validator1 := voteweightedmocks.NewValidatorI(s.T())
-		validator1.EXPECT().GetBondedTokens().Return(math.NewInt(1))
+		validator1.On("GetBondedTokens").Return(math.NewInt(1))
 
 		validator2 := voteweightedmocks.NewValidatorI(s.T())
 		validator2.On("GetBondedTokens").Return(math.NewInt(1))

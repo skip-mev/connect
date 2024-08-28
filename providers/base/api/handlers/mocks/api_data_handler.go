@@ -15,14 +15,6 @@ type APIDataHandler[K types.ResponseKey, V types.ResponseValue] struct {
 	mock.Mock
 }
 
-type APIDataHandler_Expecter[K types.ResponseKey, V types.ResponseValue] struct {
-	mock *mock.Mock
-}
-
-func (_m *APIDataHandler[K, V]) EXPECT() *APIDataHandler_Expecter[K, V] {
-	return &APIDataHandler_Expecter[K, V]{mock: &_m.Mock}
-}
-
 // CreateURL provides a mock function with given fields: ids
 func (_m *APIDataHandler[K, V]) CreateURL(ids []K) (string, error) {
 	ret := _m.Called(ids)
@@ -51,34 +43,6 @@ func (_m *APIDataHandler[K, V]) CreateURL(ids []K) (string, error) {
 	return r0, r1
 }
 
-// APIDataHandler_CreateURL_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateURL'
-type APIDataHandler_CreateURL_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// CreateURL is a helper method to define mock.On call
-//   - ids []K
-func (_e *APIDataHandler_Expecter[K, V]) CreateURL(ids interface{}) *APIDataHandler_CreateURL_Call[K, V] {
-	return &APIDataHandler_CreateURL_Call[K, V]{Call: _e.mock.On("CreateURL", ids)}
-}
-
-func (_c *APIDataHandler_CreateURL_Call[K, V]) Run(run func(ids []K)) *APIDataHandler_CreateURL_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]K))
-	})
-	return _c
-}
-
-func (_c *APIDataHandler_CreateURL_Call[K, V]) Return(_a0 string, _a1 error) *APIDataHandler_CreateURL_Call[K, V] {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *APIDataHandler_CreateURL_Call[K, V]) RunAndReturn(run func([]K) (string, error)) *APIDataHandler_CreateURL_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
-}
-
 // ParseResponse provides a mock function with given fields: ids, response
 func (_m *APIDataHandler[K, V]) ParseResponse(ids []K, response *http.Response) types.GetResponse[K, V] {
 	ret := _m.Called(ids, response)
@@ -95,35 +59,6 @@ func (_m *APIDataHandler[K, V]) ParseResponse(ids []K, response *http.Response) 
 	}
 
 	return r0
-}
-
-// APIDataHandler_ParseResponse_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ParseResponse'
-type APIDataHandler_ParseResponse_Call[K types.ResponseKey, V types.ResponseValue] struct {
-	*mock.Call
-}
-
-// ParseResponse is a helper method to define mock.On call
-//   - ids []K
-//   - response *http.Response
-func (_e *APIDataHandler_Expecter[K, V]) ParseResponse(ids interface{}, response interface{}) *APIDataHandler_ParseResponse_Call[K, V] {
-	return &APIDataHandler_ParseResponse_Call[K, V]{Call: _e.mock.On("ParseResponse", ids, response)}
-}
-
-func (_c *APIDataHandler_ParseResponse_Call[K, V]) Run(run func(ids []K, response *http.Response)) *APIDataHandler_ParseResponse_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]K), args[1].(*http.Response))
-	})
-	return _c
-}
-
-func (_c *APIDataHandler_ParseResponse_Call[K, V]) Return(_a0 types.GetResponse[K, V]) *APIDataHandler_ParseResponse_Call[K, V] {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *APIDataHandler_ParseResponse_Call[K, V]) RunAndReturn(run func([]K, *http.Response) types.GetResponse[K, V]) *APIDataHandler_ParseResponse_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
 }
 
 // NewAPIDataHandler creates a new instance of APIDataHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
