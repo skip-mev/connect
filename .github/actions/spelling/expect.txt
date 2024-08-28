@@ -594,6 +594,9 @@ sirmoggintonwebsocket
 skipprotocol
 SLAs
 SLf
+slashingkeeper
+slashingmodulev
+slashingtypes
 slinkyabci
 slinkyabcimocks
 slinkyabcitypes
