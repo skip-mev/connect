@@ -18,6 +18,14 @@ type ValidatorI struct {
 	mock.Mock
 }
 
+type ValidatorI_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *ValidatorI) EXPECT() *ValidatorI_Expecter {
+	return &ValidatorI_Expecter{mock: &_m.Mock}
+}
+
 // ConsPubKey provides a mock function with given fields:
 func (_m *ValidatorI) ConsPubKey() (types.PubKey, error) {
 	ret := _m.Called()
@@ -48,6 +56,33 @@ func (_m *ValidatorI) ConsPubKey() (types.PubKey, error) {
 	return r0, r1
 }
 
+// ValidatorI_ConsPubKey_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ConsPubKey'
+type ValidatorI_ConsPubKey_Call struct {
+	*mock.Call
+}
+
+// ConsPubKey is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) ConsPubKey() *ValidatorI_ConsPubKey_Call {
+	return &ValidatorI_ConsPubKey_Call{Call: _e.mock.On("ConsPubKey")}
+}
+
+func (_c *ValidatorI_ConsPubKey_Call) Run(run func()) *ValidatorI_ConsPubKey_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_ConsPubKey_Call) Return(_a0 types.PubKey, _a1 error) *ValidatorI_ConsPubKey_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorI_ConsPubKey_Call) RunAndReturn(run func() (types.PubKey, error)) *ValidatorI_ConsPubKey_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBondedTokens provides a mock function with given fields:
 func (_m *ValidatorI) GetBondedTokens() math.Int {
 	ret := _m.Called()
@@ -66,6 +101,33 @@ func (_m *ValidatorI) GetBondedTokens() math.Int {
 	return r0
 }
 
+// ValidatorI_GetBondedTokens_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBondedTokens'
+type ValidatorI_GetBondedTokens_Call struct {
+	*mock.Call
+}
+
+// GetBondedTokens is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetBondedTokens() *ValidatorI_GetBondedTokens_Call {
+	return &ValidatorI_GetBondedTokens_Call{Call: _e.mock.On("GetBondedTokens")}
+}
+
+func (_c *ValidatorI_GetBondedTokens_Call) Run(run func()) *ValidatorI_GetBondedTokens_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetBondedTokens_Call) Return(_a0 math.Int) *ValidatorI_GetBondedTokens_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetBondedTokens_Call) RunAndReturn(run func() math.Int) *ValidatorI_GetBondedTokens_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetCommission provides a mock function with given fields:
 func (_m *ValidatorI) GetCommission() math.LegacyDec {
 	ret := _m.Called()
@@ -82,6 +144,33 @@ func (_m *ValidatorI) GetCommission() math.LegacyDec {
 	}
 
 	return r0
+}
+
+// ValidatorI_GetCommission_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCommission'
+type ValidatorI_GetCommission_Call struct {
+	*mock.Call
+}
+
+// GetCommission is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetCommission() *ValidatorI_GetCommission_Call {
+	return &ValidatorI_GetCommission_Call{Call: _e.mock.On("GetCommission")}
+}
+
+func (_c *ValidatorI_GetCommission_Call) Run(run func()) *ValidatorI_GetCommission_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetCommission_Call) Return(_a0 math.LegacyDec) *ValidatorI_GetCommission_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetCommission_Call) RunAndReturn(run func() math.LegacyDec) *ValidatorI_GetCommission_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetConsAddr provides a mock function with given fields:
@@ -114,6 +203,33 @@ func (_m *ValidatorI) GetConsAddr() ([]byte, error) {
 	return r0, r1
 }
 
+// ValidatorI_GetConsAddr_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetConsAddr'
+type ValidatorI_GetConsAddr_Call struct {
+	*mock.Call
+}
+
+// GetConsAddr is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetConsAddr() *ValidatorI_GetConsAddr_Call {
+	return &ValidatorI_GetConsAddr_Call{Call: _e.mock.On("GetConsAddr")}
+}
+
+func (_c *ValidatorI_GetConsAddr_Call) Run(run func()) *ValidatorI_GetConsAddr_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetConsAddr_Call) Return(_a0 []byte, _a1 error) *ValidatorI_GetConsAddr_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorI_GetConsAddr_Call) RunAndReturn(run func() ([]byte, error)) *ValidatorI_GetConsAddr_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetConsensusPower provides a mock function with given fields: _a0
 func (_m *ValidatorI) GetConsensusPower(_a0 math.Int) int64 {
 	ret := _m.Called(_a0)
@@ -130,6 +246,34 @@ func (_m *ValidatorI) GetConsensusPower(_a0 math.Int) int64 {
 	}
 
 	return r0
+}
+
+// ValidatorI_GetConsensusPower_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetConsensusPower'
+type ValidatorI_GetConsensusPower_Call struct {
+	*mock.Call
+}
+
+// GetConsensusPower is a helper method to define mock.On call
+//   - _a0 math.Int
+func (_e *ValidatorI_Expecter) GetConsensusPower(_a0 interface{}) *ValidatorI_GetConsensusPower_Call {
+	return &ValidatorI_GetConsensusPower_Call{Call: _e.mock.On("GetConsensusPower", _a0)}
+}
+
+func (_c *ValidatorI_GetConsensusPower_Call) Run(run func(_a0 math.Int)) *ValidatorI_GetConsensusPower_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.Int))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetConsensusPower_Call) Return(_a0 int64) *ValidatorI_GetConsensusPower_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetConsensusPower_Call) RunAndReturn(run func(math.Int) int64) *ValidatorI_GetConsensusPower_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetDelegatorShares provides a mock function with given fields:
@@ -150,6 +294,33 @@ func (_m *ValidatorI) GetDelegatorShares() math.LegacyDec {
 	return r0
 }
 
+// ValidatorI_GetDelegatorShares_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetDelegatorShares'
+type ValidatorI_GetDelegatorShares_Call struct {
+	*mock.Call
+}
+
+// GetDelegatorShares is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetDelegatorShares() *ValidatorI_GetDelegatorShares_Call {
+	return &ValidatorI_GetDelegatorShares_Call{Call: _e.mock.On("GetDelegatorShares")}
+}
+
+func (_c *ValidatorI_GetDelegatorShares_Call) Run(run func()) *ValidatorI_GetDelegatorShares_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetDelegatorShares_Call) Return(_a0 math.LegacyDec) *ValidatorI_GetDelegatorShares_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetDelegatorShares_Call) RunAndReturn(run func() math.LegacyDec) *ValidatorI_GetDelegatorShares_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetMinSelfDelegation provides a mock function with given fields:
 func (_m *ValidatorI) GetMinSelfDelegation() math.Int {
 	ret := _m.Called()
@@ -166,6 +337,33 @@ func (_m *ValidatorI) GetMinSelfDelegation() math.Int {
 	}
 
 	return r0
+}
+
+// ValidatorI_GetMinSelfDelegation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMinSelfDelegation'
+type ValidatorI_GetMinSelfDelegation_Call struct {
+	*mock.Call
+}
+
+// GetMinSelfDelegation is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetMinSelfDelegation() *ValidatorI_GetMinSelfDelegation_Call {
+	return &ValidatorI_GetMinSelfDelegation_Call{Call: _e.mock.On("GetMinSelfDelegation")}
+}
+
+func (_c *ValidatorI_GetMinSelfDelegation_Call) Run(run func()) *ValidatorI_GetMinSelfDelegation_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetMinSelfDelegation_Call) Return(_a0 math.Int) *ValidatorI_GetMinSelfDelegation_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetMinSelfDelegation_Call) RunAndReturn(run func() math.Int) *ValidatorI_GetMinSelfDelegation_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetMoniker provides a mock function with given fields:
@@ -186,6 +384,33 @@ func (_m *ValidatorI) GetMoniker() string {
 	return r0
 }
 
+// ValidatorI_GetMoniker_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMoniker'
+type ValidatorI_GetMoniker_Call struct {
+	*mock.Call
+}
+
+// GetMoniker is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetMoniker() *ValidatorI_GetMoniker_Call {
+	return &ValidatorI_GetMoniker_Call{Call: _e.mock.On("GetMoniker")}
+}
+
+func (_c *ValidatorI_GetMoniker_Call) Run(run func()) *ValidatorI_GetMoniker_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetMoniker_Call) Return(_a0 string) *ValidatorI_GetMoniker_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetMoniker_Call) RunAndReturn(run func() string) *ValidatorI_GetMoniker_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetOperator provides a mock function with given fields:
 func (_m *ValidatorI) GetOperator() string {
 	ret := _m.Called()
@@ -202,6 +427,33 @@ func (_m *ValidatorI) GetOperator() string {
 	}
 
 	return r0
+}
+
+// ValidatorI_GetOperator_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOperator'
+type ValidatorI_GetOperator_Call struct {
+	*mock.Call
+}
+
+// GetOperator is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetOperator() *ValidatorI_GetOperator_Call {
+	return &ValidatorI_GetOperator_Call{Call: _e.mock.On("GetOperator")}
+}
+
+func (_c *ValidatorI_GetOperator_Call) Run(run func()) *ValidatorI_GetOperator_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetOperator_Call) Return(_a0 string) *ValidatorI_GetOperator_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetOperator_Call) RunAndReturn(run func() string) *ValidatorI_GetOperator_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetStatus provides a mock function with given fields:
@@ -222,6 +474,33 @@ func (_m *ValidatorI) GetStatus() stakingtypes.BondStatus {
 	return r0
 }
 
+// ValidatorI_GetStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetStatus'
+type ValidatorI_GetStatus_Call struct {
+	*mock.Call
+}
+
+// GetStatus is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetStatus() *ValidatorI_GetStatus_Call {
+	return &ValidatorI_GetStatus_Call{Call: _e.mock.On("GetStatus")}
+}
+
+func (_c *ValidatorI_GetStatus_Call) Run(run func()) *ValidatorI_GetStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetStatus_Call) Return(_a0 stakingtypes.BondStatus) *ValidatorI_GetStatus_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetStatus_Call) RunAndReturn(run func() stakingtypes.BondStatus) *ValidatorI_GetStatus_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetTokens provides a mock function with given fields:
 func (_m *ValidatorI) GetTokens() math.Int {
 	ret := _m.Called()
@@ -238,6 +517,33 @@ func (_m *ValidatorI) GetTokens() math.Int {
 	}
 
 	return r0
+}
+
+// ValidatorI_GetTokens_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetTokens'
+type ValidatorI_GetTokens_Call struct {
+	*mock.Call
+}
+
+// GetTokens is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) GetTokens() *ValidatorI_GetTokens_Call {
+	return &ValidatorI_GetTokens_Call{Call: _e.mock.On("GetTokens")}
+}
+
+func (_c *ValidatorI_GetTokens_Call) Run(run func()) *ValidatorI_GetTokens_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_GetTokens_Call) Return(_a0 math.Int) *ValidatorI_GetTokens_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_GetTokens_Call) RunAndReturn(run func() math.Int) *ValidatorI_GetTokens_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // IsBonded provides a mock function with given fields:
@@ -258,6 +564,33 @@ func (_m *ValidatorI) IsBonded() bool {
 	return r0
 }
 
+// ValidatorI_IsBonded_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsBonded'
+type ValidatorI_IsBonded_Call struct {
+	*mock.Call
+}
+
+// IsBonded is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) IsBonded() *ValidatorI_IsBonded_Call {
+	return &ValidatorI_IsBonded_Call{Call: _e.mock.On("IsBonded")}
+}
+
+func (_c *ValidatorI_IsBonded_Call) Run(run func()) *ValidatorI_IsBonded_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_IsBonded_Call) Return(_a0 bool) *ValidatorI_IsBonded_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_IsBonded_Call) RunAndReturn(run func() bool) *ValidatorI_IsBonded_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // IsJailed provides a mock function with given fields:
 func (_m *ValidatorI) IsJailed() bool {
 	ret := _m.Called()
@@ -274,6 +607,33 @@ func (_m *ValidatorI) IsJailed() bool {
 	}
 
 	return r0
+}
+
+// ValidatorI_IsJailed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsJailed'
+type ValidatorI_IsJailed_Call struct {
+	*mock.Call
+}
+
+// IsJailed is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) IsJailed() *ValidatorI_IsJailed_Call {
+	return &ValidatorI_IsJailed_Call{Call: _e.mock.On("IsJailed")}
+}
+
+func (_c *ValidatorI_IsJailed_Call) Run(run func()) *ValidatorI_IsJailed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_IsJailed_Call) Return(_a0 bool) *ValidatorI_IsJailed_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_IsJailed_Call) RunAndReturn(run func() bool) *ValidatorI_IsJailed_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // IsUnbonded provides a mock function with given fields:
@@ -294,6 +654,33 @@ func (_m *ValidatorI) IsUnbonded() bool {
 	return r0
 }
 
+// ValidatorI_IsUnbonded_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsUnbonded'
+type ValidatorI_IsUnbonded_Call struct {
+	*mock.Call
+}
+
+// IsUnbonded is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) IsUnbonded() *ValidatorI_IsUnbonded_Call {
+	return &ValidatorI_IsUnbonded_Call{Call: _e.mock.On("IsUnbonded")}
+}
+
+func (_c *ValidatorI_IsUnbonded_Call) Run(run func()) *ValidatorI_IsUnbonded_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_IsUnbonded_Call) Return(_a0 bool) *ValidatorI_IsUnbonded_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_IsUnbonded_Call) RunAndReturn(run func() bool) *ValidatorI_IsUnbonded_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // IsUnbonding provides a mock function with given fields:
 func (_m *ValidatorI) IsUnbonding() bool {
 	ret := _m.Called()
@@ -310,6 +697,33 @@ func (_m *ValidatorI) IsUnbonding() bool {
 	}
 
 	return r0
+}
+
+// ValidatorI_IsUnbonding_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsUnbonding'
+type ValidatorI_IsUnbonding_Call struct {
+	*mock.Call
+}
+
+// IsUnbonding is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) IsUnbonding() *ValidatorI_IsUnbonding_Call {
+	return &ValidatorI_IsUnbonding_Call{Call: _e.mock.On("IsUnbonding")}
+}
+
+func (_c *ValidatorI_IsUnbonding_Call) Run(run func()) *ValidatorI_IsUnbonding_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_IsUnbonding_Call) Return(_a0 bool) *ValidatorI_IsUnbonding_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_IsUnbonding_Call) RunAndReturn(run func() bool) *ValidatorI_IsUnbonding_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // SharesFromTokens provides a mock function with given fields: amt
@@ -340,6 +754,34 @@ func (_m *ValidatorI) SharesFromTokens(amt math.Int) (math.LegacyDec, error) {
 	return r0, r1
 }
 
+// ValidatorI_SharesFromTokens_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SharesFromTokens'
+type ValidatorI_SharesFromTokens_Call struct {
+	*mock.Call
+}
+
+// SharesFromTokens is a helper method to define mock.On call
+//   - amt math.Int
+func (_e *ValidatorI_Expecter) SharesFromTokens(amt interface{}) *ValidatorI_SharesFromTokens_Call {
+	return &ValidatorI_SharesFromTokens_Call{Call: _e.mock.On("SharesFromTokens", amt)}
+}
+
+func (_c *ValidatorI_SharesFromTokens_Call) Run(run func(amt math.Int)) *ValidatorI_SharesFromTokens_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.Int))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_SharesFromTokens_Call) Return(_a0 math.LegacyDec, _a1 error) *ValidatorI_SharesFromTokens_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorI_SharesFromTokens_Call) RunAndReturn(run func(math.Int) (math.LegacyDec, error)) *ValidatorI_SharesFromTokens_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SharesFromTokensTruncated provides a mock function with given fields: amt
 func (_m *ValidatorI) SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) {
 	ret := _m.Called(amt)
@@ -366,6 +808,34 @@ func (_m *ValidatorI) SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, e
 	}
 
 	return r0, r1
+}
+
+// ValidatorI_SharesFromTokensTruncated_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SharesFromTokensTruncated'
+type ValidatorI_SharesFromTokensTruncated_Call struct {
+	*mock.Call
+}
+
+// SharesFromTokensTruncated is a helper method to define mock.On call
+//   - amt math.Int
+func (_e *ValidatorI_Expecter) SharesFromTokensTruncated(amt interface{}) *ValidatorI_SharesFromTokensTruncated_Call {
+	return &ValidatorI_SharesFromTokensTruncated_Call{Call: _e.mock.On("SharesFromTokensTruncated", amt)}
+}
+
+func (_c *ValidatorI_SharesFromTokensTruncated_Call) Run(run func(amt math.Int)) *ValidatorI_SharesFromTokensTruncated_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.Int))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_SharesFromTokensTruncated_Call) Return(_a0 math.LegacyDec, _a1 error) *ValidatorI_SharesFromTokensTruncated_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorI_SharesFromTokensTruncated_Call) RunAndReturn(run func(math.Int) (math.LegacyDec, error)) *ValidatorI_SharesFromTokensTruncated_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // TmConsPublicKey provides a mock function with given fields:
@@ -396,6 +866,33 @@ func (_m *ValidatorI) TmConsPublicKey() (crypto.PublicKey, error) {
 	return r0, r1
 }
 
+// ValidatorI_TmConsPublicKey_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TmConsPublicKey'
+type ValidatorI_TmConsPublicKey_Call struct {
+	*mock.Call
+}
+
+// TmConsPublicKey is a helper method to define mock.On call
+func (_e *ValidatorI_Expecter) TmConsPublicKey() *ValidatorI_TmConsPublicKey_Call {
+	return &ValidatorI_TmConsPublicKey_Call{Call: _e.mock.On("TmConsPublicKey")}
+}
+
+func (_c *ValidatorI_TmConsPublicKey_Call) Run(run func()) *ValidatorI_TmConsPublicKey_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *ValidatorI_TmConsPublicKey_Call) Return(_a0 crypto.PublicKey, _a1 error) *ValidatorI_TmConsPublicKey_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *ValidatorI_TmConsPublicKey_Call) RunAndReturn(run func() (crypto.PublicKey, error)) *ValidatorI_TmConsPublicKey_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // TokensFromShares provides a mock function with given fields: _a0
 func (_m *ValidatorI) TokensFromShares(_a0 math.LegacyDec) math.LegacyDec {
 	ret := _m.Called(_a0)
@@ -412,6 +909,34 @@ func (_m *ValidatorI) TokensFromShares(_a0 math.LegacyDec) math.LegacyDec {
 	}
 
 	return r0
+}
+
+// ValidatorI_TokensFromShares_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TokensFromShares'
+type ValidatorI_TokensFromShares_Call struct {
+	*mock.Call
+}
+
+// TokensFromShares is a helper method to define mock.On call
+//   - _a0 math.LegacyDec
+func (_e *ValidatorI_Expecter) TokensFromShares(_a0 interface{}) *ValidatorI_TokensFromShares_Call {
+	return &ValidatorI_TokensFromShares_Call{Call: _e.mock.On("TokensFromShares", _a0)}
+}
+
+func (_c *ValidatorI_TokensFromShares_Call) Run(run func(_a0 math.LegacyDec)) *ValidatorI_TokensFromShares_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.LegacyDec))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromShares_Call) Return(_a0 math.LegacyDec) *ValidatorI_TokensFromShares_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromShares_Call) RunAndReturn(run func(math.LegacyDec) math.LegacyDec) *ValidatorI_TokensFromShares_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // TokensFromSharesRoundUp provides a mock function with given fields: _a0
@@ -432,6 +957,34 @@ func (_m *ValidatorI) TokensFromSharesRoundUp(_a0 math.LegacyDec) math.LegacyDec
 	return r0
 }
 
+// ValidatorI_TokensFromSharesRoundUp_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TokensFromSharesRoundUp'
+type ValidatorI_TokensFromSharesRoundUp_Call struct {
+	*mock.Call
+}
+
+// TokensFromSharesRoundUp is a helper method to define mock.On call
+//   - _a0 math.LegacyDec
+func (_e *ValidatorI_Expecter) TokensFromSharesRoundUp(_a0 interface{}) *ValidatorI_TokensFromSharesRoundUp_Call {
+	return &ValidatorI_TokensFromSharesRoundUp_Call{Call: _e.mock.On("TokensFromSharesRoundUp", _a0)}
+}
+
+func (_c *ValidatorI_TokensFromSharesRoundUp_Call) Run(run func(_a0 math.LegacyDec)) *ValidatorI_TokensFromSharesRoundUp_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.LegacyDec))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromSharesRoundUp_Call) Return(_a0 math.LegacyDec) *ValidatorI_TokensFromSharesRoundUp_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromSharesRoundUp_Call) RunAndReturn(run func(math.LegacyDec) math.LegacyDec) *ValidatorI_TokensFromSharesRoundUp_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // TokensFromSharesTruncated provides a mock function with given fields: _a0
 func (_m *ValidatorI) TokensFromSharesTruncated(_a0 math.LegacyDec) math.LegacyDec {
 	ret := _m.Called(_a0)
@@ -448,6 +1001,34 @@ func (_m *ValidatorI) TokensFromSharesTruncated(_a0 math.LegacyDec) math.LegacyD
 	}
 
 	return r0
+}
+
+// ValidatorI_TokensFromSharesTruncated_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TokensFromSharesTruncated'
+type ValidatorI_TokensFromSharesTruncated_Call struct {
+	*mock.Call
+}
+
+// TokensFromSharesTruncated is a helper method to define mock.On call
+//   - _a0 math.LegacyDec
+func (_e *ValidatorI_Expecter) TokensFromSharesTruncated(_a0 interface{}) *ValidatorI_TokensFromSharesTruncated_Call {
+	return &ValidatorI_TokensFromSharesTruncated_Call{Call: _e.mock.On("TokensFromSharesTruncated", _a0)}
+}
+
+func (_c *ValidatorI_TokensFromSharesTruncated_Call) Run(run func(_a0 math.LegacyDec)) *ValidatorI_TokensFromSharesTruncated_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(math.LegacyDec))
+	})
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromSharesTruncated_Call) Return(_a0 math.LegacyDec) *ValidatorI_TokensFromSharesTruncated_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *ValidatorI_TokensFromSharesTruncated_Call) RunAndReturn(run func(math.LegacyDec) math.LegacyDec) *ValidatorI_TokensFromSharesTruncated_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewValidatorI creates a new instance of ValidatorI. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

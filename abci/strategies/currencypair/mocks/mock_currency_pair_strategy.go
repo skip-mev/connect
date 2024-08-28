@@ -17,6 +17,14 @@ type CurrencyPairStrategy struct {
 	mock.Mock
 }
 
+type CurrencyPairStrategy_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *CurrencyPairStrategy) EXPECT() *CurrencyPairStrategy_Expecter {
+	return &CurrencyPairStrategy_Expecter{mock: &_m.Mock}
+}
+
 // FromID provides a mock function with given fields: ctx, id
 func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (pkgtypes.CurrencyPair, error) {
 	ret := _m.Called(ctx, id)
@@ -43,6 +51,35 @@ func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (pkgtypes.C
 	}
 
 	return r0, r1
+}
+
+// CurrencyPairStrategy_FromID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FromID'
+type CurrencyPairStrategy_FromID_Call struct {
+	*mock.Call
+}
+
+// FromID is a helper method to define mock.On call
+//   - ctx types.Context
+//   - id uint64
+func (_e *CurrencyPairStrategy_Expecter) FromID(ctx interface{}, id interface{}) *CurrencyPairStrategy_FromID_Call {
+	return &CurrencyPairStrategy_FromID_Call{Call: _e.mock.On("FromID", ctx, id)}
+}
+
+func (_c *CurrencyPairStrategy_FromID_Call) Run(run func(ctx types.Context, id uint64)) *CurrencyPairStrategy_FromID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(uint64))
+	})
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_FromID_Call) Return(_a0 pkgtypes.CurrencyPair, _a1 error) *CurrencyPairStrategy_FromID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_FromID_Call) RunAndReturn(run func(types.Context, uint64) (pkgtypes.CurrencyPair, error)) *CurrencyPairStrategy_FromID_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetDecodedPrice provides a mock function with given fields: ctx, cp, priceBytes
@@ -75,6 +112,36 @@ func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp pkgtypes.C
 	return r0, r1
 }
 
+// CurrencyPairStrategy_GetDecodedPrice_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetDecodedPrice'
+type CurrencyPairStrategy_GetDecodedPrice_Call struct {
+	*mock.Call
+}
+
+// GetDecodedPrice is a helper method to define mock.On call
+//   - ctx types.Context
+//   - cp pkgtypes.CurrencyPair
+//   - priceBytes []byte
+func (_e *CurrencyPairStrategy_Expecter) GetDecodedPrice(ctx interface{}, cp interface{}, priceBytes interface{}) *CurrencyPairStrategy_GetDecodedPrice_Call {
+	return &CurrencyPairStrategy_GetDecodedPrice_Call{Call: _e.mock.On("GetDecodedPrice", ctx, cp, priceBytes)}
+}
+
+func (_c *CurrencyPairStrategy_GetDecodedPrice_Call) Run(run func(ctx types.Context, cp pkgtypes.CurrencyPair, priceBytes []byte)) *CurrencyPairStrategy_GetDecodedPrice_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(pkgtypes.CurrencyPair), args[2].([]byte))
+	})
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetDecodedPrice_Call) Return(_a0 *big.Int, _a1 error) *CurrencyPairStrategy_GetDecodedPrice_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetDecodedPrice_Call) RunAndReturn(run func(types.Context, pkgtypes.CurrencyPair, []byte) (*big.Int, error)) *CurrencyPairStrategy_GetDecodedPrice_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetEncodedPrice provides a mock function with given fields: ctx, cp, price
 func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp pkgtypes.CurrencyPair, price *big.Int) ([]byte, error) {
 	ret := _m.Called(ctx, cp, price)
@@ -105,6 +172,36 @@ func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp pkgtypes.C
 	return r0, r1
 }
 
+// CurrencyPairStrategy_GetEncodedPrice_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetEncodedPrice'
+type CurrencyPairStrategy_GetEncodedPrice_Call struct {
+	*mock.Call
+}
+
+// GetEncodedPrice is a helper method to define mock.On call
+//   - ctx types.Context
+//   - cp pkgtypes.CurrencyPair
+//   - price *big.Int
+func (_e *CurrencyPairStrategy_Expecter) GetEncodedPrice(ctx interface{}, cp interface{}, price interface{}) *CurrencyPairStrategy_GetEncodedPrice_Call {
+	return &CurrencyPairStrategy_GetEncodedPrice_Call{Call: _e.mock.On("GetEncodedPrice", ctx, cp, price)}
+}
+
+func (_c *CurrencyPairStrategy_GetEncodedPrice_Call) Run(run func(ctx types.Context, cp pkgtypes.CurrencyPair, price *big.Int)) *CurrencyPairStrategy_GetEncodedPrice_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(pkgtypes.CurrencyPair), args[2].(*big.Int))
+	})
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetEncodedPrice_Call) Return(_a0 []byte, _a1 error) *CurrencyPairStrategy_GetEncodedPrice_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetEncodedPrice_Call) RunAndReturn(run func(types.Context, pkgtypes.CurrencyPair, *big.Int) ([]byte, error)) *CurrencyPairStrategy_GetEncodedPrice_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetMaxNumCP provides a mock function with given fields: ctx
 func (_m *CurrencyPairStrategy) GetMaxNumCP(ctx types.Context) (uint64, error) {
 	ret := _m.Called(ctx)
@@ -133,6 +230,34 @@ func (_m *CurrencyPairStrategy) GetMaxNumCP(ctx types.Context) (uint64, error) {
 	return r0, r1
 }
 
+// CurrencyPairStrategy_GetMaxNumCP_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMaxNumCP'
+type CurrencyPairStrategy_GetMaxNumCP_Call struct {
+	*mock.Call
+}
+
+// GetMaxNumCP is a helper method to define mock.On call
+//   - ctx types.Context
+func (_e *CurrencyPairStrategy_Expecter) GetMaxNumCP(ctx interface{}) *CurrencyPairStrategy_GetMaxNumCP_Call {
+	return &CurrencyPairStrategy_GetMaxNumCP_Call{Call: _e.mock.On("GetMaxNumCP", ctx)}
+}
+
+func (_c *CurrencyPairStrategy_GetMaxNumCP_Call) Run(run func(ctx types.Context)) *CurrencyPairStrategy_GetMaxNumCP_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context))
+	})
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetMaxNumCP_Call) Return(_a0 uint64, _a1 error) *CurrencyPairStrategy_GetMaxNumCP_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_GetMaxNumCP_Call) RunAndReturn(run func(types.Context) (uint64, error)) *CurrencyPairStrategy_GetMaxNumCP_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ID provides a mock function with given fields: ctx, cp
 func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp pkgtypes.CurrencyPair) (uint64, error) {
 	ret := _m.Called(ctx, cp)
@@ -159,6 +284,35 @@ func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp pkgtypes.CurrencyPair) 
 	}
 
 	return r0, r1
+}
+
+// CurrencyPairStrategy_ID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ID'
+type CurrencyPairStrategy_ID_Call struct {
+	*mock.Call
+}
+
+// ID is a helper method to define mock.On call
+//   - ctx types.Context
+//   - cp pkgtypes.CurrencyPair
+func (_e *CurrencyPairStrategy_Expecter) ID(ctx interface{}, cp interface{}) *CurrencyPairStrategy_ID_Call {
+	return &CurrencyPairStrategy_ID_Call{Call: _e.mock.On("ID", ctx, cp)}
+}
+
+func (_c *CurrencyPairStrategy_ID_Call) Run(run func(ctx types.Context, cp pkgtypes.CurrencyPair)) *CurrencyPairStrategy_ID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(pkgtypes.CurrencyPair))
+	})
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_ID_Call) Return(_a0 uint64, _a1 error) *CurrencyPairStrategy_ID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CurrencyPairStrategy_ID_Call) RunAndReturn(run func(types.Context, pkgtypes.CurrencyPair) (uint64, error)) *CurrencyPairStrategy_ID_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewCurrencyPairStrategy creates a new instance of CurrencyPairStrategy. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

@@ -9,6 +9,14 @@ type NodeClient struct {
 	mock.Mock
 }
 
+type NodeClient_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *NodeClient) EXPECT() *NodeClient_Expecter {
+	return &NodeClient_Expecter{mock: &_m.Mock}
+}
+
 // DeriveNodeIdentifier provides a mock function with given fields:
 func (_m *NodeClient) DeriveNodeIdentifier() (string, error) {
 	ret := _m.Called()
@@ -35,6 +43,33 @@ func (_m *NodeClient) DeriveNodeIdentifier() (string, error) {
 	}
 
 	return r0, r1
+}
+
+// NodeClient_DeriveNodeIdentifier_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeriveNodeIdentifier'
+type NodeClient_DeriveNodeIdentifier_Call struct {
+	*mock.Call
+}
+
+// DeriveNodeIdentifier is a helper method to define mock.On call
+func (_e *NodeClient_Expecter) DeriveNodeIdentifier() *NodeClient_DeriveNodeIdentifier_Call {
+	return &NodeClient_DeriveNodeIdentifier_Call{Call: _e.mock.On("DeriveNodeIdentifier")}
+}
+
+func (_c *NodeClient_DeriveNodeIdentifier_Call) Run(run func()) *NodeClient_DeriveNodeIdentifier_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *NodeClient_DeriveNodeIdentifier_Call) Return(_a0 string, _a1 error) *NodeClient_DeriveNodeIdentifier_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *NodeClient_DeriveNodeIdentifier_Call) RunAndReturn(run func() (string, error)) *NodeClient_DeriveNodeIdentifier_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewNodeClient creates a new instance of NodeClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

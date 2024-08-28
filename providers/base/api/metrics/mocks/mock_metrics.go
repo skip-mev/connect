@@ -19,9 +19,46 @@ type APIMetrics struct {
 	mock.Mock
 }
 
+type APIMetrics_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *APIMetrics) EXPECT() *APIMetrics_Expecter {
+	return &APIMetrics_Expecter{mock: &_m.Mock}
+}
+
 // AddHTTPStatusCode provides a mock function with given fields: providerName, resp
 func (_m *APIMetrics) AddHTTPStatusCode(providerName string, resp *http.Response) {
 	_m.Called(providerName, resp)
+}
+
+// APIMetrics_AddHTTPStatusCode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddHTTPStatusCode'
+type APIMetrics_AddHTTPStatusCode_Call struct {
+	*mock.Call
+}
+
+// AddHTTPStatusCode is a helper method to define mock.On call
+//   - providerName string
+//   - resp *http.Response
+func (_e *APIMetrics_Expecter) AddHTTPStatusCode(providerName interface{}, resp interface{}) *APIMetrics_AddHTTPStatusCode_Call {
+	return &APIMetrics_AddHTTPStatusCode_Call{Call: _e.mock.On("AddHTTPStatusCode", providerName, resp)}
+}
+
+func (_c *APIMetrics_AddHTTPStatusCode_Call) Run(run func(providerName string, resp *http.Response)) *APIMetrics_AddHTTPStatusCode_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(*http.Response))
+	})
+	return _c
+}
+
+func (_c *APIMetrics_AddHTTPStatusCode_Call) Return() *APIMetrics_AddHTTPStatusCode_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *APIMetrics_AddHTTPStatusCode_Call) RunAndReturn(run func(string, *http.Response)) *APIMetrics_AddHTTPStatusCode_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // AddProviderResponse provides a mock function with given fields: providerName, id, errorCode
@@ -29,14 +66,104 @@ func (_m *APIMetrics) AddProviderResponse(providerName string, id string, errorC
 	_m.Called(providerName, id, errorCode)
 }
 
+// APIMetrics_AddProviderResponse_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddProviderResponse'
+type APIMetrics_AddProviderResponse_Call struct {
+	*mock.Call
+}
+
+// AddProviderResponse is a helper method to define mock.On call
+//   - providerName string
+//   - id string
+//   - errorCode types.ErrorCode
+func (_e *APIMetrics_Expecter) AddProviderResponse(providerName interface{}, id interface{}, errorCode interface{}) *APIMetrics_AddProviderResponse_Call {
+	return &APIMetrics_AddProviderResponse_Call{Call: _e.mock.On("AddProviderResponse", providerName, id, errorCode)}
+}
+
+func (_c *APIMetrics_AddProviderResponse_Call) Run(run func(providerName string, id string, errorCode types.ErrorCode)) *APIMetrics_AddProviderResponse_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string), args[2].(types.ErrorCode))
+	})
+	return _c
+}
+
+func (_c *APIMetrics_AddProviderResponse_Call) Return() *APIMetrics_AddProviderResponse_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *APIMetrics_AddProviderResponse_Call) RunAndReturn(run func(string, string, types.ErrorCode)) *APIMetrics_AddProviderResponse_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // AddRPCStatusCode provides a mock function with given fields: providerName, endpoint, code
 func (_m *APIMetrics) AddRPCStatusCode(providerName string, endpoint string, code metrics.RPCCode) {
 	_m.Called(providerName, endpoint, code)
 }
 
+// APIMetrics_AddRPCStatusCode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddRPCStatusCode'
+type APIMetrics_AddRPCStatusCode_Call struct {
+	*mock.Call
+}
+
+// AddRPCStatusCode is a helper method to define mock.On call
+//   - providerName string
+//   - endpoint string
+//   - code metrics.RPCCode
+func (_e *APIMetrics_Expecter) AddRPCStatusCode(providerName interface{}, endpoint interface{}, code interface{}) *APIMetrics_AddRPCStatusCode_Call {
+	return &APIMetrics_AddRPCStatusCode_Call{Call: _e.mock.On("AddRPCStatusCode", providerName, endpoint, code)}
+}
+
+func (_c *APIMetrics_AddRPCStatusCode_Call) Run(run func(providerName string, endpoint string, code metrics.RPCCode)) *APIMetrics_AddRPCStatusCode_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string), args[2].(metrics.RPCCode))
+	})
+	return _c
+}
+
+func (_c *APIMetrics_AddRPCStatusCode_Call) Return() *APIMetrics_AddRPCStatusCode_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *APIMetrics_AddRPCStatusCode_Call) RunAndReturn(run func(string, string, metrics.RPCCode)) *APIMetrics_AddRPCStatusCode_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ObserveProviderResponseLatency provides a mock function with given fields: providerName, endpoint, duration
 func (_m *APIMetrics) ObserveProviderResponseLatency(providerName string, endpoint string, duration time.Duration) {
 	_m.Called(providerName, endpoint, duration)
+}
+
+// APIMetrics_ObserveProviderResponseLatency_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ObserveProviderResponseLatency'
+type APIMetrics_ObserveProviderResponseLatency_Call struct {
+	*mock.Call
+}
+
+// ObserveProviderResponseLatency is a helper method to define mock.On call
+//   - providerName string
+//   - endpoint string
+//   - duration time.Duration
+func (_e *APIMetrics_Expecter) ObserveProviderResponseLatency(providerName interface{}, endpoint interface{}, duration interface{}) *APIMetrics_ObserveProviderResponseLatency_Call {
+	return &APIMetrics_ObserveProviderResponseLatency_Call{Call: _e.mock.On("ObserveProviderResponseLatency", providerName, endpoint, duration)}
+}
+
+func (_c *APIMetrics_ObserveProviderResponseLatency_Call) Run(run func(providerName string, endpoint string, duration time.Duration)) *APIMetrics_ObserveProviderResponseLatency_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string), args[2].(time.Duration))
+	})
+	return _c
+}
+
+func (_c *APIMetrics_ObserveProviderResponseLatency_Call) Return() *APIMetrics_ObserveProviderResponseLatency_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *APIMetrics_ObserveProviderResponseLatency_Call) RunAndReturn(run func(string, string, time.Duration)) *APIMetrics_ObserveProviderResponseLatency_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewAPIMetrics creates a new instance of APIMetrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
