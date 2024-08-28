@@ -23,13 +23,6 @@ type NodeClientImpl struct {
 	conn *grpc.ClientConn
 }
 
-// no-op client for testing
-type NoopNodeClient struct{}
-
-func (n *NoopNodeClient) DeriveNodeIdentifier() (string, error) {
-	return "noop", nil
-}
-
 func NewNodeClient(endpoint config.Endpoint) (NodeClient, error) {
 	conn, err := slinkygrpc.NewClient(
 		endpoint.URL,
