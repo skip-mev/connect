@@ -444,7 +444,7 @@ func NewApp(
             app.OracleKeeper.InitGenesis(ctx, *oracletypes.DefaultGenesisState())
             app.MarketMapKeeper.InitGenesis(ctx, *marketmaptypes.DefaultGenesisState())
 
-            // initalize markets
+            // initialize markets
             err := app.setupMarkets(ctx)
             if err != nil {
                 return nil, err
