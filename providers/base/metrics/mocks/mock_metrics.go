@@ -15,9 +15,48 @@ type ProviderMetrics struct {
 	mock.Mock
 }
 
+type ProviderMetrics_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *ProviderMetrics) EXPECT() *ProviderMetrics_Expecter {
+	return &ProviderMetrics_Expecter{mock: &_m.Mock}
+}
+
 // AddProviderResponse provides a mock function with given fields: providerName, status, ec, providerType
 func (_m *ProviderMetrics) AddProviderResponse(providerName string, status metrics.Status, ec types.ErrorCode, providerType types.ProviderType) {
 	_m.Called(providerName, status, ec, providerType)
+}
+
+// ProviderMetrics_AddProviderResponse_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddProviderResponse'
+type ProviderMetrics_AddProviderResponse_Call struct {
+	*mock.Call
+}
+
+// AddProviderResponse is a helper method to define mock.On call
+//   - providerName string
+//   - status metrics.Status
+//   - ec types.ErrorCode
+//   - providerType types.ProviderType
+func (_e *ProviderMetrics_Expecter) AddProviderResponse(providerName interface{}, status interface{}, ec interface{}, providerType interface{}) *ProviderMetrics_AddProviderResponse_Call {
+	return &ProviderMetrics_AddProviderResponse_Call{Call: _e.mock.On("AddProviderResponse", providerName, status, ec, providerType)}
+}
+
+func (_c *ProviderMetrics_AddProviderResponse_Call) Run(run func(providerName string, status metrics.Status, ec types.ErrorCode, providerType types.ProviderType)) *ProviderMetrics_AddProviderResponse_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(metrics.Status), args[2].(types.ErrorCode), args[3].(types.ProviderType))
+	})
+	return _c
+}
+
+func (_c *ProviderMetrics_AddProviderResponse_Call) Return() *ProviderMetrics_AddProviderResponse_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *ProviderMetrics_AddProviderResponse_Call) RunAndReturn(run func(string, metrics.Status, types.ErrorCode, types.ProviderType)) *ProviderMetrics_AddProviderResponse_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // AddProviderResponseByID provides a mock function with given fields: providerName, id, status, ec, providerType
@@ -25,9 +64,71 @@ func (_m *ProviderMetrics) AddProviderResponseByID(providerName string, id strin
 	_m.Called(providerName, id, status, ec, providerType)
 }
 
+// ProviderMetrics_AddProviderResponseByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddProviderResponseByID'
+type ProviderMetrics_AddProviderResponseByID_Call struct {
+	*mock.Call
+}
+
+// AddProviderResponseByID is a helper method to define mock.On call
+//   - providerName string
+//   - id string
+//   - status metrics.Status
+//   - ec types.ErrorCode
+//   - providerType types.ProviderType
+func (_e *ProviderMetrics_Expecter) AddProviderResponseByID(providerName interface{}, id interface{}, status interface{}, ec interface{}, providerType interface{}) *ProviderMetrics_AddProviderResponseByID_Call {
+	return &ProviderMetrics_AddProviderResponseByID_Call{Call: _e.mock.On("AddProviderResponseByID", providerName, id, status, ec, providerType)}
+}
+
+func (_c *ProviderMetrics_AddProviderResponseByID_Call) Run(run func(providerName string, id string, status metrics.Status, ec types.ErrorCode, providerType types.ProviderType)) *ProviderMetrics_AddProviderResponseByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string), args[2].(metrics.Status), args[3].(types.ErrorCode), args[4].(types.ProviderType))
+	})
+	return _c
+}
+
+func (_c *ProviderMetrics_AddProviderResponseByID_Call) Return() *ProviderMetrics_AddProviderResponseByID_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *ProviderMetrics_AddProviderResponseByID_Call) RunAndReturn(run func(string, string, metrics.Status, types.ErrorCode, types.ProviderType)) *ProviderMetrics_AddProviderResponseByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LastUpdated provides a mock function with given fields: providerName, id, providerType
 func (_m *ProviderMetrics) LastUpdated(providerName string, id string, providerType types.ProviderType) {
 	_m.Called(providerName, id, providerType)
+}
+
+// ProviderMetrics_LastUpdated_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LastUpdated'
+type ProviderMetrics_LastUpdated_Call struct {
+	*mock.Call
+}
+
+// LastUpdated is a helper method to define mock.On call
+//   - providerName string
+//   - id string
+//   - providerType types.ProviderType
+func (_e *ProviderMetrics_Expecter) LastUpdated(providerName interface{}, id interface{}, providerType interface{}) *ProviderMetrics_LastUpdated_Call {
+	return &ProviderMetrics_LastUpdated_Call{Call: _e.mock.On("LastUpdated", providerName, id, providerType)}
+}
+
+func (_c *ProviderMetrics_LastUpdated_Call) Run(run func(providerName string, id string, providerType types.ProviderType)) *ProviderMetrics_LastUpdated_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string), args[2].(types.ProviderType))
+	})
+	return _c
+}
+
+func (_c *ProviderMetrics_LastUpdated_Call) Return() *ProviderMetrics_LastUpdated_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *ProviderMetrics_LastUpdated_Call) RunAndReturn(run func(string, string, types.ProviderType)) *ProviderMetrics_LastUpdated_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewProviderMetrics creates a new instance of ProviderMetrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

@@ -8,11 +8,12 @@ import (
 
 	p2p "github.com/cometbft/cometbft/proto/tendermint/p2p"
 	cmtservice "github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
-	"github.com/skip-mev/connect/v2/oracle/config"
-	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	"github.com/skip-mev/connect/v2/oracle/config"
+	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
 )
 
 // mocks a remote sdk grpc service.

@@ -17,9 +17,46 @@ type Metrics struct {
 	mock.Mock
 }
 
+type Metrics_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Metrics) EXPECT() *Metrics_Expecter {
+	return &Metrics_Expecter{mock: &_m.Mock}
+}
+
 // AddABCIRequest provides a mock function with given fields: method, status
 func (_m *Metrics) AddABCIRequest(method metrics.ABCIMethod, status metrics.Labeller) {
 	_m.Called(method, status)
+}
+
+// Metrics_AddABCIRequest_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddABCIRequest'
+type Metrics_AddABCIRequest_Call struct {
+	*mock.Call
+}
+
+// AddABCIRequest is a helper method to define mock.On call
+//   - method metrics.ABCIMethod
+//   - status metrics.Labeller
+func (_e *Metrics_Expecter) AddABCIRequest(method interface{}, status interface{}) *Metrics_AddABCIRequest_Call {
+	return &Metrics_AddABCIRequest_Call{Call: _e.mock.On("AddABCIRequest", method, status)}
+}
+
+func (_c *Metrics_AddABCIRequest_Call) Run(run func(method metrics.ABCIMethod, status metrics.Labeller)) *Metrics_AddABCIRequest_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(metrics.ABCIMethod), args[1].(metrics.Labeller))
+	})
+	return _c
+}
+
+func (_c *Metrics_AddABCIRequest_Call) Return() *Metrics_AddABCIRequest_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_AddABCIRequest_Call) RunAndReturn(run func(metrics.ABCIMethod, metrics.Labeller)) *Metrics_AddABCIRequest_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // AddOracleResponse provides a mock function with given fields: status
@@ -27,9 +64,67 @@ func (_m *Metrics) AddOracleResponse(status metrics.Labeller) {
 	_m.Called(status)
 }
 
+// Metrics_AddOracleResponse_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddOracleResponse'
+type Metrics_AddOracleResponse_Call struct {
+	*mock.Call
+}
+
+// AddOracleResponse is a helper method to define mock.On call
+//   - status metrics.Labeller
+func (_e *Metrics_Expecter) AddOracleResponse(status interface{}) *Metrics_AddOracleResponse_Call {
+	return &Metrics_AddOracleResponse_Call{Call: _e.mock.On("AddOracleResponse", status)}
+}
+
+func (_c *Metrics_AddOracleResponse_Call) Run(run func(status metrics.Labeller)) *Metrics_AddOracleResponse_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(metrics.Labeller))
+	})
+	return _c
+}
+
+func (_c *Metrics_AddOracleResponse_Call) Return() *Metrics_AddOracleResponse_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_AddOracleResponse_Call) RunAndReturn(run func(metrics.Labeller)) *Metrics_AddOracleResponse_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // AddValidatorPriceForTicker provides a mock function with given fields: validator, ticker, price
 func (_m *Metrics) AddValidatorPriceForTicker(validator string, ticker types.CurrencyPair, price float64) {
 	_m.Called(validator, ticker, price)
+}
+
+// Metrics_AddValidatorPriceForTicker_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddValidatorPriceForTicker'
+type Metrics_AddValidatorPriceForTicker_Call struct {
+	*mock.Call
+}
+
+// AddValidatorPriceForTicker is a helper method to define mock.On call
+//   - validator string
+//   - ticker types.CurrencyPair
+//   - price float64
+func (_e *Metrics_Expecter) AddValidatorPriceForTicker(validator interface{}, ticker interface{}, price interface{}) *Metrics_AddValidatorPriceForTicker_Call {
+	return &Metrics_AddValidatorPriceForTicker_Call{Call: _e.mock.On("AddValidatorPriceForTicker", validator, ticker, price)}
+}
+
+func (_c *Metrics_AddValidatorPriceForTicker_Call) Run(run func(validator string, ticker types.CurrencyPair, price float64)) *Metrics_AddValidatorPriceForTicker_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(types.CurrencyPair), args[2].(float64))
+	})
+	return _c
+}
+
+func (_c *Metrics_AddValidatorPriceForTicker_Call) Return() *Metrics_AddValidatorPriceForTicker_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_AddValidatorPriceForTicker_Call) RunAndReturn(run func(string, types.CurrencyPair, float64)) *Metrics_AddValidatorPriceForTicker_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // AddValidatorReportForTicker provides a mock function with given fields: validator, ticker, status
@@ -37,9 +132,68 @@ func (_m *Metrics) AddValidatorReportForTicker(validator string, ticker types.Cu
 	_m.Called(validator, ticker, status)
 }
 
+// Metrics_AddValidatorReportForTicker_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddValidatorReportForTicker'
+type Metrics_AddValidatorReportForTicker_Call struct {
+	*mock.Call
+}
+
+// AddValidatorReportForTicker is a helper method to define mock.On call
+//   - validator string
+//   - ticker types.CurrencyPair
+//   - status metrics.ReportStatus
+func (_e *Metrics_Expecter) AddValidatorReportForTicker(validator interface{}, ticker interface{}, status interface{}) *Metrics_AddValidatorReportForTicker_Call {
+	return &Metrics_AddValidatorReportForTicker_Call{Call: _e.mock.On("AddValidatorReportForTicker", validator, ticker, status)}
+}
+
+func (_c *Metrics_AddValidatorReportForTicker_Call) Run(run func(validator string, ticker types.CurrencyPair, status metrics.ReportStatus)) *Metrics_AddValidatorReportForTicker_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(types.CurrencyPair), args[2].(metrics.ReportStatus))
+	})
+	return _c
+}
+
+func (_c *Metrics_AddValidatorReportForTicker_Call) Return() *Metrics_AddValidatorReportForTicker_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_AddValidatorReportForTicker_Call) RunAndReturn(run func(string, types.CurrencyPair, metrics.ReportStatus)) *Metrics_AddValidatorReportForTicker_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ObserveABCIMethodLatency provides a mock function with given fields: method, duration
 func (_m *Metrics) ObserveABCIMethodLatency(method metrics.ABCIMethod, duration time.Duration) {
 	_m.Called(method, duration)
+}
+
+// Metrics_ObserveABCIMethodLatency_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ObserveABCIMethodLatency'
+type Metrics_ObserveABCIMethodLatency_Call struct {
+	*mock.Call
+}
+
+// ObserveABCIMethodLatency is a helper method to define mock.On call
+//   - method metrics.ABCIMethod
+//   - duration time.Duration
+func (_e *Metrics_Expecter) ObserveABCIMethodLatency(method interface{}, duration interface{}) *Metrics_ObserveABCIMethodLatency_Call {
+	return &Metrics_ObserveABCIMethodLatency_Call{Call: _e.mock.On("ObserveABCIMethodLatency", method, duration)}
+}
+
+func (_c *Metrics_ObserveABCIMethodLatency_Call) Run(run func(method metrics.ABCIMethod, duration time.Duration)) *Metrics_ObserveABCIMethodLatency_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(metrics.ABCIMethod), args[1].(time.Duration))
+	})
+	return _c
+}
+
+func (_c *Metrics_ObserveABCIMethodLatency_Call) Return() *Metrics_ObserveABCIMethodLatency_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_ObserveABCIMethodLatency_Call) RunAndReturn(run func(metrics.ABCIMethod, time.Duration)) *Metrics_ObserveABCIMethodLatency_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // ObserveMessageSize provides a mock function with given fields: msg, size
@@ -47,14 +201,100 @@ func (_m *Metrics) ObserveMessageSize(msg metrics.MessageType, size int) {
 	_m.Called(msg, size)
 }
 
+// Metrics_ObserveMessageSize_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ObserveMessageSize'
+type Metrics_ObserveMessageSize_Call struct {
+	*mock.Call
+}
+
+// ObserveMessageSize is a helper method to define mock.On call
+//   - msg metrics.MessageType
+//   - size int
+func (_e *Metrics_Expecter) ObserveMessageSize(msg interface{}, size interface{}) *Metrics_ObserveMessageSize_Call {
+	return &Metrics_ObserveMessageSize_Call{Call: _e.mock.On("ObserveMessageSize", msg, size)}
+}
+
+func (_c *Metrics_ObserveMessageSize_Call) Run(run func(msg metrics.MessageType, size int)) *Metrics_ObserveMessageSize_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(metrics.MessageType), args[1].(int))
+	})
+	return _c
+}
+
+func (_c *Metrics_ObserveMessageSize_Call) Return() *Metrics_ObserveMessageSize_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_ObserveMessageSize_Call) RunAndReturn(run func(metrics.MessageType, int)) *Metrics_ObserveMessageSize_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ObserveOracleResponseLatency provides a mock function with given fields: duration
 func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
 	_m.Called(duration)
 }
 
+// Metrics_ObserveOracleResponseLatency_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ObserveOracleResponseLatency'
+type Metrics_ObserveOracleResponseLatency_Call struct {
+	*mock.Call
+}
+
+// ObserveOracleResponseLatency is a helper method to define mock.On call
+//   - duration time.Duration
+func (_e *Metrics_Expecter) ObserveOracleResponseLatency(duration interface{}) *Metrics_ObserveOracleResponseLatency_Call {
+	return &Metrics_ObserveOracleResponseLatency_Call{Call: _e.mock.On("ObserveOracleResponseLatency", duration)}
+}
+
+func (_c *Metrics_ObserveOracleResponseLatency_Call) Run(run func(duration time.Duration)) *Metrics_ObserveOracleResponseLatency_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(time.Duration))
+	})
+	return _c
+}
+
+func (_c *Metrics_ObserveOracleResponseLatency_Call) Return() *Metrics_ObserveOracleResponseLatency_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_ObserveOracleResponseLatency_Call) RunAndReturn(run func(time.Duration)) *Metrics_ObserveOracleResponseLatency_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ObservePriceForTicker provides a mock function with given fields: ticker, price
 func (_m *Metrics) ObservePriceForTicker(ticker types.CurrencyPair, price float64) {
 	_m.Called(ticker, price)
+}
+
+// Metrics_ObservePriceForTicker_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ObservePriceForTicker'
+type Metrics_ObservePriceForTicker_Call struct {
+	*mock.Call
+}
+
+// ObservePriceForTicker is a helper method to define mock.On call
+//   - ticker types.CurrencyPair
+//   - price float64
+func (_e *Metrics_Expecter) ObservePriceForTicker(ticker interface{}, price interface{}) *Metrics_ObservePriceForTicker_Call {
+	return &Metrics_ObservePriceForTicker_Call{Call: _e.mock.On("ObservePriceForTicker", ticker, price)}
+}
+
+func (_c *Metrics_ObservePriceForTicker_Call) Run(run func(ticker types.CurrencyPair, price float64)) *Metrics_ObservePriceForTicker_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.CurrencyPair), args[1].(float64))
+	})
+	return _c
+}
+
+func (_c *Metrics_ObservePriceForTicker_Call) Return() *Metrics_ObservePriceForTicker_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_ObservePriceForTicker_Call) RunAndReturn(run func(types.CurrencyPair, float64)) *Metrics_ObservePriceForTicker_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewMetrics creates a new instance of Metrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
