@@ -122,6 +122,10 @@ func ValidateDefiAssetString(asset string) error {
 		return fmt.Errorf("token field %q is invalid: %w", token, err)
 	}
 
+	if strings.ToUpper(asset) != asset {
+		return fmt.Errorf("incorrectly formatted asset string, expected: %q got: %q", strings.ToUpper(asset), asset)
+	}
+
 	return nil
 }
 
