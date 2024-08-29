@@ -22,16 +22,17 @@ const (
 	OracleSubsystem = "side_car"
 	// SuccessLabel is a label for a successful operation.
 	SuccessLabel = "success"
-	// Version is a label for the Slinky version.
+	// Version is a label for the Connect version.
 	Version = "version"
 
-	TicksMetricName           = "health_check_system_updates_total"
-	TickerTicksMetricName     = "health_check_ticker_updates_total"
-	PricesMetricName          = "provider_price"
-	AggregatePricesMetricName = "aggregated_price"
-	ProviderTickMetricName    = "health_check_provider_updates_total"
-	ProviderCountMetricName   = "health_check_market_providers"
-	SlinkyBuildInfoMetricName = "slinky_build_info"
+	TicksMetricName            = "health_check_system_updates_total"
+	TickerTicksMetricName      = "health_check_ticker_updates_total"
+	PricesMetricName           = "provider_price"
+	AggregatePricesMetricName  = "aggregated_price"
+	ProviderTickMetricName     = "health_check_provider_updates_total"
+	ProviderCountMetricName    = "health_check_market_providers"
+	SlinkyBuildInfoMetricName  = "slinky_build_info"
+	ConnectBuildInfoMetricName = "connect_build_info"
 )
 
 // Metrics is an interface that defines the API for oracle metrics.
@@ -61,21 +62,22 @@ type Metrics interface {
 	// to calculate the final price for a given market.
 	AddProviderCountForMarket(market string, count int)
 
-	// SetSlinkyBuildInfo sets the build information for the Slinky binary.
-	SetSlinkyBuildInfo()
+	// SetConnectBuildInfo sets the build information for the Slinky binary.
+	SetConnectBuildInfo()
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
-	promTicks           prometheus.Counter
-	promTickerTicks     *prometheus.CounterVec
-	promPrices          *prometheus.GaugeVec
-	promAggregatePrices *prometheus.GaugeVec
-	promProviderTick    *prometheus.CounterVec
-	promProviderCount   *prometheus.GaugeVec
-	promSlinkyBuildInfo *prometheus.GaugeVec
-	statsdClient        statsd.ClientInterface
-	nodeIdentifier      string
+	promTicks            prometheus.Counter
+	promTickerTicks      *prometheus.CounterVec
+	promPrices           *prometheus.GaugeVec
+	promAggregatePrices  *prometheus.GaugeVec
+	promProviderTick     *prometheus.CounterVec
+	promProviderCount    *prometheus.GaugeVec
+	promSlinkyBuildInfo  *prometheus.GaugeVec
+	promConnectBuildInfo *prometheus.GaugeVec
+	statsdClient         statsd.ClientInterface
+	nodeIdentifier       string
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
@@ -91,7 +93,7 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Me
 			identifier, err = nodeClient.DeriveNodeIdentifier()
 			if err == nil { // only publish statsd data when connected to a node
 				c, err := statsd.New(config.Telemetry.PushAddress, func(c *statsd.Options) error {
-					// Prepends all messages with connect.sidecar
+					// Prepends all messages with connect.sidecar.
 					c.Namespace = "connect.sidecar."
 					c.Tags = []string{identifier}
 					return nil
@@ -115,39 +117,44 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 
 	ret.promTicks = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: OracleSubsystem,
-		Name:      "health_check_system_updates_total",
+		Name:      TicksMetricName,
 		Help:      "Number of ticks with a successful oracle update.",
 	})
 	ret.promTickerTicks = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: OracleSubsystem,
-		Name:      "health_check_ticker_updates_total",
+		Name:      TickerTicksMetricName,
 		Help:      "Number of ticks with a successful ticker update.",
 	}, []string{PairIDLabel})
 
 	ret.promPrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: OracleSubsystem,
-		Name:      "provider_price",
+		Name:      PricesMetricName,
 		Help:      "Price gauge for a given currency pair on a provider",
 	}, []string{ProviderLabel, PairIDLabel, DecimalsLabel})
 	ret.promAggregatePrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: OracleSubsystem,
-		Name:      "aggregated_price",
+		Name:      AggregatePricesMetricName,
 		Help:      "Aggregate price for a given currency pair",
 	}, []string{PairIDLabel, DecimalsLabel})
 	ret.promProviderTick = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: OracleSubsystem,
-		Name:      "health_check_provider_updates_total",
+		Name:      ProviderTickMetricName,
 		Help:      "Number of ticks with a successful provider update.",
 	}, []string{ProviderLabel, PairIDLabel, SuccessLabel})
 	ret.promProviderCount = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: OracleSubsystem,
-		Name:      "health_check_market_providers",
+		Name:      ProviderCountMetricName,
 		Help:      "Number of providers that were utilized to calculate the final price for a given market.",
 	}, []string{PairIDLabel})
 	ret.promSlinkyBuildInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: OracleSubsystem,
-		Name:      "slinky_build_info",
-		Help:      "Information about the slinky build",
+		Name:      SlinkyBuildInfoMetricName,
+		Help:      "(Deprecated) Information about the slinky build",
+	}, []string{Version})
+	ret.promConnectBuildInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      ConnectBuildInfoMetricName,
+		Help:      "Information about the connect build",
 	}, []string{Version})
 
 	prometheus.MustRegister(ret.promTicks)
@@ -157,6 +164,7 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 	prometheus.MustRegister(ret.promProviderTick)
 	prometheus.MustRegister(ret.promProviderCount)
 	prometheus.MustRegister(ret.promSlinkyBuildInfo)
+	prometheus.MustRegister(ret.promConnectBuildInfo)
 
 	return &ret
 }
@@ -190,8 +198,8 @@ func (m *noOpOracleMetrics) AddProviderTick(_, _ string, _ bool) {}
 // to calculate the final price for a given market.
 func (m *noOpOracleMetrics) AddProviderCountForMarket(string, int) {}
 
-// SetSlinkyBuildInfo sets the build information for the Slinky binary.
-func (m *noOpOracleMetrics) SetSlinkyBuildInfo() {}
+// SetConnectBuildInfo sets the build information for the Connect binary.
+func (m *noOpOracleMetrics) SetConnectBuildInfo() {}
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *OracleMetricsImpl) AddTick() {
@@ -271,14 +279,17 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 	m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
 }
 
-// SetSlinkyBuildInfo sets the build information for the Slinky binary. The version exported
+// SetConnectBuildInfo sets the build information for the Connect binary. The version exported
 // is determined by the build time version in accordance with the build pkg.
-func (m *OracleMetricsImpl) SetSlinkyBuildInfo() {
+func (m *OracleMetricsImpl) SetConnectBuildInfo() {
 	m.promSlinkyBuildInfo.With(prometheus.Labels{
+		Version: build.Build,
+	}).Set(1)
+	m.promConnectBuildInfo.With(prometheus.Labels{
 		Version: build.Build,
 	}).Set(1)
 
 	encodedBuild := strings.ToLower(strings.ReplaceAll(build.Build, ".", "_"))
-	metricName := strings.Join([]string{SlinkyBuildInfoMetricName, m.nodeIdentifier, encodedBuild}, ".")
+	metricName := strings.Join([]string{ConnectBuildInfoMetricName, m.nodeIdentifier, encodedBuild}, ".")
 	m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
 }
