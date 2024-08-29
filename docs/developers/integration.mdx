@@ -437,8 +437,23 @@ func NewApp(
 
 	// initialize the chain with markets in state.
     app.SetInitChainer(func(ctx sdk.Context, req *types.RequestInitChain) (*types.ResponseInitChain, error) {
-            // set vote extension height. (must be greater than 1).
-            req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2
+            consensusParams, err := app.ConsensusParamsKeeper.Params(ctx, nil)
+            if err != nil {
+                    return nil, err
+            }
+            consensusParams.Params.Abci = &types.ABCIParams{
+                    VoteExtensionsEnableHeight: 5, // must be greater than 1
+            }
+            _, err = app.ConsensusParamsKeeper.UpdateParams(ctx, &consensustypes.MsgUpdateParams{
+                    Authority: app.ConsensusParamsKeeper.GetAuthority(),
+                    Block:     consensusParams.Params.Block,
+                    Evidence:  consensusParams.Params.Evidence,
+                    Validator: consensusParams.Params.Validator,
+                    Abci:      consensusParams.Params.Abci,
+            })
+            if err != nil {
+                    return nil, err
+            }
 
             // initialize module state
             app.OracleKeeper.InitGenesis(ctx, *oracletypes.DefaultGenesisState())
