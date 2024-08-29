@@ -152,26 +152,50 @@ func TestValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"if Base formatted correctly as defi, Quote standard - pass",
+			"if Base formatted incorrectly as defi, Quote standard but rest lowercase - fail",
 			slinkytypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain",
+				Quote: "AA",
+			},
+			false,
+		},
+		{
+			"if Quote formatted incorrectly as Base, Quote standard but rest lowercase - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: "AA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"if both Quote + Base are formatted correctly as defi but rest lowercase - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,testAddress,testChain",
+				Quote: "AA,testAddress,testChain",
+			},
+			false,
+		},
+		{
+			"if Base formatted incorrectly as defi, Quote standard - pass",
+			slinkytypes.CurrencyPair{
+				Base:  "BB,TESTADDRESS,TESTCHAIN",
 				Quote: "AA",
 			},
 			true,
 		},
 		{
-			"if Quote formatted correctly as Base, Quote standard - pass",
+			"if Quote formatted incorrectly as Base, Quote standard - pass",
 			slinkytypes.CurrencyPair{
 				Base:  "BB",
-				Quote: "AA,testAddress,testChain",
+				Quote: "AA,TESTADDRESS,TESTCHAIN",
 			},
 			true,
 		},
 		{
 			"if both Quote + Base are formatted correctly as defi - pass",
 			slinkytypes.CurrencyPair{
-				Base:  "BB,testAddress,testChain",
-				Quote: "AA,testAddress,testChain",
+				Base:  "BB,TESTADDRESS,TESTCHAIN",
+				Quote: "AA,TESTADDRESS,TESTCHAIN",
 			},
 			true,
 		},
