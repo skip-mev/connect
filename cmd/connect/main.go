@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"net/http"
 	_ "net/http/pprof" //nolint: gosec
 	"os"
@@ -11,10 +14,6 @@ import (
 	"path/filepath"
 	"syscall"
 	"time"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/cmd/build"
 	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
@@ -81,6 +80,8 @@ var (
 
 const (
 	DefaultLegacyConfigPath = "./oracle.json"
+
+	debugTimeoutDuration = 10 * time.Minute
 )
 
 func init() {
@@ -268,13 +269,6 @@ func runOracle() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if debugTimeout {
-		go func() {
-			time.Sleep(10 * time.Minute)
-			cancel()
-		}()
-	}
-
 	// Set up logging.
 	logCfg := log.NewDefaultConfig()
 	logCfg.StdOutLogLevel = logLevel
@@ -373,6 +367,16 @@ func runOracle() error {
 
 		cancel()
 	}()
+
+	// cancel oracle after a timeout if in debug mode timeout
+	if debugTimeout {
+		go func() {
+			time.Sleep(debugTimeoutDuration)
+			logger.Info("shutting down gracefully after debug timeout", zap.Int64("timeout",
+				int64(debugTimeoutDuration)))
+			cancel()
+		}()
+	}
 
 	// start prometheus metrics
 	if cfg.Metrics.Enabled {
