@@ -261,19 +261,19 @@ func TestToFromString(t *testing.T) {
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"a,testAddress,testChain/B",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"a/b,testAddress,testChain",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B,testAddress,testChain"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B,TESTADDRESS,TESTCHAIN"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"A,testAddress,testChain/B,testAddress,testChain",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			slinkytypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B,TESTADDRESS,TESTCHAIN"},
 			true,
 		},
 	}
