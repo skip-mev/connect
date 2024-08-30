@@ -32,8 +32,6 @@ The connect repository is composed of the following core packages:
 * **oracle** - This [package](./oracle/) contains the main oracle that aggregates external data sources before broadcasting it to the network. You can reference the provider documentation [here](./providers/base/README.md) to get a high level overview of how the oracle works.
 * **providers** - This package contains a collection of [websocket](./providers/websockets/README.md) and [API](./providers/apis/README.md) based data providers that are used by the oracle to collect external data.
 * **x/oracle** - This package contains a Cosmos SDK module that allows you to store oracle data on a blockchain.
-* **x/alerts** - <UNDER DEVELOPMENT> This package contains a Cosmos SDK module that allows network participants to create alerts when oracle data that is in violation of some condition is broadcast to the network and stored on the blockchain.
-* **x/sla** - <UNDER DEVELOPMENT> This package contains a Cosmos SDK module that allows you to create service level agreements (SLAs) that can be used to incentivize network participants to consistently, reliably provide data with high uptime.
 * **x/marketmap** - This [package](./x/marketmap/README.md) contains  a Cosmos SDK module that allows for market configuration to be stored and updated on a blockchain.
 
 ## Validator Usage
