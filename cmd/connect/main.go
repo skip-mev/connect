@@ -392,14 +392,6 @@ func runOracle() error {
 		cancel()
 	}()
 
-	// cancel oracle after a timeout if in validation mode
-	if runMode(mode) == modeValidate {
-		logger.Info("running in validation mode", zap.Int("validation period",
-			validationPeriod))
-
-		go validate(cancel, logger)
-	}
-
 	// start prometheus metrics
 	if cfg.Metrics.Enabled {
 		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
@@ -427,6 +419,14 @@ func runOracle() error {
 				logger.Error("pprof server failed", zap.Error(err))
 			}
 		}()
+	}
+
+	// cancel oracle after a timeout if in validation mode
+	if runMode(mode) == modeValidate {
+		logger.Info("running in validation mode", zap.Int("validation period",
+			validationPeriod))
+
+		go validate(cancel, logger)
 	}
 
 	// start server (blocks).
