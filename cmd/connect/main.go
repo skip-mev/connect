@@ -57,7 +57,8 @@ var (
 	flagPort                     = "port"
 	flagUpdateInterval           = "update-interval"
 	flagMaxPriceAge              = "max-price-age"
-	flagModeDebugTimeout         = "mode-debug-timeout"
+	flagMode                     = "mode"
+	flagValidationPeriod         = "validation-period"
 
 	// flag-bound values.
 	oracleCfgPath       string
@@ -75,13 +76,21 @@ var (
 	maxAge              int
 	disableCompressLogs bool
 	disableRotatingLogs bool
-	debugTimeout        bool
+	mode                string
+	validationPeriod    time.Duration
 )
 
 const (
 	DefaultLegacyConfigPath = "./oracle.json"
 
-	debugTimeoutDuration = 10 * time.Minute
+	defaultValidationPeriod = 10 * time.Minute
+)
+
+type runMode string
+
+var (
+	modeExec     runMode = "exec"
+	modeValidate runMode = "validate"
 )
 
 func init() {
@@ -190,12 +199,12 @@ func init() {
 		"",
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
 	)
-	rootCmd.Flags().BoolVarP(
-		&debugTimeout,
-		flagModeDebugTimeout,
-		"",
-		false,
-		"Run the oracle in a debug mode for 10 minutes to collect and export metrics.",
+	rootCmd.Flags().StringVarP(
+		&mode,
+		flagMode,
+		"m",
+		string(modeExec),
+		"Select the mode to run the oracle in.  Default is \"exec\" which will fetch prices as configured.  \"validate\" mode will run the oracle for a set period of time to validate the configuration.",
 	)
 
 	// these flags are connected to the OracleConfig.
@@ -376,14 +385,9 @@ func runOracle() error {
 		cancel()
 	}()
 
-	// cancel oracle after a timeout if in debug mode timeout
-	if debugTimeout {
-		go func() {
-			time.Sleep(debugTimeoutDuration)
-			logger.Info("shutting down gracefully after debug timeout", zap.Int64("timeout",
-				int64(debugTimeoutDuration)))
-			cancel()
-		}()
+	// cancel oracle after a timeout if in validation mode
+	if runMode(mode) == modeValidate {
+		go validate(cancel, logger)
 	}
 
 	// start prometheus metrics
@@ -436,4 +440,11 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	}
 
 	return cfg, fmt.Errorf("no market-map provider found in config")
+}
+
+func validate(c context.CancelFunc, logger *zap.Logger) {
+	time.Sleep(validationPeriod)
+	logger.Info("shutting down gracefully after debug timeout", zap.Int64("timeout",
+		int64(validationPeriod)))
+	c()
 }
