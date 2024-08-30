@@ -25,6 +25,7 @@ import (
 	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
 	oraclefactory "github.com/skip-mev/connect/v2/providers/factories/oracle"
 	mmservicetypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
+	promclient "github.com/skip-mev/connect/v2/service/clients/prometheus"
 	oracleserver "github.com/skip-mev/connect/v2/service/servers/oracle"
 	promserver "github.com/skip-mev/connect/v2/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
@@ -83,7 +84,7 @@ var (
 const (
 	DefaultLegacyConfigPath = "./oracle.json"
 
-	defaultValidationPeriod = 10 * time.Minute
+	defaultValidationPeriod = 2 * time.Minute
 )
 
 type runMode string
@@ -426,7 +427,17 @@ func runOracle() error {
 		logger.Info("running in validation mode", zap.Int("validation period",
 			validationPeriod))
 
-		go validate(cancel, logger)
+		go func(c context.CancelFunc) {
+			defer c()
+
+			err := validate(cfg.Metrics.PrometheusServerAddress, logger)
+			if err != nil {
+				logger.Error("failed to validate metrics", zap.Error(err))
+				return
+			}
+			logger.Info("shutting down after validation")
+
+		}(cancel)
 	}
 
 	// start server (blocks).
@@ -452,9 +463,13 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	return cfg, fmt.Errorf("no market-map provider found in config")
 }
 
-func validate(c context.CancelFunc, logger *zap.Logger) {
+func validate(address string, logger *zap.Logger) error {
+	_, err := promclient.NewClient(address, logger)
+	if err != nil {
+		return err
+	}
+
 	time.Sleep(time.Duration(validationPeriod))
 
-	logger.Info("cancelling context after validation period")
-	c()
+	return nil
 }
