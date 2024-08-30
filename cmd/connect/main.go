@@ -77,7 +77,7 @@ var (
 	disableCompressLogs bool
 	disableRotatingLogs bool
 	mode                string
-	validationPeriod    time.Duration
+	validationPeriod    int
 )
 
 const (
@@ -205,6 +205,13 @@ func init() {
 		"m",
 		string(modeExec),
 		"Select the mode to run the oracle in.  Default is \"exec\" which will fetch prices as configured.  \"validate\" mode will run the oracle for a set period of time to validate the configuration.",
+	)
+	rootCmd.Flags().IntVarP(
+		&validationPeriod,
+		flagValidationPeriod,
+		"",
+		int(defaultValidationPeriod),
+		"Duration to run in validation mode.  Note: this flag is only used if mode == \"validate\"",
 	)
 
 	// these flags are connected to the OracleConfig.
@@ -443,8 +450,8 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 }
 
 func validate(c context.CancelFunc, logger *zap.Logger) {
-	time.Sleep(validationPeriod)
-	logger.Info("shutting down gracefully after debug timeout", zap.Int64("timeout",
-		int64(validationPeriod)))
+	time.Sleep(time.Duration(validationPeriod))
+	logger.Info("shutting down gracefully after debug timeout", zap.Int("timeout",
+		validationPeriod))
 	c()
 }
