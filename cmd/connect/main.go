@@ -394,6 +394,9 @@ func runOracle() error {
 
 	// cancel oracle after a timeout if in validation mode
 	if runMode(mode) == modeValidate {
+		logger.Info("running in validation mode", zap.Int("validation period",
+			validationPeriod))
+
 		go validate(cancel, logger)
 	}
 
@@ -449,9 +452,8 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	return cfg, fmt.Errorf("no market-map provider found in config")
 }
 
-func validate(c context.CancelFunc, logger *zap.Logger) {
+func validate(c context.CancelFunc, _ *zap.Logger) {
 	time.Sleep(time.Duration(validationPeriod))
-	logger.Info("shutting down gracefully after debug timeout", zap.Int("timeout",
-		validationPeriod))
+
 	c()
 }
