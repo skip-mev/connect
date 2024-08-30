@@ -122,6 +122,10 @@ func ValidateDefiAssetString(asset string) error {
 		return fmt.Errorf("token field %q is invalid: %w", token, err)
 	}
 
+	if strings.ToUpper(asset) != asset {
+		return fmt.Errorf("incorrectly formatted asset string, expected: %q got: %q", strings.ToUpper(asset), asset)
+	}
+
 	return nil
 }
 
@@ -204,19 +208,7 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 }
 
 func sanitizeAssetString(s string) (string, error) {
-	if IsLegacyAssetString(s) {
-		s = strings.ToUpper(s)
-	} else {
-		token, address, chainID, err := SplitDefiAssetString(s)
-		if err != nil {
-			return "", fmt.Errorf("incorrectly formatted asset: %q: %w", s, err)
-		}
-
-		token = strings.ToUpper(token)
-		s = strings.Join([]string{token, address, chainID}, fieldSeparator)
-	}
-
-	return s, nil
+	return strings.ToUpper(s), nil
 }
 
 // LegacyDecimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
