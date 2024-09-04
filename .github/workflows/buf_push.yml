@@ -1,10 +1,12 @@
 name: BSR Push
 
 on:
-  # Apply to all pushes on 'main' branch
+  # Apply to pushes on 'main' branch that affect the 'proto' directory
   push:
     branches:
       - main
+    paths:
+      - proto/**
 jobs:
   build:
     runs-on: ubuntu-latest

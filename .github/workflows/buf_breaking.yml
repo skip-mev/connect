@@ -3,6 +3,8 @@ name: Proto Breaking
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - proto/**
 
 jobs:
   build:
