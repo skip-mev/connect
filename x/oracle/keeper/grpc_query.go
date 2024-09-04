@@ -43,8 +43,12 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
-	cp := req.CurrencyPair
-	if err := cp.ValidateBasic(); err != nil {
+	cp, err := slinkytypes.CurrencyPairFromString(req.CurrencyPair)
+	if err != nil {
+		return nil, fmt.Errorf("invalid currency pair: %w", err)
+	}
+
+	if err = cp.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid currency pair: %w", err)
 	}
 
