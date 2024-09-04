@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/skip-mev/connect/v2/service/validation"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -31,6 +30,7 @@ import (
 	mmservicetypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/connect/v2/service/servers/oracle"
 	promserver "github.com/skip-mev/connect/v2/service/servers/prometheus"
+	"github.com/skip-mev/connect/v2/service/validation"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
@@ -443,7 +443,6 @@ func runOracle() error {
 			}
 
 			logger.Info("shutting down gracefully after validation")
-
 		}(cancel)
 	}
 

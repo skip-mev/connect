@@ -34,7 +34,6 @@ const (
 	ProviderCountMetricName    = "health_check_market_providers"
 	SlinkyBuildInfoMetricName  = "slinky_build_info"
 	ConnectBuildInfoMetricName = "connect_build_info"
-	MissingPricesName          = "missing_prices"
 )
 
 // Metrics is an interface that defines the API for oracle metrics.
@@ -169,11 +168,6 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 		Name:      ConnectBuildInfoMetricName,
 		Help:      "Information about the connect build",
 	}, []string{Version})
-	ret.promMissingPrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: OracleSubsystem,
-		Name:      MissingPricesName,
-		Help:      "Missing Prices",
-	}, []string{Version})
 
 	prometheus.MustRegister(ret.promTicks)
 	prometheus.MustRegister(ret.promTickerTicks)
@@ -183,7 +177,6 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 	prometheus.MustRegister(ret.promProviderCount)
 	prometheus.MustRegister(ret.promSlinkyBuildInfo)
 	prometheus.MustRegister(ret.promConnectBuildInfo)
-	prometheus.MustRegister(ret.promMissingPrices)
 
 	return &ret
 }
@@ -311,7 +304,6 @@ func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
 	m.missingPricesMtx.Lock()
 	defer m.missingPricesMtx.Unlock()
 	m.missingPricesInternal = pairIDs
-
 }
 
 // GetMissingPrices gets the internal missing prices array.
