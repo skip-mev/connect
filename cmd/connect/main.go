@@ -4,16 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"net/http"
-	_ "net/http/pprof" //nolint: gosec
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+
+	//nolint: gosec
 
 	"github.com/skip-mev/connect/v2/cmd/build"
 	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
@@ -436,7 +439,6 @@ func runOracle() error {
 				return
 			}
 			logger.Info("shutting down after validation")
-
 		}(cancel)
 	}
 
