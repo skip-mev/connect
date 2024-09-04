@@ -14,14 +14,14 @@ go 1.22.5
 
 require (
 	cosmossdk.io/math v1.3.0
-	github.com/cometbft/cometbft v0.38.11
+	github.com/cometbft/cometbft v0.38.12
 	github.com/cosmos/cosmos-sdk v0.50.9
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/skip-mev/connect/v2 v2.0.0
 	github.com/strangelove-ventures/interchaintest/v8 v8.6.1
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
-	google.golang.org/grpc v1.65.0
+	google.golang.org/grpc v1.66.0
 )
 
 require (
@@ -203,7 +203,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/rs/cors v1.11.0 // indirect
+	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
