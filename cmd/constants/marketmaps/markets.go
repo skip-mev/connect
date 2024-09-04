@@ -476,23 +476,6 @@ var (
           }
         ]
       },
-      "AGIX/USD": {
-        "ticker": {
-          "currency_pair": {
-            "Base": "AGIX",
-            "Quote": "USD"
-          },
-          "decimals": 10,
-          "min_provider_count": 1,
-          "enabled": true
-        },
-        "provider_configs": [
-          {
-            "name": "coinmarketcap_api",
-            "off_chain_ticker": "2424"
-          }
-        ]
-      },
       "ALGO/USD": {
         "ticker": {
           "currency_pair": {
@@ -3420,67 +3403,6 @@ var (
 			  }
 			]
 		  },
-		  "AGIX/USD": {
-			"ticker": {
-			  "currency_pair": {
-				"Base": "AGIX",
-				"Quote": "USD"
-			  },
-			  "decimals": 10,
-			  "min_provider_count": 3,
-			  "enabled": true
-			},
-			"provider_configs": [
-			  {
-				"name": "binance_ws",
-				"off_chain_ticker": "AGIXUSDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "bybit_ws",
-				"off_chain_ticker": "AGIXUSDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "gate_ws",
-				"off_chain_ticker": "AGIX_USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "kucoin_ws",
-				"off_chain_ticker": "AGIX-USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "okx_ws",
-				"off_chain_ticker": "AGIX-USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "mexc_ws",
-				"off_chain_ticker": "AGIXUSDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  }
-			]
-		  },
 		  "ALGO/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -6337,67 +6259,6 @@ var (
 			  }
 			]
 		  },
-		  "RNDR/USD": {
-			"ticker": {
-			  "currency_pair": {
-				"Base": "RNDR",
-				"Quote": "USD"
-			  },
-			  "decimals": 9,
-			  "min_provider_count": 3,
-			  "enabled": true
-			},
-			"provider_configs": [
-			  {
-				"name": "binance_ws",
-				"off_chain_ticker": "RNDRUSDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "coinbase_ws",
-				"off_chain_ticker": "RNDR-USD"
-			  },
-			  {
-				"name": "kraken_api",
-				"off_chain_ticker": "RNDRUSD"
-			  },
-			  {
-				"name": "kucoin_ws",
-				"off_chain_ticker": "RNDR-USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "okx_ws",
-				"off_chain_ticker": "RNDR-USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "mexc_ws",
-				"off_chain_ticker": "RNDRUSDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "crypto_dot_com_ws",
-				"off_chain_ticker": "RNDR_USDT",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  }
-			]
-		  },
 		  "RUNE/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -7965,23 +7826,6 @@ var (
 			  }
 			]
 		  },
-		  "AGIX/USD": {
-			"ticker": {
-			  "currency_pair": {
-				"Base": "AGIX",
-				"Quote": "USD"
-			  },
-			  "decimals": 10,
-			  "min_provider_count": 1,
-			  "enabled": true
-			},
-			"provider_configs": [
-			  {
-				"name": "coingecko_api",
-				"off_chain_ticker": "singularitynet/usd"
-			  }
-			]
-		  },
 		  "ALGO/USD": {
 			"ticker": {
 			  "currency_pair": {
@@ -9288,23 +9132,6 @@ var (
 			  {
 				"name": "coingecko_api",
 				"off_chain_ticker": "pyth-network/usd"
-			  }
-			]
-		  },
-		  "RNDR/USD": {
-			"ticker": {
-			  "currency_pair": {
-				"Base": "RNDR",
-				"Quote": "USD"
-			  },
-			  "decimals": 9,
-			  "min_provider_count": 1,
-			  "enabled": true
-			},
-			"provider_configs": [
-			  {
-				"name": "coingecko_api",
-				"off_chain_ticker": "render-token/usd"
 			  }
 			]
 		  },
