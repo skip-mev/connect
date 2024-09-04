@@ -1,4 +1,4 @@
-name: Buf Push
+name: BSR Push
 
 on:
   # Apply to all pushes on 'main' branch

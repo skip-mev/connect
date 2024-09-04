@@ -1,4 +1,4 @@
-name: Proto
+name: Proto Breaking
 
 on:
   pull_request:
