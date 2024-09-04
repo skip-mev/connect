@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/skip-mev/connect/v2/service/validation"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -85,8 +86,6 @@ var (
 
 const (
 	DefaultLegacyConfigPath = "./oracle.json"
-
-	defaultValidationPeriod = 2 * time.Minute
 )
 
 type runMode string
@@ -213,7 +212,7 @@ func init() {
 		&validationPeriod,
 		flagValidationPeriod,
 		"",
-		int(defaultValidationPeriod),
+		int(validation.DefaultValidationPeriod),
 		"Duration to run in validation mode.  Note: this flag is only used if mode == \"validate\"",
 	)
 
@@ -347,7 +346,7 @@ func runOracle() error {
 
 	isValidateMode := runMode(mode) == modeValidate
 
-	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient, isValidateMode)
+	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient)
 
 	aggregator, err := oraclemath.NewIndexPriceAggregator(
 		logger,
@@ -426,20 +425,25 @@ func runOracle() error {
 		}()
 	}
 
-	// cancel oracle after a timeout if in validation mode
-	if runMode(mode) == modeValidate {
-		logger.Info("running in validation mode", zap.Int("validation period",
-			validationPeriod))
+	// run validation service if enabled and tear down if completed successfully
+	if isValidateMode {
+		valCfg := validation.DefaultConfig()
+		valCfg.ValidationPeriod = time.Duration(validationPeriod)
+		validatorService := validation.NewValidator(logger, metrics, valCfg)
 
 		go func(c context.CancelFunc) {
 			defer c()
 
-			err := validate(logger, metrics)
+			_, err := validatorService.Run()
 			if err != nil {
 				logger.Error("failed to validate metrics", zap.Error(err))
-				return
+
+				// kill the process
+				os.Exit(1)
 			}
-			logger.Info("shutting down after validation")
+
+			logger.Info("shutting down gracefully after validation")
+
 		}(cancel)
 	}
 
@@ -464,31 +468,4 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	}
 
 	return cfg, fmt.Errorf("no market-map provider found in config")
-}
-
-const (
-	burnInPeriod = 30 * time.Second
-)
-
-func validate(logger *zap.Logger, metrics oraclemetrics.Metrics) error {
-	logger.Info("waiting for burn in period to end", zap.Duration("period", burnInPeriod))
-	time.Sleep(burnInPeriod)
-
-	ticker := time.NewTicker(time.Duration(validationPeriod / 1000))
-	go func() {
-		for range ticker.C {
-			logger.Info("validating market map")
-
-			missingPrices := metrics.GetMissingPrices()
-			if len(missingPrices) > 0 {
-				logger.Warn("missing prices", zap.Any("prices", missingPrices))
-			}
-
-		}
-	}()
-
-	time.Sleep(time.Duration(validationPeriod))
-	ticker.Stop()
-
-	return nil
 }

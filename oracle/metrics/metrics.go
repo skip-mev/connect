@@ -88,13 +88,12 @@ type OracleMetricsImpl struct {
 	statsdClient          statsd.ClientInterface
 	nodeIdentifier        string
 	missingPricesInternal []string
-	mtx                   sync.RWMutex
-	isValidateMode        bool
+	missingPricesMtx      sync.Mutex
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
-func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient, isValidateMode bool) Metrics {
+func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Metrics {
 	if config.Enabled {
 		var err error
 
@@ -115,15 +114,15 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient, is
 				}
 			}
 		}
-		return NewMetrics(statsdClient, identifier, isValidateMode)
+		return NewMetrics(statsdClient, identifier)
 	}
 	return NewNopMetrics()
 }
 
 // NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
-func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string, isValidateMode bool) Metrics {
+func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metrics {
 	ret := OracleMetricsImpl{
-		isValidateMode: isValidateMode,
+		missingPricesInternal: make([]string, 0),
 	}
 
 	ret.statsdClient = statsdClient
@@ -305,31 +304,20 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 
 // MissingPrices updates the list of missing prices for the given tick.
 func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
-	if m.isValidateMode {
-		m.mtx.RLock()
-		defer m.mtx.RUnlock()
-
-		m.missingPricesInternal = pairIDs
+	if len(pairIDs) == 0 {
+		return
 	}
 
-	for _, pairID := range pairIDs {
-		m.promMissingPrices.With(prometheus.Labels{
-			PairIDLabel: strings.ToLower(pairID),
-		}).Set(1)
+	m.missingPricesMtx.Lock()
+	defer m.missingPricesMtx.Unlock()
+	m.missingPricesInternal = pairIDs
 
-		metricName := strings.Join([]string{MissingPricesName, m.nodeIdentifier, strings.ToLower(pairID)}, ".")
-		m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
-	}
 }
 
 // GetMissingPrices gets the internal missing prices array.
 func (m *OracleMetricsImpl) GetMissingPrices() []string {
-	if !m.isValidateMode {
-		return []string{}
-	}
-
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
+	m.missingPricesMtx.Lock()
+	defer m.missingPricesMtx.Unlock()
 
 	return m.missingPricesInternal
 }

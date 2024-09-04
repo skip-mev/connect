@@ -132,6 +132,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	m.logger.Debug("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
 	if len(missingPrices) > 0 {
 		m.logger.Info("failed to calculate prices for price feeds", zap.Strings("missing_prices", missingPrices))
+		m.metrics.MissingPrices(missingPrices)
 	}
 	m.indexPrices = indexPrices
 	m.scaledPrices = scaledPrices
