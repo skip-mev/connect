@@ -44,7 +44,7 @@ services:
       "--market-config-path", "/data/markets.json",
       "--pprof-port", "6060",
       "--run-pprof",
-      # "-m", "validate" uncomment to run in validation mode with default config
+      # "-m", "validate" # uncomment to run in validation mode with default config
     ]
     ports:
       - "8080:8080" # main oracle port

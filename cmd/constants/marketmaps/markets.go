@@ -1309,23 +1309,6 @@ var (
           }
         ]
       },
-      "RNDR/USD": {
-        "ticker": {
-          "currency_pair": {
-            "Base": "RNDR",
-            "Quote": "USD"
-          },
-          "decimals": 9,
-          "min_provider_count": 1,
-          "enabled": true
-        },
-        "provider_configs": [
-          {
-            "name": "coinmarketcap_api",
-            "off_chain_ticker": "5690"
-          }
-        ]
-      },
       "RUNE/USD": {
         "ticker": {
           "currency_pair": {
