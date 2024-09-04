@@ -1,0 +1,20 @@
+name: Proto
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          version: "1.39.0"
+      # Run breaking change detection for Protobuf sources against the current
+      # `main` branch, 'proto' subdirectory
+      - uses: bufbuild/buf-breaking-action@v1
+        with:
+          input: proto
+          against: https://github.com/skip-mev/connect.git#branch=main,ref=HEAD~1,subdir=proto
