@@ -50,6 +50,12 @@ services:
       - "8080:8080" # main oracle port
       - "6060:6060" # pprof port
       - "8002:8002" # metrics port
+    healthcheck:
+      test: curl localhost:8080/connect/oracle/v1/prices
+      interval: 60s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     depends_on:
       - market_generator
     volumes:
