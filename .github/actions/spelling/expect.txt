@@ -1,4 +1,5 @@
 aab
+AABB
 aadb
 AAQMb
 aarch
