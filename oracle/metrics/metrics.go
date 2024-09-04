@@ -296,12 +296,9 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 
 // MissingPrices updates the list of missing prices for the given tick.
 func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
-	if len(pairIDs) == 0 {
-		return
-	}
-
 	m.missingPricesMtx.Lock()
 	defer m.missingPricesMtx.Unlock()
+
 	m.missingPricesInternal = pairIDs
 }
 
