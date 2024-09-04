@@ -6,8 +6,8 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#wip)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://godoc.org/github.com/skip-mev/connect/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skip-mev/connect/v2?style=flat-square)](https://goreportcard.com/report/github.com/skip-mev/connect/v2)
-[![Version](https://img.shields.io/github/tag/skip-mev/connect.svg?style=flat-square)](https://github.com/skip-mev/connect/v2/releases/latest)
-[![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/connect?style=flat-square)](https://github.com/skip-mev/connect/v2)
+[![Version](https://img.shields.io/github/tag/skip-mev/connect.svg?style=flat-square)](https://github.com/skip-mev/connect/releases/latest)
+[![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/connect?style=flat-square)](https://github.com/skip-mev/connect)
 
 A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.build/connect/introduction) page for more information!
 
