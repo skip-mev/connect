@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	//nolint: gosec
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -15,8 +16,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-
-	//nolint: gosec
 
 	"github.com/skip-mev/connect/v2/cmd/build"
 	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"

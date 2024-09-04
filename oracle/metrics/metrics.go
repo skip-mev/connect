@@ -83,7 +83,6 @@ type OracleMetricsImpl struct {
 	promProviderCount     *prometheus.GaugeVec
 	promSlinkyBuildInfo   *prometheus.GaugeVec
 	promConnectBuildInfo  *prometheus.GaugeVec
-	promMissingPrices     *prometheus.GaugeVec
 	statsdClient          statsd.ClientInterface
 	nodeIdentifier        string
 	missingPricesInternal []string

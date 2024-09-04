@@ -74,7 +74,7 @@ func (v *Validator) Run() (LivenessResults, error) {
 			if len(missingPrices) > 0 {
 				v.logger.Warn("currently missing prices", zap.Any("prices", missingPrices))
 				for _, price := range missingPrices {
-					missingPricesMap[price] += 1
+					missingPricesMap[price]++
 				}
 			}
 		}
