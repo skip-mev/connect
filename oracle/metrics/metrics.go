@@ -89,11 +89,12 @@ type OracleMetricsImpl struct {
 	nodeIdentifier        string
 	missingPricesInternal []string
 	mtx                   sync.RWMutex
+	isValidateMode        bool
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
-func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Metrics {
+func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient, isValidateMode bool) Metrics {
 	if config.Enabled {
 		var err error
 
@@ -114,14 +115,16 @@ func NewMetricsFromConfig(config config.MetricsConfig, nodeClient NodeClient) Me
 				}
 			}
 		}
-		return NewMetrics(statsdClient, identifier)
+		return NewMetrics(statsdClient, identifier, isValidateMode)
 	}
 	return NewNopMetrics()
 }
 
 // NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
-func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metrics {
-	ret := OracleMetricsImpl{}
+func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string, isValidateMode bool) Metrics {
+	ret := OracleMetricsImpl{
+		isValidateMode: isValidateMode,
+	}
 
 	ret.statsdClient = statsdClient
 	ret.nodeIdentifier = nodeIdentifier
@@ -195,7 +198,7 @@ func NewNopMetrics() Metrics {
 
 func (m *noOpOracleMetrics) MissingPrices(_ []string) {}
 
-func (m *noOpOracleMetrics) GetMissingPrices() []string { return nil }
+func (m *noOpOracleMetrics) GetMissingPrices() []string { return []string{} }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *noOpOracleMetrics) AddTick() {}
@@ -302,7 +305,7 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 
 // MissingPrices updates the list of missing prices for the given tick.
 func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
-	{
+	if m.isValidateMode {
 		m.mtx.RLock()
 		defer m.mtx.RUnlock()
 
@@ -321,6 +324,10 @@ func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
 
 // GetMissingPrices gets the internal missing prices array.
 func (m *OracleMetricsImpl) GetMissingPrices() []string {
+	if !m.isValidateMode {
+		return []string{}
+	}
+
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 

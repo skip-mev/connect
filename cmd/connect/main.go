@@ -345,7 +345,9 @@ func runOracle() error {
 		nodeClient, _ = oraclemetrics.NewNodeClient(nodeEndpoint)
 	}
 
-	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient)
+	isValidateMode := runMode(mode) == modeValidate
+
+	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient, isValidateMode)
 
 	aggregator, err := oraclemath.NewIndexPriceAggregator(
 		logger,
