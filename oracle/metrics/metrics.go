@@ -3,6 +3,7 @@ package metrics
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/DataDog/datadog-go/statsd"
 	"github.com/prometheus/client_golang/prometheus"
@@ -33,6 +34,7 @@ const (
 	ProviderCountMetricName    = "health_check_market_providers"
 	SlinkyBuildInfoMetricName  = "slinky_build_info"
 	ConnectBuildInfoMetricName = "connect_build_info"
+	MissingPricesName          = "missing_prices"
 )
 
 // Metrics is an interface that defines the API for oracle metrics.
@@ -45,7 +47,7 @@ type Metrics interface {
 
 	// AddTickerTick increments the number of ticks for a given ticker. Specifically, this
 	// is used to track the number of times a ticker was updated.
-	AddTickerTick(ticker string)
+	AddTickerTick(pairID string)
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
 	UpdatePrice(name, pairID string, decimals uint64, price float64)
@@ -60,24 +62,33 @@ type Metrics interface {
 
 	// AddProviderCountForMarket increments the number of providers that were utilized
 	// to calculate the final price for a given market.
-	AddProviderCountForMarket(market string, count int)
+	AddProviderCountForMarket(pairID string, count int)
 
 	// SetConnectBuildInfo sets the build information for the Slinky binary.
 	SetConnectBuildInfo()
+
+	// MissingPrices sets a list of missing prices for the given aggregation tick.
+	MissingPrices(pairIDs []string)
+
+	// GetMissingPrices gets the current list of missing prices.
+	GetMissingPrices() []string
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
-	promTicks            prometheus.Counter
-	promTickerTicks      *prometheus.CounterVec
-	promPrices           *prometheus.GaugeVec
-	promAggregatePrices  *prometheus.GaugeVec
-	promProviderTick     *prometheus.CounterVec
-	promProviderCount    *prometheus.GaugeVec
-	promSlinkyBuildInfo  *prometheus.GaugeVec
-	promConnectBuildInfo *prometheus.GaugeVec
-	statsdClient         statsd.ClientInterface
-	nodeIdentifier       string
+	promTicks             prometheus.Counter
+	promTickerTicks       *prometheus.CounterVec
+	promPrices            *prometheus.GaugeVec
+	promAggregatePrices   *prometheus.GaugeVec
+	promProviderTick      *prometheus.CounterVec
+	promProviderCount     *prometheus.GaugeVec
+	promSlinkyBuildInfo   *prometheus.GaugeVec
+	promConnectBuildInfo  *prometheus.GaugeVec
+	promMissingPrices     *prometheus.GaugeVec
+	statsdClient          statsd.ClientInterface
+	nodeIdentifier        string
+	missingPricesInternal []string
+	mtx                   sync.RWMutex
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
@@ -156,6 +167,11 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 		Name:      ConnectBuildInfoMetricName,
 		Help:      "Information about the connect build",
 	}, []string{Version})
+	ret.promMissingPrices = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: OracleSubsystem,
+		Name:      MissingPricesName,
+		Help:      "Missing Prices",
+	}, []string{Version})
 
 	prometheus.MustRegister(ret.promTicks)
 	prometheus.MustRegister(ret.promTickerTicks)
@@ -165,6 +181,7 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 	prometheus.MustRegister(ret.promProviderCount)
 	prometheus.MustRegister(ret.promSlinkyBuildInfo)
 	prometheus.MustRegister(ret.promConnectBuildInfo)
+	prometheus.MustRegister(ret.promMissingPrices)
 
 	return &ret
 }
@@ -175,6 +192,10 @@ type noOpOracleMetrics struct{}
 func NewNopMetrics() Metrics {
 	return &noOpOracleMetrics{}
 }
+
+func (m *noOpOracleMetrics) MissingPrices(_ []string) {}
+
+func (m *noOpOracleMetrics) GetMissingPrices() []string { return nil }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *noOpOracleMetrics) AddTick() {}
@@ -277,6 +298,33 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 
 	metricName := strings.Join([]string{ProviderCountMetricName, m.nodeIdentifier, strings.ToLower(market)}, ".")
 	m.statsdClient.Gauge(metricName, float64(count), []string{}, 1)
+}
+
+// MissingPrices updates the list of missing prices for the given tick.
+func (m *OracleMetricsImpl) MissingPrices(pairIDs []string) {
+	{
+		m.mtx.RLock()
+		defer m.mtx.RUnlock()
+
+		m.missingPricesInternal = pairIDs
+	}
+
+	for _, pairID := range pairIDs {
+		m.promMissingPrices.With(prometheus.Labels{
+			PairIDLabel: strings.ToLower(pairID),
+		}).Set(1)
+
+		metricName := strings.Join([]string{MissingPricesName, m.nodeIdentifier, strings.ToLower(pairID)}, ".")
+		m.statsdClient.Gauge(metricName, float64(1), []string{}, 1)
+	}
+}
+
+// GetMissingPrices gets the internal missing prices array.
+func (m *OracleMetricsImpl) GetMissingPrices() []string {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	return m.missingPricesInternal
 }
 
 // SetConnectBuildInfo sets the build information for the Connect binary. The version exported

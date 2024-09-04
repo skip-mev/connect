@@ -28,7 +28,6 @@ import (
 	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
 	oraclefactory "github.com/skip-mev/connect/v2/providers/factories/oracle"
 	mmservicetypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
-	promclient "github.com/skip-mev/connect/v2/service/clients/prometheus"
 	oracleserver "github.com/skip-mev/connect/v2/service/servers/oracle"
 	promserver "github.com/skip-mev/connect/v2/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
@@ -433,7 +432,7 @@ func runOracle() error {
 		go func(c context.CancelFunc) {
 			defer c()
 
-			err := validate(cfg.Metrics.PrometheusServerAddress, logger)
+			err := validate(logger, metrics)
 			if err != nil {
 				logger.Error("failed to validate metrics", zap.Error(err))
 				return
@@ -465,13 +464,29 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	return cfg, fmt.Errorf("no market-map provider found in config")
 }
 
-func validate(address string, logger *zap.Logger) error {
-	_, err := promclient.NewClient(address, logger)
-	if err != nil {
-		return err
-	}
+const (
+	burnInPeriod = 30 * time.Second
+)
+
+func validate(logger *zap.Logger, metrics oraclemetrics.Metrics) error {
+	logger.Info("waiting for burn in period to end", zap.Duration("period", burnInPeriod))
+	time.Sleep(burnInPeriod)
+
+	ticker := time.NewTicker(time.Duration(validationPeriod / 1000))
+	go func() {
+		for range ticker.C {
+			logger.Info("validating market map")
+
+			missingPrices := metrics.GetMissingPrices()
+			if len(missingPrices) > 0 {
+				logger.Warn("missing prices", zap.Any("prices", missingPrices))
+			}
+
+		}
+	}()
 
 	time.Sleep(time.Duration(validationPeriod))
+	ticker.Stop()
 
 	return nil
 }
