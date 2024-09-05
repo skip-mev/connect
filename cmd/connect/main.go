@@ -80,7 +80,7 @@ var (
 	disableCompressLogs bool
 	disableRotatingLogs bool
 	mode                string
-	validationPeriod    int
+	validationPeriod    time.Duration
 )
 
 const (
@@ -207,12 +207,11 @@ func init() {
 		string(modeExec),
 		"Select the mode to run the oracle in.  Default is \"exec\" which will fetch prices as configured.  \"validate\" mode will run the oracle for a set period of time to validate the configuration.",
 	)
-	rootCmd.Flags().IntVarP(
+	rootCmd.Flags().DurationVar(
 		&validationPeriod,
 		flagValidationPeriod,
-		"",
-		int(validation.DefaultValidationPeriod),
-		"Duration to run in validation mode.  Note: this flag is only used if mode == \"validate\"",
+		validation.DefaultValidationPeriod,
+		"Duration to run in validation mode in seconds.  Note: this flag is only used if mode == \"validate\"",
 	)
 
 	// these flags are connected to the OracleConfig.
@@ -427,7 +426,7 @@ func runOracle() error {
 	// run validation service if enabled and tear down if completed successfully
 	if isValidateMode {
 		valCfg := validation.DefaultConfig()
-		valCfg.ValidationPeriod = time.Duration(validationPeriod)
+		valCfg.ValidationPeriod = validationPeriod
 		validatorService := validation.NewValidator(logger, metrics, valCfg)
 
 		go func(c context.CancelFunc) {
