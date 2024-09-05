@@ -61,11 +61,14 @@ type LivenessResults map[string]float64
 func (v *Validator) Run(ctx context.Context) (LivenessResults, error) {
 	v.logger.Info("running in validation mode", zap.Duration("validation period (s)",
 		v.cfg.ValidationPeriod))
+
 	v.logger.Info("waiting for burn in period to end", zap.Duration("period (s)", v.cfg.BurnInPeriod))
 	time.Sleep(v.cfg.BurnInPeriod)
+
 	missingPricesMap := make(map[string]int)
 	tickTime := v.cfg.ValidationPeriod / time.Duration(v.cfg.NumChecks)
 	ticker := time.NewTicker(tickTime)
+
 	v.logger.Info("beginning validation")
 
 	done := make(chan struct{})
@@ -84,29 +87,27 @@ func (v *Validator) Run(ctx context.Context) (LivenessResults, error) {
 		case <-done:
 			return
 		case <-ctx.Done():
-			done <- struct{}{}
+			close(done)
 			return
 		}
 	}()
 
 	// check for early exits
 	numSleeps := 0
-	for {
+	for numSleeps < v.cfg.NumChecks {
 		select {
 		case <-done:
+			v.logger.Info("context canceled - exiting early")
 			return nil, nil
 		default:
-			if numSleeps == v.cfg.NumChecks {
-				ticker.Stop()
-				done <- struct{}{}
-				goto EXIT
-			}
-
 			time.Sleep(tickTime)
+			v.logger.Info("sleeping before checking prices", zap.Int("sleeps", numSleeps))
 			numSleeps++
 		}
 	}
-EXIT:
+
+	ticker.Stop()
+	close(done)
 
 	resultsMap := make(LivenessResults)
 	invalidTickers := make([]string, 0)
