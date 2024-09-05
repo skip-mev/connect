@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
 	//nolint: gosec
 	_ "net/http/pprof"
 	"os"
@@ -432,7 +433,7 @@ func runOracle() error {
 		go func(c context.CancelFunc) {
 			defer c()
 
-			_, err := validatorService.Run()
+			_, err := validatorService.Run(ctx)
 			if err != nil {
 				logger.Error("failed to validate metrics", zap.Error(err))
 

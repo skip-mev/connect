@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -57,17 +58,20 @@ func DefaultConfig() Config {
 type LivenessResults map[string]float64
 
 // Run runs the validation service, checking for missing prices and accumulating liveness data.
-func (v *Validator) Run() (LivenessResults, error) {
+func (v *Validator) Run(ctx context.Context) (LivenessResults, error) {
 	v.logger.Info("running in validation mode", zap.Duration("validation period (s)",
 		v.cfg.ValidationPeriod))
 	v.logger.Info("waiting for burn in period to end", zap.Duration("period (s)", v.cfg.BurnInPeriod))
 	time.Sleep(v.cfg.BurnInPeriod)
 	missingPricesMap := make(map[string]int)
-	ticker := time.NewTicker(v.cfg.ValidationPeriod / time.Duration(v.cfg.NumChecks))
+	tickTime := v.cfg.ValidationPeriod / time.Duration(v.cfg.NumChecks)
+	ticker := time.NewTicker(tickTime)
 	v.logger.Info("beginning validation")
 
+	done := make(chan struct{})
 	go func() {
-		for range ticker.C {
+		select {
+		case <-ticker.C:
 			v.logger.Info("checking for missing prices")
 
 			missingPrices := v.metrics.GetMissingPrices()
@@ -77,11 +81,32 @@ func (v *Validator) Run() (LivenessResults, error) {
 					missingPricesMap[price]++
 				}
 			}
+		case <-done:
+			return
+		case <-ctx.Done():
+			done <- struct{}{}
+			return
 		}
 	}()
 
-	time.Sleep(v.cfg.ValidationPeriod)
-	ticker.Stop()
+	// check for early exits
+	numSleeps := 0
+	for {
+		select {
+		case <-done:
+			return nil, nil
+		default:
+			if numSleeps == v.cfg.NumChecks {
+				ticker.Stop()
+				done <- struct{}{}
+				goto EXIT
+			}
+
+			time.Sleep(tickTime)
+			numSleeps++
+		}
+	}
+EXIT:
 
 	resultsMap := make(LivenessResults)
 	invalidTickers := make([]string, 0)
