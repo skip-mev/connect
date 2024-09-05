@@ -73,22 +73,24 @@ func (v *Validator) Run(ctx context.Context) (LivenessResults, error) {
 
 	done := make(chan struct{})
 	go func() {
-		select {
-		case <-ticker.C:
-			v.logger.Info("checking for missing prices")
+		for {
+			select {
+			case <-ticker.C:
+				v.logger.Info("checking for missing prices")
 
-			missingPrices := v.metrics.GetMissingPrices()
-			if len(missingPrices) > 0 {
-				v.logger.Warn("currently missing prices", zap.Any("prices", missingPrices))
-				for _, price := range missingPrices {
-					missingPricesMap[price]++
+				missingPrices := v.metrics.GetMissingPrices()
+				if len(missingPrices) > 0 {
+					v.logger.Warn("currently missing prices", zap.Any("prices", missingPrices))
+					for _, price := range missingPrices {
+						missingPricesMap[price]++
+					}
 				}
+			case <-done:
+				return
+			case <-ctx.Done():
+				close(done)
+				return
 			}
-		case <-done:
-			return
-		case <-ctx.Done():
-			close(done)
-			return
 		}
 	}()
 
@@ -101,7 +103,6 @@ func (v *Validator) Run(ctx context.Context) (LivenessResults, error) {
 			return nil, nil
 		default:
 			time.Sleep(tickTime)
-			v.logger.Info("sleeping before checking prices", zap.Int("sleeps", numSleeps))
 			numSleeps++
 		}
 	}
