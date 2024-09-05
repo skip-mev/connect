@@ -1,0 +1,21 @@
+name: BSR Push
+
+on:
+  # Apply to pushes on 'main' branch that affect the 'proto' directory
+  push:
+    branches:
+      - main
+    paths:
+      - proto/**
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          version: "1.39.0"
+      - uses: bufbuild/buf-push-action@v1
+        with:
+          input: proto
+          buf_token: ${{ secrets.BUF_TOKEN }}
