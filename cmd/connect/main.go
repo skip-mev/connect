@@ -90,7 +90,7 @@ const (
 
 type runMode string
 
-var (
+const (
 	modeExec     runMode = "exec"
 	modeValidate runMode = "validate"
 )
