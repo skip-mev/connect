@@ -212,7 +212,7 @@ func init() {
 		&validationPeriod,
 		flagValidationPeriod,
 		validation.DefaultValidationPeriod,
-		"Duration to run in validation mode in seconds.  Note: this flag is only used if mode == \"validate\"",
+		"Duration to run in validation mode.  Note: this flag is only used if mode == \"validate\"",
 	)
 
 	// these flags are connected to the OracleConfig.
