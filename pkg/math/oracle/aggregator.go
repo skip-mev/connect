@@ -117,7 +117,6 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		m.logger.Debug(
 			"calculated median price",
 			zap.String("target_ticker", ticker),
-
 			zap.String("unscaled_price", indexPrices[target.String()].String()),
 			zap.String("scaled_price", scaledPrices[target.String()].String()),
 			zap.Any("converted_prices", convertedPrices),
@@ -130,6 +129,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
 	m.logger.Debug("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
+	m.metrics.MissingPrices(missingPrices)
 	if len(missingPrices) > 0 {
 		m.logger.Info("failed to calculate prices for price feeds", zap.Strings("missing_prices", missingPrices))
 	}
