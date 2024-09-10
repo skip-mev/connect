@@ -217,7 +217,7 @@ var (
 		usdtusdDisabled.Ticker.String(): usdtusdDisabled,
 	}
 
-	// Entire market removed
+	// Entire market removed.
 	partiallyValidMarkets1 = map[string]types.Market{
 		// Valid
 		ethusd.Ticker.String():  ethusd,
@@ -235,7 +235,7 @@ var (
 		usdcusdDisabled.Ticker.String(): usdcusdDisabled,
 	}
 
-	// Should only remove certain provider configs
+	// Should only remove certain provider configs.
 	partiallyValidMarkets2 = map[string]types.Market{
 		btcusd.Ticker.String(): {
 			Ticker: types.Ticker{

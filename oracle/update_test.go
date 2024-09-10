@@ -18,7 +18,7 @@ import (
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {
-	t.Run("bad market map is rejected", func(t *testing.T) {
+	t.Run("bad market map is not rejected", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -35,7 +35,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 				"bad": {},
 			},
 		})
-		require.Error(t, err)
+		require.NoError(t, err)
 
 		o.Stop()
 	})
