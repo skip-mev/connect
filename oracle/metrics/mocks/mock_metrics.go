@@ -17,9 +17,9 @@ func (_m *Metrics) EXPECT() *Metrics_Expecter {
 	return &Metrics_Expecter{mock: &_m.Mock}
 }
 
-// AddProviderCountForMarket provides a mock function with given fields: market, count
-func (_m *Metrics) AddProviderCountForMarket(market string, count int) {
-	_m.Called(market, count)
+// AddProviderCountForMarket provides a mock function with given fields: pairID, count
+func (_m *Metrics) AddProviderCountForMarket(pairID string, count int) {
+	_m.Called(pairID, count)
 }
 
 // Metrics_AddProviderCountForMarket_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddProviderCountForMarket'
@@ -28,13 +28,13 @@ type Metrics_AddProviderCountForMarket_Call struct {
 }
 
 // AddProviderCountForMarket is a helper method to define mock.On call
-//   - market string
+//   - pairID string
 //   - count int
-func (_e *Metrics_Expecter) AddProviderCountForMarket(market interface{}, count interface{}) *Metrics_AddProviderCountForMarket_Call {
-	return &Metrics_AddProviderCountForMarket_Call{Call: _e.mock.On("AddProviderCountForMarket", market, count)}
+func (_e *Metrics_Expecter) AddProviderCountForMarket(pairID interface{}, count interface{}) *Metrics_AddProviderCountForMarket_Call {
+	return &Metrics_AddProviderCountForMarket_Call{Call: _e.mock.On("AddProviderCountForMarket", pairID, count)}
 }
 
-func (_c *Metrics_AddProviderCountForMarket_Call) Run(run func(market string, count int)) *Metrics_AddProviderCountForMarket_Call {
+func (_c *Metrics_AddProviderCountForMarket_Call) Run(run func(pairID string, count int)) *Metrics_AddProviderCountForMarket_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(string), args[1].(int))
 	})
@@ -118,9 +118,9 @@ func (_c *Metrics_AddTick_Call) RunAndReturn(run func()) *Metrics_AddTick_Call {
 	return _c
 }
 
-// AddTickerTick provides a mock function with given fields: ticker
-func (_m *Metrics) AddTickerTick(ticker string) {
-	_m.Called(ticker)
+// AddTickerTick provides a mock function with given fields: pairID
+func (_m *Metrics) AddTickerTick(pairID string) {
+	_m.Called(pairID)
 }
 
 // Metrics_AddTickerTick_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddTickerTick'
@@ -129,12 +129,12 @@ type Metrics_AddTickerTick_Call struct {
 }
 
 // AddTickerTick is a helper method to define mock.On call
-//   - ticker string
-func (_e *Metrics_Expecter) AddTickerTick(ticker interface{}) *Metrics_AddTickerTick_Call {
-	return &Metrics_AddTickerTick_Call{Call: _e.mock.On("AddTickerTick", ticker)}
+//   - pairID string
+func (_e *Metrics_Expecter) AddTickerTick(pairID interface{}) *Metrics_AddTickerTick_Call {
+	return &Metrics_AddTickerTick_Call{Call: _e.mock.On("AddTickerTick", pairID)}
 }
 
-func (_c *Metrics_AddTickerTick_Call) Run(run func(ticker string)) *Metrics_AddTickerTick_Call {
+func (_c *Metrics_AddTickerTick_Call) Run(run func(pairID string)) *Metrics_AddTickerTick_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(string))
 	})
@@ -147,6 +147,86 @@ func (_c *Metrics_AddTickerTick_Call) Return() *Metrics_AddTickerTick_Call {
 }
 
 func (_c *Metrics_AddTickerTick_Call) RunAndReturn(run func(string)) *Metrics_AddTickerTick_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetMissingPrices provides a mock function with given fields:
+func (_m *Metrics) GetMissingPrices() []string {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMissingPrices")
+	}
+
+	var r0 []string
+	if rf, ok := ret.Get(0).(func() []string); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
+	}
+
+	return r0
+}
+
+// Metrics_GetMissingPrices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMissingPrices'
+type Metrics_GetMissingPrices_Call struct {
+	*mock.Call
+}
+
+// GetMissingPrices is a helper method to define mock.On call
+func (_e *Metrics_Expecter) GetMissingPrices() *Metrics_GetMissingPrices_Call {
+	return &Metrics_GetMissingPrices_Call{Call: _e.mock.On("GetMissingPrices")}
+}
+
+func (_c *Metrics_GetMissingPrices_Call) Run(run func()) *Metrics_GetMissingPrices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Metrics_GetMissingPrices_Call) Return(_a0 []string) *Metrics_GetMissingPrices_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Metrics_GetMissingPrices_Call) RunAndReturn(run func() []string) *Metrics_GetMissingPrices_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// MissingPrices provides a mock function with given fields: pairIDs
+func (_m *Metrics) MissingPrices(pairIDs []string) {
+	_m.Called(pairIDs)
+}
+
+// Metrics_MissingPrices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MissingPrices'
+type Metrics_MissingPrices_Call struct {
+	*mock.Call
+}
+
+// MissingPrices is a helper method to define mock.On call
+//   - pairIDs []string
+func (_e *Metrics_Expecter) MissingPrices(pairIDs interface{}) *Metrics_MissingPrices_Call {
+	return &Metrics_MissingPrices_Call{Call: _e.mock.On("MissingPrices", pairIDs)}
+}
+
+func (_c *Metrics_MissingPrices_Call) Run(run func(pairIDs []string)) *Metrics_MissingPrices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].([]string))
+	})
+	return _c
+}
+
+func (_c *Metrics_MissingPrices_Call) Return() *Metrics_MissingPrices_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Metrics_MissingPrices_Call) RunAndReturn(run func([]string)) *Metrics_MissingPrices_Call {
 	_c.Call.Return(run)
 	return _c
 }
