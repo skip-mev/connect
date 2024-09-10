@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	//nolint: gosec
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
-
-	_ "net/http/pprof" //nolint: gosec
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,6 +30,7 @@ import (
 	mmservicetypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/connect/v2/service/servers/oracle"
 	promserver "github.com/skip-mev/connect/v2/service/servers/prometheus"
+	"github.com/skip-mev/connect/v2/service/validation"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
@@ -58,6 +61,8 @@ var (
 	flagPort                     = "port"
 	flagUpdateInterval           = "update-interval"
 	flagMaxPriceAge              = "max-price-age"
+	flagMode                     = "mode"
+	flagValidationPeriod         = "validation-period"
 
 	// flag-bound values.
 	oracleCfgPath       string
@@ -75,10 +80,19 @@ var (
 	maxAge              int
 	disableCompressLogs bool
 	disableRotatingLogs bool
+	mode                string
+	validationPeriod    time.Duration
 )
 
 const (
 	DefaultLegacyConfigPath = "./oracle.json"
+)
+
+type runMode string
+
+const (
+	modeExec     runMode = "exec"
+	modeValidate runMode = "validate"
 )
 
 func init() {
@@ -186,6 +200,19 @@ func init() {
 		"",
 		"",
 		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
+	)
+	rootCmd.Flags().StringVarP(
+		&mode,
+		flagMode,
+		"m",
+		string(modeExec),
+		"Select the mode to run the oracle in.  Default is \"exec\" which will fetch prices as configured.  \"validate\" mode will run the oracle for a set period of time to validate the configuration.",
+	)
+	rootCmd.Flags().DurationVar(
+		&validationPeriod,
+		flagValidationPeriod,
+		validation.DefaultValidationPeriod,
+		"Duration to run in validation mode.  Note: this flag is only used if mode == \"validate\"",
 	)
 
 	// these flags are connected to the OracleConfig.
@@ -316,6 +343,8 @@ func runOracle() error {
 		nodeClient, _ = oraclemetrics.NewNodeClient(nodeEndpoint)
 	}
 
+	isValidateMode := runMode(mode) == modeValidate
+
 	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient)
 
 	aggregator, err := oraclemath.NewIndexPriceAggregator(
@@ -393,6 +422,27 @@ func runOracle() error {
 				logger.Error("pprof server failed", zap.Error(err))
 			}
 		}()
+	}
+
+	// run validation service if enabled and tear down if completed successfully
+	if isValidateMode {
+		valCfg := validation.DefaultConfig()
+		valCfg.ValidationPeriod = validationPeriod
+		validatorService := validation.NewValidator(logger, metrics, valCfg)
+
+		go func(c context.CancelFunc) {
+			defer c()
+
+			_, err := validatorService.Run(ctx)
+			if err != nil {
+				logger.Error("failed to validate metrics", zap.Error(err))
+
+				// kill the process
+				os.Exit(1)
+			}
+
+			logger.Info("shutting down gracefully after validation")
+		}(cancel)
 	}
 
 	// start server (blocks).

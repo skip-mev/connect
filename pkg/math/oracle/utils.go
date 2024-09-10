@@ -53,7 +53,7 @@ func (m *IndexPriceAggregator) GetIndexPrice(
 	return price, nil
 }
 
-// SetIndexPrice sets the index price for the given currency pair.
+// SetIndexPrices sets the index price for the given currency pair.
 func (m *IndexPriceAggregator) SetIndexPrices(
 	prices types.Prices,
 ) {
