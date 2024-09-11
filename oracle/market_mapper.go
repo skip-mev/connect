@@ -43,6 +43,11 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
+			if o.lastUpdated != 0 && o.lastUpdated == result.Value.LastUpdated {
+				o.logger.Debug("skipping market map update on no lastUpdated change", zap.Uint64("lastUpdated", o.lastUpdated))
+				continue
+			}
+
 			validSubset, err := result.Value.MarketMap.GetValidSubset()
 			if err != nil {
 				o.logger.Error("failed to validate market map", zap.Error(err))
@@ -58,7 +63,7 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 			}
 			if len(validSubset.Markets) == 0 || len(validSubset.Markets) != len(result.Value.MarketMap.Markets) {
 				o.logger.Warn("invalid market map update has caused some markets to be removed")
-				o.logger.Info("markets removed from invalid market map", zap.String("markets", strings.Join(removedMarkets, ",")))
+				o.logger.Info("markets removed from invalid market map", zap.String("markets", strings.Join(removedMarkets, " ")))
 			}
 
 			// Update the oracle with the latest market map iff the market map has changed.
@@ -73,6 +78,8 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				o.logger.Error("failed to update oracle with new market map", zap.Error(err))
 				continue
 			}
+
+			o.lastUpdated = result.Value.GetLastUpdated()
 
 			// Write the market map to the configured path.
 			if err := o.WriteMarketMap(); err != nil {
