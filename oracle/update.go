@@ -19,14 +19,19 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	if err := marketMap.ValidateBasic(); err != nil {
+	validSubset, err := marketMap.GetValidSubset()
+	if err != nil {
 		o.logger.Error("failed to validate market map", zap.Error(err))
 		return err
 	}
 
+	if len(validSubset.Markets) == 0 {
+		o.logger.Warn("market map update produced no valid markets to fetch")
+	}
+
 	// Iterate over all existing price providers and update their market maps.
 	for name, state := range o.priceProviders {
-		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
+		providerTickers, err := types.ProviderTickersFromMarketMap(name, validSubset)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
 			return err
@@ -42,7 +47,7 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 		o.priceProviders[name] = updatedState
 	}
 
-	o.marketMap = marketMap
+	o.marketMap = validSubset
 	if o.aggregator != nil {
 		o.aggregator.UpdateMarketMap(o.marketMap)
 	}
