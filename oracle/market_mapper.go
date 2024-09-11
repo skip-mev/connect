@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -42,8 +43,26 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
+			validSubset, err := result.Value.MarketMap.GetValidSubset()
+			if err != nil {
+				o.logger.Error("failed to validate market map", zap.Error(err))
+				continue
+			}
+
+			// Detect removed markets and surface info about the removals
+			var removedMarkets []string
+			for t, _ := range result.Value.MarketMap.Markets {
+				if _, in := validSubset.Markets[t]; !in {
+					removedMarkets = append(removedMarkets, t)
+				}
+			}
+			if len(validSubset.Markets) == 0 || len(validSubset.Markets) != len(result.Value.MarketMap.Markets) {
+				o.logger.Warn("invalid market map update has caused some markets to be removed")
+				o.logger.Info("markets removed from invalid market map", zap.String("markets", strings.Join(removedMarkets, ",")))
+			}
+
 			// Update the oracle with the latest market map iff the market map has changed.
-			updated := result.Value.MarketMap
+			updated := validSubset
 			if o.marketMap.Equal(updated) {
 				o.logger.Debug("market map has not changed")
 				continue

@@ -3,7 +3,6 @@ package oracle
 import (
 	"fmt"
 	"math/big"
-	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -20,27 +19,14 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	validSubset, err := marketMap.GetValidSubset()
-	if err != nil {
+	if err := marketMap.ValidateBasic(); err != nil {
 		o.logger.Error("failed to validate market map", zap.Error(err))
 		return err
 	}
 
-	// Detect removed markets and surface info about the removals
-	var removedMarkets []string
-	for ticker, _ := range marketMap.Markets {
-		if _, in := validSubset.Markets[ticker]; !in {
-			removedMarkets = append(removedMarkets, ticker)
-		}
-	}
-	if len(validSubset.Markets) == 0 || len(validSubset.Markets) != len(marketMap.Markets) {
-		o.logger.Warn("invalid market map update has caused some markets to be removed")
-		o.logger.Debug("markets removed from invalid market map", zap.String("markets", strings.Join(removedMarkets, ",")))
-	}
-
 	// Iterate over all existing price providers and update their market maps.
 	for name, state := range o.priceProviders {
-		providerTickers, err := types.ProviderTickersFromMarketMap(name, validSubset)
+		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
 			return err
@@ -56,7 +42,7 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 		o.priceProviders[name] = updatedState
 	}
 
-	o.marketMap = validSubset
+	o.marketMap = marketMap
 	if o.aggregator != nil {
 		o.aggregator.UpdateMarketMap(o.marketMap)
 	}
