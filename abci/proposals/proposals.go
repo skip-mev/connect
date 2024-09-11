@@ -288,6 +288,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			"vote_extensions_enabled", voteExtensionsEnabled,
 		)
 
+		// we save the injected tx so we can re-add it to the txs in case it is removed in a wrapped proposal handler.
+		var injectedTx []byte
+
 		if voteExtensionsEnabled {
 			// Ensure that the commit info was correctly injected into the proposal.
 			if len(req.Txs) < slinkyabci.NumInjectedTxs {
@@ -331,6 +334,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 			// Remove the extended commit info from the proposal if required
 			if !h.retainOracleDataInWrappedHandler {
+				injectedTx = req.Txs[slinkyabci.OracleInfoIndex]
 				req.Txs = req.Txs[slinkyabci.NumInjectedTxs:]
 			}
 		}
@@ -343,6 +347,11 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				Handler: servicemetrics.ProcessProposal,
 				Err:     err,
 			}
+		}
+
+		if !h.retainOracleDataInWrappedHandler && injectedTx != nil {
+			// Re-inject the extended commit info back into the response if it was removed
+			req.Txs = append([][]byte{injectedTx}, req.Txs...)
 		}
 
 		wrappedProcessProposalLatency = time.Since(wrappedProcessProposalStartTime)
