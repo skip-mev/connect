@@ -3,6 +3,7 @@ package oracle
 import (
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -25,8 +26,16 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 		return err
 	}
 
-	if len(validSubset.Markets) == 0 {
-		o.logger.Warn("market map update produced no valid markets to fetch")
+	// Detect removed markets and surface info about the removals
+	var removedMarkets = make([]string, len(marketMap.Markets)-len(validSubset.Markets))
+	for ticker, _ := range marketMap.Markets {
+		if _, in := validSubset.Markets[ticker]; !in {
+			removedMarkets = append(removedMarkets, ticker)
+		}
+	}
+	if len(validSubset.Markets) == 0 || len(validSubset.Markets) != len(marketMap.Markets) {
+		o.logger.Warn("invalid market map update has caused some markets to be removed")
+		o.logger.Debug("markets removed from invalid market map", zap.String("markets", strings.Join(removedMarkets, ",")))
 	}
 
 	// Iterate over all existing price providers and update their market maps.
