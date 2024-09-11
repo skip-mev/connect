@@ -27,7 +27,7 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	}
 
 	// Detect removed markets and surface info about the removals
-	var removedMarkets = make([]string, len(marketMap.Markets)-len(validSubset.Markets))
+	var removedMarkets []string
 	for ticker, _ := range marketMap.Markets {
 		if _, in := validSubset.Markets[ticker]; !in {
 			removedMarkets = append(removedMarkets, ticker)

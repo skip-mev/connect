@@ -60,7 +60,8 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
 
-			o.logger.Info("updated oracle with new market map", zap.Any("market_map", updated))
+			o.logger.Info("updated oracle with new market map")
+			o.logger.Debug("updated oracle with new market map", zap.Any("market_map", updated))
 		}
 	}
 }
