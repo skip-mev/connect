@@ -28,6 +28,8 @@ import (
 
 var (
 	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	btcusdCP  = slinkytypes.NewCurrencyPair("BTC", "USD")
+	usdtusdCP = slinkytypes.NewCurrencyPair("USDT", "USD")
 	ethusdtCP = slinkytypes.NewCurrencyPair("ETH", "USDT")
 )
 
@@ -164,6 +166,72 @@ var (
 			Name:             "mock-mapper",
 		},
 		Type: mmclienttypes.ConfigType,
+	}
+
+	validMarketMapSubset = mmtypes.MarketMap{
+		Markets: map[string]mmtypes.Market{
+			ethusdtCP.String(): {
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     ethusdtCP,
+					MinProviderCount: 1,
+					Decimals:         8,
+					Enabled:          true,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: coinbaseethusd.GetOffChainTicker(),
+					},
+					{
+						Name:           okx.Name,
+						OffChainTicker: okxethusd.GetOffChainTicker(),
+					},
+				},
+			},
+		},
+	}
+
+	partialInvalidMarketMap = mmtypes.MarketMap{
+		Markets: map[string]mmtypes.Market{
+			btcusdCP.String(): {
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     btcusdCP,
+					MinProviderCount: 1,
+					Decimals:         8,
+					Enabled:          true,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  coinbasebtcusd.GetOffChainTicker(),
+						NormalizeByPair: &usdtusdCP,
+					},
+					{
+						Name:            okx.Name,
+						OffChainTicker:  okxbtcusd.GetOffChainTicker(),
+						NormalizeByPair: &usdtusdCP,
+					},
+				},
+			},
+			ethusdtCP.String(): {
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     ethusdtCP,
+					MinProviderCount: 1,
+					Decimals:         8,
+					Enabled:          true,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: coinbaseethusd.GetOffChainTicker(),
+					},
+					{
+						Name:           okx.Name,
+						OffChainTicker: okxethusd.GetOffChainTicker(),
+					},
+				},
+			},
+		},
 	}
 
 	// Coinbase and OKX are supported by the marketmap.
