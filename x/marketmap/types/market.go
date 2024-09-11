@@ -44,7 +44,7 @@ func (mm *MarketMap) ValidateBasic() error {
 //
 //	In particular, this will eliminate anything which would otherwise cause a failure in ValidateBasic.
 //	The resulting MarketMap should be able to pass ValidateBasic.
-func (mm *MarketMap) GetValidSubset() MarketMap {
+func (mm *MarketMap) GetValidSubset() (MarketMap, error) {
 	validSubset := MarketMap{Markets: make(map[string]Market)}
 
 	// Operates in 2 passes:
@@ -79,7 +79,11 @@ func (mm *MarketMap) GetValidSubset() MarketMap {
 			continue
 		}
 	}
-	return validSubset
+	if valErr := validSubset.ValidateBasic(); valErr != nil {
+		return validSubset, valErr
+	}
+
+	return validSubset, nil
 }
 
 // String returns the string representation of the market map.

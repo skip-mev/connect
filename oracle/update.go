@@ -19,11 +19,14 @@ func (o *OracleImpl) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	validSubset := marketMap.GetValidSubset()
-
-	if err := validSubset.ValidateBasic(); err != nil {
+	validSubset, err := marketMap.GetValidSubset()
+	if err != nil {
 		o.logger.Error("failed to validate market map", zap.Error(err))
 		return err
+	}
+
+	if len(validSubset.Markets) == 0 {
+		o.logger.Warn("market map update produced no valid markets to fetch")
 	}
 
 	// Iterate over all existing price providers and update their market maps.
