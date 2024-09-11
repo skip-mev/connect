@@ -4,7 +4,7 @@ project_name: slinky
 release:
   github:
     owner: skip-mev
-    name: slinky
+    name: connect
   prerelease: true
 
 builds:
