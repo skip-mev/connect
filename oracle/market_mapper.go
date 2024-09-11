@@ -56,7 +56,7 @@ func (o *OracleImpl) listenForMarketMapUpdates(ctx context.Context) {
 
 			// Detect removed markets and surface info about the removals
 			var removedMarkets []string
-			for t, _ := range result.Value.MarketMap.Markets {
+			for t := range result.Value.MarketMap.Markets {
 				if _, in := validSubset.Markets[t]; !in {
 					removedMarkets = append(removedMarkets, t)
 				}
