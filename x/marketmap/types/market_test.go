@@ -459,9 +459,9 @@ func TestMarketMapGetValidSubset(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			validSubset := tc.marketMap.GetValidSubset()
+			validSubset, err := tc.marketMap.GetValidSubset()
 			require.Equal(t, tc.validSubset, validSubset)
-			require.NoError(t, validSubset.ValidateBasic())
+			require.NoError(t, err)
 		})
 	}
 }
