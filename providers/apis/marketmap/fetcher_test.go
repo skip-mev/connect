@@ -120,22 +120,28 @@ func TestFetch(t *testing.T) {
 			},
 		},
 		{
-			name:   "errors when the market map response is invalid",
+			name:   "does not error when the market map response is invalid",
 			chains: chains[:1],
 			client: func() mmtypes.QueryClient {
 				c := mocks.NewQueryClient(t)
 				c.On("MarketMap", mock.Anything, mock.Anything).Return(
 					&mmtypes.MarketMapResponse{
-						MarketMap: badMarketMap,
+						MarketMap:   badMarketMap,
+						ChainId:     chains[0].ChainID,
+						LastUpdated: 11,
 					},
 					nil,
 				)
 				return c
 			},
 			expected: types.MarketMapResponse{
-				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid market map response"), providertypes.ErrorAPIGeneral),
+				Resolved: types.ResolvedMarketMap{
+					chains[0]: types.MarketMapResult{
+						Value: &mmtypes.MarketMapResponse{
+							MarketMap:   badMarketMap,
+							ChainId:     chains[0].ChainID,
+							LastUpdated: 11,
+						},
 					},
 				},
 			},

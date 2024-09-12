@@ -54,6 +54,8 @@ type OracleImpl struct { //nolint:revive
 	cfg config.OracleConfig
 	// marketMap is the market map that the oracle is using.
 	marketMap mmtypes.MarketMap
+	// lastUpdated is the field in the marketmap module tracking the last block at which an update was posted
+	lastUpdated uint64
 	// writeTo is a path to write the market map to.
 	writeTo string
 

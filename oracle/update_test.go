@@ -18,7 +18,7 @@ import (
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {
-	t.Run("bad market map is not rejected", func(t *testing.T) {
+	t.Run("bad market map is rejected", func(t *testing.T) {
 		orc, err := oracle.New(
 			oracleCfg,
 			noOpPriceAggregator{},
@@ -35,7 +35,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 				"bad": {},
 			},
 		})
-		require.NoError(t, err)
+		require.Error(t, err)
 
 		o.Stop()
 	})
@@ -625,61 +625,5 @@ func TestUpdateProviderState(t *testing.T) {
 			10*time.Second,
 			500*time.Millisecond,
 		)
-	})
-
-	t.Run("can update the market map with partial failure on NormalizeBy", func(t *testing.T) {
-		orc, err := oracle.New(
-			oracleCfg,
-			noOpPriceAggregator{},
-			oracle.WithLogger(logger),
-			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-		)
-		require.NoError(t, err)
-		o := orc.(*oracle.OracleImpl)
-		require.NoError(t, o.Init(context.TODO()))
-
-		providers := o.GetProviderState()
-		require.Len(t, providers, 3)
-
-		// Update the oracle's market map.
-		require.NoError(t, o.UpdateMarketMap(partialInvalidMarketMap))
-
-		providers = o.GetProviderState()
-
-		cbTickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, validMarketMapSubset)
-		require.NoError(t, err)
-
-		// Check the state after the update.
-		coinbaseState, ok := providers[coinbase.Name]
-		require.True(t, ok)
-		checkProviderState(
-			t,
-			cbTickers,
-			coinbase.Name,
-			providertypes.API,
-			false,
-			coinbaseState,
-		)
-
-		okxTickers, err := types.ProviderTickersFromMarketMap(okx.Name, validMarketMapSubset)
-		require.NoError(t, err)
-
-		okxState, ok := providers[okx.Name]
-		require.True(t, ok)
-		checkProviderState(
-			t,
-			okxTickers,
-			okx.Name,
-			providertypes.WebSockets,
-			false,
-			okxState,
-		)
-
-		binanceState, ok := providers[binance.Name]
-		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
-
-		o.Stop()
 	})
 }

@@ -296,4 +296,46 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		// Clean up the file.
 		require.NoError(t, os.Remove(path))
 	})
+	t.Run("can update providers with a new market map and handle partially invalid state", func(t *testing.T) {
+		chains := []mmclienttypes.Chain{{ChainID: "dYdX"}}
+		handler, factory := marketMapperFactory(t, chains)
+		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
+
+		resolved := make(mmclienttypes.ResolvedMarketMap)
+		resp := mmtypes.MarketMapResponse{
+			MarketMap: partialInvalidMarketMap,
+		}
+		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
+		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
+
+		o, err := oracle.New(
+			oracleCfgWithMockMapper,
+			noOpPriceAggregator{},
+			oracle.WithLogger(logger),
+			oracle.WithMarketMapperFactory(factory),
+			oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		go func() {
+			err := o.Start(ctx)
+			if !errors.Is(err, context.Canceled) {
+				t.Errorf("Start() should have returned context.Canceled error")
+			}
+		}()
+
+		// Wait for the oracle to start.
+		time.Sleep(5000 * time.Millisecond)
+
+		// The oracle should have been updated.
+		require.Equal(t, validMarketMapSubset, o.GetMarketMap())
+
+		// Stop the oracle.
+		cancel()
+		o.Stop()
+	})
 }
