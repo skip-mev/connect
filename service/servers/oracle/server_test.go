@@ -58,7 +58,7 @@ func (s *ServerTestSuite) SetupTest() {
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
 
 	// listen on a random port and extract that port number
-	l, err := net.Listen("tcp", ":0")
+	l, err := net.Listen("tcp", localhost+":0")
 	s.Require().NoError(err)
 	defer l.Close()
 	s.port = strconv.Itoa(l.Addr().(*net.TCPAddr).Port)
