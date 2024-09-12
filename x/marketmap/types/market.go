@@ -40,6 +40,52 @@ func (mm *MarketMap) ValidateBasic() error {
 	return nil
 }
 
+// GetValidSubset outputs a MarketMap which contains the maximal valid subset of this MarketMap.
+//
+//	In particular, this will eliminate anything which would otherwise cause a failure in ValidateBasic.
+//	The resulting MarketMap should be able to pass ValidateBasic.
+func (mm *MarketMap) GetValidSubset() (MarketMap, error) {
+	validSubset := MarketMap{Markets: make(map[string]Market)}
+
+	// Operates in 2 passes:
+	// 1. Remove invalid ProviderConfigs
+	for ticker, market := range mm.Markets {
+		var validProviderConfigs []ProviderConfig
+		for _, providerConfig := range market.ProviderConfigs {
+			if providerConfig.NormalizeByPair != nil {
+				normalizeMarket, found := mm.Markets[providerConfig.NormalizeByPair.String()]
+				if !found {
+					continue
+				}
+
+				if !normalizeMarket.Ticker.Enabled && market.Ticker.Enabled {
+					continue
+				}
+			}
+			validProviderConfigs = append(validProviderConfigs, providerConfig)
+		}
+		market.ProviderConfigs = validProviderConfigs
+		validSubset.Markets[ticker] = market
+	}
+	// 2. Remove ValidateBasic failures on all included markets
+	for ticker, market := range validSubset.Markets {
+		if err := market.ValidateBasic(); err != nil {
+			delete(validSubset.Markets, ticker)
+			continue
+		}
+		// expect that the ticker (index) is equal to the market.Ticker.String()
+		if ticker != market.Ticker.String() {
+			delete(validSubset.Markets, ticker)
+			continue
+		}
+	}
+	if valErr := validSubset.ValidateBasic(); valErr != nil {
+		return validSubset, valErr
+	}
+
+	return validSubset, nil
+}
+
 // String returns the string representation of the market map.
 func (mm *MarketMap) String() string {
 	return fmt.Sprintf(
