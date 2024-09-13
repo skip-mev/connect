@@ -9639,13 +9639,13 @@ var (
         "provider_configs": [
           {
             "name": "binance_ws",
-            "off_chain_ticker": "USDTTRY",
-            "invert": false,
+            "off_chain_ticker": "USDTBRL",
+            "invert": true,
             "metadata_JSON": ""
           },
           {
             "name": "okx_ws",
-            "off_chain_ticker": "TRY-USDT",
+            "off_chain_ticker": "BRL-USDT",
             "invert": false,
             "metadata_JSON": ""
           }
