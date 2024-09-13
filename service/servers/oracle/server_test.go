@@ -87,6 +87,7 @@ func (s *ServerTestSuite) SetupTest() {
 		if i == 10 {
 			s.T().Fatal("failed to connect to server")
 		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
