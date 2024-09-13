@@ -77,6 +77,17 @@ func (s *ServerTestSuite) SetupTest() {
 	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s.Require().NoError(s.client.Start(dialCtx))
+
+	// Health check
+	for i := 0; ; i++ {
+		_, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+		if err == nil {
+			break
+		}
+		if i == 10 {
+			s.T().Fatal("failed to connect to server")
+		}
+	}
 }
 
 // teardown test suite.
