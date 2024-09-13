@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math/big"
-	"net"
 	"net/http"
-	"strconv"
 	"testing"
 	"time"
 
@@ -29,6 +27,7 @@ import (
 
 const (
 	localhost     = "localhost"
+	port          = "8080"
 	timeout       = 1 * time.Second
 	delay         = 20 * time.Second
 	grpcErrPrefix = "rpc error: code = Unknown desc = "
@@ -43,7 +42,6 @@ type ServerTestSuite struct {
 	httpClient *http.Client
 	ctx        context.Context
 	cancel     context.CancelFunc
-	port       string
 }
 
 func TestServerTestSuite(t *testing.T) {
@@ -57,15 +55,10 @@ func (s *ServerTestSuite) SetupTest() {
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
 
-	// listen on a random port and extract that port number
-	l, err := net.Listen("tcp", localhost+":0")
-	s.Require().NoError(err)
-	defer l.Close()
-	s.port = strconv.Itoa(l.Addr().(*net.TCPAddr).Port)
-
+	var err error
 	s.client, err = client.NewClient(
 		log.NewTestLogger(s.T()),
-		localhost+":"+s.port,
+		localhost+":"+port,
 		timeout,
 		metrics.NewNopMetrics(),
 		client.WithBlockingDial(), // block on dialing the server
@@ -79,11 +72,23 @@ func (s *ServerTestSuite) SetupTest() {
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
 	// start server + client w/ context
-	go s.srv.StartServer(s.ctx, "0.0.0.0", s.port)
+	go s.srv.StartServer(s.ctx, localhost, port)
 
 	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s.Require().NoError(s.client.Start(dialCtx))
+
+	// Health check
+	for i := 0; ; i++ {
+		_, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+		if err == nil {
+			break
+		}
+		if i == 10 {
+			s.T().Fatal("failed to connect to server")
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
 
 // teardown test suite.
@@ -164,7 +169,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(resp.Timestamp, ts.UTC())
 
 	// call from http client
-	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, s.port))
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
 	s.Require().NoError(err)
 
 	// check response
