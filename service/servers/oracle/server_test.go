@@ -204,6 +204,7 @@ func (s *ServerTestSuite) TestOracleMarketMap() {
 	expectedJSON, err := dummyMarketMap.Marshal()
 	_ = expectedJSON
 	s.Require().NoError(err)
+	s.mockOracle.On("IsRunning").Return(true)
 	s.mockOracle.On("GetMarketMap", mock.Anything).Return(dummyMarketMap).Once()
 
 	res, err := s.client.MarketMap(context.Background(), &stypes.QueryMarketMapRequest{})
