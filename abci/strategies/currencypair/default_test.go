@@ -9,13 +9,13 @@ import (
 
 	strategies "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 var (
-	btcusd = slinkytypes.NewCurrencyPair("BTC", "USD")
-	usdeth = slinkytypes.NewCurrencyPair("USD", "ETH")
-	ethbtc = slinkytypes.NewCurrencyPair("ETH", "BTC")
+	btcusd = connecttypes.NewCurrencyPair("BTC", "USD")
+	usdeth = connecttypes.NewCurrencyPair("USD", "ETH")
+	ethbtc = connecttypes.NewCurrencyPair("ETH", "BTC")
 )
 
 func TestDefaultCurrencyPairStrategyID(t *testing.T) {
@@ -93,7 +93,7 @@ func TestDefaultCurrencyPairStrategyFromID(t *testing.T) {
 	// test that if a currency-pair does not have an ID w/ x/oracle, a failure is returned
 	t.Run("expect error when currency-pair not found in module-state", func(t *testing.T) {
 		// expect an error when querying for a currency-pair not in module-state
-		ok.On("GetCurrencyPairFromID", ctx, uint64(2)).Return(slinkytypes.CurrencyPair{}, false).Once()
+		ok.On("GetCurrencyPairFromID", ctx, uint64(2)).Return(connecttypes.CurrencyPair{}, false).Once()
 		_, err := strategy.FromID(ctx, uint64(2))
 		require.Error(t, err)
 	})

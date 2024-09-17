@@ -44,7 +44,7 @@ make install
 Let's check Connect is properly installed on your machine.
 You should see the version printed in your terminal after running the following command:
 ```shell
-slinky version
+connect version
 ```
 
 ## Run Connect Sidecar
@@ -72,7 +72,7 @@ slinky version
 To verify Connect is working, run the following command:
 
 ```shell
-curl 'http://localhost:8080/slinky/oracle/v1/prices' | jq .
+curl 'http://localhost:8080/connect/oracle/v2/prices' | jq .
 ```
 
 The output of the command should look similar to this:

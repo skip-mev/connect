@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	servertypes "github.com/skip-mev/connect/v2/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
@@ -17,8 +17,8 @@ import (
 //
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface { //golint:ignore
-	GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
-	SetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair, qp oracletypes.QuotePrice) error
+	GetAllCurrencyPairs(ctx sdk.Context) []connecttypes.CurrencyPair
+	SetPriceForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair, qp oracletypes.QuotePrice) error
 }
 
 // OracleClient defines the interface that must be fulfilled by the slinky client.

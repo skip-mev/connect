@@ -9,7 +9,7 @@ import (
 
 	strategies "github.com/skip-mev/connect/v2/abci/strategies/currencypair"
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 func TestHashCurrencyPairStrategyID(t *testing.T) {
@@ -27,10 +27,10 @@ func TestHashCurrencyPairStrategyID(t *testing.T) {
 	})
 
 	t.Run("test a currency pair with no base/quote", func(t *testing.T) {
-		ok.On("GetIDForCurrencyPair", mock.Anything, slinkytypes.CurrencyPair{}).Return(uint64(0), false).Once()
+		ok.On("GetIDForCurrencyPair", mock.Anything, connecttypes.CurrencyPair{}).Return(uint64(0), false).Once()
 
 		// expect an error when querying for a currency-pair not in module-state
-		id, err := strategy.ID(ctx, slinkytypes.CurrencyPair{})
+		id, err := strategy.ID(ctx, connecttypes.CurrencyPair{})
 		require.Error(t, err)
 		require.Equal(t, uint64(0), id) // not equal to 0 because we have a delimiter.
 	})
@@ -54,7 +54,7 @@ func TestHashCurrencyPairStrategyFromID(t *testing.T) {
 	strategy := strategies.NewHashCurrencyPairStrategy(ok)
 
 	t.Run("test getting currency pair for currency pair that does not exist in state", func(t *testing.T) {
-		ok.On("GetAllCurrencyPairs", ctx).Return([]slinkytypes.CurrencyPair{}).Once()
+		ok.On("GetAllCurrencyPairs", ctx).Return([]connecttypes.CurrencyPair{}).Once()
 
 		id, err := strategies.CurrencyPairToHashID(btcusd.String())
 		require.NoError(t, err)
@@ -64,7 +64,7 @@ func TestHashCurrencyPairStrategyFromID(t *testing.T) {
 	})
 
 	t.Run("test getting currency pair for currency pair that exists in state (no cache)", func(t *testing.T) {
-		ok.On("GetAllCurrencyPairs", ctx).Return([]slinkytypes.CurrencyPair{btcusd}).Once()
+		ok.On("GetAllCurrencyPairs", ctx).Return([]connecttypes.CurrencyPair{btcusd}).Once()
 
 		id, err := strategies.CurrencyPairToHashID(btcusd.String())
 		require.NoError(t, err)

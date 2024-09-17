@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/base"
 	apierrors "github.com/skip-mev/connect/v2/providers/base/api/errors"
 	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
@@ -80,7 +80,7 @@ var (
 		MaxSubscriptionsPerBatch:      config.DefaultMaxSubscriptionsPerBatch,
 	}
 
-	pairs = []slinkytypes.CurrencyPair{
+	pairs = []connecttypes.CurrencyPair{
 		{
 			Base:  "BTC",
 			Quote: "USD",
@@ -100,16 +100,16 @@ func TestStart(t *testing.T) {
 	t.Run("closes on cancel with api", func(t *testing.T) {
 		t.Parallel()
 
-		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := apihandlermocks.NewQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Maybe().After(200 * time.Millisecond)
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -123,15 +123,15 @@ func TestStart(t *testing.T) {
 	t.Run("closes with deadline with api", func(t *testing.T) {
 		t.Parallel()
 
-		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := apihandlermocks.NewQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Maybe().After(200 * time.Millisecond)
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -148,15 +148,15 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 		handler.On("Copy").Return(handler).Maybe()
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
-			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -170,15 +170,15 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 		handler.On("Copy").Return(handler).Maybe()
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
-			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfgMultiplex),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
+			base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](wsCfgMultiplex),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -192,7 +192,7 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 
-		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 		handler.On("Copy").Return(handler).Maybe()
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
@@ -200,11 +200,11 @@ func TestStart(t *testing.T) {
 		}()).Maybe()
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
-			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -218,7 +218,7 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 
-		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 		handler.On("Copy").Return(handler).Maybe()
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
@@ -226,11 +226,11 @@ func TestStart(t *testing.T) {
 		}()).Maybe()
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
-			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfgMultiplex),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
+			base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](wsCfgMultiplex),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -241,14 +241,14 @@ func TestStart(t *testing.T) {
 
 func TestStop(t *testing.T) {
 	t.Run("no error when not running", func(t *testing.T) {
-		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler := apihandlermocks.NewQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 		provider.Stop()
@@ -257,7 +257,7 @@ func TestStop(t *testing.T) {
 	})
 
 	t.Run("no error when running an API provider", func(t *testing.T) {
-		handler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+		handler := testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 			t,
 			logger,
 			nil,
@@ -265,11 +265,11 @@ func TestStop(t *testing.T) {
 		)
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -292,7 +292,7 @@ func TestStop(t *testing.T) {
 	})
 
 	t.Run("no error when running a WebSocket provider", func(t *testing.T) {
-		handler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+		handler := testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
 			logger,
@@ -300,11 +300,11 @@ func TestStop(t *testing.T) {
 		)
 
 		provider, err := base.NewProvider(
-			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
-			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
-			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[connecttypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[connecttypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -330,64 +330,64 @@ func TestStop(t *testing.T) {
 func TestWebSocketProvider(t *testing.T) {
 	testCases := []struct {
 		name           string
-		handler        func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int]
-		pairs          []slinkytypes.CurrencyPair
+		handler        func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int]
+		pairs          []connecttypes.CurrencyPair
 		cfg            config.WebSocketConfig
-		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
+		expectedPrices map[connecttypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "no prices to fetch",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					nil,
 				)
 			},
-			pairs:          []slinkytypes.CurrencyPair{},
+			pairs:          []connecttypes.CurrencyPair{},
 			cfg:            wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "can fetch a single price",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg: wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				fn := func(ctx context.Context, responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
-					resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				fn := func(ctx context.Context, responseCh chan<- providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]) {
+					resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(100),
 							Timestamp: respTime,
 						},
 					}
-					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+					resp := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 
 					select {
 					case <-ctx.Done():
@@ -397,13 +397,13 @@ func TestWebSocketProvider(t *testing.T) {
 						time.Sleep(time.Second)
 					}
 
-					resolved = map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+					resolved = map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(200),
 							Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 					}
-					resp = providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+					resp = providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 
 					select {
 					case <-ctx.Done():
@@ -414,23 +414,23 @@ func TestWebSocketProvider(t *testing.T) {
 					}
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithResponseFn[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithResponseFn[connecttypes.CurrencyPair, *big.Int](
 					t,
 					fn,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg: wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch multiple prices",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -441,31 +441,31 @@ func TestWebSocketProvider(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 				pairs[1],
 			},
 			cfg: wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
 			},
 		},
 		{
 			name: "can fetch multiple prices multiplexed",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -476,73 +476,73 @@ func TestWebSocketProvider(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 				pairs[1],
 			},
 			cfg: wsCfgMultiplex,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
 			},
 		},
 		{
 			name: "does not update if the response included an error",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				unResolved := map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorWebSocketGeneral),
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unResolved),
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, unResolved),
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg:            wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "continues restarting if the query handler returns",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				handler.On("Copy").Return(handler).Maybe()
 				handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("no gib price updates")).Maybe()
 
 				return handler
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg:            wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "continues restarting if the query handler returns multiplexed",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				handler := wshandlermocks.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				handler.On("Copy").Return(handler).Maybe()
 
@@ -550,24 +550,24 @@ func TestWebSocketProvider(t *testing.T) {
 
 				return handler
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg:            wsCfgMultiplex,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "updates the timestamp associated with a result if the the data is unchanged and still valid",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
 				// First response is valid and sets the data.
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
 
-				unchangedResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				unchangedResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:        big.NewInt(100),
 						Timestamp:    time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -575,31 +575,31 @@ func TestWebSocketProvider(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 					providertypes.NewGetResponse(unchangedResolved, nil),
 				}
 
-				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					time.Second,
 					logger,
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg: wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "does not update the base provider if the result is unchanged but the cache has no entry for the id",
-			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+			handler: func() wshandlers.WebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int] {
 				// First response is valid and sets the data.
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:        big.NewInt(100),
 						Timestamp:    time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -607,7 +607,7 @@ func TestWebSocketProvider(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
@@ -618,22 +618,22 @@ func TestWebSocketProvider(t *testing.T) {
 					responses,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 			cfg:            wsCfg,
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
-				base.WithName[slinkytypes.CurrencyPair, *big.Int](tc.cfg.Name),
-				base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](tc.cfg),
-				base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-				base.WithIDs[slinkytypes.CurrencyPair, *big.Int](tc.pairs),
+			provider, err := base.NewProvider[connecttypes.CurrencyPair, *big.Int](
+				base.WithName[connecttypes.CurrencyPair, *big.Int](tc.cfg.Name),
+				base.WithWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithWebSocketConfig[connecttypes.CurrencyPair, *big.Int](tc.cfg),
+				base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[connecttypes.CurrencyPair, *big.Int](tc.pairs),
 			)
 			require.NoError(t, err)
 
@@ -657,87 +657,87 @@ func TestWebSocketProvider(t *testing.T) {
 func TestAPIProviderLoop(t *testing.T) {
 	testCases := []struct {
 		name           string
-		handler        func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int]
-		pairs          []slinkytypes.CurrencyPair
-		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
+		handler        func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int]
+		pairs          []connecttypes.CurrencyPair
+		expectedPrices map[connecttypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "no prices to fetch",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					nil,
 					200*time.Millisecond,
 				)
 			},
-			pairs:          []slinkytypes.CurrencyPair{},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			pairs:          []connecttypes.CurrencyPair{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "can fetch a single price",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 					200*time.Millisecond,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				resp := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 
-				resolved2 := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved2 := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(200),
 						Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				resp2 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved2, nil)
+				resp2 := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved2, nil)
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
-					[]providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{resp, resp2},
+					[]providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{resp, resp2},
 					200*time.Millisecond,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch multiple prices",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -748,61 +748,61 @@ func TestAPIProviderLoop(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 					200*time.Millisecond,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 				pairs[1],
 			},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
 			},
 		},
 		{
 			name: "does not update if the response included an error",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				unResolved := map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
 						ErrorWithCode: providertypes.NewErrorWithCode(apierrors.ErrRateLimit, providertypes.ErrorAPIGeneral),
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unResolved),
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, unResolved),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 					200*time.Millisecond,
 				)
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
-				base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-				base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-				base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-				base.WithIDs[slinkytypes.CurrencyPair, *big.Int](tc.pairs),
+			provider, err := base.NewProvider[connecttypes.CurrencyPair, *big.Int](
+				base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+				base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+				base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[connecttypes.CurrencyPair, *big.Int](tc.pairs),
 			)
 			require.NoError(t, err)
 
@@ -829,24 +829,24 @@ func TestAPIProviderLoop(t *testing.T) {
 func TestMetrics(t *testing.T) {
 	testCases := []struct {
 		name    string
-		handler func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int]
+		handler func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int]
 		metrics func() providermetrics.ProviderMetrics
-		pairs   []slinkytypes.CurrencyPair
+		pairs   []connecttypes.CurrencyPair
 	}{
 		{
 			name: "can fetch a single price",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
@@ -863,24 +863,24 @@ func TestMetrics(t *testing.T) {
 
 				return m
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 		},
 		{
 			name: "updates correctly with bad responses",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			handler: func() apihandlers.APIQueryHandler[connecttypes.CurrencyPair, *big.Int] {
+				unResolved := map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
 						ErrorWithCode: providertypes.NewErrorWithCode(apierrors.ErrRateLimit, providertypes.ErrorAPIGeneral),
 					},
 				}
 
-				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unResolved),
+				responses := []providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, unResolved),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[connecttypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
@@ -898,7 +898,7 @@ func TestMetrics(t *testing.T) {
 
 				return m
 			},
-			pairs: []slinkytypes.CurrencyPair{
+			pairs: []connecttypes.CurrencyPair{
 				pairs[0],
 			},
 		},
@@ -906,13 +906,13 @@ func TestMetrics(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
-				base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
-				base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
-				base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
-				base.WithIDs[slinkytypes.CurrencyPair, *big.Int](tc.pairs),
-				base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](tc.metrics()),
+			provider, err := base.NewProvider[connecttypes.CurrencyPair, *big.Int](
+				base.WithName[connecttypes.CurrencyPair, *big.Int](apiCfg.Name),
+				base.WithAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[connecttypes.CurrencyPair, *big.Int](apiCfg),
+				base.WithLogger[connecttypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[connecttypes.CurrencyPair, *big.Int](tc.pairs),
+				base.WithMetrics[connecttypes.CurrencyPair, *big.Int](tc.metrics()),
 			)
 			require.NoError(t, err)
 

@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	wserrors "github.com/skip-mev/connect/v2/providers/base/websocket/errors"
 	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 	handlermocks "github.com/skip-mev/connect/v2/providers/base/websocket/handlers/mocks"
@@ -24,9 +24,9 @@ import (
 
 var (
 	logger  = zap.NewExample()
-	btcusd  = slinkytypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = slinkytypes.NewCurrencyPair("ETH", "USD")
-	atomusd = slinkytypes.NewCurrencyPair("ATOM", "USD")
+	btcusd  = connecttypes.NewCurrencyPair("BTC", "USD")
+	ethusd  = connecttypes.NewCurrencyPair("ETH", "USD")
+	atomusd = connecttypes.NewCurrencyPair("ATOM", "USD")
 
 	name        = "sirmoggintonwebsocket"
 	testMessage = []byte("gib me money")
@@ -80,10 +80,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		name        string
 		cfg         config.WebSocketConfig
 		connHandler func() handlers.WebSocketConnHandler
-		dataHandler func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int]
+		dataHandler func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int]
 		metrics     func() metrics.WebSocketMetrics
-		ids         []slinkytypes.CurrencyPair
-		responses   providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		ids         []connecttypes.CurrencyPair
+		responses   providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]
 	}{
 		{
 			name: "fails to dial the websocket",
@@ -95,8 +95,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 				return dataHandler
 			},
 			metrics: func() metrics.WebSocketMetrics {
@@ -107,9 +107,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			ids: []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrDial, providertypes.ErrorWebsocketStartFail),
 					},
@@ -126,8 +126,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
 
@@ -142,9 +142,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			ids: []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrCreateMessages, providertypes.ErrorWebsocketStartFail),
 					},
@@ -162,8 +162,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
@@ -179,9 +179,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			ids: []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrWrite, providertypes.ErrorWebsocketStartFail),
 					},
@@ -201,8 +201,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
@@ -224,8 +224,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:       []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			ids:       []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "fails to parse the response from the websocket",
@@ -240,12 +240,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					nil,
 					fmt.Errorf("no rizz alert"),
 				).Maybe()
@@ -269,8 +269,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:       []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			ids:       []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "pseudo heart beat update message with no response",
@@ -285,12 +285,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
@@ -316,8 +316,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:       []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			ids:       []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "fails to send the update message to the websocket",
@@ -333,12 +333,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
@@ -365,8 +365,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:       []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			ids:       []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "fails to close the websocket",
@@ -381,12 +381,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
@@ -412,8 +412,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:       []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			ids:       []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "returns a single response with no update message",
@@ -428,17 +428,17 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				response := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response,
 					nil,
@@ -464,9 +464,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			ids: []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -486,17 +486,17 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				response := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response,
 					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
@@ -524,9 +524,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			ids: []connecttypes.CurrencyPair{btcusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -546,42 +546,42 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				resolved2 := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved2 := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					ethusd: {
 						Value: big.NewInt(200),
 					},
 				}
-				unresolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+				unresolved := map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					atomusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
 					},
 				}
 
-				response1 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				response1 := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved, nil)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response1,
 					nil,
 					nil,
 				).Once()
 
-				response2 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved2, nil)
+				response2 := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](resolved2, nil)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response2,
 					nil,
 					nil,
 				).Once()
 
-				response3 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unresolved)
+				response3 := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, unresolved)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response3,
 					nil,
@@ -607,9 +607,9 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{btcusd, ethusd},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			ids: []connecttypes.CurrencyPair{btcusd, ethusd},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -617,7 +617,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						Value: big.NewInt(200),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					atomusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
 					},
@@ -639,12 +639,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					nil,
 					nil,
 				).Maybe()
@@ -676,10 +676,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{
+			ids: []connecttypes.CurrencyPair{
 				btcusd,
 			},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "is unable to create a heart beat message and send it to the websocket",
@@ -694,12 +694,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					nil,
 					nil,
 				).Maybe()
@@ -730,10 +730,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{
+			ids: []connecttypes.CurrencyPair{
 				btcusd,
 			},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 		{
 			name: "is able to create a heart beat message and but cannot write it to the websocket",
@@ -750,12 +750,12 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return connHandler
 			},
-			dataHandler: func() handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				dataHandler := handlermocks.NewWebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			dataHandler: func() handlers.WebSocketDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
-					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+					providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](nil, nil),
 					nil,
 					nil,
 				).Maybe()
@@ -787,16 +787,16 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids: []slinkytypes.CurrencyPair{
+			ids: []connecttypes.CurrencyPair{
 				btcusd,
 			},
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := handlers.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](
+			handler, err := handlers.NewWebSocketQueryHandler[connecttypes.CurrencyPair, *big.Int](
 				logger,
 				tc.cfg,
 				tc.dataHandler(),
@@ -805,7 +805,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], 20)
+			responseCh := make(chan providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int], 20)
 
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			handler.Start(ctx, tc.ids, responseCh)
@@ -813,7 +813,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			close(responseCh)
 
 			expectedResponses := tc.responses
-			seenResponses := make(map[slinkytypes.CurrencyPair]bool)
+			seenResponses := make(map[connecttypes.CurrencyPair]bool)
 			for resp := range responseCh {
 				for id, result := range resp.Resolved {
 					if _, ok := seenResponses[id]; ok {
