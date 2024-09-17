@@ -410,7 +410,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		// check that last updated is correct
 		lastUpdated, err := s.keeper.GetLastUpdated(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated) //nolint:gosec
 
 		// check that the emitted events are correct (get the last event)
 		event := s.ctx.EventManager().Events()[len(s.ctx.EventManager().Events())-1]
@@ -478,7 +478,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		// check that last updated is correct
 		lastUpdated, err := s.keeper.GetLastUpdated(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), lastUpdated) //nolint:gosec
 
 		// check that the emitted events are correct (get the last event)
 		event := s.ctx.EventManager().Events()[len(s.ctx.EventManager().Events())-1]

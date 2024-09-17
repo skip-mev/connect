@@ -63,7 +63,7 @@ func (s *KeeperTestSuite) initKeeperWithHooks(hooks types.MarketMapHooks) *keepe
 	s.ctx = testutil.DefaultContextWithKeys(keys, transientKeys, nil).WithBlockHeight(10)
 
 	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
-	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight())))
+	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight()))) //nolint:gosec
 
 	s.admin = sample.Address(r)
 	s.marketAuthorities = []string{sample.Address(r), sample.Address(r), sample.Address(r)}
