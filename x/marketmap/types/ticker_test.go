@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
@@ -20,7 +20,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "valid ticker",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -33,7 +33,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty base",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "",
 					Quote: "USDT",
 				},
@@ -46,7 +46,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty quote",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "",
 				},
@@ -59,7 +59,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid base",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "bitcoin",
 					Quote: "USDT",
 				},
@@ -72,7 +72,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid quote",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "usdt",
 				},
@@ -85,7 +85,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid decimals",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -98,7 +98,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid min provider count",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -111,7 +111,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid json len",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -124,7 +124,7 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid json",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -159,7 +159,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "equal tickers",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -167,7 +167,7 @@ func TestTickerEqual(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -179,7 +179,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different base",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -187,7 +187,7 @@ func TestTickerEqual(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "ETHEREUM",
 					Quote: "USDT",
 				},
@@ -199,7 +199,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different quote",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -207,7 +207,7 @@ func TestTickerEqual(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "BTC",
 				},
@@ -219,7 +219,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different decimals",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -227,7 +227,7 @@ func TestTickerEqual(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -239,7 +239,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different min provider count",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -247,7 +247,7 @@ func TestTickerEqual(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -260,7 +260,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different metadata",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -269,7 +269,7 @@ func TestTickerEqual(t *testing.T) {
 				Metadata_JSON:    `{"key": "value"}`,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -283,7 +283,7 @@ func TestTickerEqual(t *testing.T) {
 		{
 			name: "different enabled",
 			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},
@@ -292,7 +292,7 @@ func TestTickerEqual(t *testing.T) {
 				Enabled:          true,
 			},
 			other: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BITCOIN",
 					Quote: "USDT",
 				},

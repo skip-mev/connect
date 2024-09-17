@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // HashCurrencyPairStrategy is a strategy that uses the sha256 hash of the currency
@@ -26,11 +26,11 @@ func NewHashCurrencyPairStrategy(oracleKeeper OracleKeeper) *HashCurrencyPairStr
 
 // ID returns the ID of the given currency pair, by taking the hash of the currency
 // pair and using that as the ID.
-func (s *HashCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
+func (s *HashCurrencyPairStrategy) ID(ctx sdk.Context, cp connecttypes.CurrencyPair) (uint64, error) {
 	// reset cache if the block height has changed
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.idCache = make(map[uint64]connecttypes.CurrencyPair, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
@@ -52,11 +52,11 @@ func (s *HashCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.CurrencyPa
 // FromID returns the currency pair with the given ID, it first checks the cache
 // for the currency pair and if it is not found in the cache, it will attempt to
 // retrieve the currency pair from the x/oracle state.
-func (s *HashCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytypes.CurrencyPair, error) {
+func (s *HashCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (connecttypes.CurrencyPair, error) {
 	// reset cache if the block height has changed
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.idCache = make(map[uint64]connecttypes.CurrencyPair, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
@@ -72,7 +72,7 @@ func (s *HashCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytyp
 	for _, cp := range allCPs {
 		hash, err := CurrencyPairToHashID(cp.String())
 		if err != nil {
-			return slinkytypes.CurrencyPair{}, fmt.Errorf("failed to hash currency pair %s: %w", cp.String(), err)
+			return connecttypes.CurrencyPair{}, fmt.Errorf("failed to hash currency pair %s: %w", cp.String(), err)
 		}
 
 		s.idCache[hash] = cp
@@ -80,7 +80,7 @@ func (s *HashCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytyp
 
 	cp, found = s.idCache[id]
 	if !found {
-		return slinkytypes.CurrencyPair{}, fmt.Errorf("currency pair with sha256 hashed ID %d not found in x/oracle state", id)
+		return connecttypes.CurrencyPair{}, fmt.Errorf("currency pair with sha256 hashed ID %d not found in x/oracle state", id)
 	}
 
 	return cp, nil

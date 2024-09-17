@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -27,7 +27,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 			"if any of the currency pairs are invalid - fail",
 			types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress("abc").String(),
-				CurrencyPairs: []slinkytypes.CurrencyPair{
+				CurrencyPairs: []connecttypes.CurrencyPair{
 					{Base: "A"},
 				},
 			},
@@ -37,7 +37,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 			"if all currency pairs are valid + authority is valid - pass",
 			types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress("abc").String(),
-				CurrencyPairs: []slinkytypes.CurrencyPair{
+				CurrencyPairs: []connecttypes.CurrencyPair{
 					{Base: "A", Quote: "B"},
 					{Base: "C", Quote: "D"},
 				},
@@ -86,8 +86,8 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 			types.MsgRemoveCurrencyPairs{
 				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
-					slinkytypes.CurrencyPairString("A", "B"),
-					slinkytypes.CurrencyPairString("C", "D"),
+					connecttypes.CurrencyPairString("A", "B"),
+					connecttypes.CurrencyPairString("C", "D"),
 				},
 			},
 			true,

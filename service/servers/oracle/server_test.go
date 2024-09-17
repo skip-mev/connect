@@ -17,7 +17,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/oracle/mocks"
 	"github.com/skip-mev/connect/v2/oracle/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	client "github.com/skip-mev/connect/v2/service/clients/oracle"
 	"github.com/skip-mev/connect/v2/service/metrics"
 	server "github.com/skip-mev/connect/v2/service/servers/oracle"
@@ -123,7 +123,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.EXPECT().IsRunning().Return(true)
 	cp1 := mmtypes.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
+		CurrencyPair: connecttypes.CurrencyPair{
 			Base:  "BTC",
 			Quote: "USD",
 		},
@@ -131,7 +131,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	}
 
 	cp2 := mmtypes.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
+		CurrencyPair: connecttypes.CurrencyPair{
 			Base:  "ETH",
 			Quote: "USD",
 		},
@@ -171,7 +171,7 @@ func (s *ServerTestSuite) TestOracleMarketMap() {
 	dummyMarketMap := mmtypes.MarketMap{Markets: map[string]mmtypes.Market{
 		"foo": {
 			Ticker: mmtypes.Ticker{
-				CurrencyPair:     slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
+				CurrencyPair:     connecttypes.CurrencyPair{Base: "ETH", Quote: "USD"},
 				Decimals:         420,
 				MinProviderCount: 79,
 				Enabled:          true,
@@ -181,7 +181,7 @@ func (s *ServerTestSuite) TestOracleMarketMap() {
 				{
 					Name:           "FOO",
 					OffChainTicker: "BAR",
-					NormalizeByPair: &slinkytypes.CurrencyPair{
+					NormalizeByPair: &connecttypes.CurrencyPair{
 						Base:  "FOO",
 						Quote: "BAR",
 					},

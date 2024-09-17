@@ -19,7 +19,7 @@ import (
 	"github.com/skip-mev/connect/v2/aggregator"
 	"github.com/skip-mev/connect/v2/pkg/math/voteweighted"
 	"github.com/skip-mev/connect/v2/pkg/math/voteweighted/mocks"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 type MathTestSuite struct {
@@ -50,14 +50,14 @@ func TestMathTestSuite(t *testing.T) {
 func (s *MathTestSuite) TestMedian() {
 	cases := []struct {
 		name              string
-		providerPrices    aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]
+		providerPrices    aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]
 		validators        []validator
 		totalBondedTokens sdkmath.Int
-		expectedPrices    map[slinkytypes.CurrencyPair]*big.Int
+		expectedPrices    map[connecttypes.CurrencyPair]*big.Int
 	}{
 		{
 			name:           "no providers",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{},
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{},
 			validators: []validator{
 				{
 					stake:    sdkmath.NewInt(100),
@@ -65,12 +65,12 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices:    map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices:    map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "single provider entire stake + single price",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -84,7 +84,7 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
@@ -93,8 +93,8 @@ func (s *MathTestSuite) TestMedian() {
 		},
 		{
 			name: "single provider with not enough stake + single price",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -112,12 +112,12 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices:    map[slinkytypes.CurrencyPair]*big.Int{},
+			expectedPrices:    map[connecttypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "single provider with just enough stake + multiple prices",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -139,7 +139,7 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
@@ -152,14 +152,14 @@ func (s *MathTestSuite) TestMedian() {
 		},
 		{
 			name: "2 providers with equal stake + single asset",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
 					}: big.NewInt(100),
 				},
-				validator2.String(): map[slinkytypes.CurrencyPair]*big.Int{
+				validator2.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -177,7 +177,7 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
@@ -186,20 +186,20 @@ func (s *MathTestSuite) TestMedian() {
 		},
 		{
 			name: "3 providers with equal stake + single asset",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
 					}: big.NewInt(100),
 				},
-				validator2.String(): map[slinkytypes.CurrencyPair]*big.Int{
+				validator2.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
 					}: big.NewInt(200),
 				},
-				validator3.String(): map[slinkytypes.CurrencyPair]*big.Int{
+				validator3.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -221,7 +221,7 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(99),
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
@@ -230,8 +230,8 @@ func (s *MathTestSuite) TestMedian() {
 		},
 		{
 			name: "3 providers with equal stake + multiple assets",
-			providerPrices: aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
-				validator1.String(): map[slinkytypes.CurrencyPair]*big.Int{
+			providerPrices: aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]{
+				validator1.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -241,7 +241,7 @@ func (s *MathTestSuite) TestMedian() {
 						Quote: "USD",
 					}: big.NewInt(200),
 				},
-				validator2.String(): map[slinkytypes.CurrencyPair]*big.Int{
+				validator2.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -251,7 +251,7 @@ func (s *MathTestSuite) TestMedian() {
 						Quote: "USD",
 					}: big.NewInt(400),
 				},
-				validator3.String(): map[slinkytypes.CurrencyPair]*big.Int{
+				validator3.String(): map[connecttypes.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
@@ -273,7 +273,7 @@ func (s *MathTestSuite) TestMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(99),
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{ // only btc/usd should be included
+			expectedPrices: map[connecttypes.CurrencyPair]*big.Int{ // only btc/usd should be included
 				{
 					Base:  "BTC",
 					Quote: "USD",

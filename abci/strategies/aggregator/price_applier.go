@@ -9,10 +9,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/connect/v2/abci/strategies/codec"
-	slinkyabcitypes "github.com/skip-mev/connect/v2/abci/types"
+	connectabcitypes "github.com/skip-mev/connect/v2/abci/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // PriceApplier is an interface used in `ExtendVote` and `PreBlock` to apply the prices
@@ -24,11 +24,11 @@ type PriceApplier interface {
 	// vote extensions + VoteAggregator. If a price exists for an asset, it is written to state. The
 	// prices aggregated from vote-extensions are returned if no errors are encountered in execution,
 	// otherwise an error is returned + nil prices.
-	ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[slinkytypes.CurrencyPair]*big.Int, error)
+	ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[connecttypes.CurrencyPair]*big.Int, error)
 
 	// GetPriceForValidator gets the prices reported by a given validator. This method depends
 	// on the prices from the latest set of aggregated votes.
-	GetPricesForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
+	GetPricesForValidator(validator sdk.ConsAddress) map[connecttypes.CurrencyPair]*big.Int
 }
 
 // oraclePriceApplier is an implementation of PriceApplier that applies prices to the oracle module.
@@ -37,7 +37,7 @@ type oraclePriceApplier struct {
 	va VoteAggregator
 
 	// ok is the oracle keeper that is used to write prices to state.
-	ok slinkyabcitypes.OracleKeeper
+	ok connectabcitypes.OracleKeeper
 
 	// logger
 	logger log.Logger
@@ -50,7 +50,7 @@ type oraclePriceApplier struct {
 // NewOraclePriceApplier returns a new oraclePriceApplier.
 func NewOraclePriceApplier(
 	va VoteAggregator,
-	ok slinkyabcitypes.OracleKeeper,
+	ok connectabcitypes.OracleKeeper,
 	voteExtensionCodec codec.VoteExtensionCodec,
 	extendedCommitCodec codec.ExtendedCommitCodec,
 	logger log.Logger,
@@ -64,7 +64,7 @@ func NewOraclePriceApplier(
 	}
 }
 
-func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[slinkytypes.CurrencyPair]*big.Int, error) {
+func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[connecttypes.CurrencyPair]*big.Int, error) {
 	// If vote extensions have been enabled, the extended commit info - which
 	// contains the vote extensions - must be included in the request.
 	votes, err := GetOracleVotes(req.Txs, opa.voteExtensionCodec, opa.extendedCommitCodec)
@@ -150,6 +150,6 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 	return prices, nil
 }
 
-func (opa *oraclePriceApplier) GetPricesForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
+func (opa *oraclePriceApplier) GetPricesForValidator(validator sdk.ConsAddress) map[connecttypes.CurrencyPair]*big.Int {
 	return opa.va.GetPriceForValidator(validator)
 }

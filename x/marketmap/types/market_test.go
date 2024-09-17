@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/coinbase"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
@@ -13,7 +13,7 @@ import (
 var (
 	emptyMM = types.MarketMap{Markets: make(map[string]types.Market)}
 
-	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	btcusdtCP = connecttypes.NewCurrencyPair("BTC", "USDT")
 
 	btcusdt = types.Market{
 		Ticker: types.Ticker{
@@ -32,7 +32,7 @@ var (
 
 	btcusdViaUSDC = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair:     slinkytypes.CurrencyPair{Base: "BTC", Quote: "USD"},
+			CurrencyPair:     connecttypes.CurrencyPair{Base: "BTC", Quote: "USD"},
 			Decimals:         8,
 			MinProviderCount: 1,
 			Enabled:          true,
@@ -48,7 +48,7 @@ var (
 
 	btcusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "BTC",
 				Quote: "USD",
 			},
@@ -67,7 +67,7 @@ var (
 
 	btcusdInvalid = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "BTC",
 				Quote: "USD",
 			},
@@ -86,7 +86,7 @@ var (
 
 	usdtusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDT",
 				Quote: "USD",
 			},
@@ -104,7 +104,7 @@ var (
 
 	usdtusdDisabled = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDT",
 				Quote: "USD",
 			},
@@ -122,7 +122,7 @@ var (
 
 	usdcusdDisabled = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDC",
 				Quote: "USD",
 			},
@@ -140,7 +140,7 @@ var (
 
 	usdcusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDC",
 				Quote: "USD",
 			},
@@ -158,7 +158,7 @@ var (
 
 	ethusdt = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "ETHEREUM",
 				Quote: "USDT",
 			},
@@ -176,7 +176,7 @@ var (
 
 	ethusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "ETHEREUM",
 				Quote: "USD",
 			},
@@ -239,7 +239,7 @@ var (
 	partiallyValidMarkets2 = map[string]types.Market{
 		btcusd.Ticker.String(): {
 			Ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
+				CurrencyPair: connecttypes.CurrencyPair{
 					Base:  "BTC",
 					Quote: "USD",
 				},
@@ -338,7 +338,7 @@ func TestMarketMapGetValidSubset(t *testing.T) {
 							{
 								Name:            coinbase.Name,
 								OffChainTicker:  "btc-usd",
-								NormalizeByPair: &slinkytypes.CurrencyPair{Base: "not", Quote: "real"},
+								NormalizeByPair: &connecttypes.CurrencyPair{Base: "not", Quote: "real"},
 								Invert:          false,
 								Metadata_JSON:   "",
 							},
@@ -530,7 +530,7 @@ func TestMarketMapValidateBasic(t *testing.T) {
 							{
 								Name:            coinbase.Name,
 								OffChainTicker:  "btc-usd",
-								NormalizeByPair: &slinkytypes.CurrencyPair{Base: "not", Quote: "real"},
+								NormalizeByPair: &connecttypes.CurrencyPair{Base: "not", Quote: "real"},
 								Invert:          false,
 								Metadata_JSON:   "",
 							},

@@ -22,10 +22,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/ve/types"
 	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
 	"github.com/skip-mev/connect/v2/providers/static"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
@@ -96,7 +96,7 @@ func GetOracleSideCar(node *cosmos.ChainNode) *cosmos.SidecarProcess {
 	return node.Sidecars[0]
 }
 
-type SlinkyIntegrationSuite struct {
+type ConnectIntegrationSuite struct {
 	suite.Suite
 
 	spec *interchaintest.ChainSpec
@@ -129,40 +129,40 @@ type SlinkyIntegrationSuite struct {
 	cc ChainConstructor
 }
 
-// Option is a function that modifies the SlinkyIntegrationSuite
-type Option func(*SlinkyIntegrationSuite)
+// Option is a function that modifies the ConnectIntegrationSuite
+type Option func(*ConnectIntegrationSuite)
 
 // WithDenom sets the token denom
 func WithDenom(denom string) Option {
-	return func(s *SlinkyIntegrationSuite) {
+	return func(s *ConnectIntegrationSuite) {
 		s.denom = denom
 	}
 }
 
 // WithAuthority sets the authority address
 func WithAuthority(addr sdk.AccAddress) Option {
-	return func(s *SlinkyIntegrationSuite) {
+	return func(s *ConnectIntegrationSuite) {
 		s.authority = addr
 	}
 }
 
 // WithBlockTime sets the block time
 func WithBlockTime(t time.Duration) Option {
-	return func(s *SlinkyIntegrationSuite) {
+	return func(s *ConnectIntegrationSuite) {
 		s.blockTime = t
 	}
 }
 
 // WithInterchainConstructor sets the interchain constructor
 func WithInterchainConstructor(ic InterchainConstructor) Option {
-	return func(s *SlinkyIntegrationSuite) {
+	return func(s *ConnectIntegrationSuite) {
 		s.icc = ic
 	}
 }
 
 // WithChainConstructor sets the chain constructor
 func WithChainConstructor(cc ChainConstructor) Option {
-	return func(s *SlinkyIntegrationSuite) {
+	return func(s *ConnectIntegrationSuite) {
 		s.cc = cc
 	}
 }
@@ -203,8 +203,8 @@ func CreateTx(t *testing.T, chain *cosmos.CosmosChain, user cosmos.User, GasPric
 	return bz
 }
 
-func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *SlinkyIntegrationSuite {
-	suite := &SlinkyIntegrationSuite{
+func NewConnectIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *ConnectIntegrationSuite {
+	suite := &ConnectIntegrationSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
 		denom:        defaultDenom,
@@ -221,7 +221,7 @@ func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.D
 	return suite
 }
 
-func (s *SlinkyIntegrationSuite) SetupSuite() {
+func (s *ConnectIntegrationSuite) SetupSuite() {
 	// update market-map params to add the user as the market-authority
 	accountAddressBz, err := hex.DecodeString(userAccountAddressHex)
 	if err != nil {
@@ -282,7 +282,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
-func (s *SlinkyIntegrationSuite) TearDownSuite() {
+func (s *ConnectIntegrationSuite) TearDownSuite() {
 	defer s.Teardown()
 	// get the oracle integration-test suite keep alive env
 	if ok := os.Getenv(envKeepAlive); ok == "" {
@@ -296,7 +296,7 @@ func (s *SlinkyIntegrationSuite) TearDownSuite() {
 	<-sig
 }
 
-func (s *SlinkyIntegrationSuite) Teardown() {
+func (s *ConnectIntegrationSuite) Teardown() {
 	// stop all nodes + sidecars in the chain
 	ctx := context.Background()
 	if s.chain == nil {
@@ -313,7 +313,7 @@ func (s *SlinkyIntegrationSuite) Teardown() {
 	}
 }
 
-func (s *SlinkyIntegrationSuite) SetupTest() {
+func (s *ConnectIntegrationSuite) SetupTest() {
 	s.TearDownSuite()
 	s.SetupSuite()
 
@@ -328,12 +328,12 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 }
 
 type SlinkyOracleIntegrationSuite struct {
-	*SlinkyIntegrationSuite
+	*ConnectIntegrationSuite
 }
 
-func NewSlinkyOracleIntegrationSuite(suite *SlinkyIntegrationSuite) *SlinkyOracleIntegrationSuite {
+func NewSlinkyOracleIntegrationSuite(suite *ConnectIntegrationSuite) *SlinkyOracleIntegrationSuite {
 	return &SlinkyOracleIntegrationSuite{
-		SlinkyIntegrationSuite: suite,
+		ConnectIntegrationSuite: suite,
 	}
 }
 
@@ -347,7 +347,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
 			{
 				Base:  "BTC",
 				Quote: "USD",
@@ -363,9 +363,9 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	})
 
 	s.Run("Add multiple Currency Pairs", func() {
-		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
-		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+		cp1 := connecttypes.NewCurrencyPair("ETH", "USD")
+		cp2 := connecttypes.NewCurrencyPair("USDT", "USD")
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
 			cp1, cp2,
 		}...))
 
@@ -380,9 +380,9 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
-	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
+	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
 		ethusdcCP,
 	}...))
 
@@ -426,7 +426,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			s.Require().NoError(RestartOracle(node))
 		}
 
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
 					id: zeroBz,
@@ -461,7 +461,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		StopOracle(node)
 
 		// expect the following vote-extensions
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{},
 			},
@@ -502,7 +502,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		StopOracle(node)
 
 		// expect the following vote-extensions
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{},
 			},
@@ -543,7 +543,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		}
 
 		// expect the given oracle reports
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{},
 			},
@@ -578,12 +578,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
-	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
-	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
+	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
+	ethusdtCP := connecttypes.NewCurrencyPair("ETH", "USDT")
+	ethusdCP := connecttypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	cps := []slinkytypes.CurrencyPair{
+	cps := []connecttypes.CurrencyPair{
 		ethusdcCP,
 		ethusdtCP,
 		ethusdCP,
@@ -638,7 +638,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	}
 
 	s.Run("all oracles running for multiple price feeds", func() {
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
 					id1: zeroBz,
@@ -710,7 +710,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(RestartOracle(node))
 		s.Require().NoError(RestartOracle(node))
 
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{},
 			},
@@ -747,7 +747,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	})
 }
 
-func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp slinkytypes.CurrencyPair) (uint64, error) {
+func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp connecttypes.CurrencyPair) (uint64, error) {
 	// query for the given currency pair
 	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
 		CurrencyPair: cp.String(),

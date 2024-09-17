@@ -1,10 +1,10 @@
 ---
-project_name: slinky
+project_name: connect
 
 release:
   github:
     owner: skip-mev
-    name: slinky
+    name: connect
   prerelease: true
 
 builds:

@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/connect/v2/aggregator"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // DefaultPowerThreshold defines the total voting power % that must be
@@ -38,8 +38,8 @@ func MedianFromContext(
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
-) aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int] {
-	return func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+) aggregator.AggregateFnFromContext[string, map[connecttypes.CurrencyPair]*big.Int] {
+	return func(ctx sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
 		return Median(ctx, logger, validatorStore, threshold)
 	}
 }
@@ -61,9 +61,9 @@ func Median(
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
-) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-	return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
-		priceInfo := make(map[slinkytypes.CurrencyPair]PriceInfo)
+) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+	return func(providers aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
+		priceInfo := make(map[connecttypes.CurrencyPair]PriceInfo)
 
 		// Iterate through all providers and store stake weight + price for each currency pair.
 		for valAddress, validatorPrices := range providers {
@@ -126,7 +126,7 @@ func Median(
 		}
 
 		// Iterate through all prices and compute the median price for each asset.
-		prices := make(map[slinkytypes.CurrencyPair]*big.Int)
+		prices := make(map[connecttypes.CurrencyPair]*big.Int)
 		totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx)
 		if err != nil {
 			// This should never error.

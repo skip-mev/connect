@@ -20,7 +20,7 @@
 ## Concepts
 
 The `x/marketmap` module encapsulates a system for creating and updating a unified configuration that is stored on-chain
-and consumed by a set of oracle service providers (Slinky oracle, etc.).
+and consumed by a set of oracle service providers (Connect oracle, etc.).
 
 The core goal of the system is to collect off-chain market updates and to post them on chain, informing oracle service
 providers to fetch prices for new markets.
@@ -75,8 +75,7 @@ message Ticker {
   option (gogoproto.stringer) = false;
 
   // CurrencyPair is the currency pair for this ticker.
-  slinky.types.v1.CurrencyPair currency_pair = 1
-  [ (gogoproto.nullable) = false ];
+  connect.types.v2.CurrencyPair currency_pair = 1 [ (gogoproto.nullable) = false ];
 
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
@@ -109,7 +108,7 @@ message ProviderConfig {
   // For example, if the desired Ticker is BTC/USD, this market could be reached
   // using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
   // optional and nullable.
-  slinky.types.v1.CurrencyPair normalize_by_pair = 3;
+  connect.types.v2.CurrencyPair normalize_by_pair = 3;
 
   // Invert is a boolean indicating if the BASE and QUOTE of the market should
   // be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
@@ -196,7 +195,7 @@ The `MarketMap` endpoint queries the full state of the market map as well as ass
 Example:
 
 ```shell
-grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap
+grpcurl -plaintext localhost:9090 connect.marketmap.v2.Query/MarketMap
 ```
 
 Example response:
@@ -262,7 +261,7 @@ must be updated using the heavier `MarketMap` query.
 Example:
 
 ```shell
-grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/LastUpdated
+grpcurl -plaintext localhost:9090 connect.marketmap.v2.Query/LastUpdated
 ```
 
 Example response:
@@ -280,7 +279,7 @@ The params query allows users to query values set as marketmap parameters.
 Example:
 
 ```shell
-grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/Params
+grpcurl -plaintext localhost:9090 connect.marketmap.v2.Query/Params
 ```
 
 Example response:
@@ -305,7 +304,7 @@ The `MarketMap` endpoint queries the full state of the market map as well as ass
 Example:
 
 ```shell
-  slinkyd q marketmap market-map
+  connectd q marketmap market-map
 ```
 
 #### LastUpdated
@@ -317,7 +316,7 @@ must be updated using the heavier `MarketMap` query.
 Example:
 
 ```shell
-  slinkyd q marketmap last-updated
+  connectd q marketmap last-updated
 ```
 
 #### Params
@@ -327,5 +326,5 @@ The params query allows users to query values set as marketmap parameters.
 Example:
 
 ```shell
-  slinkyd q marketmap params
+  connectd q marketmap params
 ```

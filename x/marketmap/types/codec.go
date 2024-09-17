@@ -12,9 +12,9 @@ import (
 // cdc. These types are used for amino serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the msg-types
-	legacy.RegisterAminoMsg(cdc, &MsgCreateMarkets{}, "slinky/x/marketmap/MsgCreateMarkets")
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateMarkets{}, "slinky/x/marketmap/MsgUpdateMarkets")
-	legacy.RegisterAminoMsg(cdc, &MsgParams{}, "slinky/x/marketmap/MsgParams")
+	legacy.RegisterAminoMsg(cdc, &MsgCreateMarkets{}, "connect/x/marketmap/MsgCreateMarkets")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateMarkets{}, "connect/x/marketmap/MsgUpdateMarkets")
+	legacy.RegisterAminoMsg(cdc, &MsgParams{}, "connect/x/marketmap/MsgParams")
 }
 
 // RegisterInterfaces registers the x/marketmap messages + message service w/ the InterfaceRegistry (registry).

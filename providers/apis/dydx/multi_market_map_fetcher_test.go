@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/dydx"
 	apihandlermocks "github.com/skip-mev/connect/v2/providers/base/api/handlers/mocks"
 	providertypes "github.com/skip-mev/connect/v2/providers/types"
@@ -93,7 +93,7 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 						Markets: map[string]mmtypes.Market{
 							"BTC/USD": {
 								Ticker: mmtypes.Ticker{
-									CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+									CurrencyPair:     connecttypes.NewCurrencyPair("BTC", "USD"),
 									Decimals:         8,
 									MinProviderCount: 1,
 									Enabled:          true,
@@ -117,7 +117,7 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 						Markets: map[string]mmtypes.Market{
 							"ETH/USD": {
 								Ticker: mmtypes.Ticker{
-									CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USD"),
+									CurrencyPair:     connecttypes.NewCurrencyPair("ETH", "USD"),
 									Decimals:         8,
 									MinProviderCount: 1,
 								},

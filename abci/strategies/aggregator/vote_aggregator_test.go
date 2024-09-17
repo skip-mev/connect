@@ -18,19 +18,19 @@ import (
 	"github.com/skip-mev/connect/v2/abci/testutils"
 	"github.com/skip-mev/connect/v2/pkg/math/voteweighted"
 	"github.com/skip-mev/connect/v2/pkg/math/voteweighted/mocks"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 var (
-	btcUSD = slinkytypes.CurrencyPair{
+	btcUSD = connecttypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
-	ethUSD = slinkytypes.CurrencyPair{
+	ethUSD = connecttypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
-	ethBTC = slinkytypes.CurrencyPair{
+	ethBTC = connecttypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "BTC",
 	}

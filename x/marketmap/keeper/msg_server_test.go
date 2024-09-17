@@ -11,7 +11,7 @@ import (
 
 	"github.com/skip-mev/chaintestutil/sample"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 	mmmocks "github.com/skip-mev/connect/v2/x/marketmap/types/mocks"
@@ -44,7 +44,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 
 	// query the oracle module to see if they were created via hooks
 	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
-	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
+	s.Require().Equal([]connecttypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgCreateMarkets{
@@ -93,7 +93,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 						{
 							Name:           "kucoin",
 							OffChainTicker: "eth-usdt",
-							NormalizeByPair: &slinkytypes.CurrencyPair{
+							NormalizeByPair: &connecttypes.CurrencyPair{
 								Base:  "INVALID",
 								Quote: "PAIR",
 							},
@@ -182,7 +182,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 			{
 				Name:           "kucoin",
 				OffChainTicker: "btc-usdc",
-				NormalizeByPair: &slinkytypes.CurrencyPair{
+				NormalizeByPair: &connecttypes.CurrencyPair{
 					Base:  "INVALID",
 					Quote: "PAIR",
 				},
@@ -501,7 +501,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 						{
 							Name:           "kucoin",
 							OffChainTicker: "eth-usdt",
-							NormalizeByPair: &slinkytypes.CurrencyPair{
+							NormalizeByPair: &connecttypes.CurrencyPair{
 								Base:  "INVALID",
 								Quote: "PAIR",
 							},
