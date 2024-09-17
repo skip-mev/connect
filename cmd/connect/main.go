@@ -323,9 +323,9 @@ func runOracle() error {
 		}
 	}
 
+	// check that the marketmap endpoint they provided is correct.
 	if marketMapProvider == marketmap.Name {
-		p := cfg.Providers[marketMapProvider]
-		mmEndpoint := p.API.Endpoints[0].URL
+		mmEndpoint := cfg.Providers[marketMapProvider].API.Endpoints[0].URL
 		if err := checkMarketMapEndpoint(mmEndpoint); err != nil {
 			return err
 		}
