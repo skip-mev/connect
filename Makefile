@@ -52,7 +52,7 @@ BUILD_TAGS := -X github.com/skip-mev/connect/v2/cmd/build.Build=$(TAG)
 ###############################################################################
 
 build: tidy
-	go build -ldflags="$(BUILD_TAGS)" \
+	@go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
 
 run-oracle-client: build
