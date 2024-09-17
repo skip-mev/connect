@@ -326,7 +326,7 @@ func runOracle() error {
 	// check that the marketmap endpoint they provided is correct.
 	if marketMapProvider == marketmap.Name {
 		mmEndpoint := cfg.Providers[marketMapProvider].API.Endpoints[0].URL
-		if err := checkMarketMapEndpoint(mmEndpoint); err != nil {
+		if err := isValidGRPCEndpoint(mmEndpoint); err != nil {
 			return err
 		}
 	}
@@ -477,8 +477,8 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	return cfg, fmt.Errorf("no market-map provider found in config")
 }
 
-// checkMarketMapEndpoint checks that the endpoint does NOT start with http and that it DOES end with a port.
-func checkMarketMapEndpoint(s string) error {
+// isValidGRPCEndpoint checks that the string s is a valid gRPC endpoint. (doesn't start with http, ends with a port).
+func isValidGRPCEndpoint(s string) error {
 	if strings.HasPrefix(s, "http") {
 		return fmt.Errorf("expected gRPC endpoint but got HTTP endpoint %q. Please provide a gRPC endpoint (e.g. some.host:9090)", s)
 	}

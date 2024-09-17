@@ -51,7 +51,7 @@ func TestCheckMarketMapEndpoint(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := checkMarketMapEndpoint(tt.endpoint)
+			err := isValidGRPCEndpoint(tt.endpoint)
 			if tt.wantErr {
 				require.EqualError(t, err, tt.errMsg)
 			} else {
