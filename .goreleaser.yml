@@ -16,14 +16,6 @@ builds:
     id: 'connect'
     ldflags:
       - "-X github.com/skip-mev/connect/v2/cmd/build.Build={{.Version}}"
-  - main: 'cmd/connect/main.go'
-    goos:
-    - 'linux'
-    - 'darwin'
-    binary: 'slinky'
-    id: 'slinky'
-    ldflags:
-      - "-X github.com/skip-mev/connect/v2/cmd/build.Build={{.Version}}"
 archives:
   - format: tar.gz
     wrap_in_directory: true
