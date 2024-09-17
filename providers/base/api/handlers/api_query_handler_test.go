@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/base/api/errors"
 	"github.com/skip-mev/connect/v2/providers/base/api/handlers"
 	"github.com/skip-mev/connect/v2/providers/base/api/handlers/mocks"
@@ -29,9 +29,9 @@ import (
 
 var (
 	logger  = zap.NewExample()
-	btcusd  = slinkytypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = slinkytypes.NewCurrencyPair("ETH", "USD")
-	atomusd = slinkytypes.NewCurrencyPair("ATOM", "USD")
+	btcusd  = connecttypes.NewCurrencyPair("BTC", "USD")
+	ethusd  = connecttypes.NewCurrencyPair("ETH", "USD")
+	atomusd = connecttypes.NewCurrencyPair("ATOM", "USD")
 
 	constantURL = "http://fetchdata.org:8080"
 
@@ -62,30 +62,30 @@ func TestAPIQueryHandler(t *testing.T) {
 	testCases := []struct {
 		name           string
 		requestHandler func() handlers.RequestHandler
-		apiHandler     func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int]
+		apiHandler     func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int]
 		metrics        func() metrics.APIMetrics
-		ids            []slinkytypes.CurrencyPair
+		ids            []connecttypes.CurrencyPair
 		atomic         bool
-		responses      providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		responses      providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]
 	}{
 		{
 			name: "no ids to query",
 			requestHandler: func() handlers.RequestHandler {
 				return mocks.NewRequestHandler(t)
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{},
+			ids:    []connecttypes.CurrencyPair{},
 			atomic: false,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved:   map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved:   map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -97,14 +97,14 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				expectedIDs := []slinkytypes.CurrencyPair{btcusd}
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				expectedIDs := []connecttypes.CurrencyPair{btcusd}
 
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -127,15 +127,15 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd},
+			ids:    []connecttypes.CurrencyPair{btcusd},
 			atomic: true,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -147,19 +147,19 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				expectedIDs := []slinkytypes.CurrencyPair{btcusd}
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				expectedIDs := []connecttypes.CurrencyPair{btcusd}
 
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					resolved,
 					nil,
 				)
@@ -177,15 +177,15 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd},
+			ids:    []connecttypes.CurrencyPair{btcusd},
 			atomic: false,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -197,10 +197,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
@@ -212,11 +212,11 @@ func TestAPIQueryHandler(t *testing.T) {
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), providertypes.ErrorRateLimitExceeded).Maybe()
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd},
+			ids:    []connecttypes.CurrencyPair{btcusd},
 			atomic: true,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrRateLimit, providertypes.ErrorRateLimitExceeded),
 					},
@@ -232,10 +232,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
@@ -248,11 +248,11 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd},
+			ids:    []connecttypes.CurrencyPair{btcusd},
 			atomic: true,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError), providertypes.ErrorUnknown),
 					},
@@ -268,10 +268,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
@@ -284,11 +284,11 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd},
+			ids:    []connecttypes.CurrencyPair{btcusd},
 			atomic: true,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")), providertypes.ErrorUnknown),
 					},
@@ -304,14 +304,14 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				expectedIDs := []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd}
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				expectedIDs := []connecttypes.CurrencyPair{btcusd, ethusd, atomusd}
 
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
 				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				resolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -342,10 +342,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			ids:    []connecttypes.CurrencyPair{btcusd, ethusd, atomusd},
 			atomic: true,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -356,7 +356,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -368,46 +368,46 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
-				btcResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				btcResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				btcResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				btcResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					btcResolved,
 					nil,
 				)
 
-				ethResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				ethResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					ethusd: {
 						Value: big.NewInt(200),
 					},
 				}
-				ethResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				ethResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					ethResolved,
 					nil,
 				)
 
-				atomResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				atomResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					atomusd: {
 						Value: big.NewInt(300),
 					},
 				}
-				atomResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				atomResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					atomResolved,
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
@@ -422,10 +422,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			ids:    []connecttypes.CurrencyPair{btcusd, ethusd, atomusd},
 			atomic: false,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -436,7 +436,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -449,24 +449,24 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL+"eth", nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{ethusd}).Return(constantURL+"eth", nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
-				btcResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				btcResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				btcResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				btcResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					btcResolved,
 					nil,
 				)
 
-				atomResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				atomResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					atomusd: {
 						Value: big.NewInt(300),
 					},
@@ -476,8 +476,8 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
@@ -492,10 +492,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			ids:    []connecttypes.CurrencyPair{btcusd, ethusd, atomusd},
 			atomic: false,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -503,7 +503,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{
 					ethusd: {
 						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrRateLimit, providertypes.ErrorRateLimitExceeded),
 					},
@@ -520,46 +520,46 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return h
 			},
-			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
-				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
+			apiHandler: func() handlers.APIDataHandler[connecttypes.CurrencyPair, *big.Int] {
+				h := mocks.NewAPIDataHandler[connecttypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []connecttypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
-				btcResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				btcResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				btcResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				btcResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					btcResolved,
 					nil,
 				)
 
-				ethResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				ethResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					ethusd: {
 						Value: big.NewInt(200),
 					},
 				}
-				ethResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				ethResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					ethResolved,
 					nil,
 				)
 
-				atomResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				atomResolved := map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					atomusd: {
 						Value: big.NewInt(300),
 					},
 				}
-				atomResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				atomResponse := providertypes.NewGetResponse[connecttypes.CurrencyPair, *big.Int](
 					atomResolved,
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
+				h.On("ParseResponse", []connecttypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
@@ -574,10 +574,10 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			ids:    []connecttypes.CurrencyPair{btcusd, ethusd, atomusd},
 			atomic: false,
-			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+			responses: providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int]{
+				Resolved: map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -588,7 +588,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
+				UnResolved: map[connecttypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 	}
@@ -602,7 +602,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				apiCfg = nonAtomicCfg
 			}
 
-			handler, err := handlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
+			handler, err := handlers.NewAPIQueryHandler[connecttypes.CurrencyPair, *big.Int](
 				logger,
 				apiCfg,
 				tc.requestHandler(),
@@ -611,7 +611,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], len(tc.ids))
+			responseCh := make(chan providertypes.GetResponse[connecttypes.CurrencyPair, *big.Int], len(tc.ids))
 
 			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 			defer cancel()
@@ -622,8 +622,8 @@ func TestAPIQueryHandler(t *testing.T) {
 			}()
 
 			expectedResponses := tc.responses
-			resolved := make(map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int])
-			unResolved := make(map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult)
+			resolved := make(map[connecttypes.CurrencyPair]providertypes.ResolvedResult[*big.Int])
+			unResolved := make(map[connecttypes.CurrencyPair]providertypes.UnresolvedResult)
 			for resp := range responseCh {
 				for id, result := range resp.Resolved {
 					require.Equal(t, expectedResponses.Resolved[id], result)

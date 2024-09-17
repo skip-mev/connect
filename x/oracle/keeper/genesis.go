@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -56,7 +56,7 @@ func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	}
 
 	// next, iterate over NonceKey to retrieve any CurrencyPairs that have not yet been traversed (CurrencyPairs w/ no Price info)
-	err = k.IterateCurrencyPairs(ctx, func(cp slinkytypes.CurrencyPair, cps types.CurrencyPairState) {
+	err = k.IterateCurrencyPairs(ctx, func(cp connecttypes.CurrencyPair, cps types.CurrencyPairState) {
 		// append the currency pair + state to the genesis state
 		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, types.CurrencyPairGenesis{
 			CurrencyPair:      cp,

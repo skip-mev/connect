@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
+	connectgrpc "github.com/skip-mev/connect/v2/pkg/grpc"
 	"github.com/skip-mev/connect/v2/service/metrics"
 	"github.com/skip-mev/connect/v2/service/servers/oracle/types"
 )
@@ -142,7 +142,7 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 	)
 	go func() {
 		defer close(done)
-		conn, err = slinkygrpc.NewClient(c.addr, opts...)
+		conn, err = connectgrpc.NewClient(c.addr, opts...)
 
 		// attempt to connect + wait for change in connection state
 		if c.blockingDial {

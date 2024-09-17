@@ -1,7 +1,7 @@
 package dydx_test
 
 import (
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/kraken"
 	"github.com/skip-mev/connect/v2/providers/websockets/binance"
 	"github.com/skip-mev/connect/v2/providers/websockets/bybit"
@@ -75,7 +75,7 @@ const dYdXResponseInvalid = `
 }
 `
 
-var usdtusd = slinkytypes.NewCurrencyPair("USDT", "USD")
+var usdtusd = connecttypes.NewCurrencyPair("USDT", "USD")
 
 var convertedResponse = mmtypes.MarketMapResponse{
 	MarketMap: mmtypes.MarketMap{
@@ -186,7 +186,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 					{
 						Name:            huobi.Name,
 						OffChainTicker:  "ethusdt",
-						NormalizeByPair: &slinkytypes.CurrencyPair{Base: "ETH", Quote: "USD"},
+						NormalizeByPair: &connecttypes.CurrencyPair{Base: "ETH", Quote: "USD"},
 						Invert:          true,
 					},
 					{
@@ -196,7 +196,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 					{
 						Name:            kucoin.Name,
 						OffChainTicker:  "BTC-USDT",
-						NormalizeByPair: &slinkytypes.CurrencyPair{Base: "BTC", Quote: "USD"},
+						NormalizeByPair: &connecttypes.CurrencyPair{Base: "BTC", Quote: "USD"},
 						Invert:          true,
 					},
 					{

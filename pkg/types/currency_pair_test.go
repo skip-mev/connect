@@ -5,19 +5,19 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/testutil"
 )
 
 func TestValidateBasic(t *testing.T) {
 	tcs := []struct {
 		name       string
-		cp         slinkytypes.CurrencyPair
+		cp         connecttypes.CurrencyPair
 		expectPass bool
 	}{
 		{
 			"if the Base is not upper-case - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "aB",
 				Quote: "BB",
 			},
@@ -25,7 +25,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the Quote is not upper-case - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "aB",
 			},
@@ -33,7 +33,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Base formatted incorrectly as defi, Quote standard - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "bB,testAddress,testChain",
 				Quote: "AA",
 			},
@@ -41,7 +41,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Quote formatted correctly as defi, Base incorrectly  - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "bB",
 				Quote: "AA,testAddress,testChain",
 			},
@@ -49,7 +49,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if both Quote + Base are formatted incorrectly as defi - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "bB,testAddress,testChain",
 				Quote: "AA,testAddress,testChain",
 			},
@@ -57,7 +57,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Base formatted correctly as defi, Quote incorrectly - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain",
 				Quote: "aA",
 			},
@@ -65,7 +65,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Quote formatted incorrectly as defi, Quote standard - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "aA,testAddress,testChain",
 			},
@@ -73,7 +73,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if both Quote + Base are formatted incorrectly as defi - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain",
 				Quote: "aA,testAddress,testChain",
 			},
@@ -81,7 +81,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"Base defi asset too many fields - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain,extra",
 				Quote: "AA",
 			},
@@ -89,7 +89,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"Base defi asset too few fields - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress",
 				Quote: "AA",
 			},
@@ -97,7 +97,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"Quote defi asset too many fields - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA,testAddress,testChain,extra",
 			},
@@ -105,7 +105,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"Quote defi asset too few fields - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA,testAddress",
 			},
@@ -113,7 +113,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the base string is empty - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "",
 				Quote: "BB",
 			},
@@ -121,7 +121,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the quote string is empty - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "",
 			},
@@ -129,23 +129,23 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"Base is too long - fail",
-			slinkytypes.CurrencyPair{
-				Base:  testutil.RandomString(slinkytypes.MaxCPFieldLength + 1),
+			connecttypes.CurrencyPair{
+				Base:  testutil.RandomString(connecttypes.MaxCPFieldLength + 1),
 				Quote: "AA",
 			},
 			false,
 		},
 		{
 			"Quote is too long - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
-				Quote: testutil.RandomString(slinkytypes.MaxCPFieldLength + 1),
+				Quote: testutil.RandomString(connecttypes.MaxCPFieldLength + 1),
 			},
 			false,
 		},
 		{
 			"if both Quote + Base are formatted correctly - pass",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA",
 			},
@@ -153,7 +153,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Base formatted incorrectly as defi, Quote standard but rest lowercase - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain",
 				Quote: "AA",
 			},
@@ -161,7 +161,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Quote formatted incorrectly as Base, Quote standard but rest lowercase - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA,testAddress,testChain",
 			},
@@ -169,7 +169,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if both Quote + Base are formatted correctly as defi but rest lowercase - fail",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,testAddress,testChain",
 				Quote: "AA,testAddress,testChain",
 			},
@@ -177,7 +177,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Base formatted incorrectly as defi, Quote standard - pass",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,TESTADDRESS,TESTCHAIN",
 				Quote: "AA",
 			},
@@ -185,7 +185,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if Quote formatted incorrectly as Base, Quote standard - pass",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA,TESTADDRESS,TESTCHAIN",
 			},
@@ -193,7 +193,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if both Quote + Base are formatted correctly as defi - pass",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "BB,TESTADDRESS,TESTCHAIN",
 				Quote: "AA,TESTADDRESS,TESTCHAIN",
 			},
@@ -219,68 +219,68 @@ func TestToFromString(t *testing.T) {
 		name string
 		// string formatted CurrencyPair
 		cps        string
-		cp         slinkytypes.CurrencyPair
+		cp         connecttypes.CurrencyPair
 		expectPass bool
 	}{
 		{
 			"if string is incorrectly formatted, return an empty CurrencyPair",
 			"aa",
-			slinkytypes.CurrencyPair{},
+			connecttypes.CurrencyPair{},
 			false,
 		},
 		{
 			"if string is incorrectly formatted (defi), return an empty CurrencyPair",
 			"a,a,a,a,a,a/a",
-			slinkytypes.CurrencyPair{},
+			connecttypes.CurrencyPair{},
 			false,
 		},
 		{
 			"if string is incorrectly formatted (empty), return an empty CurrencyPair",
 			"",
-			slinkytypes.CurrencyPair{},
+			connecttypes.CurrencyPair{},
 			false,
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			slinkytypes.CurrencyPairString("A", "B"),
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPairString("A", "B"),
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"a/B",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"A/b",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"a,testAddress,testChain/B",
-			slinkytypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"a/b,testAddress,testChain",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B,TESTADDRESS,TESTCHAIN"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B,TESTADDRESS,TESTCHAIN"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case (defi), return the original CurrencyPair",
 			"A,testAddress,testChain/B,testAddress,testChain",
-			slinkytypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B,TESTADDRESS,TESTCHAIN"},
+			connecttypes.CurrencyPair{Base: "A,TESTADDRESS,TESTCHAIN", Quote: "B,TESTADDRESS,TESTCHAIN"},
 			true,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			cp, err := slinkytypes.CurrencyPairFromString(tc.cps)
+			cp, err := connecttypes.CurrencyPairFromString(tc.cps)
 			if tc.expectPass {
 				require.Nil(t, err)
 				require.Equal(t, cp, tc.cp)
@@ -294,17 +294,17 @@ func TestToFromString(t *testing.T) {
 func TestDecimals(t *testing.T) {
 	tcs := []struct {
 		name string
-		cp   slinkytypes.CurrencyPair
+		cp   connecttypes.CurrencyPair
 		dec  int
 	}{
 		{
 			"if the quote is ethereum, return 18",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
 			18,
 		},
 		{
 			"if the quote is not ethereum or eth, return 8",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
 			8,
 		},
 	}
@@ -319,44 +319,44 @@ func TestDecimals(t *testing.T) {
 func TestEqual(t *testing.T) {
 	tcs := []struct {
 		name string
-		cp1  slinkytypes.CurrencyPair
-		cp2  slinkytypes.CurrencyPair
+		cp1  connecttypes.CurrencyPair
+		cp2  connecttypes.CurrencyPair
 		eq   bool
 	}{
 		{
 			"if the CurrencyPairs are equal, return true",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 		{
 			"if the CurrencyPairs are not equal, return false",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
-			slinkytypes.CurrencyPair{Base: "B", Quote: "A"},
+			connecttypes.CurrencyPair{Base: "A", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "B", Quote: "A"},
 			false,
 		},
 		{
 			"if the CurrencyPairs are equal, return true - defi",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
 			true,
 		},
 		{
 			"if the CurrencyPairs are not equal, return false - defi",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
-			slinkytypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B"},
+			connecttypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A"},
 			false,
 		},
 		{
 			"if the CurrencyPairs are equal, return true - defi",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
 			true,
 		},
 		{
 			"if the CurrencyPairs are not equal, return false - defi",
-			slinkytypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
-			slinkytypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A,testAddress,testChain"},
+			connecttypes.CurrencyPair{Base: "A,testAddress,testChain", Quote: "B,testAddress,testChain"},
+			connecttypes.CurrencyPair{Base: "B,testAddress,testChain", Quote: "A,testAddress,testChain"},
 			false,
 		},
 	}

@@ -11,12 +11,12 @@ import (
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
 	mocks "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/connect/v2/abci/testutils"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
-	cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+	cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 	t.Run("price does not exist in state, delta is final price", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
@@ -197,7 +197,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		ok.On(
 			"GetPriceForCurrencyPair",
@@ -219,7 +219,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -244,7 +244,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -269,7 +269,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -294,7 +294,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -315,7 +315,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -344,7 +344,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp := connecttypes.NewCurrencyPair("BTC", "USD")
 
 		onChainPrice := math.NewInt(100)
 		ok.On(

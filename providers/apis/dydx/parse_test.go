@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/connect/v2/oracle/constants"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/defi/raydium"
 	"github.com/skip-mev/connect/v2/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/connect/v2/providers/apis/dydx"
@@ -116,7 +116,7 @@ func TestCreateTickerFromMarket(t *testing.T) {
 				Exponent:     -8,
 			},
 			expected: mmtypes.Ticker{
-				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+				CurrencyPair:     connecttypes.NewCurrencyPair("BTC", "USD"),
 				Decimals:         8,
 				MinProviderCount: 3,
 				Enabled:          true,
@@ -250,7 +250,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 				{
 					Name:           okx.Name,
 					OffChainTicker: "BTC-USDT",
-					NormalizeByPair: &slinkytypes.CurrencyPair{
+					NormalizeByPair: &connecttypes.CurrencyPair{
 						Base:  "USDT",
 						Quote: "USD",
 					},
@@ -274,7 +274,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 				{
 					Name:           kucoin.Name,
 					OffChainTicker: "BTC-USDT",
-					NormalizeByPair: &slinkytypes.CurrencyPair{
+					NormalizeByPair: &connecttypes.CurrencyPair{
 						Base:  "BTC",
 						Quote: "USD",
 					},
@@ -334,7 +334,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 				{
 					Name:           mexc.Name,
 					OffChainTicker: "ETHUSDT",
-					NormalizeByPair: &slinkytypes.CurrencyPair{
+					NormalizeByPair: &connecttypes.CurrencyPair{
 						Base:  "USDT",
 						Quote: "USD",
 					},
@@ -378,7 +378,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					Name:           uniswapv3.ProviderNames[constants.ETHEREUM],
 					OffChainTicker: "0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa-8-18",
 					Metadata_JSON:  "{\"address\":\"0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa\",\"base_decimals\":8,\"quote_decimals\":18,\"invert\":false}",
-					NormalizeByPair: &slinkytypes.CurrencyPair{
+					NormalizeByPair: &connecttypes.CurrencyPair{
 						Base:  "ETH",
 						Quote: "USD",
 					},
