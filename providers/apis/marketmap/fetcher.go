@@ -122,25 +122,6 @@ func (f *MarketMapFetcher) Fetch(
 		)
 	}
 
-	// Validate the market map response.
-	//
-	// TODO: Add checks on the chain ID.
-	if err := resp.MarketMap.ValidateBasic(); err != nil {
-		f.logger.Info(
-			"invalid market map response from module",
-			zap.Any("market_map", resp.MarketMap),
-			zap.Error(err),
-		)
-
-		return types.NewMarketMapResponseWithErr(
-			chains,
-			providertypes.NewErrorWithCode(
-				fmt.Errorf("invalid market map response: %w", err),
-				providertypes.ErrorInvalidResponse,
-			),
-		)
-	}
-
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(resp, time.Now())
 
