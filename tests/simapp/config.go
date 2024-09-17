@@ -24,8 +24,6 @@ import (
 	"cosmossdk.io/depinject"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	oraclemodulev1 "github.com/skip-mev/connect/v2/api/slinky/oracle/module/v1"
-
 	_ "cosmossdk.io/x/circuit"                        // import for side-effects
 	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config" // import for side-effects
@@ -66,7 +64,8 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/slinky/marketmap/module/v1"
+	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/connect/marketmap/module/v2"
+	oraclemodulev1 "github.com/skip-mev/connect/v2/api/connect/oracle/module/v2"
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
