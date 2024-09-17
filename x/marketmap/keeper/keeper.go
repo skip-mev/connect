@@ -182,7 +182,7 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 // the aggregate of all updates has led to a valid state.
 func (k *Keeper) ValidateState(ctx sdk.Context, updates []types.Market) error {
 	for _, market := range updates {
-		if err := k.IsMarketValid(ctx, market); err != nil {
+		if err := k.isMarketValid(ctx, market); err != nil {
 			return err
 		}
 	}
@@ -190,9 +190,9 @@ func (k *Keeper) ValidateState(ctx sdk.Context, updates []types.Market) error {
 	return nil
 }
 
-// IsMarketValid checks if a market is valid by statefully checking if each of the currency pairs
+// isMarketValid checks if a market is valid by statefully checking if each of the currency pairs
 // specified by its provider configs are valid and in state.
-func (k *Keeper) IsMarketValid(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) isMarketValid(ctx sdk.Context, market types.Market) error {
 	// check that all markets already exist in the keeper store:
 	for _, providerConfig := range market.ProviderConfigs {
 		if providerConfig.NormalizeByPair != nil {

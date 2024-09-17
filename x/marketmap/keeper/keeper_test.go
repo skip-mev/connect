@@ -276,6 +276,26 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
 }
 
+func (s *KeeperTestSuite) TestInvalidUpdateDisabledNormalizeBy() {
+	// create a valid markets
+	btcusdt.Ticker.Enabled = true
+	ethusdt.Ticker.Enabled = false
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, ethusdt))
+
+	// valid market with a normalize pair that is in state
+	validMarket := btcusdt
+	validMarket.ProviderConfigs = append(validMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &ethusdt.Ticker.CurrencyPair,
+	})
+
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
+}
+
 func (s *KeeperTestSuite) TestDeleteMarket() {
 	// create a valid markets
 	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
