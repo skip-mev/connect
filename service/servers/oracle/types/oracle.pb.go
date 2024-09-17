@@ -494,6 +494,7 @@ func _Oracle_Version_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+var Oracle_serviceDesc = _Oracle_serviceDesc
 var _Oracle_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "connect.service.v2.Oracle",
 	HandlerType: (*OracleServer)(nil),

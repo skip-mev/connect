@@ -126,7 +126,7 @@ func (opa *oraclePriceApplier) ApplyPricesFromVoteExtensions(ctx sdk.Context, re
 		quotePrice := oracletypes.QuotePrice{
 			Price:          math.NewIntFromBigInt(price),
 			BlockTimestamp: ctx.BlockHeader().Time,
-			BlockHeight:    uint64(ctx.BlockHeight()),
+			BlockHeight:    uint64(ctx.BlockHeight()), //nolint:gosec
 		}
 
 		if err := opa.ok.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
