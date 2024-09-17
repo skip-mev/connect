@@ -100,7 +100,16 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			"if the currency pair is empty, expect failure - fail",
 			func() {},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{},
+				CurrencyPair: "",
+			},
+			nil,
+			false,
+		},
+		{
+			"if the currency pair is malformed, expect failure - fail",
+			func() {},
+			&types.GetPriceRequest{
+				CurrencyPair: "AABB",
 			},
 			nil,
 			false,
@@ -110,10 +119,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			"if the query is for a currency pair that does not exist fail - fail",
 			func() {},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "DD",
-					Quote: "EE",
-				},
+				CurrencyPair: "DD/EE",
 			},
 			nil,
 			false,
@@ -131,10 +137,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "CC",
-					Quote: "BB",
-				},
+				CurrencyPair: "CC/BB",
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
@@ -156,10 +159,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "AA",
-					Quote: "ETHEREUM",
-				},
+				CurrencyPair: "AA/ETHEREUM",
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
