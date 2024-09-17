@@ -140,8 +140,8 @@ message MsgRemoveMarketAuthorities {
 // Msg/RemoveMarketAuthoritiesResponse response type.
 message MsgRemoveMarketAuthoritiesResponse {}
 
-// MsgRemoveMarkets defines the Msg/RemoveMarkets request type. It contains the new markets to be removed from the
-// market map.
+// MsgRemoveMarkets defines the Msg/RemoveMarkets request type. It contains the
+// new markets to be removed from the market map.
 message MsgRemoveMarkets {
   option (cosmos.msg.v1.signer) = "authority";
 
