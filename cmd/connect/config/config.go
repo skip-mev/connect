@@ -32,7 +32,7 @@ const (
 	DefaultPort = "8080"
 	// jsonFieldDelimiter is the delimiter used to separate fields in the JSON output.
 	jsonFieldDelimiter = "."
-	// ConnectConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
+	// ConnectConfigEnvironmentPrefix is the prefix for environment variables that override the connect config.
 	ConnectConfigEnvironmentPrefix = "CONNECT_CONFIG"
 	// TelemetryPushAddress is the value for the publication endpoint.
 	TelemetryPushAddress = "connect-statsd-data.dev.skip.money:9125"
