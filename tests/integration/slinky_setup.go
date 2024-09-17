@@ -296,7 +296,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 
 	// query the currency pairs
 	res, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPair: cp,
+		CurrencyPair: cp.String(),
 	})
 	if err != nil {
 		return nil, 0, err

@@ -77,18 +77,6 @@ func (s *ServerTestSuite) SetupTest() {
 	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s.Require().NoError(s.client.Start(dialCtx))
-
-	// Health check
-	for i := 0; ; i++ {
-		_, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
-		if err == nil {
-			break
-		}
-		if i == 10 {
-			s.T().Fatal("failed to connect to server")
-		}
-		time.Sleep(1 * time.Second)
-	}
 }
 
 // teardown test suite.
@@ -110,7 +98,7 @@ func (s *ServerTestSuite) TearDownTest() {
 
 func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	// set the mock oracle to not be running
-	s.mockOracle.On("IsRunning").Return(false)
+	s.mockOracle.EXPECT().IsRunning().Return(false)
 
 	// call from client
 	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
@@ -121,7 +109,7 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
 	// set the mock oracle to delay GetPrices response (delay for absurd time)
-	s.mockOracle.On("IsRunning").Return(true)
+	s.mockOracle.EXPECT().IsRunning().Return(true)
 	s.mockOracle.On("GetPrices").Return(nil).After(delay)
 
 	// call from client
@@ -133,7 +121,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
-	s.mockOracle.On("IsRunning").Return(true)
+	s.mockOracle.EXPECT().IsRunning().Return(true)
 	cp1 := mmtypes.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "BTC",
@@ -169,7 +157,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(resp.Timestamp, ts.UTC())
 
 	// call from http client
-	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/connect/oracle/v2/prices", localhost, port))
 	s.Require().NoError(err)
 
 	// check response

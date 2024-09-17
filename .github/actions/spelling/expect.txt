@@ -1,4 +1,5 @@
 aab
+AABB
 aadb
 AAQMb
 aarch
@@ -98,6 +99,7 @@ bto
 bufbuild
 cca
 ccc
+ccd
 Ccjku
 ccv
 ccvtypes
@@ -186,6 +188,7 @@ datacenters
 datadog
 datasources
 dbddb
+dbe
 dbf
 dbm
 dcdbc
@@ -217,6 +220,7 @@ dydxprotocol
 dydxtypes
 dylib
 EAB
+eaa
 ece
 ecfc
 eci
