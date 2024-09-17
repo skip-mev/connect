@@ -169,7 +169,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(resp.Timestamp, ts.UTC())
 
 	// call from http client
-	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/connect/oracle/v2/prices", localhost, port))
 	s.Require().NoError(err)
 
 	// check response
