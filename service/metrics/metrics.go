@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 //go:generate mockery --name Metrics --filename mock_metrics.go
@@ -24,19 +24,19 @@ type Metrics interface {
 	// AddABCIRequest updates a counter corresponding to the given ABCI method and status.
 	AddABCIRequest(method ABCIMethod, status Labeller)
 
-	// ObserveMessageSize updates a histogram per slinky message type with the size of that message
+	// ObserveMessageSize updates a histogram per Connect message type with the size of that message
 	ObserveMessageSize(msg MessageType, size int)
 
 	// ObservePriceForTicker updates a gauge with the price for the given ticker, this is updated each time a price is written to state
-	ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64)
+	ObservePriceForTicker(ticker connecttypes.CurrencyPair, price float64)
 
 	// AddValidatorPriceForTicker updates a gauge per validator with the price they observed for a given ticker, this is updated when prices
 	// to be written to state are aggregated
-	AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64)
+	AddValidatorPriceForTicker(validator string, ticker connecttypes.CurrencyPair, price float64)
 
 	// AddValidatorReportForTicker updates a counter per validator + status. This counter represents the number of times a validator
 	// for a ticker with a price, w/o a price, or w/ an absent.
-	AddValidatorReportForTicker(validator string, ticker slinkytypes.CurrencyPair, status ReportStatus)
+	AddValidatorReportForTicker(validator string, ticker connecttypes.CurrencyPair, status ReportStatus)
 }
 
 type nopMetricsImpl struct{}
@@ -46,16 +46,16 @@ func NewNopMetrics() Metrics {
 	return &nopMetricsImpl{}
 }
 
-func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                                {}
-func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)      {}
-func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                     {}
-func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                     {}
-func (m *nopMetricsImpl) ObservePriceForTicker(_ slinkytypes.CurrencyPair, _ float64) {}
-func (m *nopMetricsImpl) AddValidatorReportForTicker(_ string, _ slinkytypes.CurrencyPair, _ ReportStatus) {
+func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                 {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                                 {}
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)       {}
+func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                      {}
+func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                      {}
+func (m *nopMetricsImpl) ObservePriceForTicker(_ connecttypes.CurrencyPair, _ float64) {}
+func (m *nopMetricsImpl) AddValidatorReportForTicker(_ string, _ connecttypes.CurrencyPair, _ ReportStatus) {
 }
 
-func (m *nopMetricsImpl) AddValidatorPriceForTicker(_ string, _ slinkytypes.CurrencyPair, _ float64) {
+func (m *nopMetricsImpl) AddValidatorPriceForTicker(_ string, _ connecttypes.CurrencyPair, _ float64) {
 }
 
 func NewMetrics(chainID string) Metrics {
@@ -74,7 +74,7 @@ func NewMetrics(chainID string) Metrics {
 		abciMethodLatency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: AppNamespace,
 			Name:      "abci_method_latency",
-			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
+			Help:      "The time it took for an ABCI method to execute Connect specific logic (in seconds)",
 			Buckets:   []float64{.0001, .0004, .002, .009, .02, .1, .65, 2, 6, 25},
 		}, []string{ABCIMethodLabel, ChainIDLabel}),
 		abciRequests: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -167,14 +167,14 @@ func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
 	}).Observe(float64(size))
 }
 
-func (m *metricsImpl) ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64) {
+func (m *metricsImpl) ObservePriceForTicker(ticker connecttypes.CurrencyPair, price float64) {
 	m.prices.With(prometheus.Labels{
 		ChainIDLabel: m.chainID,
 		TickerLabel:  strings.ToLower(ticker.String()),
 	}).Set(price)
 }
 
-func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64) {
+func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker connecttypes.CurrencyPair, price float64) {
 	m.reportsPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
 		TickerLabel:    strings.ToLower(ticker.String()),
@@ -182,7 +182,7 @@ func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker slinky
 	}).Set(price)
 }
 
-func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker slinkytypes.CurrencyPair, rs ReportStatus) {
+func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker connecttypes.CurrencyPair, rs ReportStatus) {
 	m.reportStatusPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
 		ValidatorLabel: validator,

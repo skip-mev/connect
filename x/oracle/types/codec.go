@@ -12,10 +12,10 @@ import (
 // cdc. These types are used for amino serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the MsgAddCurrencyPairs for amino serialization
-	legacy.RegisterAminoMsg(cdc, &MsgAddCurrencyPairs{}, "slinky/x/oracle/MsgAddCurrencyPairs")
+	legacy.RegisterAminoMsg(cdc, &MsgAddCurrencyPairs{}, "connect/x/oracle/MsgAddCurrencyPairs")
 
 	// register the MsgRemoveCurrencyPairs for amino serialization
-	legacy.RegisterAminoMsg(cdc, &MsgRemoveCurrencyPairs{}, "slinky/x/oracle/MsgRemoveCurrencyPairs")
+	legacy.RegisterAminoMsg(cdc, &MsgRemoveCurrencyPairs{}, "connect/x/oracle/MsgRemoveCurrencyPairs")
 }
 
 // RegisterInterfaces registers the x/oracle messages + message service w/ the InterfaceRegistry (registry).

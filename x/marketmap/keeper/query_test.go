@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
@@ -23,7 +23,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 			MarketMap: types.MarketMap{
 				Markets: make(map[string]types.Market),
 			},
-			LastUpdated: uint64(s.ctx.BlockHeight()),
+			LastUpdated: uint64(s.ctx.BlockHeight()), //nolint:gosec
 			ChainId:     "test-chain",
 		}
 
@@ -45,7 +45,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 
 		expected := &types.MarketMapResponse{
 			MarketMap:   expectedMarketMap,
-			LastUpdated: uint64(s.ctx.BlockHeight()),
+			LastUpdated: uint64(s.ctx.BlockHeight()), //nolint:gosec
 			ChainId:     "test-chain",
 		}
 
@@ -70,7 +70,7 @@ func (s *KeeperTestSuite) TestMarket() {
 
 	s.Run("run query with no state", func() {
 		_, err := qs.Market(s.ctx, &types.MarketRequest{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "valid",
 				Quote: "pair",
 			},
@@ -131,7 +131,7 @@ func (s *KeeperTestSuite) TestLastUpdated() {
 		resp, err := qs.LastUpdated(s.ctx, &types.LastUpdatedRequest{})
 		s.Require().NoError(err)
 
-		s.Require().Equal(uint64(s.ctx.BlockHeight()), resp.LastUpdated)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), resp.LastUpdated) //nolint:gosec
 	})
 
 	s.Run("run invalid nil request", func() {

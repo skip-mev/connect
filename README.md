@@ -4,14 +4,14 @@
 <!-- markdownlint-disable MD041 -->
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#wip)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://godoc.org/github.com/skip-mev/connect/v2)
-[![Go Report Card](https://goreportcard.com/badge/github.com/skip-mev/connect/v2?style=flat-square)](https://goreportcard.com/report/github.com/skip-mev/connect/v2)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://godoc.org/github.com/skip-mev/connect)
+[![Go Report Card](https://goreportcard.com/badge/github.com/skip-mev/connect?style=flat-square)](https://goreportcard.com/report/github.com/skip-mev/connect)
 [![Version](https://img.shields.io/github/tag/skip-mev/connect.svg?style=flat-square)](https://github.com/skip-mev/connect/releases/latest)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/connect?style=flat-square)](https://github.com/skip-mev/connect)
 
 A general purpose price oracle leveraging ABCI++. Please visit our [docs](https://docs.skip.build/connect/introduction) page for more information!
 
-Connect uses Vote Extensions to create an hyperperformant, extremely secure mechanism for aggregating off-chain data onto a blockchain. It is used by
+Connect uses Vote Extensions to create a hyperperformant, extremely secure mechanism for aggregating off-chain data onto a blockchain. It is used by
 many of the highest-performance decentralized applications today. If you would like to integrate Connect to power your use case, please contact us on our
 [Discord](https://discord.gg/PeBGE9jrbu).
 

@@ -31,9 +31,9 @@ import (
 	"google.golang.org/grpc/metadata"
 
 	compression "github.com/skip-mev/connect/v2/abci/strategies/codec"
-	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/ve/types"
 	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/static"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
@@ -273,7 +273,7 @@ func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyP
 }
 
 // QueryCurrencyPair queries the price for the given currency-pair given a desired height to query from
-func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
+func QueryCurrencyPair(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
 	// create the client
@@ -359,7 +359,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...slinkytypes.CurrencyPair) error {
+func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...connecttypes.CurrencyPair) error {
 	creates := make([]mmtypes.Market, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.Market{
@@ -403,7 +403,7 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	return nil
 }
 
-func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
+func (s *ConnectIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
 	msg := &mmtypes.MsgUpsertMarkets{
 		Authority: s.user.FormattedAddress(),
 		Markets:   markets,
@@ -479,7 +479,7 @@ func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Durati
 // per validator. This method returns the height at which the condition was satisfied.
 //
 // Notice: the height returned is safe for querying, i.e the prices will have been written to state if a quorum reported
-func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves []slinkyabci.OracleVoteExtension) (uint64, error) {
+func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves []connectabci.OracleVoteExtension) (uint64, error) {
 	client := chain.Nodes()[0].Client
 
 	var blockHeight int64

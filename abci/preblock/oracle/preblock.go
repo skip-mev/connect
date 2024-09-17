@@ -14,10 +14,10 @@ import (
 	abciaggregator "github.com/skip-mev/connect/v2/abci/strategies/aggregator"
 	"github.com/skip-mev/connect/v2/abci/strategies/codec"
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
-	slinkyabcitypes "github.com/skip-mev/connect/v2/abci/types"
+	connectabcitypes "github.com/skip-mev/connect/v2/abci/types"
 	"github.com/skip-mev/connect/v2/abci/ve"
 	"github.com/skip-mev/connect/v2/aggregator"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
 
@@ -33,7 +33,7 @@ type PreBlockHandler struct { //golint:ignore
 
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
-	keeper slinkyabcitypes.OracleKeeper
+	keeper connectabcitypes.OracleKeeper
 
 	// pa is the price applier that is used to decode vote-extensions, aggregate price reports, and write prices to state.
 	pa abciaggregator.PriceApplier
@@ -43,8 +43,8 @@ type PreBlockHandler struct { //golint:ignore
 // is responsible for writing oracle data included in vote extensions to state.
 func NewOraclePreBlockHandler(
 	logger log.Logger,
-	aggregateFn aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int],
-	oracleKeeper slinkyabcitypes.OracleKeeper,
+	aggregateFn aggregator.AggregateFnFromContext[string, map[connecttypes.CurrencyPair]*big.Int],
+	oracleKeeper connectabcitypes.OracleKeeper,
 	metrics servicemetrics.Metrics,
 	strategy currencypair.CurrencyPairStrategy,
 	veCodec codec.VoteExtensionCodec,
@@ -93,7 +93,7 @@ func (h *PreBlockHandler) WrappedPreBlocker(mm *module.Manager) sdk.PreBlocker {
 		}
 
 		start := time.Now()
-		var prices map[slinkytypes.CurrencyPair]*big.Int
+		var prices map[connecttypes.CurrencyPair]*big.Int
 		defer func() {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {
@@ -103,7 +103,7 @@ func (h *PreBlockHandler) WrappedPreBlocker(mm *module.Manager) sdk.PreBlocker {
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
 				)
-				slinkyabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+				connectabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
 
 				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
 				if err == nil && prices != nil {
@@ -165,7 +165,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 		}
 
 		start := time.Now()
-		var prices map[slinkytypes.CurrencyPair]*big.Int
+		var prices map[connecttypes.CurrencyPair]*big.Int
 		defer func() {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {
@@ -175,7 +175,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
 				)
-				slinkyabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+				connectabcitypes.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
 
 				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
 				if err == nil && prices != nil {

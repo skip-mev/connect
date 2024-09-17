@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -19,31 +18,31 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 
-	slinkyabci "github.com/skip-mev/connect/v2/abci/ve/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/ve/types"
 	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/static"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
-// SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
-type SlinkyCCVSuite struct {
-	*SlinkyIntegrationSuite
+// ConnectCCVSuite is a testing-suite for testing Connect's integration with ics consumer chains
+type ConnectCCVSuite struct {
+	*ConnectIntegrationSuite
 }
 
-func NewSlinkyCCVIntegrationSuite(
+func NewConnectCCVIntegrationSuite(
 	spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option,
-) *SlinkyCCVSuite {
-	suite := NewSlinkyIntegrationSuite(spec, oracleImage, opts...)
-	return &SlinkyCCVSuite{
-		SlinkyIntegrationSuite: suite,
+) *ConnectCCVSuite {
+	suite := NewConnectIntegrationSuite(spec, oracleImage, opts...)
+	return &ConnectCCVSuite{
+		ConnectIntegrationSuite: suite,
 	}
 }
 
-func (s *SlinkyCCVSuite) TestCCVAggregation() {
-	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
+func (s *ConnectCCVSuite) TestCCVAggregation() {
+	ethusdc := connecttypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, ethusdc))
 
@@ -89,7 +88,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 
 	// test that prices are reported as expected when stake-weight is the same across validators
 	s.Run("expect a price-feed to be reported", func() {
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
 					id: zeroBz,
@@ -193,7 +192,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 		bz, err := priceDelta.GobEncode()
 
 		// wait for the vote-extensions
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []connectabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{},
 			},

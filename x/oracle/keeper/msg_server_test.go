@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/keeper"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
@@ -36,7 +36,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if the authority is not the authority of the module - fail",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress("not-authority").String(),
-				CurrencyPairs: []slinkytypes.CurrencyPair{
+				CurrencyPairs: []connecttypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress(moduleAuth).String(),
-				CurrencyPairs: []slinkytypes.CurrencyPair{
+				CurrencyPairs: []connecttypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -66,7 +66,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if there is a CurrencyPair that already exists in module, it is not overwritten",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress(moduleAuth).String(),
-				CurrencyPairs: []slinkytypes.CurrencyPair{
+				CurrencyPairs: []connecttypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -85,7 +85,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		},
 	}
 
-	initCP := slinkytypes.CurrencyPair{
+	initCP := connecttypes.CurrencyPair{
 		Base:  "E",
 		Quote: "F",
 	}
@@ -143,11 +143,11 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 	s.SetupWithNoMMKeeper()
 
 	// insert CurrencyPairs that will be deleted in the test-cases
-	cp1 := slinkytypes.CurrencyPair{
+	cp1 := connecttypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
-	cp2 := slinkytypes.CurrencyPair{
+	cp2 := connecttypes.CurrencyPair{
 		Base:  "CC",
 		Quote: "DD",
 	}
@@ -245,7 +245,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
 				// get currency pair from request
-				cp, err := slinkytypes.CurrencyPairFromString(cps)
+				cp, err := connecttypes.CurrencyPairFromString(cps)
 				require.Nil(s.T(), err)
 
 				// assert that currency-pair was removed

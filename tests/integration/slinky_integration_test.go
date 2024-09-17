@@ -113,7 +113,7 @@ var (
 )
 
 func TestSlinkyOracleIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
+	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)
@@ -122,7 +122,7 @@ func TestSlinkyOracleIntegration(t *testing.T) {
 }
 
 func TestSlinkyOracleValidatorIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
+	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)

@@ -9,10 +9,10 @@ import (
 
 	"github.com/skip-mev/connect/v2/abci/strategies/codec"
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
-	slinkyabci "github.com/skip-mev/connect/v2/abci/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/types"
 	vetypes "github.com/skip-mev/connect/v2/abci/ve/types"
 	"github.com/skip-mev/connect/v2/aggregator"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 // Vote encapsulates the validator and oracle data contained within a vote extension.
@@ -31,13 +31,13 @@ func GetOracleVotes(
 	veCodec codec.VoteExtensionCodec,
 	extCommitCodec codec.ExtendedCommitCodec,
 ) ([]Vote, error) {
-	if len(proposal) < slinkyabci.NumInjectedTxs {
-		return nil, slinkyabci.MissingCommitInfoError{}
+	if len(proposal) < connectabci.NumInjectedTxs {
+		return nil, connectabci.MissingCommitInfoError{}
 	}
 
-	extendedCommitInfo, err := extCommitCodec.Decode(proposal[slinkyabci.OracleInfoIndex])
+	extendedCommitInfo, err := extCommitCodec.Decode(proposal[connectabci.OracleInfoIndex])
 	if err != nil {
-		return nil, slinkyabci.CodecError{
+		return nil, connectabci.CodecError{
 			Err: fmt.Errorf("error decoding extended-commit-info: %w", err),
 		}
 	}
@@ -46,7 +46,7 @@ func GetOracleVotes(
 	for i, voteInfo := range extendedCommitInfo.Votes {
 		voteExtension, err := veCodec.Decode(voteInfo.VoteExtension)
 		if err != nil {
-			return nil, slinkyabci.CodecError{
+			return nil, connectabci.CodecError{
 				Err: fmt.Errorf("error decoding vote-extension: %w", err),
 			}
 		}
@@ -82,16 +82,16 @@ type VoteAggregator interface {
 	// price aggregator but can be replaced by the application.
 	//
 	// Notice: This method overwrites the VoteAggregator's local view of prices.
-	AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[slinkytypes.CurrencyPair]*big.Int, error)
+	AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[connecttypes.CurrencyPair]*big.Int, error)
 
 	// GetPriceForValidator gets the prices reported by a given validator. This method depends
 	// on the prices from the latest set of aggregated votes.
-	GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
+	GetPriceForValidator(validator sdk.ConsAddress) map[connecttypes.CurrencyPair]*big.Int
 }
 
 func NewDefaultVoteAggregator(
 	logger log.Logger,
-	aggregateFn aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int],
+	aggregateFn aggregator.AggregateFnFromContext[string, map[connecttypes.CurrencyPair]*big.Int],
 	strategy currencypair.CurrencyPairStrategy,
 ) VoteAggregator {
 	return &DefaultVoteAggregator{
@@ -105,7 +105,7 @@ func NewDefaultVoteAggregator(
 
 type DefaultVoteAggregator struct {
 	// validator address -> currency-pair -> price
-	priceAggregator *aggregator.DataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int]
+	priceAggregator *aggregator.DataAggregator[string, map[connecttypes.CurrencyPair]*big.Int]
 
 	// decoding prices / currency-pair ids
 	currencyPairStrategy currencypair.CurrencyPairStrategy
@@ -113,7 +113,7 @@ type DefaultVoteAggregator struct {
 	logger log.Logger
 }
 
-func (dva *DefaultVoteAggregator) AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[slinkytypes.CurrencyPair]*big.Int, error) {
+func (dva *DefaultVoteAggregator) AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[connecttypes.CurrencyPair]*big.Int, error) {
 	// Reset the price aggregator and set the aggregationFn to use the latest application-state.
 	dva.priceAggregator.ResetProviderData()
 
@@ -155,9 +155,9 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 	}
 
 	// Format all prices into a map of currency pair -> price.
-	prices := make(map[slinkytypes.CurrencyPair]*big.Int, len(oracleData.Prices))
+	prices := make(map[connecttypes.CurrencyPair]*big.Int, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
-		if len(priceBz) > slinkyabci.MaximumPriceSize {
+		if len(priceBz) > connectabci.MaximumPriceSize {
 			dva.logger.Debug(
 				"failed to store price, bytes are too long",
 				"currency_pair_id", cpID,
@@ -205,7 +205,7 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 	return nil
 }
 
-func (dva *DefaultVoteAggregator) GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
+func (dva *DefaultVoteAggregator) GetPriceForValidator(validator sdk.ConsAddress) map[connecttypes.CurrencyPair]*big.Int {
 	consAddrStr := validator.String()
 	return dva.priceAggregator.GetDataByProvider(consAddrStr)
 }

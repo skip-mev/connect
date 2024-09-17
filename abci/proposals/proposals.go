@@ -11,7 +11,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/abci/strategies/codec"
 	"github.com/skip-mev/connect/v2/abci/strategies/currencypair"
-	slinkyabci "github.com/skip-mev/connect/v2/abci/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/types"
 	"github.com/skip-mev/connect/v2/abci/ve"
 	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 )
@@ -114,12 +114,12 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
 			)
 
-			slinkyabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
+			connectabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
 		}()
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
-			err = slinkyabci.NilRequestError{
+			err = connectabci.NilRequestError{
 				Handler: servicemetrics.PrepareProposal,
 			}
 			return nil, err
@@ -162,7 +162,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = slinkyabci.CodecError{
+				err = connectabci.CodecError{
 					Err: err,
 				}
 
@@ -193,7 +193,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
-			err = slinkyabci.WrappedHandlerError{
+			err = connectabci.WrappedHandlerError{
 				Handler: servicemetrics.PrepareProposal,
 				Err:     err,
 			}
@@ -267,13 +267,13 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
 				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
 			)
-			slinkyabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
+			connectabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
 		}()
 
 		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
-			err = slinkyabci.NilRequestError{
+			err = connectabci.NilRequestError{
 				Handler: servicemetrics.ProcessProposal,
 			}
 			return nil, err
@@ -293,21 +293,21 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		if voteExtensionsEnabled {
 			// Ensure that the commit info was correctly injected into the proposal.
-			if len(req.Txs) < slinkyabci.NumInjectedTxs {
+			if len(req.Txs) < connectabci.NumInjectedTxs {
 				h.logger.Error("failed to process proposal: missing commit info", "num_txs", len(req.Txs))
-				err = slinkyabci.MissingCommitInfoError{}
+				err = connectabci.MissingCommitInfoError{}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
 
-			extCommitBz := req.Txs[slinkyabci.OracleInfoIndex]
+			extCommitBz := req.Txs[connectabci.OracleInfoIndex]
 
 			// Validate the vote extensions included in the proposal.
 			var extInfo cometabci.ExtendedCommitInfo
 			extInfo, err = h.extendedCommitCodec.Decode(extCommitBz)
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
-				err = slinkyabci.CodecError{
+				err = connectabci.CodecError{
 					Err: err,
 				}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
@@ -334,8 +334,8 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 			// Remove the extended commit info from the proposal if required
 			if !h.retainOracleDataInWrappedHandler {
-				injectedTx = req.Txs[slinkyabci.OracleInfoIndex]
-				req.Txs = req.Txs[slinkyabci.NumInjectedTxs:]
+				injectedTx = req.Txs[connectabci.OracleInfoIndex]
+				req.Txs = req.Txs[connectabci.NumInjectedTxs:]
 			}
 		}
 
@@ -343,7 +343,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		wrappedProcessProposalStartTime := time.Now()
 		resp, err = h.processProposalHandler(ctx, req)
 		if err != nil {
-			err = slinkyabci.WrappedHandlerError{
+			err = connectabci.WrappedHandlerError{
 				Handler: servicemetrics.ProcessProposal,
 				Err:     err,
 			}

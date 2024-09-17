@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
@@ -21,14 +21,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the currency-pair geneses are invalid - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 				},
 				{
 					// invalid CurrencyPairGenesis
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base: "BB",
 					},
 				},
@@ -40,7 +40,7 @@ func TestGenesisValidation(t *testing.T) {
 			"if the CurrencyPairPrice is nil, but the nonce is non-zero - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
@@ -54,7 +54,7 @@ func TestGenesisValidation(t *testing.T) {
 			"if all of the currency-pair geneses are valid - pass",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
@@ -62,7 +62,7 @@ func TestGenesisValidation(t *testing.T) {
 				},
 				{
 					// invalid CurrencyPairGenesis
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "BB",
 						Quote: "CC",
 					},
@@ -76,14 +76,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the CurrencyPairGenesis ID's are duplicated - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 					Id: 1,
 				},
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "BB",
 						Quote: "CC",
 					},
@@ -97,14 +97,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the CurrencyPairs are repeated - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 					Id: 1,
 				},
 				{
-					CurrencyPair: slinkytypes.CurrencyPair{
+					CurrencyPair: connecttypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
