@@ -9,7 +9,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -301,11 +300,6 @@ func runOracle() error {
 	// Build logger.
 	logger := log.NewLogger(logCfg)
 	defer logger.Sync()
-
-	// Args always include command name so this is safe
-	if filepath.Base(os.Args[0]) == "slinky" {
-		logger.Warn("the `./slinky` binary is deprecated and will be removed in a future version. please use `./connect`")
-	}
 
 	var cfg config.OracleConfig
 	var err error

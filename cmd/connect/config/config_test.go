@@ -290,7 +290,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 
 	t.Run("overriding variables via config", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())
@@ -352,7 +352,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 
 	t.Run("overriding a nonexistent provider via config fails", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())
@@ -400,7 +400,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 func TestOracleConfigWithExtraKeys(t *testing.T) {
 	t.Run("an oracle config with extraneous keys", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())

@@ -8,8 +8,8 @@ import (
 	"github.com/skip-mev/connect/v2/tests/petri"
 )
 
-// TestSlinkyIntegration runs all of the petri slinky testapp tests
-func TestSlinkyIntegration(t *testing.T) {
+// TestConnectIntegration runs all petri connect testapp tests
+func TestConnectIntegration(t *testing.T) {
 	chainCfg := petri.GetChainConfig()
-	suite.Run(t, petri.NewSlinkyIntegrationSuite(&chainCfg))
+	suite.Run(t, petri.NewConnectIntegrationSuite(&chainCfg))
 }

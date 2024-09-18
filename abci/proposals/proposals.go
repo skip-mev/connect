@@ -104,14 +104,14 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		)
 		startTime := time.Now()
 
-		// report the slinky specific PrepareProposal latency
+		// report the connect specific PrepareProposal latency
 		defer func() {
 			totalLatency := time.Since(startTime)
 			h.logger.Debug(
 				"recording handle time metrics of prepare-proposal (seconds)",
 				"total latency", totalLatency.Seconds(),
 				"wrapped prepare proposal latency", wrappedPrepareProposalLatency.Seconds(),
-				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
+				"connect prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
 			)
 
 			connectabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
@@ -265,7 +265,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				"recording handle time metrics of process-proposal (seconds)",
 				"total latency", totalLatency.Seconds(),
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
-				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
+				"connect prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
 			)
 			connectabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
 		}()

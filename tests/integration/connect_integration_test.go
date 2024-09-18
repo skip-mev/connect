@@ -111,20 +111,20 @@ var (
 	}
 )
 
-func TestSlinkyOracleIntegration(t *testing.T) {
+func TestConnectOracleIntegration(t *testing.T) {
 	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)
 
-	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))
+	suite.Run(t, integration.NewConnectOracleIntegrationSuite(baseSuite))
 }
 
-func TestSlinkyOracleValidatorIntegration(t *testing.T) {
+func TestConnectOracleValidatorIntegration(t *testing.T) {
 	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)
 
-	suite.Run(t, integration.NewSlinkyOracleValidatorIntegrationSuite(baseSuite))
+	suite.Run(t, integration.NewConnectOracleValidatorIntegrationSuite(baseSuite))
 }
