@@ -198,12 +198,14 @@ func (k *Keeper) IsMarketValid(ctx sdk.Context, market types.Market) error {
 		if providerConfig.NormalizeByPair != nil {
 			norm, err := k.markets.Get(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
 			if err != nil {
-				return fmt.Errorf("unable to check if %s is normalized: %w", providerConfig.NormalizeByPair.String(), err)
+				return fmt.Errorf("unable to get normalize market %s for market %s: %w",
+					providerConfig.NormalizeByPair.String(), market.Ticker.String(), err)
 			}
 
 			// if the new market is enabled, its normalize by market must also be enabled
 			if market.Ticker.Enabled && !norm.Ticker.Enabled {
-				return fmt.Errorf("needed normalize market %s is not enabled", providerConfig.NormalizeByPair.String())
+				return fmt.Errorf("needed normalize market %s for market %s is not enabled",
+					providerConfig.NormalizeByPair.String(), market.Ticker.String())
 			}
 		}
 	}
