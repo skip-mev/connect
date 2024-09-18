@@ -8,29 +8,29 @@ import (
 
 	oracleconfig "github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/static"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 type SlinkyOracleValidatorIntegrationSuite struct {
-	*SlinkyIntegrationSuite
+	*ConnectIntegrationSuite
 }
 
-func NewSlinkyOracleValidatorIntegrationSuite(suite *SlinkyIntegrationSuite) *SlinkyOracleValidatorIntegrationSuite {
+func NewSlinkyOracleValidatorIntegrationSuite(suite *ConnectIntegrationSuite) *SlinkyOracleValidatorIntegrationSuite {
 	return &SlinkyOracleValidatorIntegrationSuite{
-		SlinkyIntegrationSuite: suite,
+		ConnectIntegrationSuite: suite,
 	}
 }
 
 func (s *SlinkyOracleValidatorIntegrationSuite) TestUnbonding() {
 	// Set up some price feeds
-	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
-	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
-	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
+	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
+	ethusdtCP := connecttypes.NewCurrencyPair("ETH", "USDT")
+	ethusdCP := connecttypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	cps := []slinkytypes.CurrencyPair{
+	cps := []connecttypes.CurrencyPair{
 		ethusdcCP,
 		ethusdtCP,
 		ethusdCP,

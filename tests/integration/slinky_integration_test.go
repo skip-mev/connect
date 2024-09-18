@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/connect/tests/integration/v2"
-
 	marketmapmodule "github.com/skip-mev/connect/v2/x/marketmap"
 	"github.com/skip-mev/connect/v2/x/oracle"
 )
@@ -113,7 +112,7 @@ var (
 )
 
 func TestSlinkyOracleIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
+	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)
@@ -122,7 +121,7 @@ func TestSlinkyOracleIntegration(t *testing.T) {
 }
 
 func TestSlinkyOracleValidatorIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
+	baseSuite := integration.NewConnectIntegrationSuite(
 		spec,
 		oracleImage,
 	)

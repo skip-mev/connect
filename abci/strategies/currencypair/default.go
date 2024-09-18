@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 // representation for a given currency pair.
 type DefaultCurrencyPairStrategy struct {
 	oracleKeeper   OracleKeeper
-	idCache        map[uint64]slinkytypes.CurrencyPair
+	idCache        map[uint64]connecttypes.CurrencyPair
 	previousHeight int64
 }
 
@@ -28,18 +28,18 @@ type DefaultCurrencyPairStrategy struct {
 func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
 	strategy := &DefaultCurrencyPairStrategy{
 		oracleKeeper: oracleKeeper,
-		idCache:      make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
+		idCache:      make(map[uint64]connecttypes.CurrencyPair, DefaultCacheInitialCapacity),
 	}
 	return strategy
 }
 
 // ID returns the ID of the given currency pair, by querying the x/oracle state for the ID of the given
 // currency pair. This method returns an error if the given currency pair is not found in the x/oracle state.
-func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
+func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp connecttypes.CurrencyPair) (uint64, error) {
 	// reset cache if the block height has changed
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.idCache = make(map[uint64]connecttypes.CurrencyPair, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
@@ -56,11 +56,11 @@ func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.Currenc
 
 // FromID returns the currency pair with the given ID, by querying the x/oracle state for the currency pair
 // with the given ID. this method returns an error if the given ID is not currently present for an existing currency-pair.
-func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytypes.CurrencyPair, error) {
+func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (connecttypes.CurrencyPair, error) {
 	// reset cache if the block height has changed
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.idCache = make(map[uint64]connecttypes.CurrencyPair, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
@@ -71,7 +71,7 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinky
 
 	cp, found := s.oracleKeeper.GetCurrencyPairFromID(ctx, id)
 	if !found {
-		return slinkytypes.CurrencyPair{}, fmt.Errorf("id %d not found", id)
+		return connecttypes.CurrencyPair{}, fmt.Errorf("id %d not found", id)
 	}
 
 	// cache the currency pair for future lookups
@@ -84,7 +84,7 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinky
 // returns the raw price, encoded into bytes.
 func (s *DefaultCurrencyPairStrategy) GetEncodedPrice(
 	_ sdk.Context,
-	_ slinkytypes.CurrencyPair,
+	_ connecttypes.CurrencyPair,
 	price *big.Int,
 ) ([]byte, error) {
 	if price.Sign() < 0 {
@@ -98,7 +98,7 @@ func (s *DefaultCurrencyPairStrategy) GetEncodedPrice(
 // returns the raw price, decoded from bytes.
 func (s *DefaultCurrencyPairStrategy) GetDecodedPrice(
 	_ sdk.Context,
-	_ slinkytypes.CurrencyPair,
+	_ connecttypes.CurrencyPair,
 	priceBytes []byte,
 ) (*big.Int, error) {
 	var price big.Int

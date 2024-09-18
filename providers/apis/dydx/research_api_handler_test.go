@@ -21,7 +21,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/dydx"
 	"github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
@@ -228,7 +228,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 
 		// check the ticker
 		expectedTicker := mmtypes.Ticker{
-			CurrencyPair:     slinkytypes.NewCurrencyPair("1INCH", "USD"),
+			CurrencyPair:     connecttypes.NewCurrencyPair("1INCH", "USD"),
 			Decimals:         10,
 			MinProviderCount: 3,
 			Enabled:          true,
@@ -343,7 +343,7 @@ func TestParseResponseResearchCMCAPI(t *testing.T) {
 
 		// check the ticker
 		expectedTicker := mmtypes.Ticker{
-			CurrencyPair:     slinkytypes.NewCurrencyPair("1INCH", "USD"),
+			CurrencyPair:     connecttypes.NewCurrencyPair("1INCH", "USD"),
 			Decimals:         10,
 			MinProviderCount: 1,
 			Enabled:          true,

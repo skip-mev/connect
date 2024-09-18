@@ -32,8 +32,8 @@ const (
 	DefaultPort = "8080"
 	// jsonFieldDelimiter is the delimiter used to separate fields in the JSON output.
 	jsonFieldDelimiter = "."
-	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
-	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
+	// ConnectConfigEnvironmentPrefix is the prefix for environment variables that override the connect config.
+	ConnectConfigEnvironmentPrefix = "CONNECT_CONFIG"
 	// TelemetryPushAddress is the value for the publication endpoint.
 	TelemetryPushAddress = "connect-statsd-data.dev.skip.money:9125"
 )
@@ -100,7 +100,7 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 	}
 
 	// set the environment prefix
-	viper.SetEnvPrefix(SlinkyConfigEnvironmentPrefix)
+	viper.SetEnvPrefix(ConnectConfigEnvironmentPrefix)
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }

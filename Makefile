@@ -52,10 +52,8 @@ BUILD_TAGS := -X github.com/skip-mev/connect/v2/cmd/build.Build=$(TAG)
 ###############################################################################
 
 build: tidy
-	go build -ldflags="$(BUILD_TAGS)" \
+	@go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
-	go build -ldflags="$(BUILD_TAGS)" \
-     -o ./build/slinky ./cmd/connect
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -216,7 +214,7 @@ test-cover: tidy
 ###                                Protobuf                                 ###
 ###############################################################################
 
-protoVer=0.14.0
+protoVer=0.15.1
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
@@ -244,7 +242,6 @@ proto-update-deps:
 	@$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-pulsar-gen proto-format proto-lint proto-check-breaking proto-update-deps
-
 
 ###############################################################################
 ###                              Formatting                                 ###

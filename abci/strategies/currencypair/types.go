@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -13,12 +13,12 @@ import (
 //
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface {
-	GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp slinkytypes.CurrencyPair, found bool)
-	GetIDForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, bool)
-	GetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (oracletypes.QuotePrice, error)
+	GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp connecttypes.CurrencyPair, found bool)
+	GetIDForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair) (uint64, bool)
+	GetPriceForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair) (oracletypes.QuotePrice, error)
 	GetNumCurrencyPairs(ctx sdk.Context) (uint64, error)
 	GetNumRemovedCurrencyPairs(ctx sdk.Context) (uint64, error)
-	GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
+	GetAllCurrencyPairs(ctx sdk.Context) []connecttypes.CurrencyPair
 }
 
 // CurrencyPairStrategy is a strategy for generating a unique ID and price representation for a given currency pair.
@@ -27,17 +27,17 @@ type OracleKeeper interface {
 type CurrencyPairStrategy interface { //nolint
 	// ID returns the on-chain ID of the given currency pair. This method returns an error if the given currency
 	// pair is not found in the x/oracle state.
-	ID(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error)
+	ID(ctx sdk.Context, cp connecttypes.CurrencyPair) (uint64, error)
 
 	// FromID returns the currency pair with the given ID. This method returns an error if the given ID is not
 	// currently present for an existing currency pair.
-	FromID(ctx sdk.Context, id uint64) (slinkytypes.CurrencyPair, error)
+	FromID(ctx sdk.Context, id uint64) (connecttypes.CurrencyPair, error)
 
 	// GetEncodedPrice returns the encoded price for the given currency pair. This method returns an error if the
 	// given currency pair is not found in the x/oracle state or if the price cannot be encoded.
 	GetEncodedPrice(
 		ctx sdk.Context,
-		cp slinkytypes.CurrencyPair,
+		cp connecttypes.CurrencyPair,
 		price *big.Int,
 	) ([]byte, error)
 
@@ -45,7 +45,7 @@ type CurrencyPairStrategy interface { //nolint
 	// given currency pair is not found in the x/oracle state or if the price cannot be decoded.
 	GetDecodedPrice(
 		ctx sdk.Context,
-		cp slinkytypes.CurrencyPair,
+		cp connecttypes.CurrencyPair,
 		priceBytes []byte,
 	) (*big.Int, error)
 

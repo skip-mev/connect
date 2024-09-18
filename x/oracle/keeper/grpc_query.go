@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -43,7 +43,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
-	cp, err := slinkytypes.CurrencyPairFromString(req.CurrencyPair)
+	cp, err := connecttypes.CurrencyPairFromString(req.CurrencyPair)
 	if err != nil {
 		return nil, fmt.Errorf("invalid currency pair: %w", err)
 	}
@@ -82,7 +82,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 
 // GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
-	var cp slinkytypes.CurrencyPair
+	var cp connecttypes.CurrencyPair
 
 	// fail on nil requests
 	if req == nil {
@@ -91,7 +91,7 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cid := range req.CurrencyPairIds {
-		cp, err = slinkytypes.CurrencyPairFromString(cid)
+		cp, err = connecttypes.CurrencyPairFromString(cid)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %w", err)
 		}

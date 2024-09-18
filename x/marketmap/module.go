@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 
-	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/slinky/marketmap/module/v1"
+	marketmapmodulev1 "github.com/skip-mev/connect/v2/api/connect/marketmap/module/v2"
 	"github.com/skip-mev/connect/v2/x/marketmap/client/cli"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"

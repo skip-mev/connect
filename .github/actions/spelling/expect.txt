@@ -12,7 +12,6 @@ abf
 abigen
 acb
 acfd
-adadfc
 adb
 adec
 adf
@@ -82,7 +81,6 @@ beea
 benchmem
 BERNIE
 bfe
-bfeb
 bidichk
 binanceapi
 binancews
@@ -97,8 +95,6 @@ btcusd
 btcusdt
 bto
 bufbuild
-cca
-ccc
 ccd
 Ccjku
 ccv
@@ -219,8 +215,8 @@ dva
 dydxprotocol
 dydxtypes
 dylib
-EAB
 eaa
+EAB
 ece
 ecfc
 eci
@@ -266,7 +262,6 @@ fdq
 febe
 fedfd
 Feegrant
-fefe
 fetchdata
 ffbf
 ffd
@@ -569,14 +564,14 @@ slashingkeeper
 slashingmodulev
 slashingtypes
 SLf
-slinkyabci
-slinkyabcimocks
-slinkyabcitypes
+connectabci
+connectabcimocks
+connectabcitypes
 slinkyd
-slinkygrpc
+connectgrpc
 slinkyhttp
 slinkymath
-slinkytypes
+connecttypes
 SMOLE
 solana
 solanago
@@ -758,4 +753,5 @@ Ywn
 Yxwa
 zaptest
 ZFvy
+zrbecker
 zstd

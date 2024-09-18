@@ -793,6 +793,7 @@ func _Msg_UpsertMarkets_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+var Msg_serviceDesc = _Msg_serviceDesc
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "connect.marketmap.v2.Msg",
 	HandlerType: (*MsgServer)(nil),

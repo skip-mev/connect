@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/keeper"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 	"github.com/skip-mev/connect/v2/x/oracle/types/mocks"
@@ -61,13 +61,13 @@ func (s *KeeperTestSuite) SetupWithNoMMKeeper() {
 func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	tcs := []struct {
 		name       string
-		cp         slinkytypes.CurrencyPair
+		cp         connecttypes.CurrencyPair
 		price      types.QuotePrice
 		expectPass bool
 	}{
 		{
 			"if the currency pair is correctly formatted - pass",
-			slinkytypes.CurrencyPair{
+			connecttypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "BB",
 			},
@@ -104,7 +104,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 
 func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	// insert a cp + qp pair, and check that the nonce is zero
-	cp := slinkytypes.CurrencyPair{
+	cp := connecttypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
@@ -149,14 +149,14 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 
 func (s *KeeperTestSuite) TestGetAllCPs() {
 	// insert multiple currency pairs
-	cp1 := slinkytypes.CurrencyPair{
+	cp1 := connecttypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
 	qp1 := types.QuotePrice{
 		Price: sdkmath.NewInt(100),
 	}
-	cp2 := slinkytypes.CurrencyPair{
+	cp2 := connecttypes.CurrencyPair{
 		Base:  "CC",
 		Quote: "DD",
 	}
@@ -183,7 +183,7 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 }
 
 func (s *KeeperTestSuite) TestCreateCurrencyPair() {
-	cp := slinkytypes.CurrencyPair{
+	cp := connecttypes.CurrencyPair{
 		Base:  "NEW",
 		Quote: "PAIR",
 	}
@@ -217,12 +217,12 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 }
 
 func (s *KeeperTestSuite) TestIDForCurrencyPair() {
-	cp1 := slinkytypes.CurrencyPair{
+	cp1 := connecttypes.CurrencyPair{
 		Base:  "PAIR",
 		Quote: "1",
 	}
 
-	cp2 := slinkytypes.CurrencyPair{
+	cp2 := connecttypes.CurrencyPair{
 		Base:  "PAIR",
 		Quote: "2",
 	}
@@ -284,7 +284,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	})
 
 	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
-		cp3 := slinkytypes.CurrencyPair{
+		cp3 := connecttypes.CurrencyPair{
 			Base:  "PAIR",
 			Quote: "3",
 		}
@@ -312,8 +312,8 @@ func (s *KeeperTestSuite) TestGetNumRemovedCurrencyPairs() {
 	s.Run("get 1 with 1 remove", func() {
 		s.SetupTest()
 
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
-		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 
 		removes, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
@@ -323,10 +323,10 @@ func (s *KeeperTestSuite) TestGetNumRemovedCurrencyPairs() {
 	s.Run("get 2 with 2 removes", func() {
 		s.SetupTest()
 
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
-		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
-		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 
 		removes, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
@@ -346,7 +346,7 @@ func (s *KeeperTestSuite) TestGetNumCurrencyPairs() {
 	s.Run("get 1 with 1 cp", func() {
 		s.SetupTest()
 
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 
 		cps, err := s.oracleKeeper.GetNumCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
@@ -356,8 +356,8 @@ func (s *KeeperTestSuite) TestGetNumCurrencyPairs() {
 	s.Run("get 2 with 2 cp", func() {
 		s.SetupTest()
 
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 
 		cps, err := s.oracleKeeper.GetNumCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
