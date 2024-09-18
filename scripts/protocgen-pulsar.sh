@@ -13,7 +13,7 @@ echo "Cleaning API directory"
 (cd api; find ./ -type f \( -iname \*.pulsar.go -o -iname \*.pb.go -o -iname \*.cosmos_orm.go -o -iname \*.pb.gw.go \) -delete; find . -empty -type d -delete; cd ..)
 
 echo "Generating API module"
-(cd proto; buf generate --template buf.gen.pulsar.yaml --exclude-path slinky/service --exclude-path connect/service)
+(cd proto; buf generate --template buf.gen.pulsar.yaml --exclude-path --exclude-path connect/service)
 
 echo "fixing types.pulsar.go"
 sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/types/v2/currency_pair.pulsar.go && rm ./api/connect/types/v2/currency_pair.pulsar.go.bak

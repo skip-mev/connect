@@ -567,10 +567,7 @@ SLf
 connectabci
 connectabcimocks
 connectabcitypes
-slinkyd
 connectgrpc
-slinkyhttp
-slinkymath
 connecttypes
 SMOLE
 solana

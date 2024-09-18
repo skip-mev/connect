@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "connect.e2e.Dockerfile", name: "connect-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "connect.sidecar.prod.Dockerfile", name: "connect-sidecar"}, {file: "connect.local.Dockerfile", name: "connect-testapp"}]
+        image: [{file: "connect.e2e.Dockerfile", name: "connect-simapp"}, {file: "connect.sidecar.prod.Dockerfile", name: "connect-sidecar"}, {file: "connect.local.Dockerfile", name: "connect-testapp"}]
     runs-on: ubuntu-latest-m
     permissions:
       contents: read

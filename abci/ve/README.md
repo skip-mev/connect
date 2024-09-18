@@ -4,7 +4,8 @@
 
 ## Overview
 
-Each validator in the network running the slinky module either runs an oracle in process or out of process. In either case, the oracle is responsible for fetching data offchain that will include the validator's vote extension, broadcast to the network, included in a block, and subsequently committed on-chain.
+Each validator in the network running the connect module either runs an oracle in process or out of process. In either 
+case, the oracle is responsible for fetching data offchain that will include the validator's vote extension, broadcast to the network, included in a block, and subsequently committed on-chain.
 
 The process of fetching data offchain and broadcasting it to the network is handled by the vote extension handlers. Note, when a validator broadcasts their vote extensions, they will only be available to other validators in the network at the next height. This means that oracle prices
 are always one height behind.

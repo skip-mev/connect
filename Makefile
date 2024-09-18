@@ -76,7 +76,6 @@ stop-sidecar-dev:
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/connect
-	@cp $(BIN_DIR)/connect $(BIN_DIR)/slinky
 
 .PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
