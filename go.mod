@@ -17,7 +17,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.9
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/interchain-security/v5 v5.2.0
+	github.com/cosmos/interchain-security/v6 v6.0.0
 	github.com/ethereum/go-ethereum v1.14.8
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
