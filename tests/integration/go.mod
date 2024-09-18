@@ -37,8 +37,8 @@ require (
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/log v1.4.1 // indirect
 	cosmossdk.io/store v1.1.1 // indirect
-	cosmossdk.io/x/evidence v0.1.0 // indirect
-	cosmossdk.io/x/feegrant v0.1.0 // indirect
+	cosmossdk.io/x/evidence v0.1.1 // indirect
+	cosmossdk.io/x/feegrant v0.1.1 // indirect
 	cosmossdk.io/x/tx v0.13.4 // indirect
 	cosmossdk.io/x/upgrade v0.1.4 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -83,9 +83,9 @@ require (
 	github.com/cosmos/gogoproto v1.7.0 // indirect
 	github.com/cosmos/iavl v1.2.0 // indirect
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
-	github.com/cosmos/ibc-go/v8 v8.3.2 // indirect
+	github.com/cosmos/ibc-go/v8 v8.5.0 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
-	github.com/cosmos/interchain-security/v6 v6.0.0 // indirect
+	github.com/cosmos/interchain-security/v5 v5.0.0-alpha1.0.20240424193412-7cd900ad2a74 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
@@ -229,7 +229,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.7.0 // indirect
-	github.com/tidwall/gjson v1.17.1 // indirect
+	github.com/tidwall/gjson v1.17.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect

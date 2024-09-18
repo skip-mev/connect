@@ -51,11 +51,10 @@ require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect
-	cloud.google.com/go/storage v1.41.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/x/tx v0.13.4 // indirect
-	cosmossdk.io/x/upgrade v0.1.2 // indirect
-	filippo.io/edwards25519 v1.0.0 // indirect
+	cosmossdk.io/x/upgrade v0.1.4 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
@@ -115,8 +114,8 @@ require (
 	github.com/cosmos/cosmos-db v1.0.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v1.2.0 // indirect
-	github.com/cosmos/ibc-go/modules/capability v1.0.0 // indirect
-	github.com/cosmos/ibc-go/v8 v8.3.2 // indirect
+	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
+	github.com/cosmos/ibc-go/v8 v8.5.0 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
@@ -329,7 +328,7 @@ require (
 	go.mongodb.org/mongo-driver v1.11.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
-	go.uber.org/multierr v1.10.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
