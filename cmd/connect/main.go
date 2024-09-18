@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
 	//nolint: gosec
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"syscall"
 	"time"
 
@@ -322,6 +323,14 @@ func runOracle() error {
 		}
 	}
 
+	// check that the marketmap endpoint they provided is correct.
+	if marketMapProvider == marketmap.Name {
+		mmEndpoint := cfg.Providers[marketMapProvider].API.Endpoints[0].URL
+		if err := isValidGRPCEndpoint(mmEndpoint); err != nil {
+			return err
+		}
+	}
+
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
 		marketCfg, err = mmtypes.ReadMarketMapFromFile(marketCfgPath)
@@ -466,4 +475,28 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	}
 
 	return cfg, fmt.Errorf("no market-map provider found in config")
+}
+
+// isValidGRPCEndpoint checks that the string s is a valid gRPC endpoint. (doesn't start with http, ends with a port).
+func isValidGRPCEndpoint(s string) error {
+	if strings.HasPrefix(s, "http") {
+		return fmt.Errorf("expected gRPC endpoint but got HTTP endpoint %q. Please provide a gRPC endpoint (e.g. some.host:9090)", s)
+	}
+	if !hasPort(s) {
+		// they might do something like foo.bar:hello
+		// so lets just take the bit before foo.bar for the example in the error.
+		example := strings.Split(s, ":")[0]
+		return fmt.Errorf("invalid gRPC endpoint %q. Must specify port (e.g. %s:9090)", s, example)
+	}
+	return nil
+}
+
+// hasPort reports whether s contains `:` followed by numbers.
+func hasPort(s string) bool {
+	// matches anything that has `:` and some numbers after.
+	pattern := `:[0-9]+$`
+
+	regex := regexp.MustCompile(pattern)
+
+	return regex.MatchString(s)
 }
