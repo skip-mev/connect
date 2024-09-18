@@ -13,7 +13,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/connect/tests/integration/v2"
+	"github.com/skip-mev/connect/v2/tests/integration"
 	marketmapmodule "github.com/skip-mev/connect/v2/x/marketmap"
 	"github.com/skip-mev/connect/v2/x/oracle"
 )
