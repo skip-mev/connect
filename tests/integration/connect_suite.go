@@ -327,17 +327,17 @@ func (s *ConnectIntegrationSuite) SetupTest() {
 	}
 }
 
-type ConnectOracleIntegrationSuite struct {
+type SlinkyOracleIntegrationSuite struct {
 	*ConnectIntegrationSuite
 }
 
-func NewConnectOracleIntegrationSuite(suite *ConnectIntegrationSuite) *ConnectOracleIntegrationSuite {
-	return &ConnectOracleIntegrationSuite{
+func NewSlinkyOracleIntegrationSuite(suite *ConnectIntegrationSuite) *SlinkyOracleIntegrationSuite {
+	return &SlinkyOracleIntegrationSuite{
 		ConnectIntegrationSuite: suite,
 	}
 }
 
-func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
+func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	// query the oracle module grpc service for any CurrencyPairs
 	s.Run("QueryCurrencyPairs - no currency-pairs reported", func() {
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -379,7 +379,7 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 	return chain.GetGRPCAddress()
 }
 
-func (s *ConnectOracleIntegrationSuite) TestNodeFailures() {
+func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
@@ -577,7 +577,7 @@ func (s *ConnectOracleIntegrationSuite) TestNodeFailures() {
 	})
 }
 
-func (s *ConnectOracleIntegrationSuite) TestMultiplePriceFeeds() {
+func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
 	ethusdtCP := connecttypes.NewCurrencyPair("ETH", "USDT")
 	ethusdCP := connecttypes.NewCurrencyPair("ETH", "USD")
