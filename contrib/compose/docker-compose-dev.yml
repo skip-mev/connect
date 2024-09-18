@@ -38,7 +38,7 @@ services:
       context: ../..
       dockerfile: ./contrib/images/connect.sidecar.dev.Dockerfile
     environment:
-      - SLINKY_CONFIG_UPDATEINTERVAL=${SLINKY_CONFIG_UPDATEINTERVAL:-250ms}
+      - CONNECT_CONFIG_UPDATEINTERVAL=${CONNECT_CONFIG_UPDATEINTERVAL:-250ms}
     entrypoint: [
       "connect",
       "--market-config-path", "/data/markets.json",
