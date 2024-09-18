@@ -11,7 +11,7 @@ import (
 	"github.com/gagliardetto/solana-go/rpc/jsonrpc"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkyhttp "github.com/skip-mev/connect/v2/pkg/http"
+	connecthttp "github.com/skip-mev/connect/v2/pkg/http"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
 )
 
@@ -94,17 +94,17 @@ func (c *JSONRPCClient) GetMultipleAccountsWithOpts(
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
 func solanaClientFromEndpoint(endpoint config.Endpoint) (*rpc.Client, error) {
-	opts := []slinkyhttp.HeaderOption{
-		slinkyhttp.WithSlinkyVersionUserAgent(),
+	opts := []connecthttp.HeaderOption{
+		connecthttp.WithConnectVersionUserAgent(),
 	}
 
 	// if authentication is enabled
 	if endpoint.Authentication.Enabled() {
 		// add authentication header
-		opts = append(opts, slinkyhttp.WithAuthentication(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey))
+		opts = append(opts, connecthttp.WithAuthentication(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey))
 	}
 
-	transport := slinkyhttp.NewRoundTripperWithHeaders(http.DefaultTransport, opts...)
+	transport := connecthttp.NewRoundTripperWithHeaders(http.DefaultTransport, opts...)
 
 	client := rpc.NewWithCustomRPCClient(jsonrpc.NewClientWithOpts(endpoint.URL, &jsonrpc.RPCClientOpts{
 		HTTPClient: &http.Client{
