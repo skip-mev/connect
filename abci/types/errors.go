@@ -19,7 +19,7 @@ func (e NilRequestError) Label() string {
 	return "NilRequestError"
 }
 
-// WrappedHandlerError is an error that is returned when a handler that is wrapped by a Slinky ABCI handler
+// WrappedHandlerError is an error that is returned when a handler that is wrapped by a Connect ABCI handler
 // returns an error.
 type WrappedHandlerError struct {
 	Handler servicemetrics.ABCIMethod

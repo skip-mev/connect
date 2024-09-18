@@ -7,7 +7,7 @@ import (
 	"math"
 	"time"
 
-	slinkymath "github.com/skip-mev/connect/v2/pkg/math"
+	connectmath "github.com/skip-mev/connect/v2/pkg/math"
 	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 )
 
@@ -112,7 +112,7 @@ func (h *WebSocketHandler) NewSubscribeRequest(symbols []string) ([]handlers.Web
 	for i := 0; i < numBatches; i++ {
 		// Get the symbols for the batch.
 		start := i * h.ws.MaxSubscriptionsPerBatch
-		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numSymbols)
+		end := connectmath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numSymbols)
 
 		bz, err := json.Marshal(SubscribeRequest{
 			BaseMessage: BaseMessage{

@@ -111,7 +111,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "side_car_slinky_build_info{job=~\"$job\"}",
+          "expr": "side_car_connect_build_info{job=~\"$job\"}",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -2769,7 +2769,7 @@
     ]
   },
   "timezone": "",
-  "title": "Slinky SideCar Dashboard",
+  "title": "Connect SideCar Dashboard",
   "uid": "cdca49ue665mocd",
   "version": 144,
   "weekStart": ""

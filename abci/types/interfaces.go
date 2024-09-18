@@ -21,7 +21,7 @@ type OracleKeeper interface { //golint:ignore
 	SetPriceForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair, qp oracletypes.QuotePrice) error
 }
 
-// OracleClient defines the interface that must be fulfilled by the slinky client.
+// OracleClient defines the interface that must be fulfilled by the connect client.
 // This interface is utilized by the vote extension handler to fetch prices.
 type OracleClient interface {
 	Prices(ctx context.Context, in *servertypes.QueryPricesRequest, opts ...grpc.CallOption) (*servertypes.QueryPricesResponse, error)

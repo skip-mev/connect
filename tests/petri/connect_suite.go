@@ -8,8 +8,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// SlinkyIntegrationSuite is the testify suite for building and running slinky testapp networks using petri
-type SlinkyIntegrationSuite struct {
+// ConnectIntegrationSuite is the testify suite for building and running connect testapp networks using petri
+type ConnectIntegrationSuite struct {
 	suite.Suite
 
 	logger *zap.Logger
@@ -19,13 +19,13 @@ type SlinkyIntegrationSuite struct {
 	chain petritypes.ChainI
 }
 
-func NewSlinkyIntegrationSuite(spec *petritypes.ChainConfig) *SlinkyIntegrationSuite {
-	return &SlinkyIntegrationSuite{
+func NewConnectIntegrationSuite(spec *petritypes.ChainConfig) *ConnectIntegrationSuite {
+	return &ConnectIntegrationSuite{
 		spec: spec,
 	}
 }
 
-func (s *SlinkyIntegrationSuite) SetupSuite() {
+func (s *ConnectIntegrationSuite) SetupSuite() {
 	// create the logger
 	var err error
 	s.logger, err = zap.NewDevelopment()
@@ -40,13 +40,13 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
-func (s *SlinkyIntegrationSuite) TearDownSuite() {
+func (s *ConnectIntegrationSuite) TearDownSuite() {
 	err := s.chain.Teardown(context.Background())
 	s.Require().NoError(err)
 }
 
-// TestSlinkyIntegration waits for the chain to reach height 5
-func (s *SlinkyIntegrationSuite) TestSlinkyIntegration() {
+// TestConnectIntegration waits for the chain to reach height 5
+func (s *ConnectIntegrationSuite) TestConnectIntegration() {
 	err := s.chain.WaitForHeight(context.Background(), 5)
 	s.Require().NoError(err)
 }

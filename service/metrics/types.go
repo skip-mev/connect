@@ -29,7 +29,7 @@ func StatusFromError(err error) Labeller {
 	return Failure{}
 }
 
-// MessageType is an identifier used to represent the different types of data that is transmitted between validators in Slinky.
+// MessageType is an identifier used to represent the different types of data that is transmitted between validators in Connect.
 // This ID is used to paginate metrics corresponding to these messages.
 type MessageType int
 

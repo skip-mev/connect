@@ -16,19 +16,19 @@ import (
 )
 
 const (
-	// DefaultUpdateInterval is the default value for how frequently slinky updates aggregate price responses.
+	// DefaultUpdateInterval is the default value for how frequently connect updates aggregate price responses.
 	DefaultUpdateInterval = 250000000
-	// DefaultMaxPriceAge is the default value for the oldest price considered in an aggregate price response by slinky.
+	// DefaultMaxPriceAge is the default value for the oldest price considered in an aggregate price response by connect.
 	DefaultMaxPriceAge = 120000000000
-	// DefaultPrometheusServerAddress is the default value for the prometheus server address in slinky.
+	// DefaultPrometheusServerAddress is the default value for the prometheus server address in connect.
 	DefaultPrometheusServerAddress = "0.0.0.0:8002"
-	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
+	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in connect.
 	DefaultMetricsEnabled = true
 	// DefaultTelemetryDisabled is the default value for disabling telemetry.
 	DefaultTelemetryDisabled = false
-	// DefaultHost is the default for the slinky oracle server host.
+	// DefaultHost is the default for the connect oracle server host.
 	DefaultHost = "0.0.0.0"
-	// DefaultPort is the default for the slinky oracle server port.
+	// DefaultPort is the default for the connect oracle server port.
 	DefaultPort = "8080"
 	// jsonFieldDelimiter is the delimiter used to separate fields in the JSON output.
 	jsonFieldDelimiter = "."
@@ -38,7 +38,7 @@ const (
 	TelemetryPushAddress = "connect-statsd-data.dev.skip.money:9125"
 )
 
-// DefaultOracleConfig returns the default configuration for the slinky oracle.
+// DefaultOracleConfig returns the default configuration for the connect oracle.
 func DefaultOracleConfig() config.OracleConfig {
 	cfg := config.OracleConfig{
 		UpdateInterval: DefaultUpdateInterval,

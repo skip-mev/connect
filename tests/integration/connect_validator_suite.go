@@ -13,17 +13,17 @@ import (
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
-type SlinkyOracleValidatorIntegrationSuite struct {
+type ConnectOracleValidatorIntegrationSuite struct {
 	*ConnectIntegrationSuite
 }
 
-func NewSlinkyOracleValidatorIntegrationSuite(suite *ConnectIntegrationSuite) *SlinkyOracleValidatorIntegrationSuite {
-	return &SlinkyOracleValidatorIntegrationSuite{
+func NewConnectOracleValidatorIntegrationSuite(suite *ConnectIntegrationSuite) *ConnectOracleValidatorIntegrationSuite {
+	return &ConnectOracleValidatorIntegrationSuite{
 		ConnectIntegrationSuite: suite,
 	}
 }
 
-func (s *SlinkyOracleValidatorIntegrationSuite) TestUnbonding() {
+func (s *ConnectOracleValidatorIntegrationSuite) TestUnbonding() {
 	// Set up some price feeds
 	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
 	ethusdtCP := connecttypes.NewCurrencyPair("ETH", "USDT")

@@ -80,7 +80,7 @@ func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmo
 		zaptest.NewLogger(t),
 	).Build(t, client, network)
 
-	path := "slinky-ibc-path"
+	path := "connect-ibc-path"
 	// create the interchain
 	ic := interchaintest.NewInterchain().
 		AddChain(chains[0]).
