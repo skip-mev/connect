@@ -1,4 +1,4 @@
-name: Build Slinky docker images
+name: Build Connect docker images
 on:
   push:
     paths-ignore:
