@@ -6,7 +6,7 @@ toolchain go1.23.0
 
 require (
 	github.com/cosmos/cosmos-sdk v0.50.9
-	github.com/skip-mev/connect/v2 v2.0.0
+	github.com/skip-mev/connect/v2 v2.0.1
 	github.com/skip-mev/connect/v2/tests/simapp v0.0.0
 	github.com/skip-mev/petri/chain/v2 v2.0.1
 	github.com/skip-mev/petri/node/v2 v2.0.1
