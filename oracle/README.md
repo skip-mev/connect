@@ -8,9 +8,7 @@ Responsibilities of the Oracle:
 
 ## Configuration
 
-At a high level the oracle is configured with a `oracle.json` file that contains all providers that need to be 
-instantiated. To read more about the configuration of `oracle.json`, please refer to the [oracle configuration 
-documentation](../docs/validators/configuration.mdx).
+At a high level the oracle is configured with a `oracle.json` file that contains all providers that need to be instantiated. To read more about the configuration of `oracle.json`, please refer to the [oracle configuration documentation](../docs/validators/configuration.mdx).
 
 Each provider is instantiated using the `PriceAPIQueryHandlerFactory`, `PriceWebSocketQueryHandlerFactory`, and `MarketMapFactory` factory functions. Think of these as the constructors for the providers. 
 
