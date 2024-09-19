@@ -1,6 +1,7 @@
 package currencypair
 
 import (
+	"context"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,12 +14,12 @@ import (
 //
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface {
-	GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp connecttypes.CurrencyPair, found bool)
-	GetIDForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair) (uint64, bool)
-	GetPriceForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair) (oracletypes.QuotePrice, error)
-	GetNumCurrencyPairs(ctx sdk.Context) (uint64, error)
-	GetNumRemovedCurrencyPairs(ctx sdk.Context) (uint64, error)
-	GetAllCurrencyPairs(ctx sdk.Context) []connecttypes.CurrencyPair
+	GetCurrencyPairFromID(ctx context.Context, id uint64) (cp connecttypes.CurrencyPair, found bool)
+	GetIDForCurrencyPair(ctx context.Context, cp connecttypes.CurrencyPair) (uint64, bool)
+	GetPriceForCurrencyPair(ctx context.Context, cp connecttypes.CurrencyPair) (oracletypes.QuotePrice, error)
+	GetNumCurrencyPairs(ctx context.Context) (uint64, error)
+	GetNumRemovedCurrencyPairs(ctx context.Context) (uint64, error)
+	GetAllCurrencyPairs(ctx context.Context) []connecttypes.CurrencyPair
 }
 
 // CurrencyPairStrategy is a strategy for generating a unique ID and price representation for a given currency pair.

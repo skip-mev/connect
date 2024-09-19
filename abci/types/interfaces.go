@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
@@ -17,8 +16,8 @@ import (
 //
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface { //golint:ignore
-	GetAllCurrencyPairs(ctx sdk.Context) []connecttypes.CurrencyPair
-	SetPriceForCurrencyPair(ctx sdk.Context, cp connecttypes.CurrencyPair, qp oracletypes.QuotePrice) error
+	GetAllCurrencyPairs(ctx context.Context) []connecttypes.CurrencyPair
+	SetPriceForCurrencyPair(ctx context.Context, cp connecttypes.CurrencyPair, qp oracletypes.QuotePrice) error
 }
 
 // OracleClient defines the interface that must be fulfilled by the connect client.

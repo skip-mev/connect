@@ -5,9 +5,8 @@ package mocks
 import (
 	context "context"
 
-	mock "github.com/stretchr/testify/mock"
-
 	handlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/skip-mev/connect/v2/providers/types"
 )

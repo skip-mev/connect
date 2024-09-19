@@ -37,7 +37,7 @@ func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCur
 // GetPrice gets the QuotePrice and the nonce for the QuotePrice for a given CurrencyPair. The request contains a
 // CurrencyPairSelector (either the stringified CurrencyPair, or the CurrencyPair itself). If the request is nil this method fails.
 // If the selector is an incorrectly formatted string this method fails. If the QuotePrice / Nonce do not exist for this CurrencyPair, this method fails.
-func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest) (_ *types.GetPriceResponse, err error) {
+func (q queryServer) GetPrice(ctx context.Context, req *types.GetPriceRequest) (_ *types.GetPriceResponse, err error) {
 	// fail on nil requests
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -51,9 +51,6 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	if err = cp.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid currency pair: %w", err)
 	}
-
-	// unwrap ctx
-	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// get the QuotePrice + nonce for the given CurrencyPair
 	qpn, err := q.k.GetPriceWithNonceForCurrencyPair(ctx, cp)
@@ -81,7 +78,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 }
 
 // GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
-func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
+func (q queryServer) GetPrices(ctx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
 	var cp connecttypes.CurrencyPair
 
 	// fail on nil requests
@@ -95,9 +92,6 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %w", err)
 		}
-
-		// unwrap ctx
-		ctx := sdk.UnwrapSDKContext(goCtx)
 
 		// get the QuotePrice + nonce for the given CurrencyPair
 		qpn, err := q.k.GetPriceWithNonceForCurrencyPair(ctx, cp)
@@ -129,8 +123,7 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 }
 
 func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCurrencyPairMappingRequest) (*types.GetCurrencyPairMappingResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	pairs, err := q.k.GetCurrencyPairMapping(sdkCtx)
+	pairs, err := q.k.GetCurrencyPairMapping(ctx)
 	if err != nil {
 		return nil, err
 	}
