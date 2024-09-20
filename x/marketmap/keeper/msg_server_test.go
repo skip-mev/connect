@@ -537,4 +537,98 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
+
+	s.Run("unable to remove non-existent market - multiple", func() {
+		msg := &types.MsgRemoveMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets:   []string{"BTC/USD", "ETH/USDT"},
+		}
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to remove non-existent market - single", func() {
+		msg := &types.MsgRemoveMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets:   []string{"BTC/USD"},
+		}
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("able to remove disabled market", func() {
+		copyBTC := btcusdt
+		copyBTC.Ticker.Enabled = false
+
+		msg := &types.MsgRemoveMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets:   []string{copyBTC.Ticker.String()},
+		}
+
+		msgCreate := &types.MsgCreateMarkets{
+			Authority:     s.marketAuthorities[0],
+			CreateMarkets: []types.Market{copyBTC},
+		}
+
+		_, err := msgServer.CreateMarkets(s.ctx, msgCreate)
+		s.Require().NoError(err)
+
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
+		s.Require().Error(err)
+	})
+
+	s.Run("unable to remove enabled market", func() {
+		copyBTC := btcusdt
+		copyBTC.Ticker.Enabled = true
+
+		msg := &types.MsgRemoveMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets:   []string{copyBTC.Ticker.String()},
+		}
+
+		msgCreate := &types.MsgCreateMarkets{
+			Authority:     s.marketAuthorities[0],
+			CreateMarkets: []types.Market{copyBTC},
+		}
+
+		_, err := msgServer.CreateMarkets(s.ctx, msgCreate)
+		s.Require().NoError(err)
+
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+
+		// market should exist
+		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
+		s.Require().NoError(err)
+
+		// update market to be disabled
+		copyBTC.Ticker.Enabled = false
+
+		msgUpdate := &types.MsgUpdateMarkets{
+			Authority:     s.marketAuthorities[0],
+			UpdateMarkets: []types.Market{copyBTC},
+		}
+
+		_, err = msgServer.UpdateMarkets(s.ctx, msgUpdate)
+		s.Require().NoError(err)
+
+		// remove
+		resp, err = msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
+		s.Require().Error(err)
+	})
+
+	// TODO: more testing
 }
