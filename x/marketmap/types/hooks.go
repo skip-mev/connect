@@ -14,6 +14,9 @@ type MarketMapHooks interface {
 
 	// AfterMarketGenesis is called after x/marketmap init genesis.
 	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Market) error
+
+	// AfterMarketRemoved is called after a market is removed.
+	AfterMarketRemoved(ctx sdk.Context, market Market) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -54,6 +57,17 @@ func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, markets map[st
 	return nil
 }
 
+// AfterMarketRemoved calls all AfterMarketRemoved hooks registered to the MultiMarketMapHooks.
+func (mh MultiMarketMapHooks) AfterMarketRemoved(ctx sdk.Context, market Market) error {
+	for i := range mh {
+		if err := mh[i].AfterMarketRemoved(ctx, market); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // MarketMapHooksWrapper is a wrapper for modules to inject MarketMapHooks using depinject.
 type MarketMapHooksWrapper struct{ MarketMapHooks }
 
@@ -71,5 +85,9 @@ func (n *NoopMarketMapHooks) AfterMarketUpdated(_ sdk.Context, _ Market) error {
 }
 
 func (n *NoopMarketMapHooks) AfterMarketGenesis(_ sdk.Context, _ map[string]Market) error {
+	return nil
+}
+
+func (n *NoopMarketMapHooks) AfterMarketRemoved(_ sdk.Context, _ Market) error {
 	return nil
 }

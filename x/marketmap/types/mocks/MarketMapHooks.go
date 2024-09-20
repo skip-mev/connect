@@ -117,6 +117,53 @@ func (_c *MarketMapHooks_AfterMarketGenesis_Call) RunAndReturn(run func(types.Co
 	return _c
 }
 
+// AfterMarketRemoved provides a mock function with given fields: ctx, market
+func (_m *MarketMapHooks) AfterMarketRemoved(ctx types.Context, market marketmaptypes.Market) error {
+	ret := _m.Called(ctx, market)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AfterMarketRemoved")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(types.Context, marketmaptypes.Market) error); ok {
+		r0 = rf(ctx, market)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MarketMapHooks_AfterMarketRemoved_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AfterMarketRemoved'
+type MarketMapHooks_AfterMarketRemoved_Call struct {
+	*mock.Call
+}
+
+// AfterMarketRemoved is a helper method to define mock.On call
+//   - ctx types.Context
+//   - market marketmaptypes.Market
+func (_e *MarketMapHooks_Expecter) AfterMarketRemoved(ctx interface{}, market interface{}) *MarketMapHooks_AfterMarketRemoved_Call {
+	return &MarketMapHooks_AfterMarketRemoved_Call{Call: _e.mock.On("AfterMarketRemoved", ctx, market)}
+}
+
+func (_c *MarketMapHooks_AfterMarketRemoved_Call) Run(run func(ctx types.Context, market marketmaptypes.Market)) *MarketMapHooks_AfterMarketRemoved_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Context), args[1].(marketmaptypes.Market))
+	})
+	return _c
+}
+
+func (_c *MarketMapHooks_AfterMarketRemoved_Call) Return(_a0 error) *MarketMapHooks_AfterMarketRemoved_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MarketMapHooks_AfterMarketRemoved_Call) RunAndReturn(run func(types.Context, marketmaptypes.Market) error) *MarketMapHooks_AfterMarketRemoved_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // AfterMarketUpdated provides a mock function with given fields: ctx, market
 func (_m *MarketMapHooks) AfterMarketUpdated(ctx types.Context, market marketmaptypes.Market) error {
 	ret := _m.Called(ctx, market)
