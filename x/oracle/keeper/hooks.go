@@ -45,3 +45,10 @@ func (h Hooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]marketmapt
 
 	return nil
 }
+
+// AfterMarketRemoved is the marketmap hook for x/oracle that is run after a market is removed in
+// the marketmap.
+func (h Hooks) AfterMarketRemoved(_ sdk.Context, _ marketmaptypes.Market) error {
+	// TODO
+	return nil
+}
