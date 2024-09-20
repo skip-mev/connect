@@ -519,3 +519,23 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().Nil(resp)
 	})
 }
+
+func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
+	msgServer := keeper.NewMsgServer(s.keeper)
+
+	s.Run("unable to process nil request", func() {
+		resp, err := msgServer.RemoveMarkets(s.ctx, nil)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority", func() {
+		msg := &types.MsgRemoveMarkets{
+			Authority: "invalid",
+		}
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+}
