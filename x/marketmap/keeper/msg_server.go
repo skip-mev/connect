@@ -265,8 +265,20 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 	}
 
 	for _, market := range msg.Markets {
-		if err := ms.k.DeleteMarket(ctx, market); err != nil {
+		if err := ms.k.DeleteDisabledMarket(ctx, market); err != nil {
+			return nil, fmt.Errorf("unable to delete market: %w", err)
 		}
+	}
+
+	// check if the resulting state is valid: it may not be valid if the removed market is used as a normalization pair
+	allMarkets, err := ms.k.GetAllMarkets(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	mm := types.MarketMap{Markets: allMarkets}
+	if err := mm.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid state resulting from removals: %w", err)
 	}
 
 	return &types.MsgRemoveMarketsResponse{}, nil
