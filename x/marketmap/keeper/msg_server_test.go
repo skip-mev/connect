@@ -567,12 +567,7 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 			Markets:   []string{copyBTC.Ticker.String()},
 		}
 
-		msgCreate := &types.MsgCreateMarkets{
-			Authority:     s.marketAuthorities[0],
-			CreateMarkets: []types.Market{copyBTC},
-		}
-
-		_, err := msgServer.CreateMarkets(s.ctx, msgCreate)
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
 		s.Require().NoError(err)
 
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
@@ -593,12 +588,7 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 			Markets:   []string{copyBTC.Ticker.String()},
 		}
 
-		msgCreate := &types.MsgCreateMarkets{
-			Authority:     s.marketAuthorities[0],
-			CreateMarkets: []types.Market{copyBTC},
-		}
-
-		_, err := msgServer.CreateMarkets(s.ctx, msgCreate)
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
 		s.Require().NoError(err)
 
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
@@ -612,12 +602,7 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		// update market to be disabled
 		copyBTC.Ticker.Enabled = false
 
-		msgUpdate := &types.MsgUpdateMarkets{
-			Authority:     s.marketAuthorities[0],
-			UpdateMarkets: []types.Market{copyBTC},
-		}
-
-		_, err = msgServer.UpdateMarkets(s.ctx, msgUpdate)
+		err = s.keeper.UpdateMarket(s.ctx, copyBTC)
 		s.Require().NoError(err)
 
 		// remove
