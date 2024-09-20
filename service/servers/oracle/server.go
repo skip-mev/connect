@@ -128,6 +128,9 @@ func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.List
 	eg.Go(func() error {
 		// serve, and return any errors
 		host, port, err := net.SplitHostPort(ln.Addr().String())
+		if err != nil {
+			return fmt.Errorf("[grpc server]: invalid listener address")
+		}
 		os.logger.Info(
 			"starting grpc server",
 			zap.String("host", host),
