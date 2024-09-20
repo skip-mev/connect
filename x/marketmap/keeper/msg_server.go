@@ -252,7 +252,8 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 
 // RemoveMarkets attempts to remove all currently non-enabled markets from the market map.
 func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMarkets) (*types.MsgRemoveMarketsResponse,
-	error) {
+	error,
+) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
 	}

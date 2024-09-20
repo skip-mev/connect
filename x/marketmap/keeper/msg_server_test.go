@@ -537,5 +537,4 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
-
 }

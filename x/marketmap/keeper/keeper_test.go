@@ -341,7 +341,6 @@ func (s *KeeperTestSuite) TestDeleteDisabledMarket() {
 	s.Require().NoError(s.keeper.DeleteDisabledMarket(s.ctx, btcCopy.Ticker.String()))
 	_, err := s.keeper.GetMarket(s.ctx, btcCopy.Ticker.String())
 	s.Require().Error(err)
-
 }
 
 func (s *KeeperTestSuite) TestEnableDisableMarket() {

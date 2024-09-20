@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
