@@ -334,6 +334,29 @@ func (s *KeeperTestSuite) TestDeleteMarket() {
 	s.Require().Error(err)
 }
 
+func (s *KeeperTestSuite) TestDeleteDisabledMarket() {
+	// create a valid markets
+	btcCopy := btcusdt
+	btcCopy.Ticker.Enabled = true
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcCopy))
+
+	// invalid delete fails
+	s.Require().Error(s.keeper.DeleteDisabledMarket(s.ctx, "foobar"))
+
+	// cannot delete enabled markets
+	s.Require().Error(s.keeper.DeleteDisabledMarket(s.ctx, btcCopy.Ticker.String()))
+
+	// disable market
+	btcCopy.Ticker.Enabled = false
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, btcCopy))
+
+	// delete disabled markets
+	s.Require().NoError(s.keeper.DeleteDisabledMarket(s.ctx, btcCopy.Ticker.String()))
+	_, err := s.keeper.GetMarket(s.ctx, btcCopy.Ticker.String())
+	s.Require().Error(err)
+
+}
+
 func (s *KeeperTestSuite) TestEnableDisableMarket() {
 	// create a valid markets
 	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))

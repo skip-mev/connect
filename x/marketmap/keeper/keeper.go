@@ -109,7 +109,6 @@ func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error)
 	if err != nil {
 		return nil, err
 	}
-
 	m := make(map[string]types.Market, len(keyValues))
 	for _, keyValue := range keyValues {
 		m[string(keyValue.Key)] = keyValue.Value
@@ -159,6 +158,19 @@ func (k *Keeper) DeleteMarket(ctx sdk.Context, tickerStr string) error {
 	}
 	if !alreadyExists {
 		return types.NewMarketDoesNotExistsError(types.TickerString(tickerStr))
+	}
+	return k.markets.Remove(ctx, types.TickerString(tickerStr))
+}
+
+// DeleteDisabledMarket removes a Market if it is disabled.
+func (k *Keeper) DeleteDisabledMarket(ctx sdk.Context, tickerStr string) error {
+	// Check if Ticker exists
+	market, err := k.markets.Get(ctx, types.TickerString(tickerStr))
+	if err != nil {
+		return err
+	}
+	if market.Ticker.Enabled {
+		return fmt.Errorf("cannot remove market: %w", types.NewMarketIsEnabled(types.TickerString(tickerStr)))
 	}
 	return k.markets.Remove(ctx, types.TickerString(tickerStr))
 }

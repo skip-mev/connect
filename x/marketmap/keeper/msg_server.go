@@ -250,6 +250,28 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 	return &types.MsgRemoveMarketAuthoritiesResponse{}, nil
 }
 
+// RemoveMarkets attempts to remove all currently non-enabled markets from the market map.
+func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMarkets) (*types.MsgRemoveMarketsResponse,
+	error) {
+	if msg == nil {
+		return nil, fmt.Errorf("unable to process nil msg")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// perform basic msg validity checks
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
+		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
+	}
+
+	for _, market := range msg.Markets {
+		if err := ms.k.DeleteMarket(ctx, market); err != nil {
+		}
+	}
+
+	return &types.MsgRemoveMarketsResponse{}, nil
+}
+
 // checkMarketAuthority checks if the given authority is the x/marketmap's list of MarketAuthorities.
 func checkMarketAuthority(authority string, params types.Params) bool {
 	if len(params.MarketAuthorities) == 0 {
