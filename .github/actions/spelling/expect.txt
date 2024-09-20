@@ -1,4 +1,5 @@
 aab
+AABB
 aadb
 AAQMb
 aarch
@@ -11,7 +12,6 @@ abf
 abigen
 acb
 acfd
-adadfc
 adb
 adec
 adf
@@ -81,7 +81,6 @@ beea
 benchmem
 BERNIE
 bfe
-bfeb
 bidichk
 binanceapi
 binancews
@@ -96,8 +95,7 @@ btcusd
 btcusdt
 bto
 bufbuild
-cca
-ccc
+ccd
 Ccjku
 ccv
 ccvtypes
@@ -152,11 +150,17 @@ Commitcodec
 conditionaltokens
 configurator
 confixcmd
+connectabci
+connectabcimocks
+connectabcitypes
 connectd
+connectgrpc
+connecthttp
+connectmath
+connecttypes
 consensuskeeper
 consensusmodulev
 consensustypes
-consulcatalog
 consumertypes
 conventionalcommits
 copyloopvar
@@ -182,10 +186,10 @@ cve
 cwwv
 dac
 dasel
-datacenters
 datadog
 datasources
 dbddb
+dbe
 dbf
 dbm
 dcdbc
@@ -216,6 +220,7 @@ dva
 dydxprotocol
 dydxtypes
 dylib
+eaa
 EAB
 ece
 ecfc
@@ -228,9 +233,7 @@ EFDDc
 efdff
 egs
 eguhvrsnrw
-entrypoints
 eod
-EOH
 Eqcq
 erc
 Errf
@@ -262,7 +265,6 @@ fdq
 febe
 fedfd
 Feegrant
-fefe
 fetchdata
 ffbf
 ffd
@@ -501,7 +503,6 @@ postmsg
 prealloc
 preblock
 preblocker
-prestart
 pricefeed
 printenv
 privkey
@@ -509,7 +510,6 @@ PROMETHEUSSERVERADDRESS
 promhttp
 promlinter
 promserver
-promtail
 protoc
 protocgen
 protoiface
@@ -565,14 +565,6 @@ slashingkeeper
 slashingmodulev
 slashingtypes
 SLf
-slinkyabci
-slinkyabcimocks
-slinkyabcitypes
-slinkyd
-slinkygrpc
-slinkyhttp
-slinkymath
-slinkytypes
 SMOLE
 solana
 solanago
@@ -629,7 +621,6 @@ topbar
 tparallel
 tprteaching
 tpt
-traefik
 trimpath
 tsql
 tuu
@@ -660,7 +651,6 @@ upgradekeeper
 upgrademodulev
 upgradetypes
 upserts
-upstreams
 USAPI
 usd
 USDCBTC
@@ -754,4 +744,5 @@ Ywn
 Yxwa
 zaptest
 ZFvy
+zrbecker
 zstd

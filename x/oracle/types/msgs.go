@@ -3,7 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 var (
@@ -12,7 +12,7 @@ var (
 )
 
 // NewMsgAddCurrencyPairs returns a new message from a set of currency-pairs and an authority.
-func NewMsgAddCurrencyPairs(authority string, cps []slinkytypes.CurrencyPair) MsgAddCurrencyPairs {
+func NewMsgAddCurrencyPairs(authority string, cps []connecttypes.CurrencyPair) MsgAddCurrencyPairs {
 	return MsgAddCurrencyPairs{
 		Authority:     authority,
 		CurrencyPairs: cps,
@@ -58,7 +58,7 @@ func (m *MsgRemoveCurrencyPairs) ValidateBasic() error {
 
 	// check that each CurrencyPairID is correctly formatted
 	for _, id := range m.CurrencyPairIds {
-		if _, err := slinkytypes.CurrencyPairFromString(id); err != nil {
+		if _, err := connecttypes.CurrencyPairFromString(id); err != nil {
 			return err
 		}
 	}

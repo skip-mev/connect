@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
+	connectgrpc "github.com/skip-mev/connect/v2/pkg/grpc"
 	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
 	apihandlers "github.com/skip-mev/connect/v2/providers/base/api/handlers"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
@@ -83,7 +83,7 @@ func NewDefaultSwitchOverMarketMapFetcher(
 	}
 
 	// Construct the dYdX x/marketmap API handler.
-	conn, err := slinkygrpc.NewClient(
+	conn, err := connectgrpc.NewClient(
 		api.Endpoints[1].URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithNoProxy(),

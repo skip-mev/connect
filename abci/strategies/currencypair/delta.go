@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -15,7 +15,7 @@ import (
 // encodes/decodes the price as the difference between the current price and the previous price.
 type DeltaCurrencyPairStrategy struct {
 	*DefaultCurrencyPairStrategy
-	cache          map[slinkytypes.CurrencyPair]*big.Int
+	cache          map[connecttypes.CurrencyPair]*big.Int
 	previousHeight int64
 }
 
@@ -23,7 +23,7 @@ type DeltaCurrencyPairStrategy struct {
 func NewDeltaCurrencyPairStrategy(oracleKeeper OracleKeeper) *DeltaCurrencyPairStrategy {
 	return &DeltaCurrencyPairStrategy{
 		DefaultCurrencyPairStrategy: NewDefaultCurrencyPairStrategy(oracleKeeper),
-		cache:                       make(map[slinkytypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity),
+		cache:                       make(map[connecttypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity),
 	}
 }
 
@@ -32,7 +32,7 @@ func NewDeltaCurrencyPairStrategy(oracleKeeper OracleKeeper) *DeltaCurrencyPairS
 // price. The delta price is then encoded into bytes.
 func (s *DeltaCurrencyPairStrategy) GetEncodedPrice(
 	ctx sdk.Context,
-	cp slinkytypes.CurrencyPair,
+	cp connecttypes.CurrencyPair,
 	price *big.Int,
 ) ([]byte, error) {
 	if price.Sign() < 0 {
@@ -61,7 +61,7 @@ func (s *DeltaCurrencyPairStrategy) GetEncodedPrice(
 // is strictly positive and is the price.
 func (s *DeltaCurrencyPairStrategy) GetDecodedPrice(
 	ctx sdk.Context,
-	cp slinkytypes.CurrencyPair,
+	cp connecttypes.CurrencyPair,
 	priceBytes []byte,
 ) (*big.Int, error) {
 	onChainPrice, err := s.getOnChainPrice(ctx, cp)
@@ -86,10 +86,10 @@ func (s *DeltaCurrencyPairStrategy) GetDecodedPrice(
 // getOnChainPrice returns the on-chain price, if it exists, for the given currency pair. If the
 // price is successfully fetched, the price is cached for future calls. The price cache is cleared
 // when the height changes.
-func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkytypes.CurrencyPair) (*big.Int, error) {
+func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp connecttypes.CurrencyPair) (*big.Int, error) {
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.cache = make(map[slinkytypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity)
+		s.cache = make(map[connecttypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 

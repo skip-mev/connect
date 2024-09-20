@@ -30,5 +30,5 @@ var (
 )
 
 // TickerString is the key used to identify unique pairs of Base/Quote with corresponding PathsConfig objects--or in other words AggregationConfigs.
-// The TickerString is identical to Slinky's CurrencyPair.String() output in that it is `Base` and `Quote` joined by `/` i.e. `$BASE/$QUOTE`.
+// The TickerString is identical to Connect's CurrencyPair.String() output in that it is `Base` and `Quote` joined by `/` i.e. `$BASE/$QUOTE`.
 type TickerString string

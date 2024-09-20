@@ -6,12 +6,12 @@ import (
 	"github.com/skip-mev/chaintestutil/sample"
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
 func TestValidateBasicMsgUpsertMarket(t *testing.T) {
-	validCurrencyPair := slinkytypes.CurrencyPair{
+	validCurrencyPair := connecttypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "ETH",
 	}
@@ -147,7 +147,7 @@ func TestValidateBasicMsgUpsertMarket(t *testing.T) {
 }
 
 func TestValidateBasicMsgCreateMarket(t *testing.T) {
-	validCurrencyPair := slinkytypes.CurrencyPair{
+	validCurrencyPair := connecttypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "ETH",
 	}
@@ -280,7 +280,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 }
 
 func TestValidateBasicMsgUpdateMarket(t *testing.T) {
-	validCurrencyPair := slinkytypes.CurrencyPair{
+	validCurrencyPair := connecttypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "ETH",
 	}

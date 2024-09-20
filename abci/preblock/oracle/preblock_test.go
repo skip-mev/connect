@@ -24,12 +24,12 @@ import (
 	currencypairmock "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/connect/v2/abci/testutils"
 	"github.com/skip-mev/connect/v2/abci/types"
-	slinkyabcimocks "github.com/skip-mev/connect/v2/abci/types/mocks"
+	connectabcimocks "github.com/skip-mev/connect/v2/abci/types/mocks"
 	vetypes "github.com/skip-mev/connect/v2/abci/ve/types"
 	"github.com/skip-mev/connect/v2/aggregator"
 	"github.com/skip-mev/connect/v2/pkg/math/voteweighted"
 	voteweightedmocks "github.com/skip-mev/connect/v2/pkg/math/voteweighted/mocks"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
 	metricmock "github.com/skip-mev/connect/v2/service/metrics/mocks"
 	"github.com/skip-mev/connect/v2/x/oracle/keeper"
@@ -43,7 +43,7 @@ type PreBlockTestSuite struct {
 
 	myVal         sdk.ConsAddress
 	ctx           sdk.Context
-	currencyPairs []slinkytypes.CurrencyPair
+	currencyPairs []connecttypes.CurrencyPair
 	genesis       oracletypes.GenesisState
 	key           *storetypes.KVStoreKey
 	transientKey  *storetypes.TransientStoreKey
@@ -63,7 +63,7 @@ func TestPreBlockTestSuite(t *testing.T) {
 func (s *PreBlockTestSuite) SetupTest() {
 	s.mm = &module.Manager{Modules: map[string]interface{}{}, OrderPreBlockers: make([]string, 0)}
 	s.myVal = sdk.ConsAddress("myVal")
-	s.currencyPairs = []slinkytypes.CurrencyPair{
+	s.currencyPairs = []connecttypes.CurrencyPair{
 		{
 			Base:  "BTC",
 			Quote: "ETH",
@@ -449,8 +449,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -470,8 +470,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -493,8 +493,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -523,11 +523,11 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		extCodec := codecmock.NewExtendedCommitCodec(s.T())
 		veCodec := codecmock.NewVoteExtensionCodec(s.T())
-		mockOracleKeeper := slinkyabcimocks.NewOracleKeeper(s.T())
+		mockOracleKeeper := connectabcimocks.NewOracleKeeper(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -578,8 +578,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -604,8 +604,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -638,17 +638,17 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		val2 := sdk.ConsAddress("val2")
 		val3 := sdk.ConsAddress("val3")
 
-		mockOracleKeeper := slinkyabcimocks.NewOracleKeeper(s.T())
+		mockOracleKeeper := connectabcimocks.NewOracleKeeper(s.T())
 		currencyPairStrategyMock := currencypairmock.NewCurrencyPairStrategy(s.T())
 
-		btcUsd := slinkytypes.NewCurrencyPair("BTC", "USD")
-		mogUsd := slinkytypes.NewCurrencyPair("MOG", "USD")
+		btcUsd := connecttypes.NewCurrencyPair("BTC", "USD")
+		mogUsd := connecttypes.NewCurrencyPair("MOG", "USD")
 
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
-				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
-					return map[slinkytypes.CurrencyPair]*big.Int{
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[connecttypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[connecttypes.CurrencyPair]*big.Int]) map[connecttypes.CurrencyPair]*big.Int {
+					return map[connecttypes.CurrencyPair]*big.Int{
 						// return default values
 						btcUsd: big.NewInt(1),
 						mogUsd: maxUint256,
@@ -675,7 +675,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		currencyPairStrategyMock.On("GetDecodedPrice", s.ctx, mogUsd, mock.Anything).Return(maxUint256, nil)
 
 		// mock oracle keeper calls
-		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{btcUsd, mogUsd}, nil)
+		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]connecttypes.CurrencyPair{btcUsd, mogUsd}, nil)
 		mockOracleKeeper.On("SetPriceForCurrencyPair", s.ctx, btcUsd, mock.Anything).Return(nil)
 		mockOracleKeeper.On("SetPriceForCurrencyPair", s.ctx, mogUsd, mock.Anything).Return(nil)
 

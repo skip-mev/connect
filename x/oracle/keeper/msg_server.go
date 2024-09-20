@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -79,7 +79,7 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 
 	for _, id := range req.CurrencyPairIds {
 		// get cp from identifier string
-		cp, err := slinkytypes.CurrencyPairFromString(id)
+		cp, err := connecttypes.CurrencyPairFromString(id)
 		if err != nil {
 			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %w", err)
 		}

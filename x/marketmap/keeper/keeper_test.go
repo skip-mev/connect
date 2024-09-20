@@ -15,7 +15,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
@@ -63,7 +63,7 @@ func (s *KeeperTestSuite) initKeeperWithHooks(hooks types.MarketMapHooks) *keepe
 	s.ctx = testutil.DefaultContextWithKeys(keys, transientKeys, nil).WithBlockHeight(10)
 
 	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
-	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight())))
+	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight()))) //nolint:gosec
 
 	s.admin = sample.Address(r)
 	s.marketAuthorities = []string{sample.Address(r), sample.Address(r), sample.Address(r)}
@@ -95,7 +95,7 @@ func TestKeeperTestSuite(t *testing.T) {
 var (
 	btcusdt = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "BITCOIN",
 				Quote: "USDT",
 			},
@@ -112,7 +112,7 @@ var (
 
 	usdtusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDT",
 				Quote: "USD",
 			},
@@ -129,7 +129,7 @@ var (
 
 	usdcusd = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "USDC",
 				Quote: "USD",
 			},
@@ -146,7 +146,7 @@ var (
 
 	ethusdt = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "ETHEREUM",
 				Quote: "USDT",
 			},
@@ -223,7 +223,7 @@ func (s *KeeperTestSuite) TestInvalidCreate() {
 	// invalid market with a normalize pair not in state
 	invalidMarket := types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "BITCOIN",
 				Quote: "USDT",
 			},
@@ -234,7 +234,7 @@ func (s *KeeperTestSuite) TestInvalidCreate() {
 			{
 				Name:            "kucoin",
 				OffChainTicker:  "btc-usdt",
-				NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+				NormalizeByPair: &connecttypes.CurrencyPair{Base: "invalid", Quote: "pair"},
 			},
 		},
 	}
@@ -252,7 +252,7 @@ func (s *KeeperTestSuite) TestInvalidUpdate() {
 	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
 		Name:            "huobi",
 		OffChainTicker:  "btc-usdt",
-		NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+		NormalizeByPair: &connecttypes.CurrencyPair{Base: "invalid", Quote: "pair"},
 	})
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, invalidMarket))
@@ -274,6 +274,51 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
+}
+
+func (s *KeeperTestSuite) TestInvalidUpdateDisabledNormalizeBy() {
+	marketBTCUSDT := btcusdt
+	marketETHUSDT := ethusdt
+
+	// create a valid markets
+	marketBTCUSDT.Ticker.Enabled = true
+	marketETHUSDT.Ticker.Enabled = false
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, marketBTCUSDT))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, marketETHUSDT))
+
+	// invalid market with a normalize pair that is in state but disabled
+	invalidMarket := marketBTCUSDT
+	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &marketETHUSDT.Ticker.CurrencyPair,
+	})
+
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
+}
+
+func (s *KeeperTestSuite) TestInvalidCreateDisabledNormalizeBy() {
+	marketBTCUSDT := btcusdt
+	marketETHUSDT := ethusdt
+
+	// create a valid markets
+	marketBTCUSDT.Ticker.Enabled = true
+	marketETHUSDT.Ticker.Enabled = false
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, marketETHUSDT))
+
+	// invalid market with a normalize pair that is in state but disabled
+	invalidMarket := marketBTCUSDT
+	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &marketETHUSDT.Ticker.CurrencyPair,
+	})
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
 }
 
 func (s *KeeperTestSuite) TestDeleteMarket() {

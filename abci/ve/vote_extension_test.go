@@ -17,10 +17,10 @@ import (
 	codecmocks "github.com/skip-mev/connect/v2/abci/strategies/codec/mocks"
 	mockstrategies "github.com/skip-mev/connect/v2/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/connect/v2/abci/testutils"
-	slinkyabci "github.com/skip-mev/connect/v2/abci/types"
+	connectabci "github.com/skip-mev/connect/v2/abci/types"
 	"github.com/skip-mev/connect/v2/abci/ve"
 	abcitypes "github.com/skip-mev/connect/v2/abci/ve/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	client "github.com/skip-mev/connect/v2/service/clients/oracle"
 	"github.com/skip-mev/connect/v2/service/clients/oracle/mocks"
 	servicemetrics "github.com/skip-mev/connect/v2/service/metrics"
@@ -29,8 +29,8 @@ import (
 )
 
 var (
-	btcUSD     = slinkytypes.NewCurrencyPair("BTC", "USD")
-	ethUSD     = slinkytypes.NewCurrencyPair("ETH", "USD")
+	btcUSD     = connecttypes.NewCurrencyPair("BTC", "USD")
+	ethUSD     = connecttypes.NewCurrencyPair("ETH", "USD")
 	oneHundred = big.NewInt(100)
 	twoHundred = big.NewInt(200)
 
@@ -583,7 +583,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			mockMetrics,
 		)
 
-		expErr := slinkyabci.NilRequestError{
+		expErr := connectabci.NilRequestError{
 			Handler: servicemetrics.ExtendVote,
 		}
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
@@ -725,7 +725,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 
 		pamock.On("ApplyPricesFromVoteExtensions", s.ctx, mock.Anything, mock.Anything).Return(nil, nil)
 
-		expErr := slinkyabci.CodecError{
+		expErr := connectabci.CodecError{
 			Err: codecError,
 		}
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
@@ -784,7 +784,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
-		expErr := slinkyabci.NilRequestError{
+		expErr := connectabci.NilRequestError{
 			Handler: servicemetrics.VerifyVoteExtension,
 		}
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
@@ -807,7 +807,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 			aggregatormocks.NewPriceApplier(s.T()),
 			mockMetrics,
 		)
-		expErr := slinkyabci.CodecError{
+		expErr := connectabci.CodecError{
 			Err: codecError,
 		}
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/testutil"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
@@ -32,7 +32,7 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 		pc := types.ProviderConfig{
 			Name:           "mexc",
 			OffChainTicker: "ticker",
-			NormalizeByPair: &slinkytypes.CurrencyPair{
+			NormalizeByPair: &connecttypes.CurrencyPair{
 				Base:  "BASE",
 				Quote: "QUOTE",
 			},
@@ -44,7 +44,7 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 		pc := types.ProviderConfig{
 			Name:           "mexc",
 			OffChainTicker: "ticker",
-			NormalizeByPair: &slinkytypes.CurrencyPair{
+			NormalizeByPair: &connecttypes.CurrencyPair{
 				Base:  "BASE",
 				Quote: "",
 			},
@@ -112,7 +112,7 @@ func TestProviderConfigEqual(t *testing.T) {
 			pc: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
-				NormalizeByPair: &slinkytypes.CurrencyPair{
+				NormalizeByPair: &connecttypes.CurrencyPair{
 					Base:  "BASE",
 					Quote: "QUOTE",
 				},
@@ -122,7 +122,7 @@ func TestProviderConfigEqual(t *testing.T) {
 			other: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
-				NormalizeByPair: &slinkytypes.CurrencyPair{
+				NormalizeByPair: &connecttypes.CurrencyPair{
 					Base:  "BASE",
 					Quote: "QUOTE",
 				},
@@ -191,7 +191,7 @@ func TestProviderConfigEqual(t *testing.T) {
 				Name:           "mexc",
 				OffChainTicker: "ticker",
 				Invert:         true,
-				NormalizeByPair: &slinkytypes.CurrencyPair{
+				NormalizeByPair: &connecttypes.CurrencyPair{
 					Base:  "BASE",
 					Quote: "QUOTE",
 				},
@@ -201,7 +201,7 @@ func TestProviderConfigEqual(t *testing.T) {
 				Name:           "mexc",
 				OffChainTicker: "ticker",
 				Invert:         true,
-				NormalizeByPair: &slinkytypes.CurrencyPair{
+				NormalizeByPair: &connecttypes.CurrencyPair{
 					Base:  "QUOTE",
 					Quote: "QUOTE",
 				},

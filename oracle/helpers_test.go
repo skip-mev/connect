@@ -11,7 +11,7 @@ import (
 	"github.com/skip-mev/connect/v2/oracle"
 	"github.com/skip-mev/connect/v2/oracle/config"
 	oracletypes "github.com/skip-mev/connect/v2/oracle/types"
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/binance"
 	"github.com/skip-mev/connect/v2/providers/apis/coinbase"
 	"github.com/skip-mev/connect/v2/providers/apis/dydx"
@@ -27,10 +27,10 @@ import (
 )
 
 var (
-	btcusdtCP = slinkytypes.NewCurrencyPair("BTC", "USDT")
-	btcusdCP  = slinkytypes.NewCurrencyPair("BTC", "USD")
-	usdtusdCP = slinkytypes.NewCurrencyPair("USDT", "USD")
-	ethusdtCP = slinkytypes.NewCurrencyPair("ETH", "USDT")
+	btcusdtCP = connecttypes.NewCurrencyPair("BTC", "USDT")
+	btcusdCP  = connecttypes.NewCurrencyPair("BTC", "USD")
+	usdtusdCP = connecttypes.NewCurrencyPair("USDT", "USD")
+	ethusdtCP = connecttypes.NewCurrencyPair("ETH", "USDT")
 )
 
 var (

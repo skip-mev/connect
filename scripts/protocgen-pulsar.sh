@@ -13,18 +13,18 @@ echo "Cleaning API directory"
 (cd api; find ./ -type f \( -iname \*.pulsar.go -o -iname \*.pb.go -o -iname \*.cosmos_orm.go -o -iname \*.pb.gw.go \) -delete; find . -empty -type d -delete; cd ..)
 
 echo "Generating API module"
-(cd proto; buf generate --template buf.gen.pulsar.yaml --exclude-path slinky/service)
+(cd proto; buf generate --template buf.gen.pulsar.yaml --exclude-path connect/service)
 
 echo "fixing types.pulsar.go"
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/types/v1/currency_pair.pulsar.go && rm ./api/slinky/types/v1/currency_pair.pulsar.go.bak
-sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/connect/v2/api/slinky/oracle/v1|g' ./api/slinky/types/v1/currency_pair.pulsar.go && rm ./api/slinky/types/v1/currency_pair.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/types/v2/currency_pair.pulsar.go && rm ./api/connect/types/v2/currency_pair.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/oracle/v2|github.com/skip-mev/connect/v2/api/connect/oracle/v2|g' ./api/connect/types/v2/currency_pair.pulsar.go && rm ./api/connect/types/v2/currency_pair.pulsar.go.bak
 
 echo "fixing oracle.pulsar.go"
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/oracle/v1/query.pulsar.go && rm ./api/slinky/oracle/v1/query.pulsar.go.bak
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/oracle/v1/tx.pulsar.go && rm ./api/slinky/oracle/v1/tx.pulsar.go.bak
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/oracle/v1/genesis.pulsar.go && rm ./api/slinky/oracle/v1/genesis.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/oracle/v2/query.pulsar.go && rm ./api/connect/oracle/v2/query.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/oracle/v2/tx.pulsar.go && rm ./api/connect/oracle/v2/tx.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/oracle/v2/genesis.pulsar.go && rm ./api/connect/oracle/v2/genesis.pulsar.go.bak
 
 echo "fixing market.pulsar.go"
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak
-sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/connect/v2/api/slinky/types/v1|g' ./api/slinky/marketmap/v1/query.pulsar.go && rm ./api/slinky/marketmap/v1/query.pulsar.go.bak
-sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/connect/v2/api/slinky/oracle/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/marketmap/v2/market.pulsar.go && rm ./api/connect/marketmap/v2/market.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/types/v2|github.com/skip-mev/connect/v2/api/connect/types/v2|g' ./api/connect/marketmap/v2/query.pulsar.go && rm ./api/connect/marketmap/v2/query.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/connect/oracle/v2|github.com/skip-mev/connect/v2/api/connect/oracle/v2|g' ./api/connect/marketmap/v2/market.pulsar.go && rm ./api/connect/marketmap/v2/market.pulsar.go.bak

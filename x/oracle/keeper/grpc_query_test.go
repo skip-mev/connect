@@ -4,7 +4,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/mock"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	"github.com/skip-mev/connect/v2/x/oracle/keeper"
 	"github.com/skip-mev/connect/v2/x/oracle/types"
@@ -23,21 +23,21 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	// test that after CurrencyPairs are registered, all of them are returned from the query
 	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
 		// insert multiple currency Pairs
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{
 			Base:  "AA",
 			Quote: "BB",
 		}))
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{
 			Base:  "CC",
 			Quote: "DD",
 		}))
-		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, connecttypes.CurrencyPair{
 			Base:  "EE",
 			Quote: "FF",
 		}))
 
 		// manually insert a new CurrencyPair as well
-		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, connecttypes.CurrencyPair{
 			Base:  "GG",
 			Quote: "HH",
 		}, types.QuotePrice{Price: sdkmath.NewInt(100)}))
@@ -60,7 +60,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	// set CPs on genesis for testing
 	cpg := []types.CurrencyPairGenesis{
 		{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "ETHEREUM",
 			},
@@ -71,7 +71,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			Id:    2,
 		},
 		{
-			CurrencyPair: slinkytypes.CurrencyPair{
+			CurrencyPair: connecttypes.CurrencyPair{
 				Base:  "CC",
 				Quote: "BB",
 			},
@@ -100,7 +100,16 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			"if the currency pair is empty, expect failure - fail",
 			func() {},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{},
+				CurrencyPair: "",
+			},
+			nil,
+			false,
+		},
+		{
+			"if the currency pair is malformed, expect failure - fail",
+			func() {},
+			&types.GetPriceRequest{
+				CurrencyPair: "AABB",
 			},
 			nil,
 			false,
@@ -110,10 +119,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			"if the query is for a currency pair that does not exist fail - fail",
 			func() {},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "DD",
-					Quote: "EE",
-				},
+				CurrencyPair: "DD/EE",
 			},
 			nil,
 			false,
@@ -123,7 +129,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			func() {
 				s.mockMarketMapKeeper.On("GetMarket", mock.Anything, mock.Anything).Return(marketmaptypes.Market{
 					Ticker: marketmaptypes.Ticker{
-						CurrencyPair:     slinkytypes.CurrencyPair{Base: "CC", Quote: "BB"},
+						CurrencyPair:     connecttypes.CurrencyPair{Base: "CC", Quote: "BB"},
 						Decimals:         8,
 						MinProviderCount: 3,
 						Metadata_JSON:    "",
@@ -131,10 +137,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "CC",
-					Quote: "BB",
-				},
+				CurrencyPair: "CC/BB",
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
@@ -148,7 +151,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			func() {
 				s.mockMarketMapKeeper.On("GetMarket", mock.Anything, mock.Anything).Return(marketmaptypes.Market{
 					Ticker: marketmaptypes.Ticker{
-						CurrencyPair:     slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
+						CurrencyPair:     connecttypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
 						Decimals:         18,
 						MinProviderCount: 3,
 						Metadata_JSON:    "",
@@ -156,10 +159,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "AA",
-					Quote: "ETHEREUM",
-				},
+				CurrencyPair: "AA/ETHEREUM",
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
@@ -210,7 +210,7 @@ func (s *KeeperTestSuite) TestGetCurrencyPairMappingGRPC() {
 	qs := keeper.NewQueryServer(s.oracleKeeper)
 	// test that after CurrencyPairs are registered, all of them are returned from the query
 	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
-		currencyPairs := []slinkytypes.CurrencyPair{
+		currencyPairs := []connecttypes.CurrencyPair{
 			{Base: "TEST", Quote: "COIN1"},
 			{Base: "TEST", Quote: "COIN2"},
 			{Base: "FOO", Quote: "COIN3"},
@@ -220,7 +220,7 @@ func (s *KeeperTestSuite) TestGetCurrencyPairMappingGRPC() {
 		}
 
 		// manually insert a new CurrencyPair as well
-		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, connecttypes.CurrencyPair{
 			Base:  "TEST",
 			Quote: "COIN1",
 		}, types.QuotePrice{Price: sdkmath.NewInt(100)}))
@@ -229,7 +229,7 @@ func (s *KeeperTestSuite) TestGetCurrencyPairMappingGRPC() {
 		res, err := qs.GetCurrencyPairMapping(s.ctx, nil)
 		s.Require().Nil(err)
 		for idx, cp := range currencyPairs {
-			s.Require().Equal(cp, res.CurrencyPairMapping[uint64(idx)])
+			s.Require().Equal(cp, res.CurrencyPairMapping[uint64(idx)]) //nolint:gosec
 		}
 	})
 }

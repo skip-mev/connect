@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/apis/coinbase"
 	"github.com/skip-mev/connect/v2/providers/apis/marketmap"
 	providertypes "github.com/skip-mev/connect/v2/providers/types"
@@ -28,7 +28,7 @@ var (
 		},
 	}
 
-	btcusd = slinkytypes.NewCurrencyPair("BTC", "USD")
+	btcusd = connecttypes.NewCurrencyPair("BTC", "USD")
 
 	goodMarketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{

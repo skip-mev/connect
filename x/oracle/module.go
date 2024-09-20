@@ -17,7 +17,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	oraclemodulev1 "github.com/skip-mev/connect/v2/api/slinky/oracle/module/v1"
+	oraclemodulev1 "github.com/skip-mev/connect/v2/api/connect/oracle/module/v2"
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	"github.com/skip-mev/connect/v2/x/oracle/client/cli"
 	"github.com/skip-mev/connect/v2/x/oracle/keeper"

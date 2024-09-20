@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	slinkymath "github.com/skip-mev/connect/v2/pkg/math"
+	connectmath "github.com/skip-mev/connect/v2/pkg/math"
 	"github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 )
 
@@ -221,7 +221,7 @@ func (h *WebSocketHandler) NewSubscribeRequestMessage(instruments []string) ([]h
 	for i := 0; i < numBatches; i++ {
 		// Get the instruments for the batch.
 		start := i * h.ws.MaxSubscriptionsPerBatch
-		end := slinkymath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
+		end := connectmath.Min((i+1)*h.ws.MaxSubscriptionsPerBatch, numInstruments)
 		batch := instruments[start:end]
 
 		// Create the subscriptions for the instruments.

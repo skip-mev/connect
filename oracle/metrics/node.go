@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
-	slinkygrpc "github.com/skip-mev/connect/v2/pkg/grpc"
+	connectgrpc "github.com/skip-mev/connect/v2/pkg/grpc"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 )
@@ -24,7 +24,7 @@ type NodeClientImpl struct {
 }
 
 func NewNodeClient(endpoint config.Endpoint) (NodeClient, error) {
-	conn, err := slinkygrpc.NewClient(
+	conn, err := connectgrpc.NewClient(
 		endpoint.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithNoProxy(),

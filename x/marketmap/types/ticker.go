@@ -6,7 +6,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/pkg/json"
 
-	slinkytypes "github.com/skip-mev/connect/v2/pkg/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 // places and has a minimum number of providers required to consider the ticker valid.
 func NewTicker(base, quote string, decimals, minProviderCount uint64, enabled bool) Ticker {
 	return Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
+		CurrencyPair: connecttypes.CurrencyPair{
 			Base:  strings.ToUpper(base),
 			Quote: strings.ToUpper(quote),
 		},

@@ -10,7 +10,8 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"path/filepath"
+	"regexp"
+	"strings"
 	"syscall"
 	"time"
 
@@ -301,11 +302,6 @@ func runOracle() error {
 	logger := log.NewLogger(logCfg)
 	defer logger.Sync()
 
-	// Args always include command name so this is safe
-	if filepath.Base(os.Args[0]) == "slinky" {
-		logger.Warn("the `./slinky` binary is deprecated and will be removed in a future version. please use `./connect`")
-	}
-
 	var cfg config.OracleConfig
 	var err error
 
@@ -319,6 +315,14 @@ func runOracle() error {
 		cfg, err = overwriteMarketMapEndpoint(cfg, marketMapEndPoint)
 		if err != nil {
 			return fmt.Errorf("failed to overwrite market endpoint %s: %w", marketMapEndPoint, err)
+		}
+	}
+
+	// check that the marketmap endpoint they provided is correct.
+	if marketMapProvider == marketmap.Name {
+		mmEndpoint := cfg.Providers[marketMapProvider].API.Endpoints[0].URL
+		if err := isValidGRPCEndpoint(mmEndpoint); err != nil {
+			return err
 		}
 	}
 
@@ -466,4 +470,28 @@ func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (conf
 	}
 
 	return cfg, fmt.Errorf("no market-map provider found in config")
+}
+
+// isValidGRPCEndpoint checks that the string s is a valid gRPC endpoint. (doesn't start with http, ends with a port).
+func isValidGRPCEndpoint(s string) error {
+	if strings.HasPrefix(s, "http") {
+		return fmt.Errorf("expected gRPC endpoint but got HTTP endpoint %q. Please provide a gRPC endpoint (e.g. some.host:9090)", s)
+	}
+	if !hasPort(s) {
+		// they might do something like foo.bar:hello
+		// so lets just take the bit before foo.bar for the example in the error.
+		example := strings.Split(s, ":")[0]
+		return fmt.Errorf("invalid gRPC endpoint %q. Must specify port (e.g. %s:9090)", s, example)
+	}
+	return nil
+}
+
+// hasPort reports whether s contains `:` followed by numbers.
+func hasPort(s string) bool {
+	// matches anything that has `:` and some numbers after.
+	pattern := `:[0-9]+$`
+
+	regex := regexp.MustCompile(pattern)
+
+	return regex.MatchString(s)
 }

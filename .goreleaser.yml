@@ -1,10 +1,10 @@
 ---
-project_name: slinky
+project_name: connect
 
 release:
   github:
     owner: skip-mev
-    name: slinky
+    name: connect
   prerelease: true
 
 builds:
@@ -14,14 +14,6 @@ builds:
     - 'darwin'
     binary: 'connect'
     id: 'connect'
-    ldflags:
-      - "-X github.com/skip-mev/connect/v2/cmd/build.Build={{.Version}}"
-  - main: 'cmd/connect/main.go'
-    goos:
-    - 'linux'
-    - 'darwin'
-    binary: 'slinky'
-    id: 'slinky'
     ldflags:
       - "-X github.com/skip-mev/connect/v2/cmd/build.Build={{.Version}}"
 archives:

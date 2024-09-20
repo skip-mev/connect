@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkyhttp "github.com/skip-mev/connect/v2/pkg/http"
+	connecthttp "github.com/skip-mev/connect/v2/pkg/http"
 )
 
 func TestRoundTripperWithHeaders(t *testing.T) {
@@ -19,7 +19,7 @@ func TestRoundTripperWithHeaders(t *testing.T) {
 		expectedHeaderFields: expectedHeaderFields,
 	}
 
-	rtWithHeaders := slinkyhttp.NewRoundTripperWithHeaders(rt, slinkyhttp.WithAuthentication("X-Api-Key", "test"))
+	rtWithHeaders := connecthttp.NewRoundTripperWithHeaders(rt, connecthttp.WithAuthentication("X-Api-Key", "test"))
 
 	client := &http.Client{
 		Transport: rtWithHeaders,
