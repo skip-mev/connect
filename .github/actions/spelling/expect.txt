@@ -150,11 +150,17 @@ Commitcodec
 conditionaltokens
 configurator
 confixcmd
+connectabci
+connectabcimocks
+connectabcitypes
 connectd
+connectgrpc
+connecthttp
+connectmath
+connecttypes
 consensuskeeper
 consensusmodulev
 consensustypes
-consulcatalog
 consumertypes
 conventionalcommits
 copyloopvar
@@ -180,7 +186,6 @@ cve
 cwwv
 dac
 dasel
-datacenters
 datadog
 datasources
 dbddb
@@ -228,9 +233,7 @@ EFDDc
 efdff
 egs
 eguhvrsnrw
-entrypoints
 eod
-EOH
 Eqcq
 erc
 Errf
@@ -500,7 +503,6 @@ postmsg
 prealloc
 preblock
 preblocker
-prestart
 pricefeed
 printenv
 privkey
@@ -508,7 +510,6 @@ PROMETHEUSSERVERADDRESS
 promhttp
 promlinter
 promserver
-promtail
 protoc
 protocgen
 protoiface
@@ -564,14 +565,6 @@ slashingkeeper
 slashingmodulev
 slashingtypes
 SLf
-connectabci
-connectabcimocks
-connectabcitypes
-slinkyd
-connectgrpc
-slinkyhttp
-slinkymath
-connecttypes
 SMOLE
 solana
 solanago
@@ -628,7 +621,6 @@ topbar
 tparallel
 tprteaching
 tpt
-traefik
 trimpath
 tsql
 tuu
@@ -659,7 +651,6 @@ upgradekeeper
 upgrademodulev
 upgradetypes
 upserts
-upstreams
 USAPI
 usd
 USDCBTC

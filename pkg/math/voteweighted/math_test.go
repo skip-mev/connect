@@ -5,14 +5,12 @@ import (
 	"math/big"
 	"testing"
 
-	ccvtypes "github.com/cosmos/interchain-security/v5/x/ccv/consumer/types"
-
 	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	ccvtypes "github.com/cosmos/interchain-security/v6/x/ccv/consumer/types"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/connect/v2/abci/testutils"

@@ -9564,6 +9564,95 @@ var (
       }
    }
 }`
+
+	// ForexMarketMap is used to initialize the forex market map. This only includes
+	// forex markets quoted in usdt.
+	ForexMarketMap mmtypes.MarketMap
+
+	// ForexMarketMapJSON is the JSON representation of ForexMarketMap.
+	ForexMarketMapJSON = `
+{
+    "markets": {
+      "TRY/USDT": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "TRY",
+            "Quote": "USDT"
+          },
+          "decimals": 11,
+          "min_provider_count": 1,
+          "enabled": false,
+          "metadata_JSON": "{\"reference_price\":2935133548,\"liquidity\":1504939,\"aggregate_ids\":[{\"venue\":\"coinmarketcap\",\"ID\":\"2810\"}]}"
+        },
+        "provider_configs": [
+          {
+            "name": "binance_ws",
+            "off_chain_ticker": "USDTTRY",
+            "invert": true,
+            "metadata_JSON": ""
+          },
+          {
+            "name": "okx_ws",
+            "off_chain_ticker": "TRY-USDT",
+            "invert": false,
+            "metadata_JSON": ""
+          }
+        ]
+      },
+      "EUR/USDT": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "EUR",
+            "Quote": "USDT"
+          },
+          "decimals": 9,
+          "min_provider_count": 1,
+          "enabled": false,
+          "metadata_JSON": "{\"reference_price\":1100800000,\"liquidity\":3843298,\"aggregate_ids\":[{\"venue\":\"coinmarketcap\",\"ID\":\"2790\"}]}"
+        },
+        "provider_configs": [
+          {
+            "name": "binance_ws",
+            "off_chain_ticker": "EURUSDT",
+            "invert": false,
+            "metadata_JSON": ""
+          },
+          {
+            "name": "okx_ws",
+            "off_chain_ticker": "EUR-USDT",
+            "invert": false,
+            "metadata_JSON": ""
+          }
+        ]
+      },
+      "BRL/USDT": {
+        "ticker": {
+          "currency_pair": {
+            "Base": "BRL",
+            "Quote": "USDT"
+          },
+          "decimals": 10,
+          "min_provider_count": 1,
+          "enabled": false,
+          "metadata_JSON": "{\"reference_price\":1760563380,\"liquidity\":2479974,\"aggregate_ids\":[{\"venue\":\"coinmarketcap\",\"ID\":\"2783\"}]}"
+        },
+        "provider_configs": [
+          {
+            "name": "binance_ws",
+            "off_chain_ticker": "USDTBRL",
+            "invert": true,
+            "metadata_JSON": ""
+          },
+          {
+            "name": "okx_ws",
+            "off_chain_ticker": "BRL-USDT",
+            "invert": false,
+            "metadata_JSON": ""
+          }
+        ]
+      }
+    }
+  }`
 )
 
 func init() {
@@ -9575,6 +9664,7 @@ func init() {
 		unmarshalValidate("CoinGecko", CoinGeckoMarketMapJSON, &CoinGeckoMarketMap),
 		unmarshalValidate("Osmosis", OsmosisMarketMapJSON, &OsmosisMarketMap),
 		unmarshalValidate("Polymarket", PolymarketMarketMapJSON, &PolymarketMarketMap),
+		unmarshalValidate("Forex", ForexMarketMapJSON, &ForexMarketMap),
 	)
 	if err != nil {
 		panic(err)

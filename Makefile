@@ -52,10 +52,8 @@ BUILD_TAGS := -X github.com/skip-mev/connect/v2/cmd/build.Build=$(TAG)
 ###############################################################################
 
 build: tidy
-	go build -ldflags="$(BUILD_TAGS)" \
+	@go build -ldflags="$(BUILD_TAGS)" \
 	 -o ./build/ ./...
-	go build -ldflags="$(BUILD_TAGS)" \
-     -o ./build/slinky ./cmd/connect
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -78,7 +76,6 @@ stop-sidecar-dev:
 
 install: tidy
 	@go install -ldflags="$(BUILD_TAGS)" -mod=readonly ./cmd/connect
-	@cp $(BIN_DIR)/connect $(BIN_DIR)/slinky
 
 .PHONY: build install run-oracle-client start-all-dev stop-all-dev
 
@@ -244,7 +241,6 @@ proto-update-deps:
 	@$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-pulsar-gen proto-format proto-lint proto-check-breaking proto-update-deps
-
 
 ###############################################################################
 ###                              Formatting                                 ###

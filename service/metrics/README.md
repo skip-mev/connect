@@ -22,7 +22,7 @@ The following metrics are registered to the Cosmos SDK metrics port (default :26
 
 * **purpose**
     * This prometheus histogram measures the latency (per request) in seconds of ABCI method calls
-    * The latency is measured over all slinky-specific code, and ignores any down-stream dependencies
+    * The latency is measured over all connect-specific code, and ignores any down-stream dependencies
 * **labels**
     * `method`: one of (ExtendVote, PrepareProposal, ProcessProposal, VerifyVoteExtension, FinalizeBlock), this is the ABCI method that this latency report resulted from
     * `chain_id`: the chain-id of this oracle deployment
@@ -40,7 +40,7 @@ The following metrics are registered to the Cosmos SDK metrics port (default :26
 ## `message_size`
 
 * **purpose**
-    * This prometheus histogram tracks the size of vote-extensions, and extended commits that slinky is transmitting 
+    * This prometheus histogram tracks the size of vote-extensions, and extended commits that connect is transmitting 
 * **labels**
     * `chain_id`: the chain-id of this oracle deployment
     * `message_type`: the message-type whose size is being measured

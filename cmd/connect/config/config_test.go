@@ -273,12 +273,12 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 
 	t.Run("overriding variables from environment", func(t *testing.T) {
 		// set the environment variables
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_UPDATEINTERVAL", updateIntervalOverride.String())
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_METRICS_PROMETHEUSSERVERADDRESS", prometheusServerOverride)
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL", endpointOverride.URL)
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY", endpointOverride.Authentication.APIKey)
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER", endpointOverride.Authentication.APIKeyHeader)
-		t.Setenv(cmdconfig.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_COINBASE_WS_WEBSOCKET_ENDPOINTS_0_URL", endpointOverride.URL)
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_UPDATEINTERVAL", updateIntervalOverride.String())
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_METRICS_PROMETHEUSSERVERADDRESS", prometheusServerOverride)
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL", endpointOverride.URL)
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY", endpointOverride.Authentication.APIKey)
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER", endpointOverride.Authentication.APIKeyHeader)
+		t.Setenv(cmdconfig.ConnectConfigEnvironmentPrefix+"_PROVIDERS_COINBASE_WS_WEBSOCKET_ENDPOINTS_0_URL", endpointOverride.URL)
 
 		cfg, err := cmdconfig.ReadOracleConfigWithOverrides("", marketmap.Name)
 		require.NoError(t, err)
@@ -290,7 +290,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 
 	t.Run("overriding variables via config", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())
@@ -352,7 +352,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 
 	t.Run("overriding a nonexistent provider via config fails", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())
@@ -400,7 +400,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 func TestOracleConfigWithExtraKeys(t *testing.T) {
 	t.Run("an oracle config with extraneous keys", func(t *testing.T) {
 		// create a temp file in the current directory
-		tmpfile, err := os.CreateTemp("", "slinky-config-*.json")
+		tmpfile, err := os.CreateTemp("", "connect-config-*.json")
 		require.NoError(t, err)
 
 		defer os.Remove(tmpfile.Name())

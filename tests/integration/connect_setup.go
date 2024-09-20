@@ -56,12 +56,12 @@ var (
 	)
 )
 
-// ChainConstructor returns the chain that will be using slinky, as well as any additional chains
+// ChainConstructor returns the chain that will be using connect, as well as any additional chains
 // that are needed for the test. The first chain returned will be the chain that is used in the
-// slinky integration tests.
+// connect integration tests.
 type ChainConstructor func(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos.CosmosChain
 
-// Interchain is an interface representing the set of chains that are used in the slinky e2e tests, as well
+// Interchain is an interface representing the set of chains that are used in the connect e2e tests, as well
 // as any additional relayer / ibc-path information
 type Interchain interface {
 	Relayer() ibc.Relayer
@@ -69,11 +69,11 @@ type Interchain interface {
 	IBCPath() string
 }
 
-// InterchainConstructor returns an interchain that will be used in the slinky integration tests.
+// InterchainConstructor returns an interchain that will be used in the connect integration tests.
 // The chains used in the interchain constructor should be the chains constructed via the ChainConstructor
 type InterchainConstructor func(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain
 
-// DefaultChainConstructor is the default construct of a chan that will be used in the slinky
+// DefaultChainConstructor is the default construct of a chan that will be used in the connect
 // integration tests. There is only a single chain that is created.
 func DefaultChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos.CosmosChain {
 	// require that NumFullNodes == NumValidators == 4
@@ -94,7 +94,7 @@ func DefaultChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*co
 	return []*cosmos.CosmosChain{cosmosChain}
 }
 
-// DefaultInterchainConstructor is the default constructor of an interchain that will be used in the slinky.
+// DefaultInterchainConstructor is the default constructor of an interchain that will be used in the connect.
 func DefaultInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain {
 	require.Len(t, chains, 1)
 

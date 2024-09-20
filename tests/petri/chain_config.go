@@ -75,7 +75,7 @@ func GetProvider(ctx context.Context, logger *zap.Logger) (provider.Provider, er
 	return docker.NewDockerProvider(
 		ctx,
 		logger,
-		"slinky-docker",
+		"connect-docker",
 	)
 }
 

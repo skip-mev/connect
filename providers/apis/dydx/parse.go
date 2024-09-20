@@ -51,7 +51,7 @@ var ProviderMapping = map[string]string{
 	coinmarketcap.Name:     coinmarketcap.Name,
 }
 
-// ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
+// ConvertMarketParamsToMarketMap converts a dYdX market params response to a connect market map response.
 func ConvertMarketParamsToMarketMap(
 	params dydxtypes.QueryAllMarketParamsResponse,
 ) (mmtypes.MarketMapResponse, error) {
@@ -137,7 +137,7 @@ func ConvertExchangeConfigJSON(
 		}
 		seen[cfg] = struct{}{}
 
-		// This means we have seen an exchange that slinky cannot support.
+		// This means we have seen an exchange that connect cannot support.
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			continue

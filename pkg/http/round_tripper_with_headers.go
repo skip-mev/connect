@@ -17,9 +17,9 @@ const (
 // HeaderOption is a function that sets a (key, value) pair in the headers map.
 type HeaderOption func(map[string]string)
 
-func WithSlinkyVersionUserAgent() HeaderOption {
+func WithConnectVersionUserAgent() HeaderOption {
 	return func(header map[string]string) {
-		header[UserAgentHeaderKey] = fmt.Sprintf("slinky/%s", build.Build)
+		header[UserAgentHeaderKey] = fmt.Sprintf("connect/%s", build.Build)
 	}
 }
 

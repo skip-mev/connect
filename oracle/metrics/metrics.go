@@ -32,7 +32,6 @@ const (
 	AggregatePricesMetricName  = "aggregated_price"
 	ProviderTickMetricName     = "health_check_provider_updates_total"
 	ProviderCountMetricName    = "health_check_market_providers"
-	SlinkyBuildInfoMetricName  = "slinky_build_info"
 	ConnectBuildInfoMetricName = "connect_build_info"
 )
 
@@ -63,7 +62,7 @@ type Metrics interface {
 	// to calculate the final price for a given market.
 	AddProviderCountForMarket(pairID string, count int)
 
-	// SetConnectBuildInfo sets the build information for the Slinky binary.
+	// SetConnectBuildInfo sets the build information for the Connect binary.
 	SetConnectBuildInfo()
 
 	// MissingPrices sets a list of missing prices for the given aggregation tick.
@@ -81,7 +80,6 @@ type OracleMetricsImpl struct {
 	promAggregatePrices   *prometheus.GaugeVec
 	promProviderTick      *prometheus.CounterVec
 	promProviderCount     *prometheus.GaugeVec
-	promSlinkyBuildInfo   *prometheus.GaugeVec
 	promConnectBuildInfo  *prometheus.GaugeVec
 	statsdClient          statsd.ClientInterface
 	nodeIdentifier        string
@@ -157,11 +155,6 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 		Name:      ProviderCountMetricName,
 		Help:      "Number of providers that were utilized to calculate the final price for a given market.",
 	}, []string{PairIDLabel})
-	ret.promSlinkyBuildInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: OracleSubsystem,
-		Name:      SlinkyBuildInfoMetricName,
-		Help:      "(Deprecated) Information about the slinky build",
-	}, []string{Version})
 	ret.promConnectBuildInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: OracleSubsystem,
 		Name:      ConnectBuildInfoMetricName,
@@ -174,7 +167,6 @@ func NewMetrics(statsdClient statsd.ClientInterface, nodeIdentifier string) Metr
 	prometheus.MustRegister(ret.promAggregatePrices)
 	prometheus.MustRegister(ret.promProviderTick)
 	prometheus.MustRegister(ret.promProviderCount)
-	prometheus.MustRegister(ret.promSlinkyBuildInfo)
 	prometheus.MustRegister(ret.promConnectBuildInfo)
 
 	return &ret
@@ -313,9 +305,6 @@ func (m *OracleMetricsImpl) GetMissingPrices() []string {
 // SetConnectBuildInfo sets the build information for the Connect binary. The version exported
 // is determined by the build time version in accordance with the build pkg.
 func (m *OracleMetricsImpl) SetConnectBuildInfo() {
-	m.promSlinkyBuildInfo.With(prometheus.Labels{
-		Version: build.Build,
-	}).Set(1)
 	m.promConnectBuildInfo.With(prometheus.Labels{
 		Version: build.Build,
 	}).Set(1)
