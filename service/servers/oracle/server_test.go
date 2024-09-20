@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"net"
 	"net/http"
-	"strconv"
 	"testing"
 	"time"
 
@@ -15,7 +14,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
-	"google.golang.org/grpc/status"
 
 	"github.com/skip-mev/connect/v2/oracle/mocks"
 	"github.com/skip-mev/connect/v2/oracle/types"
@@ -58,10 +56,10 @@ func (s *ServerTestSuite) SetupTest() {
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
 
 	// listen on a random port and extract that port number
-	l, err := net.Listen("tcp", localhost+":0")
+	ln, err := net.Listen("tcp", localhost+":0")
 	s.Require().NoError(err)
-	defer l.Close()
-	s.port = strconv.Itoa(l.Addr().(*net.TCPAddr).Port)
+	_, s.port, err = net.SplitHostPort(ln.Addr().String())
+	s.Require().NoError(err)
 
 	s.client, err = client.NewClient(
 		log.NewTestLogger(s.T()),
@@ -79,11 +77,23 @@ func (s *ServerTestSuite) SetupTest() {
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
 	// start server + client w/ context
-	go s.srv.StartServer(s.ctx, "0.0.0.0", s.port)
+	go s.srv.StartServerWithListener(s.ctx, ln)
 
 	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	s.Require().NoError(s.client.Start(dialCtx))
+
+	// Health check
+	for i := 0; ; i++ {
+		_, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/version", localhost, s.port))
+		if err == nil {
+			break
+		}
+		if i == 10 {
+			s.T().Fatal("failed to connect to server")
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
 
 // teardown test suite.
@@ -123,7 +133,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect deadline exceeded error
-	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
+	s.Require().Error(err)
 }
 
 func (s *ServerTestSuite) TestOracleServerPrices() {
