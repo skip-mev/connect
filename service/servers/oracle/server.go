@@ -3,6 +3,7 @@ package oracle
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -80,13 +81,11 @@ func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// StartServer starts the oracle gRPC server on the given host and port. The server is killed on any errors from the listener, or if ctx is cancelled.
+// StartServerWithListener starts the oracle gRPC server with a given listener. The server is killed on any errors from the listener, or if ctx is cancelled.
 // This method returns an error via any failure from the listener. This is a blocking call, i.e. until the server is closed or the server errors,
 // this method will block.
-func (os *OracleServer) StartServer(ctx context.Context, host, port string) error {
-	serverEndpoint := fmt.Sprintf("%s:%s", host, port)
+func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.Listener) error {
 	os.httpSrv = &http.Server{
-		Addr:              serverEndpoint,
 		ReadHeaderTimeout: DefaultServerShutdownTimeout,
 	}
 	// create grpc server
@@ -104,7 +103,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 		}),
 	)
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithNoProxy()}
-	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, serverEndpoint, opts)
+	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, ln.Addr().String(), opts)
 	if err != nil {
 		return err
 	}
@@ -128,13 +127,17 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 	// start the server
 	eg.Go(func() error {
 		// serve, and return any errors
+		host, port, err := net.SplitHostPort(ln.Addr().String())
+		if err != nil {
+			return fmt.Errorf("[grpc server]: invalid listener address")
+		}
 		os.logger.Info(
 			"starting grpc server",
 			zap.String("host", host),
 			zap.String("port", port),
 		)
 
-		err = os.httpSrv.ListenAndServe()
+		err = os.httpSrv.Serve(ln)
 		if err != nil {
 			return fmt.Errorf("[grpc server]: error serving: %w", err)
 		}
@@ -144,6 +147,18 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 	// wait for everything to finish
 	return eg.Wait()
+}
+
+// StartServer starts the oracle gRPC server on the given host and port. The server is killed on any errors from the listener, or if ctx is cancelled.
+// This method returns an error via any failure from the listener. This is a blocking call, i.e. until the server is closed or the server errors,
+// this method will block.
+func (os *OracleServer) StartServer(ctx context.Context, host, port string) error {
+	addr := fmt.Sprintf("%s:%s", host, port)
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	return os.StartServerWithListener(ctx, ln)
 }
 
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
