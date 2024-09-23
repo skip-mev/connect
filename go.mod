@@ -14,7 +14,7 @@ require (
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.12
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
-	github.com/cosmos/cosmos-sdk v0.50.9
+	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/interchain-security/v6 v6.1.0
@@ -52,7 +52,7 @@ require (
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/x/tx v0.13.4 // indirect
+	cosmossdk.io/x/tx v0.13.5 // indirect
 	cosmossdk.io/x/upgrade v0.1.4 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
