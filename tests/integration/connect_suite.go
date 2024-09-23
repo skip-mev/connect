@@ -386,6 +386,15 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 			disabledTicker(disabledCP),
 		}...))
 
+		market, err := QueryMarket(s.chain, disabledCP)
+		s.Require().NoError(err)
+		s.Require().NotNil(market)
+
+		s.Require().NoError(s.RemoveMarket(s.chain, s.user, []connecttypes.CurrencyPair{disabledCP}))
+
+		// check removed
+		_, err = QueryMarket(s.chain, disabledCP)
+		s.Require().Error(err)
 	})
 
 }

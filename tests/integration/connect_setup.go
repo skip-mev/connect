@@ -305,6 +305,33 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair, 
 	return res.Price, int64(res.Nonce), nil
 }
 
+// QueryMarket queries a market from the market map.
+func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtypes.Market, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.Market(ctx, &mmtypes.MarketRequest{
+		CurrencyPair: cp,
+	})
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+
+	return res.Market, nil
+}
+
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
@@ -375,9 +402,9 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 		}
 	}
 
-	msg := &mmtypes.MsgCreateMarkets{
-		Authority:     s.user.FormattedAddress(),
-		CreateMarkets: creates,
+	msg := &mmtypes.MsgUpsertMarkets{
+		Authority: s.user.FormattedAddress(),
+		Markets:   creates,
 	}
 
 	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
@@ -385,6 +412,35 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	if err != nil {
+		return err
+	}
+
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	return nil
+}
+
+func (s *ConnectIntegrationSuite) RemoveMarket(chain *cosmos.CosmosChain, user cosmos.User,
+	markets []connecttypes.CurrencyPair) error {
+	marketString := make([]string, len(markets))
+	for i, market := range markets {
+		marketString[i] = market.String()
+	}
+
+	msg := &mmtypes.MsgRemoveMarkets{
+		Admin:   s.user.FormattedAddress(),
+		Markets: marketString,
+	}
+
+	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
 	// broadcast the tx
 	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
