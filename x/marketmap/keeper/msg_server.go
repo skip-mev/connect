@@ -260,9 +260,13 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// perform basic msg validity checks
-	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
-		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
+	params, err := ms.k.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if msg.Authority != params.Admin {
+		return nil, fmt.Errorf("request admin %s does not match module admin %s", msg.Admin, params.Admin)
 	}
 
 	for _, market := range msg.Markets {
