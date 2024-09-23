@@ -359,21 +359,16 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...connecttypes.CurrencyPair) error {
-	creates := make([]mmtypes.Market, len(cps))
-	for i, cp := range cps {
+func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64,
+	tickers ...mmtypes.Ticker) error {
+	creates := make([]mmtypes.Market, len(tickers))
+	for i, ticker := range tickers {
 		creates[i] = mmtypes.Market{
-			Ticker: mmtypes.Ticker{
-				CurrencyPair:     cp,
-				Decimals:         8,
-				MinProviderCount: 1,
-				Metadata_JSON:    "",
-				Enabled:          true,
-			},
+			Ticker: ticker,
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
 					Name:           static.Name,
-					OffChainTicker: cp.String(),
+					OffChainTicker: ticker.String(),
 					Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 				},
 			},
@@ -451,7 +446,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForProposalStatus, waits for the deposit period for the proposal to end
+// WaitForProposalStatus waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)
