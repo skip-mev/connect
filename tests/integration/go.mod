@@ -14,7 +14,7 @@ go 1.22.5
 require (
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.12
-	github.com/cosmos/cosmos-sdk v0.50.9
+	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/pelletier/go-toml/v2 v2.2.3
 	github.com/skip-mev/connect/v2 v2.0.1
 	github.com/strangelove-ventures/interchaintest/v8 v8.7.0
@@ -39,7 +39,7 @@ require (
 	cosmossdk.io/store v1.1.1 // indirect
 	cosmossdk.io/x/evidence v0.1.1 // indirect
 	cosmossdk.io/x/feegrant v0.1.1 // indirect
-	cosmossdk.io/x/tx v0.13.4 // indirect
+	cosmossdk.io/x/tx v0.13.5 // indirect
 	cosmossdk.io/x/upgrade v0.1.4 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
