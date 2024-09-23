@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	metrics "github.com/skip-mev/connect/v2/providers/base/metrics"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/skip-mev/connect/v2/providers/types"
 )

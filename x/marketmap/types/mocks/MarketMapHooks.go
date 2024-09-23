@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

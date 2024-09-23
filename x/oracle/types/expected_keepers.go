@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"context"
 
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
 )
@@ -10,5 +10,5 @@ import (
 //
 //go:generate mockery --name MarketMapKeeper --output ./mocks/ --case underscore
 type MarketMapKeeper interface {
-	GetMarket(ctx sdk.Context, tickerStr string) (types.Market, error)
+	GetMarket(ctx context.Context, tickerStr string) (types.Market, error)
 }
