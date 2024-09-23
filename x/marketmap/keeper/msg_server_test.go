@@ -583,13 +583,13 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		copyBTC := btcusdt
 		copyBTC.Ticker.Enabled = true
 
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
+		s.Require().NoError(err)
+
 		msg := &types.MsgRemoveMarkets{
 			Admin:   s.admin,
 			Markets: []string{copyBTC.Ticker.String()},
 		}
-
-		err := s.keeper.CreateMarket(s.ctx, copyBTC)
-		s.Require().NoError(err)
 
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -615,9 +615,118 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		s.Require().Error(err)
 	})
 
-	// TODO: more testing
-	// - resulting state is invalid
-	// - multi market message
-	//   - fail if one is invalid
-	//   - pass if one is valid
+	s.Run("resulting state is invalid - 1", func() {
+		// add a market that depends on the btc market
+		copyBTC := btcusdt
+
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
+		s.Require().NoError(err)
+
+		copyETH := ethusdt
+		copyETH.ProviderConfigs = []types.ProviderConfig{
+			{
+				Name:           "normalized",
+				OffChainTicker: "normalized",
+				NormalizeByPair: &connecttypes.CurrencyPair{
+					Base:  copyBTC.Ticker.CurrencyPair.Base,
+					Quote: copyBTC.Ticker.CurrencyPair.Quote,
+				},
+			},
+		}
+
+		err = s.keeper.CreateMarket(s.ctx, copyETH)
+		s.Require().NoError(err)
+
+		msgRemoveBTC := &types.MsgRemoveMarkets{
+			Admin:   s.admin,
+			Markets: []string{copyBTC.Ticker.String()},
+		}
+
+		msgRemoveETH := &types.MsgRemoveMarkets{
+			Admin:   s.admin,
+			Markets: []string{copyETH.Ticker.String()},
+		}
+
+		resp, err := msgServer.RemoveMarkets(s.ctx, msgRemoveBTC)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+
+		// remove dependent market first for valid state in 2 transaction
+		resp, err = msgServer.RemoveMarkets(s.ctx, msgRemoveETH)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyETH.Ticker.String())
+		s.Require().Error(err)
+	})
+
+	s.Run("remove both markets in one tx - no dependency", func() {
+		// add a market that depends on the btc market
+		copyBTC := btcusdt
+		copyETH := ethusdt
+
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
+		s.Require().NoError(err)
+
+		err = s.keeper.CreateMarket(s.ctx, copyETH)
+		s.Require().NoError(err)
+
+		msg := &types.MsgRemoveMarkets{
+			Admin:   s.admin,
+			Markets: []string{copyBTC.Ticker.String(), copyETH.Ticker.String()},
+		}
+
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
+		s.Require().Error(err)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyETH.Ticker.String())
+		s.Require().Error(err)
+	})
+
+	s.Run("remove both markets in one tx - with dependency", func() {
+		// add a market that depends on the btc market
+		copyBTC := btcusdt
+
+		err := s.keeper.CreateMarket(s.ctx, copyBTC)
+		s.Require().NoError(err)
+
+		copyETH := ethusdt
+		copyETH.ProviderConfigs = []types.ProviderConfig{
+			{
+				Name:           "normalized",
+				OffChainTicker: "normalized",
+				NormalizeByPair: &connecttypes.CurrencyPair{
+					Base:  copyBTC.Ticker.CurrencyPair.Base,
+					Quote: copyBTC.Ticker.CurrencyPair.Quote,
+				},
+			},
+		}
+
+		err = s.keeper.CreateMarket(s.ctx, copyETH)
+		s.Require().NoError(err)
+
+		msg := &types.MsgRemoveMarkets{
+			Admin:   s.admin,
+			Markets: []string{copyBTC.Ticker.String(), copyETH.Ticker.String()},
+		}
+
+		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
+		s.Require().Error(err)
+
+		// market should not exist
+		_, err = s.keeper.GetMarket(s.ctx, copyETH.Ticker.String())
+		s.Require().Error(err)
+	})
 }
