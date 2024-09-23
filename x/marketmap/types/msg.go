@@ -132,7 +132,7 @@ func (m *MsgRemoveMarketAuthorities) ValidateBasic() error {
 // whether the signer is a valid acc-address.
 func (m *MsgRemoveMarkets) ValidateBasic() error {
 	// validate signer address
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return err
 	}
 

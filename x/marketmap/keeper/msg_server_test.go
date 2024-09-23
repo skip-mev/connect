@@ -531,7 +531,7 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 
 	s.Run("unable to process for invalid authority", func() {
 		msg := &types.MsgRemoveMarkets{
-			Authority: "invalid",
+			Admin: "invalid",
 		}
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -540,8 +540,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 
 	s.Run("unable to remove non-existent market - multiple", func() {
 		msg := &types.MsgRemoveMarkets{
-			Authority: s.marketAuthorities[0],
-			Markets:   []string{"BTC/USD", "ETH/USDT"},
+			Admin:   s.admin,
+			Markets: []string{"BTC/USD", "ETH/USDT"},
 		}
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -550,8 +550,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 
 	s.Run("unable to remove non-existent market - single", func() {
 		msg := &types.MsgRemoveMarkets{
-			Authority: s.marketAuthorities[0],
-			Markets:   []string{"BTC/USD"},
+			Admin:   s.admin,
+			Markets: []string{"BTC/USD"},
 		}
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -563,8 +563,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		copyBTC.Ticker.Enabled = false
 
 		msg := &types.MsgRemoveMarkets{
-			Authority: s.marketAuthorities[0],
-			Markets:   []string{copyBTC.Ticker.String()},
+			Admin:   s.admin,
+			Markets: []string{copyBTC.Ticker.String()},
 		}
 
 		err := s.keeper.CreateMarket(s.ctx, copyBTC)
@@ -584,8 +584,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		copyBTC.Ticker.Enabled = true
 
 		msg := &types.MsgRemoveMarkets{
-			Authority: s.marketAuthorities[0],
-			Markets:   []string{copyBTC.Ticker.String()},
+			Admin:   s.admin,
+			Markets: []string{copyBTC.Ticker.String()},
 		}
 
 		err := s.keeper.CreateMarket(s.ctx, copyBTC)

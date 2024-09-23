@@ -265,7 +265,7 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 		return nil, err
 	}
 
-	if msg.Authority != params.Admin {
+	if msg.Admin != params.Admin {
 		return nil, fmt.Errorf("request admin %s does not match module admin %s", msg.Admin, params.Admin)
 	}
 
