@@ -616,4 +616,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 	})
 
 	// TODO: more testing
+	// - resulting state is invalid
+	// - multi market message
+	//   - fail if one is invalid
+	//   - pass if one is valid
 }
