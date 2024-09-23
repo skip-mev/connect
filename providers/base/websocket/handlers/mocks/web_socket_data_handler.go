@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	handlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 	mock "github.com/stretchr/testify/mock"
+
+	handlers "github.com/skip-mev/connect/v2/providers/base/websocket/handlers"
 
 	types "github.com/skip-mev/connect/v2/providers/types"
 )

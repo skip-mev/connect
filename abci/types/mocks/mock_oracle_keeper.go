@@ -5,8 +5,9 @@ package mocks
 import (
 	context "context"
 
-	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 	mock "github.com/stretchr/testify/mock"
+
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
 	types "github.com/skip-mev/connect/v2/pkg/types"
 )
