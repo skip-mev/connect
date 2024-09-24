@@ -143,7 +143,7 @@ func (m *MsgRemoveMarkets) ValidateBasic() error {
 	seenMarkets := make(map[string]struct{}, len(m.Markets))
 	for _, market := range m.Markets {
 		if _, seen := seenMarkets[market]; seen {
-			return fmt.Errorf("duplicate address %s found", market)
+			return fmt.Errorf("duplicate market %s found", market)
 		}
 
 		if _, err := connecttypes.CurrencyPairFromString(market); err != nil {
