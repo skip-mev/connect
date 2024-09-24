@@ -372,9 +372,18 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		resp, err := QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
 		s.Require().True(len(resp.CurrencyPairs) == 3)
+
+		s.Run("fail to remove an enabled market", func() {
+			s.Require().Error(s.RemoveMarket(s.chain, s.user, []connecttypes.CurrencyPair{cp1}))
+
+			// check not removed
+			market, err := QueryMarket(s.chain, cp1)
+			s.Require().NoError(err)
+			s.Require().NotNil(market)
+		})
 	})
 
-	s.Run("remove a currency pair", func() {
+	s.Run("remove a disabled market", func() {
 		disabledCP := connecttypes.NewCurrencyPair("DIS", "ABLE")
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
 			disabledTicker(disabledCP),
