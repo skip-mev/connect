@@ -347,16 +347,10 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-			{
-				CurrencyPair: connecttypes.CurrencyPair{
-					Base:  "BTC",
-					Quote: "USD",
-				},
-				Decimals:         8,
-				MinProviderCount: 1,
-				Enabled:          true,
-				Metadata_JSON:    "",
-			},
+			enabledTicker(connecttypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "USD",
+			}),
 		}...))
 
 		// check that the currency-pair is added to state

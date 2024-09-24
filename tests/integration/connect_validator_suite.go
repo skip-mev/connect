@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	"time"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -11,6 +10,7 @@ import (
 	"github.com/skip-mev/connect/v2/oracle/types"
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/static"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 

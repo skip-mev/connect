@@ -156,7 +156,22 @@ func (k *Keeper) DeleteDisabledMarket(ctx context.Context, tickerStr string) err
 		return err
 	}
 	if market.Ticker.Enabled {
-		return fmt.Errorf("cannot remove market: %w", types.NewMarketIsEnabled(types.TickerString(tickerStr)))
+		return fmt.Errorf("cannot remove market: %w", types.NewMarketIsEnabledError(types.TickerString(tickerStr)))
+	}
+	return k.markets.Remove(ctx, types.TickerString(tickerStr))
+}
+
+// DeleteMarket removes a Market.
+// This is currently only expected to be called in upgrade handlers, and callers will need to separately call
+// RemoveCurrencyPair on x/oracle to clean up leftover state in that module.
+func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) error {
+	// Check if Ticker exists
+	alreadyExists, err := k.markets.Has(ctx, types.TickerString(tickerStr))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(tickerStr))
 	}
 	return k.markets.Remove(ctx, types.TickerString(tickerStr))
 }

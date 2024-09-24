@@ -35,7 +35,7 @@ type MarketIsEnabledError struct {
 	ticker TickerString
 }
 
-func NewMarketIsEnabled(ticker TickerString) MarketIsEnabledError {
+func NewMarketIsEnabledError(ticker TickerString) MarketIsEnabledError {
 	return MarketIsEnabledError{ticker: ticker}
 }
 
