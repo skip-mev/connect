@@ -399,7 +399,6 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		_, err = QueryMarket(s.chain, disabledCP)
 		s.Require().Error(err)
 	})
-
 }
 
 func translateGRPCAddr(chain *cosmos.CosmosChain) string {
@@ -799,7 +798,6 @@ func (s *ConnectOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
 	})
-
 }
 
 func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp connecttypes.CurrencyPair) (uint64, error) {

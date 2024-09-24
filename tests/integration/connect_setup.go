@@ -387,7 +387,8 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64,
-	tickers ...mmtypes.Ticker) error {
+	tickers ...mmtypes.Ticker,
+) error {
 	creates := make([]mmtypes.Market, len(tickers))
 	for i, ticker := range tickers {
 		creates[i] = mmtypes.Market{
@@ -426,7 +427,8 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 }
 
 func (s *ConnectIntegrationSuite) RemoveMarket(chain *cosmos.CosmosChain, user cosmos.User,
-	markets []connecttypes.CurrencyPair) error {
+	markets []connecttypes.CurrencyPair,
+) error {
 	marketString := make([]string, len(markets))
 	for i, market := range markets {
 		marketString[i] = market.String()
