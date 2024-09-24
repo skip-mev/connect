@@ -26,7 +26,7 @@ require (
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/klauspost/compress v1.17.9
+	github.com/klauspost/compress v1.17.10
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/prometheus/client_golang v1.20.4
 	github.com/skip-mev/chaintestutil v0.0.0-20240514161515-056d7ba45610
