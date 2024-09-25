@@ -38,6 +38,8 @@ func main() {
 			panic("market map config path (market-cfg-path) cannot be empty")
 		}
 
+		fmt.Printf("reading in market map file: %s\n", *marketFile)
+
 		marketMap, err := mmtypes.ReadMarketMapFromFile(*marketFile)
 		if err != nil {
 			fmt.Fprintf(flag.CommandLine.Output(), "failed to read market map from file: %s\n", err)
