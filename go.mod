@@ -3,7 +3,7 @@ module github.com/skip-mev/connect/v2
 go 1.22.2
 
 require (
-	cosmossdk.io/api v0.7.5
+	cosmossdk.io/api v0.7.6
 	cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.0.0
@@ -26,7 +26,7 @@ require (
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/klauspost/compress v1.17.9
+	github.com/klauspost/compress v1.17.10
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/prometheus/client_golang v1.20.4
 	github.com/skip-mev/chaintestutil v0.0.0-20240514161515-056d7ba45610
