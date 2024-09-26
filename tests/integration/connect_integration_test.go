@@ -22,7 +22,7 @@ import (
 var (
 	image = ibc.DockerImage{
 		Repository: "skip-mev/connect-e2e",
-		Version:    "latest",
+		Version:    "local",
 		UidGid:     "1000:1000",
 	}
 
@@ -33,7 +33,7 @@ var (
 
 	oracleImage = ibc.DockerImage{
 		Repository: "skip-mev/connect-e2e-oracle",
-		Version:    "latest",
+		Version:    "local",
 		UidGid:     "1000:1000",
 	}
 	encodingConfig = testutil.MakeTestEncodingConfig(
@@ -89,7 +89,7 @@ var (
 		Name:          "connect",
 		NumValidators: &numValidators,
 		NumFullNodes:  &numFullNodes,
-		Version:       "latest",
+		Version:       "local",
 		NoHostMount:   &noHostMount,
 		ChainConfig: ibc.ChainConfig{
 			EncodingConfig: &encodingConfig,
