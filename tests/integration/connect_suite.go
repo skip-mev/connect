@@ -407,6 +407,7 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		_, err := QueryMarket(s.chain, nonexistentCP)
 		s.Require().Error(err)
 
+		// tx will not error
 		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{nonexistentCP}))
 	})
 }
