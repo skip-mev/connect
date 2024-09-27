@@ -538,14 +538,14 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		s.Require().Nil(resp)
 	})
 
-	s.Run("unable to remove non-existent market - multiple", func() {
+	s.Run("only remove existing markets - no error", func() {
 		msg := &types.MsgRemoveMarkets{
 			Admin:   s.admin,
 			Markets: []string{"BTC/USD", "ETH/USDT"},
 		}
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
+		s.Require().NoError(err)
+		s.Require().Equal([]string{}, resp.DeletedMarkets)
 	})
 
 	s.Run("unable to remove non-existent market - single", func() {
@@ -554,8 +554,8 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 			Markets: []string{"BTC/USD"},
 		}
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
-		s.Require().Error(err)
-		s.Require().Nil(resp)
+		s.Require().NoError(err)
+		s.Require().Equal([]string{}, resp.DeletedMarkets)
 	})
 
 	s.Run("able to remove disabled market", func() {
@@ -572,14 +572,14 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 
 		resp, err := msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().NoError(err)
-		s.Require().NotNil(resp)
+		s.Require().Equal([]string{copyBTC.Ticker.String()}, resp.DeletedMarkets)
 
 		// market should not exist
 		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())
 		s.Require().Error(err)
 	})
 
-	s.Run("unable to remove enabled market", func() {
+	s.Run("do not remove enabled market", func() {
 		copyBTC := btcusdt
 		copyBTC.Ticker.Enabled = true
 
@@ -608,7 +608,7 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {
 		// remove
 		resp, err = msgServer.RemoveMarkets(s.ctx, msg)
 		s.Require().NoError(err)
-		s.Require().NotNil(resp)
+		s.Require().Equal([]string{copyBTC.Ticker.String()}, resp.DeletedMarkets)
 
 		// market should not exist
 		_, err = s.keeper.GetMarket(s.ctx, copyBTC.Ticker.String())

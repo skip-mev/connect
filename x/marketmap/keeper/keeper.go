@@ -146,7 +146,7 @@ func (k *Keeper) CreateMarket(ctx context.Context, market types.Market) error {
 }
 
 // UpdateMarket updates a Market.
-// The Ticker.String corresponds to a market, and exist unique.
+// The Ticker.String corresponds to a market, and exists uniquely.
 func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
@@ -162,7 +162,7 @@ func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 
 // DeleteMarket removes a Market.  If the market does not exist, this is a no-op and nil is returned.
 // If the market exists, all DeleteMarketValidationHooks are called on the market before deletion.
-// Additionally, returns a bool if the market was deleted.
+// Additionally, returns true if the market was deleted.
 func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) (bool, error) {
 	market, err := k.GetMarket(ctx, tickerStr)
 	switch {

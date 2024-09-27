@@ -328,18 +328,25 @@ func (s *KeeperTestSuite) TestDeleteMarket() {
 	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcCopy))
 
 	// invalid delete will return nil - idempotent
-	s.Require().NoError(s.keeper.DeleteMarket(s.ctx, "foobar"))
+	deleted, err := s.keeper.DeleteMarket(s.ctx, "foobar")
+	s.Require().NoError(err)
+	s.Require().False(deleted)
 
 	// cannot delete enabled markets
-	s.Require().Error(s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String()))
+	deleted, err = s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String())
+	s.Require().Error(err)
+	s.Require().False(deleted)
 
 	// disable market
 	btcCopy.Ticker.Enabled = false
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, btcCopy))
 
 	// delete disabled markets
-	s.Require().NoError(s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String()))
-	_, err := s.keeper.GetMarket(s.ctx, btcCopy.Ticker.String())
+	deleted, err = s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String())
+	s.Require().NoError(err)
+	s.Require().True(deleted)
+
+	_, err = s.keeper.GetMarket(s.ctx, btcCopy.Ticker.String())
 	s.Require().Error(err)
 }
 

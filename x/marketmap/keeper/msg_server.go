@@ -293,7 +293,7 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 	}
 
 	return &types.MsgRemoveMarketsResponse{
-		Markets: deletedMarkets,
+		DeletedMarkets: deletedMarkets,
 	}, nil
 }
 
