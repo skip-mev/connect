@@ -51,5 +51,6 @@ func (h Hooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]marketmapt
 // the marketmap.
 func (h Hooks) AfterMarketRemoved(ctx sdk.Context, market marketmaptypes.Market) error {
 	ctx.Logger().Info(fmt.Sprintf("market %s removed. retaining x/oracle state if it exists", market.Ticker.String()))
-	return nil
+
+	return h.k.incrementRemovedCPCounter(ctx)
 }
