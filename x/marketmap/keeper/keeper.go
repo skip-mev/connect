@@ -162,20 +162,26 @@ func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 
 // DeleteMarket removes a Market.  If the market does not exist, this is a no-op and nil is returned.
 // If the market exists, all DeleteMarketValidationHooks are called on the market before deletion.
-func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) error {
+// Additionally, returns a bool if the market was deleted.
+func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) (bool, error) {
 	market, err := k.GetMarket(ctx, tickerStr)
 	switch {
 	case errors.Is(err, collections.ErrNotFound):
-		return nil
+		return false, nil
 	case err != nil:
-		return fmt.Errorf("failed to get market for ticker %s: %w", tickerStr, err)
+		return false, fmt.Errorf("failed to get market for ticker %s: %w", tickerStr, err)
 	}
 
 	if err := k.deleteMarketValidationHooks.ValidateMarket(ctx, market); err != nil {
-		return err
+		return false, err
 	}
 
-	return k.markets.Remove(ctx, types.TickerString(market.Ticker.String()))
+	err = k.markets.Remove(ctx, types.TickerString(market.Ticker.String()))
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // HasMarket checks if a market exists in the store.

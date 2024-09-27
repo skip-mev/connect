@@ -269,9 +269,15 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 		return nil, fmt.Errorf("request admin %s does not match module admin %s", msg.Admin, params.Admin)
 	}
 
+	deletedMarkets := make([]string, 0, len(msg.Markets))
 	for _, market := range msg.Markets {
-		if err := ms.k.DeleteMarket(ctx, market); err != nil {
+		deleted, err := ms.k.DeleteMarket(ctx, market)
+		if err != nil {
 			return nil, fmt.Errorf("unable to delete market: %w", err)
+		}
+
+		if deleted {
+			deletedMarkets = append(deletedMarkets, market)
 		}
 	}
 
@@ -286,7 +292,9 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 		return nil, fmt.Errorf("invalid state resulting from removals: %w", err)
 	}
 
-	return &types.MsgRemoveMarketsResponse{}, nil
+	return &types.MsgRemoveMarketsResponse{
+		Markets: deletedMarkets,
+	}, nil
 }
 
 // checkMarketAuthority checks if the given authority is the x/marketmap's list of MarketAuthorities.
