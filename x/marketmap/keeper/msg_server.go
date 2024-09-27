@@ -270,7 +270,7 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 	}
 
 	for _, market := range msg.Markets {
-		if err := ms.k.DeleteDisabledMarket(ctx, market); err != nil {
+		if err := ms.k.DeleteMarket(ctx, market); err != nil {
 			return nil, fmt.Errorf("unable to delete market: %w", err)
 		}
 	}
