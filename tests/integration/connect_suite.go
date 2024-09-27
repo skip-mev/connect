@@ -374,7 +374,7 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 3)
 
 		s.Run("fail to remove an enabled market", func() {
-			s.Require().Error(s.RemoveMarket(s.chain, s.user, []connecttypes.CurrencyPair{cp1}))
+			s.Require().Error(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{cp1}))
 
 			// check not removed
 			market, err := QueryMarket(s.chain, cp1)
@@ -393,11 +393,21 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		s.Require().NoError(err)
 		s.Require().NotNil(market)
 
-		s.Require().NoError(s.RemoveMarket(s.chain, s.user, []connecttypes.CurrencyPair{disabledCP}))
+		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{disabledCP}))
 
 		// check removed
 		_, err = QueryMarket(s.chain, disabledCP)
 		s.Require().Error(err)
+	})
+
+	s.Run("remove a non existent market", func() {
+		nonexistentCP := connecttypes.NewCurrencyPair("NON", "EXIST")
+
+		// check removed doesnt exist
+		_, err := QueryMarket(s.chain, nonexistentCP)
+		s.Require().Error(err)
+
+		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{nonexistentCP}))
 	})
 }
 

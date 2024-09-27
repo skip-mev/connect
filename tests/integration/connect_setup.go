@@ -426,7 +426,8 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 	return nil
 }
 
-func (s *ConnectIntegrationSuite) RemoveMarket(chain *cosmos.CosmosChain, user cosmos.User,
+func (s *ConnectIntegrationSuite) RemoveMarket(
+	chain *cosmos.CosmosChain,
 	markets []connecttypes.CurrencyPair,
 ) error {
 	marketString := make([]string, len(markets))
