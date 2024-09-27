@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -31,10 +32,13 @@ type Keeper struct {
 
 	// params is the module's parameters.
 	params collections.Item[types.Params]
+
+	// deleteValidationHooks are called by the keeper before any deletion call is performed.
+	deleteMarketValidationHooks types.MarketValidationHooks
 }
 
 // NewKeeper initializes the keeper and its backing stores.
-func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) *Keeper {
+func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress, opts ...Option) *Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
 	// Create the collections item that will track the module parameters.
@@ -45,14 +49,27 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		codec.CollValue[types.Params](cdc),
 	)
 
-	return &Keeper{
-		cdc:         cdc,
-		authority:   authority,
-		markets:     collections.NewMap(sb, types.MarketsPrefix, "markets", types.TickersCodec, codec.CollValue[types.Market](cdc)),
-		lastUpdated: collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
-		params:      params,
-		hooks:       &types.NoopMarketMapHooks{},
+	k := &Keeper{
+		cdc:                         cdc,
+		authority:                   authority,
+		markets:                     collections.NewMap(sb, types.MarketsPrefix, "markets", types.TickersCodec, codec.CollValue[types.Market](cdc)),
+		lastUpdated:                 collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
+		params:                      params,
+		hooks:                       &types.NoopMarketMapHooks{},
+		deleteMarketValidationHooks: types.DefaultDeleteMarketValidationHooks(),
 	}
+
+	// apply options to default initialized keeper
+	for _, opt := range opts {
+		opt(k)
+	}
+
+	return k
+}
+
+// SetDeleteMarketValidationHooks sets the MarketValidationHooks for deletion in the keeper.
+func (k *Keeper) SetDeleteMarketValidationHooks(hooks types.MarketValidationHooks) {
+	k.deleteMarketValidationHooks = hooks
 }
 
 // SetLastUpdated sets the lastUpdated field to the current block height.
@@ -110,7 +127,6 @@ func (k *Keeper) GetAllMarkets(ctx context.Context) (map[string]types.Market, er
 	if err != nil {
 		return nil, err
 	}
-
 	m := make(map[string]types.Market, len(keyValues))
 	for _, keyValue := range keyValues {
 		m[string(keyValue.Key)] = keyValue.Value
@@ -135,7 +151,7 @@ func (k *Keeper) CreateMarket(ctx context.Context, market types.Market) error {
 }
 
 // UpdateMarket updates a Market.
-// The Ticker.String corresponds to a market, and exist unique.
+// The Ticker.String corresponds to a market, and exists uniquely.
 func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
@@ -149,19 +165,28 @@ func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 	return k.setMarket(ctx, market)
 }
 
-// DeleteMarket removes a Market.
-// This is currently only expected to be called in upgrade handlers, and callers will need to separately call
-// RemoveCurrencyPair on x/oracle to clean up leftover state in that module.
-func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) error {
-	// Check if Ticker exists
-	alreadyExists, err := k.markets.Has(ctx, types.TickerString(tickerStr))
+// DeleteMarket removes a Market.  If the market does not exist, this is a no-op and nil is returned.
+// If the market exists, all DeleteMarketValidationHooks are called on the market before deletion.
+// Additionally, returns true if the market was deleted.
+func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) (bool, error) {
+	market, err := k.GetMarket(ctx, tickerStr)
+	switch {
+	case errors.Is(err, collections.ErrNotFound):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("failed to get market for ticker %s: %w", tickerStr, err)
+	}
+
+	if err := k.deleteMarketValidationHooks.ValidateMarket(ctx, market); err != nil {
+		return false, err
+	}
+
+	err = k.markets.Remove(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
-		return err
+		return false, err
 	}
-	if !alreadyExists {
-		return types.NewMarketDoesNotExistsError(types.TickerString(tickerStr))
-	}
-	return k.markets.Remove(ctx, types.TickerString(tickerStr))
+
+	return true, nil
 }
 
 // HasMarket checks if a market exists in the store.
