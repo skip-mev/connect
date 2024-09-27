@@ -33,7 +33,7 @@ type Keeper struct {
 	// params is the module's parameters.
 	params collections.Item[types.Params]
 
-	// deleteValidationHooks are called by the keeper before any deletion call are performed.
+	// deleteValidationHooks are called by the keeper before any deletion call is performed.
 	deleteMarketValidationHooks types.MarketValidationHooks
 }
 

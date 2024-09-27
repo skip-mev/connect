@@ -250,9 +250,12 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 	return &types.MsgRemoveMarketAuthoritiesResponse{}, nil
 }
 
-// RemoveMarkets attempts to remove all currently non-enabled markets from the market map.
-func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMarkets) (*types.MsgRemoveMarketsResponse,
-	error,
+// RemoveMarkets attempts to remove the provided markets from the MarketMap. Stateful validation is performed on these
+// markets using the configured ValidationHooks.
+func (ms msgServer) RemoveMarkets(
+	goCtx context.Context,
+	msg *types.MsgRemoveMarkets) (
+	*types.MsgRemoveMarketsResponse, error,
 ) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
@@ -277,6 +280,7 @@ func (ms msgServer) RemoveMarkets(goCtx context.Context, msg *types.MsgRemoveMar
 		}
 
 		if deleted {
+			ctx.Logger().Info(fmt.Sprintf("deleted market %s", market))
 			deletedMarkets = append(deletedMarkets, market)
 		}
 	}
