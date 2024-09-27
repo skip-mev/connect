@@ -155,4 +155,7 @@ message MsgRemoveMarkets {
 
 // MsgRemoveMarketsResponse defines the
 // Msg/MsgRemoveMarketsResponse response type.
-message MsgRemoveMarketsResponse {}
+message MsgRemoveMarketsResponse {
+  // Markets is the list of markets that were removed.
+  repeated string markets = 1;
+}
