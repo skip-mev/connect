@@ -50,7 +50,7 @@ The following checks should be made before utilizing a price from Connect in a c
 use connect_sdk::bindings::query::ConnectQuery;
 use connect_sdk::bindings::querier::ConnectQuerier;
 use connect_sdk::bindings::marketmap::types::CurrencyPair;
-use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult, to_json_binary, Int128, StdError};
+use cosmwasm_std::{Deps, Env, StdResult, Int128, StdError};
 
 fn do_something_with_price(
     deps: Deps<ConnectQuery>,
