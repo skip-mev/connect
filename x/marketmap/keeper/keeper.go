@@ -67,6 +67,11 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	return k
 }
 
+// SetDeleteMarketValidationHooks sets the MarketValidationHooks for deletion in the keeper.
+func (k *Keeper) SetDeleteMarketValidationHooks(hooks types.MarketValidationHooks) {
+	k.deleteMarketValidationHooks = hooks
+}
+
 // SetLastUpdated sets the lastUpdated field to the current block height.
 func (k *Keeper) SetLastUpdated(ctx context.Context, height uint64) error {
 	return k.lastUpdated.Set(ctx, height)
