@@ -1,8 +1,8 @@
 module github.com/skip-mev/connect/v2/tests/petri
 
-go 1.22.2
+go 1.23
 
-toolchain go1.23.0
+toolchain go1.23.1
 
 require (
 	github.com/cosmos/cosmos-sdk v0.50.10
