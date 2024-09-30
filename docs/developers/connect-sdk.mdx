@@ -1,0 +1,98 @@
+---
+title: CosmWasm Connect SDK
+description: Querying Connect prices using CosmWasm and Connect SDK
+icon: atom-simple
+---
+
+<Note>
+**Building with Connect? Join our [Discord](https://discord.gg/amAgf9Z39w)**!
+</Note>
+
+The Connect SDK provides bindings for the `x/oracle` and `x/marketmap` modules.
+
+## Adding Connect SDK To Your Contract
+
+The version of the Connect SDK for your contract depends on the Connect protocol version of the chain.
+
+| Connect Protocol Version | Connect SDK Version                   |
+|--------------------------|---------------------------------------|
+| v1.x                     | v0.1.0                                |
+| v2.x                     | v0.2.0                                |
+
+<Tip>
+    How to find the Connect Protocol version
+
+    The protocol version of Connect can be found on the chain by either:
+
+    1. Checking the chain's `go.mod` file.
+    2. Checking the required version in the [quickstart](../validators/quickstart#run-connect-sidecar)
+</Tip>
+
+Add the following line to the `dependencies` section of your `Cargo.toml`:
+
+`connect-sdk = { git = "https://github.com/skip-mev/connect-sdk", tag = "CONNECT SDK VERSION HERE", package = "connect-sdk" }`
+
+
+
+## Safely Accessing Price Data
+
+The following checks should be made before utilizing a price from Connect in a contract:
+
+1. currency-pair exists within the `x/oracle` and `x/marketmap` modules.
+2. currency-pair is `enabled` within the `x/marketmap`.
+3. price `block_height` is not older than a few blocks.
+4. price nonce is not 0.
+
+
+### Code Example
+
+This code example is for `v0.1.0` of the Connect SDK.
+
+```rust contract.rs
+use connect_sdk::bindings::query::ConnectQuery;
+use connect_sdk::bindings::querier::ConnectQuerier;
+use connect_sdk::bindings::marketmap::types::CurrencyPair;
+use cosmwasm_std::{Deps, Env, StdResult, Int128, StdError};
+
+fn do_something_with_price(
+    deps: Deps<ConnectQuery>,
+    env: Env,
+    currency_pair: CurrencyPair
+) -> StdResult<Int128> {
+    let connect_querier = ConnectQuerier::new(&deps.querier);
+    let base = currency_pair.base.to_uppercase();
+    let quote = currency_pair.quote.to_uppercase();
+
+    // Check if the market exists and is enabled
+    let market = connect_querier.get_marketmap_market(base.clone(), quote.clone())?;
+    if !market.market.ticker.enabled {
+        return Err(StdError::generic_err("market is not enabled"));
+    }
+
+    // Check price validity
+    let price_response = connect_querier.get_oracle_price(base, quote)?;
+    if price_response.nonce == 0 {
+        return Err(StdError::generic_err("price has never been updated"));
+    }
+
+    let max_price_age: u64 = 3; // adjust based on appetite for price freshness
+    let price_age = env.block.height - price_response.price.block_height.unwrap();
+    if price_age > max_price_age {
+        return Err(StdError::generic_err("price is too old"));
+    }
+
+    // We can now do something with the price
+    let valid_price = price_response.price.price;
+
+    // Placeholder for actual price processing
+    Ok(valid_price)
+}
+```
+
+
+
+## Full Example Contract
+
+Example Contract here: [example](https://github.com/skip-mev/connect-sdk/tree/trunk/contracts/x-oracle-passthrough).
+
+

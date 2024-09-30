@@ -68,7 +68,7 @@
       "pages": [
         "developers/integration",
         "developers/high-level",
-        "developers/neutron-sdk",
+        "developers/connect-sdk",
         "developers/providers",
         {
           "group": "Modules",
