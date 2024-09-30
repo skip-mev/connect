@@ -1156,10 +1156,10 @@ var (
           }
         ]
       },
-      "MATIC/USD": {
+      "POL/USD": {
         "ticker": {
           "currency_pair": {
-            "Base": "MATIC",
+            "Base": "POL",
             "Quote": "USD"
           },
           "decimals": 10,
@@ -1169,7 +1169,7 @@ var (
         "provider_configs": [
           {
             "name": "coinmarketcap_api",
-            "off_chain_ticker": "3890"
+            "off_chain_ticker": "28321"
           }
         ]
       },
@@ -5743,10 +5743,10 @@ var (
 			  }
 			]
 		  },
-		  "MATIC/USD": {
+		  "POL/USD": {
 			"ticker": {
 			  "currency_pair": {
-				"Base": "MATIC",
+				"Base": "POL",
 				"Quote": "USD"
 			  },
 			  "decimals": 10,
@@ -5756,7 +5756,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "binance_ws",
-				"off_chain_ticker": "MATICUSDT",
+				"off_chain_ticker": "POLUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5764,7 +5764,7 @@ var (
 			  },
 			  {
 				"name": "bybit_ws",
-				"off_chain_ticker": "MATICUSDT",
+				"off_chain_ticker": "POLUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5772,11 +5772,11 @@ var (
 			  },
 			  {
 				"name": "coinbase_ws",
-				"off_chain_ticker": "MATIC-USD"
+				"off_chain_ticker": "POL-USD"
 			  },
 			  {
 				"name": "gate_ws",
-				"off_chain_ticker": "MATIC_USDT",
+				"off_chain_ticker": "POL_USDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5784,7 +5784,7 @@ var (
 			  },
 			  {
 				"name": "huobi_ws",
-				"off_chain_ticker": "maticusdt",
+				"off_chain_ticker": "polusdt",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5792,11 +5792,11 @@ var (
 			  },
 			  {
 				"name": "kraken_api",
-				"off_chain_ticker": "MATICUSD"
+				"off_chain_ticker": "POLUSD"
 			  },
 			  {
 				"name": "kucoin_ws",
-				"off_chain_ticker": "MATIC-USDT",
+				"off_chain_ticker": "POL-USDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5804,7 +5804,7 @@ var (
 			  },
 			  {
 				"name": "mexc_ws",
-				"off_chain_ticker": "MATICUSDT",
+				"off_chain_ticker": "POLUSDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5812,7 +5812,7 @@ var (
 			  },
 			  {
 				"name": "okx_ws",
-				"off_chain_ticker": "MATIC-USDT",
+				"off_chain_ticker": "POL-USDT",
 				"normalize_by_pair": {
 				  "Base": "USDT",
 				  "Quote": "USD"
@@ -5820,7 +5820,7 @@ var (
 			  },
 			  {
 				"name": "crypto_dot_com_ws",
-				"off_chain_ticker": "MATIC_USD"
+				"off_chain_ticker": "POL_USD"
 			  }
 			]
 		  },
@@ -8999,10 +8999,10 @@ var (
 			  }
 			]
 		  },
-		  "MATIC/USD": {
+		  "POL/USD": {
 			"ticker": {
 			  "currency_pair": {
-				"Base": "MATIC",
+				"Base": "POL",
 				"Quote": "USD"
 			  },
 			  "decimals": 10,
@@ -9012,7 +9012,7 @@ var (
 			"provider_configs": [
 			  {
 				"name": "coingecko_api",
-				"off_chain_ticker": "matic-network/usd"
+				"off_chain_ticker": "pol-network/usd"
 			  }
 			]
 		  },
