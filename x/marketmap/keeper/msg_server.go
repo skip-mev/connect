@@ -283,6 +283,10 @@ func (ms msgServer) RemoveMarkets(
 			ctx.Logger().Info(fmt.Sprintf("deleted market %s", market))
 			deletedMarkets = append(deletedMarkets, market)
 		}
+
+		if err := ms.k.hooks.AfterMarketRemoved(ctx, market); err != nil {
+			return nil, fmt.Errorf("unable to run market removal hook: %w", err)
+		}
 	}
 
 	// check if the resulting state is valid: it may not be valid if the removed market is used as a normalization pair
