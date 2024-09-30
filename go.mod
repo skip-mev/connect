@@ -20,7 +20,7 @@ require (
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/interchain-security/v6 v6.1.0
-	github.com/ethereum/go-ethereum v1.14.9
+	github.com/ethereum/go-ethereum v1.14.10
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
 	github.com/golang/mock v1.6.0
@@ -304,7 +304,7 @@ require (
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/supranational/blst v0.3.11 // indirect
+	github.com/supranational/blst v0.3.13 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect; indirectdependabot/go_modules/golang.org/x/net-0.28.0
 	github.com/tendermint/go-amino v0.16.0 // indirect
