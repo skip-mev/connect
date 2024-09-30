@@ -24,6 +24,7 @@ const (
 	Msg_UpdateParams_FullMethodName            = "/connect.marketmap.v2.Msg/UpdateParams"
 	Msg_RemoveMarketAuthorities_FullMethodName = "/connect.marketmap.v2.Msg/RemoveMarketAuthorities"
 	Msg_UpsertMarkets_FullMethodName           = "/connect.marketmap.v2.Msg/UpsertMarkets"
+	Msg_RemoveMarkets_FullMethodName           = "/connect.marketmap.v2.Msg/RemoveMarkets"
 )
 
 // MsgClient is the client API for Msg service.
@@ -46,6 +47,10 @@ type MsgClient interface {
 	// Specifically if a market does not exist it will be created, otherwise it
 	// will be updated. The response will be a map between ticker -> updated.
 	UpsertMarkets(ctx context.Context, in *MsgUpsertMarkets, opts ...grpc.CallOption) (*MsgUpsertMarketsResponse, error)
+	// RemoveMarkets removes the given markets from the marketmap if:
+	// - they exist in the map
+	// - they are disabled
+	RemoveMarkets(ctx context.Context, in *MsgRemoveMarkets, opts ...grpc.CallOption) (*MsgRemoveMarketsResponse, error)
 }
 
 type msgClient struct {
@@ -106,6 +111,16 @@ func (c *msgClient) UpsertMarkets(ctx context.Context, in *MsgUpsertMarkets, opt
 	return out, nil
 }
 
+func (c *msgClient) RemoveMarkets(ctx context.Context, in *MsgRemoveMarkets, opts ...grpc.CallOption) (*MsgRemoveMarketsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgRemoveMarketsResponse)
+	err := c.cc.Invoke(ctx, Msg_RemoveMarkets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -126,6 +141,10 @@ type MsgServer interface {
 	// Specifically if a market does not exist it will be created, otherwise it
 	// will be updated. The response will be a map between ticker -> updated.
 	UpsertMarkets(context.Context, *MsgUpsertMarkets) (*MsgUpsertMarketsResponse, error)
+	// RemoveMarkets removes the given markets from the marketmap if:
+	// - they exist in the map
+	// - they are disabled
+	RemoveMarkets(context.Context, *MsgRemoveMarkets) (*MsgRemoveMarketsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -150,6 +169,9 @@ func (UnimplementedMsgServer) RemoveMarketAuthorities(context.Context, *MsgRemov
 }
 func (UnimplementedMsgServer) UpsertMarkets(context.Context, *MsgUpsertMarkets) (*MsgUpsertMarketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpsertMarkets not implemented")
+}
+func (UnimplementedMsgServer) RemoveMarkets(context.Context, *MsgRemoveMarkets) (*MsgRemoveMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveMarkets not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -262,6 +284,24 @@ func _Msg_UpsertMarkets_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_RemoveMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveMarkets)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveMarkets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RemoveMarkets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveMarkets(ctx, req.(*MsgRemoveMarkets))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -288,6 +328,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpsertMarkets",
 			Handler:    _Msg_UpsertMarkets_Handler,
+		},
+		{
+			MethodName: "RemoveMarkets",
+			Handler:    _Msg_RemoveMarkets_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

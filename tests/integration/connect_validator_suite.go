@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/connect/v2/oracle/types"
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/providers/static"
+	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
@@ -30,13 +31,13 @@ func (s *ConnectOracleValidatorIntegrationSuite) TestUnbonding() {
 	ethusdCP := connecttypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	cps := []connecttypes.CurrencyPair{
-		ethusdcCP,
-		ethusdtCP,
-		ethusdCP,
+	tickers := []mmtypes.Ticker{
+		enabledTicker(ethusdcCP),
+		enabledTicker(ethusdtCP),
+		enabledTicker(ethusdCP),
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)

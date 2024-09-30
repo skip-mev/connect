@@ -38,7 +38,6 @@ const (
 	defaultDenom          = "stake"
 	validatorKey          = "validator"
 	yes                   = "yes"
-	deposit               = 1000000
 	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 	gasPrice              = 100
@@ -347,11 +346,11 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
-			{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			enabledTicker(connecttypes.CurrencyPair{
 				Base:  "BTC",
 				Quote: "USD",
-			},
+			}),
 		}...))
 
 		// check that the currency-pair is added to state
@@ -365,13 +364,51 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := connecttypes.NewCurrencyPair("ETH", "USD")
 		cp2 := connecttypes.NewCurrencyPair("USDT", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
-			cp1, cp2,
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			enabledTicker(cp1),
+			enabledTicker(cp2),
 		}...))
 
 		resp, err := QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
 		s.Require().True(len(resp.CurrencyPairs) == 3)
+
+		s.Run("fail to remove an enabled market", func() {
+			s.Require().Error(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{cp1}))
+
+			// check not removed
+			market, err := QueryMarket(s.chain, cp1)
+			s.Require().NoError(err)
+			s.Require().NotNil(market)
+		})
+	})
+
+	s.Run("remove a disabled market", func() {
+		disabledCP := connecttypes.NewCurrencyPair("DIS", "ABLE")
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			disabledTicker(disabledCP),
+		}...))
+
+		market, err := QueryMarket(s.chain, disabledCP)
+		s.Require().NoError(err)
+		s.Require().NotNil(market)
+
+		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{disabledCP}))
+
+		// check removed
+		_, err = QueryMarket(s.chain, disabledCP)
+		s.Require().Error(err)
+	})
+
+	s.Run("remove a non existent market", func() {
+		nonexistentCP := connecttypes.NewCurrencyPair("NON", "EXIST")
+
+		// check removed doesnt exist
+		_, err := QueryMarket(s.chain, nonexistentCP)
+		s.Require().Error(err)
+
+		// tx will not error
+		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{nonexistentCP}))
 	})
 }
 
@@ -381,9 +418,16 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 
 func (s *ConnectOracleIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
+	tickerETHUSDC := mmtypes.Ticker{
+		CurrencyPair:     ethusdcCP,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          true,
+		Metadata_JSON:    "",
+	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []connecttypes.CurrencyPair{
-		ethusdcCP,
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+		tickerETHUSDC,
 	}...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
@@ -577,19 +621,39 @@ func (s *ConnectOracleIntegrationSuite) TestNodeFailures() {
 	})
 }
 
+func enabledTicker(pair connecttypes.CurrencyPair) mmtypes.Ticker {
+	return mmtypes.Ticker{
+		CurrencyPair:     pair,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          true,
+		Metadata_JSON:    "",
+	}
+}
+
+func disabledTicker(pair connecttypes.CurrencyPair) mmtypes.Ticker {
+	return mmtypes.Ticker{
+		CurrencyPair:     pair,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          false,
+		Metadata_JSON:    "",
+	}
+}
+
 func (s *ConnectOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	ethusdcCP := connecttypes.NewCurrencyPair("ETH", "USDC")
 	ethusdtCP := connecttypes.NewCurrencyPair("ETH", "USDT")
 	ethusdCP := connecttypes.NewCurrencyPair("ETH", "USD")
 
-	// add multiple currency pairs
-	cps := []connecttypes.CurrencyPair{
-		ethusdcCP,
-		ethusdtCP,
-		ethusdCP,
+	// add multiple tickers
+	tickers := []mmtypes.Ticker{
+		enabledTicker(ethusdcCP),
+		enabledTicker(ethusdtCP),
+		enabledTicker(ethusdCP),
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
@@ -671,8 +735,8 @@ func (s *ConnectOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, cp := range cps {
-			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
+		for _, ticker := range tickers {
+			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
@@ -739,8 +803,8 @@ func (s *ConnectOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, cp := range cps {
-			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
+		for _, ticker := range tickers {
+			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
