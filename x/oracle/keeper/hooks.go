@@ -24,13 +24,14 @@ func (k *Keeper) Hooks() Hooks {
 // the marketmap.  After the market is created, a currency pair and its state are initialized in the
 // oracle module.
 func (h Hooks) AfterMarketCreated(ctx sdk.Context, market marketmaptypes.Market) error {
+	ctx.Logger().Info(fmt.Sprintf("creating x/oracle state for market %s", market.Ticker.String()))
 	return h.k.CreateCurrencyPair(ctx, market.Ticker.CurrencyPair)
 }
 
 // AfterMarketUpdated is the marketmap hook for x/oracle that is run after a market is updated in
 // the marketmap.
-func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ marketmaptypes.Market) error {
-	// TODO
+func (h Hooks) AfterMarketUpdated(ctx sdk.Context, market marketmaptypes.Market) error {
+	ctx.Logger().Info(fmt.Sprintf("market %s updated", market.Ticker.String()))
 	return nil
 }
 
@@ -43,5 +44,12 @@ func (h Hooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]marketmapt
 		}
 	}
 
+	return nil
+}
+
+// AfterMarketRemoved is the marketmap hook for x/oracle that is run after a market is removed in
+// the marketmap.
+func (h Hooks) AfterMarketRemoved(ctx sdk.Context, market marketmaptypes.Market) error {
+	ctx.Logger().Info(fmt.Sprintf("market %s removed. retaining x/oracle state if it exists", market.Ticker.String()))
 	return nil
 }

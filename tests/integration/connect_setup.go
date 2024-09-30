@@ -305,6 +305,33 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair, 
 	return res.Price, int64(res.Nonce), nil
 }
 
+// QueryMarket queries a market from the market map.
+func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtypes.Market, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.Market(ctx, &mmtypes.MarketRequest{
+		CurrencyPair: cp,
+	})
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+
+	return res.Market, nil
+}
+
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
@@ -359,30 +386,26 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...connecttypes.CurrencyPair) error {
-	creates := make([]mmtypes.Market, len(cps))
-	for i, cp := range cps {
+func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64,
+	tickers ...mmtypes.Ticker,
+) error {
+	creates := make([]mmtypes.Market, len(tickers))
+	for i, ticker := range tickers {
 		creates[i] = mmtypes.Market{
-			Ticker: mmtypes.Ticker{
-				CurrencyPair:     cp,
-				Decimals:         8,
-				MinProviderCount: 1,
-				Metadata_JSON:    "",
-				Enabled:          true,
-			},
+			Ticker: ticker,
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
 					Name:           static.Name,
-					OffChainTicker: cp.String(),
+					OffChainTicker: ticker.String(),
 					Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 				},
 			},
 		}
 	}
 
-	msg := &mmtypes.MsgCreateMarkets{
-		Authority:     s.user.FormattedAddress(),
-		CreateMarkets: creates,
+	msg := &mmtypes.MsgUpsertMarkets{
+		Authority: s.user.FormattedAddress(),
+		Markets:   creates,
 	}
 
 	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
@@ -390,6 +413,37 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	if err != nil {
+		return err
+	}
+
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	return nil
+}
+
+func (s *ConnectIntegrationSuite) RemoveMarket(
+	chain *cosmos.CosmosChain,
+	markets []connecttypes.CurrencyPair,
+) error {
+	marketString := make([]string, len(markets))
+	for i, market := range markets {
+		marketString[i] = market.String()
+	}
+
+	msg := &mmtypes.MsgRemoveMarkets{
+		Admin:   s.user.FormattedAddress(),
+		Markets: marketString,
+	}
+
+	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
 	// broadcast the tx
 	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
@@ -451,7 +505,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForProposalStatus, waits for the deposit period for the proposal to end
+// WaitForProposalStatus waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)

@@ -44,7 +44,7 @@ func NewConnectCCVIntegrationSuite(
 func (s *ConnectCCVSuite) TestCCVAggregation() {
 	ethusdc := connecttypes.NewCurrencyPair("ETH", "USDC")
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, ethusdc))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, enabledTicker(ethusdc)))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
