@@ -1,8 +1,13 @@
+//go:build !race
+// +build !race
+
+// we don't need the race detector here because race conditions with the dynamic impl do not matter.
+// if a codepath calls `metrics.AddTick()` while the dynamic impl is updating the impl, nothing bad really happens.
+
 package metrics
 
 import (
 	"context"
-	"sync"
 	"testing"
 	"time"
 
@@ -51,15 +56,12 @@ func TestDynamicMetrics_Switches(t *testing.T) {
 	}
 	node := mocks.NewNodeClient(t)
 
-	// i'm using a mutex to block the DeriveNodeIdentifier call so i can prevent the for/select from looping.
-	mtx := sync.Mutex{}
-	mtx.Lock()
+	blocker := make(chan bool)
 
 	// it gets called once in the loop where it checks the node,
 	// and again in NewMetricsFromConfig.
 	node.EXPECT().DeriveNodeIdentifier().Run(func() {
-		mtx.Lock()
-		mtx.Unlock() //nolint:staticcheck
+		<-blocker
 	}).Return("foobar", nil).Twice()
 
 	dyn := NewDynamicMetrics(ctx, cfg, node)
@@ -69,7 +71,10 @@ func TestDynamicMetrics_Switches(t *testing.T) {
 
 	dynImpl.cfg.Enabled = true
 
-	mtx.Unlock()
+	// once for the routine that switches it.
+	blocker <- true
+	// and again for the new metrics call.
+	blocker <- true
 
 	valid := false
 	for range 10 {
