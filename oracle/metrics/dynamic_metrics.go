@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
@@ -37,6 +38,7 @@ type dynamicMetrics struct {
 	nc          NodeClient
 	impl        Metrics
 	metricsType ImplType
+	mu          sync.RWMutex // Add a mutex for concurrent access
 }
 
 func NewDynamicMetrics(ctx context.Context, cfg config.MetricsConfig, nc NodeClient) Metrics {
@@ -72,9 +74,11 @@ func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 				_, err := d.nc.DeriveNodeIdentifier()
 				if err == nil {
 					impl := NewMetricsFromConfig(d.cfg, d.nc)
+					d.mu.Lock()
 					d.impl = impl
 					d.metricsType = determineMetricsType(d.impl)
-					d.impl.SetConnectBuildInfo()
+					d.mu.Unlock()
+					d.SetConnectBuildInfo()
 					return
 				}
 			}
@@ -83,37 +87,55 @@ func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 }
 
 func (d *dynamicMetrics) AddTick() {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.AddTick()
 }
 
 func (d *dynamicMetrics) AddTickerTick(pairID string) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.AddTickerTick(pairID)
 }
 
 func (d *dynamicMetrics) UpdatePrice(name, pairID string, decimals uint64, price float64) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.UpdatePrice(name, pairID, decimals, price)
 }
 
 func (d *dynamicMetrics) UpdateAggregatePrice(pairID string, decimals uint64, price float64) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.UpdateAggregatePrice(pairID, decimals, price)
 }
 
 func (d *dynamicMetrics) AddProviderTick(providerName, pairID string, success bool) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.AddProviderTick(providerName, pairID, success)
 }
 
 func (d *dynamicMetrics) AddProviderCountForMarket(pairID string, count int) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.AddProviderCountForMarket(pairID, count)
 }
 
 func (d *dynamicMetrics) SetConnectBuildInfo() {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.SetConnectBuildInfo()
 }
 
 func (d *dynamicMetrics) MissingPrices(pairIDs []string) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	d.impl.MissingPrices(pairIDs)
 }
 
 func (d *dynamicMetrics) GetMissingPrices() []string {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	return d.impl.GetMissingPrices()
 }
