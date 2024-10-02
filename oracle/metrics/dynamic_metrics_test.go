@@ -59,7 +59,7 @@ func TestDynamicMetrics_Switches(t *testing.T) {
 	// and again in NewMetricsFromConfig.
 	node.EXPECT().DeriveNodeIdentifier().Run(func() {
 		mtx.Lock()
-		mtx.Unlock()
+		mtx.Unlock() //nolint:staticcheck
 	}).Return("foobar", nil).Twice()
 
 	dyn := NewDynamicMetrics(ctx, cfg, node)
