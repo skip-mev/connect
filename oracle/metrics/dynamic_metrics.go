@@ -73,8 +73,8 @@ func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 			case <-ticker.C:
 				_, err := d.nc.DeriveNodeIdentifier()
 				if err == nil {
-					impl := NewMetricsFromConfig(d.cfg, d.nc)
 					d.mu.Lock()
+					impl := NewMetricsFromConfig(d.cfg, d.nc)
 					d.impl = impl
 					d.metricsType = determineMetricsType(d.impl)
 					d.mu.Unlock()
