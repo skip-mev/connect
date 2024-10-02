@@ -77,8 +77,8 @@ func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 					impl := NewMetricsFromConfig(d.cfg, d.nc)
 					d.impl = impl
 					d.metricsType = determineMetricsType(d.impl)
-					d.mu.Unlock()
 					d.SetConnectBuildInfo()
+					d.mu.Unlock()
 					return
 				}
 			}
