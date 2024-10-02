@@ -47,12 +47,16 @@ func NewDynamicMetrics(ctx context.Context, cfg config.MetricsConfig, nc NodeCli
 		impl:        impl,
 		metricsType: determineMetricsType(impl),
 	}
+	// we only want to kick off the routine of attempting to switch if we're a noop metrics, telemetry is enabled,
+	// and we have a node client.
 	if dyn.metricsType == NoOpMetricsType && !cfg.Telemetry.Disabled && nc != nil {
-		go dyn.retrySwitchImpl(ctx)
+		dyn.retrySwitchImpl(ctx)
 	}
 	return dyn
 }
 
+// retrySwitchImpl kicks off a go routine that attempts to contact a node every 3 seconds for 10 mins.
+// if it gets a response, it will switch its internal metrics impl.
 func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 	go func() {
 		retryDuration := time.NewTimer(10 * time.Minute)
@@ -65,8 +69,6 @@ func (d *dynamicMetrics) retrySwitchImpl(ctx context.Context) {
 			case <-retryDuration.C:
 				return
 			case <-ticker.C:
-				// if we can successfully query the identifier, we can switch the metrics.
-				// this means the node started, and we can actually start emitting real metrics.
 				_, err := d.nc.DeriveNodeIdentifier()
 				if err == nil {
 					impl := NewMetricsFromConfig(d.cfg, d.nc)
