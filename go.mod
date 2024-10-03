@@ -1,6 +1,7 @@
 module github.com/skip-mev/connect/v2
 
 go 1.22.2
+toolchain go1.23.2
 
 require (
 	cosmossdk.io/api v0.7.6
@@ -34,7 +35,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	github.com/vektra/mockery/v2 v2.46.0
+	github.com/vektra/mockery/v2 v2.46.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 	golang.org/x/net v0.29.0
