@@ -24,7 +24,7 @@ var (
 	}
 )
 
-// NewDYDXResearchMarketMapFetcher returns a MultiMarketMapFetcher composed of dydx mainnet + research
+// DefaultDYDXResearchMarketMapFetcher returns a MultiMarketMapFetcher composed of dydx mainnet + research
 // apiDataHandlers.
 func DefaultDYDXResearchMarketMapFetcher(
 	rh apihandlers.RequestHandler,
