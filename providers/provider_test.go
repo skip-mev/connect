@@ -67,15 +67,9 @@ var (
 		ProviderConfigs: []mmtypes.ProviderConfig{
 			{
 				Name:           "okx_ws",
-				OffChainTicker: "USDC-USDT",
+				OffChainTicker: "USDC{-USDT",
 				Invert:         true,
 			},
-		},
-	}
-
-	marketMap = mmtypes.MarketMap{
-		Markets: map[string]mmtypes.Market{
-			usdtusd.Ticker.String(): usdtusd,
 		},
 	}
 )
@@ -135,8 +129,9 @@ func NewTestingOracle(ctx context.Context) (TestingOracle, error) {
 }
 
 type ProviderTestConfig struct {
-	TestDuration time.Duration
-	PollInterval time.Duration
+	TestDuration   time.Duration
+	PollInterval   time.Duration
+	BurnInInterval time.Duration
 }
 
 func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, cfg ProviderTestConfig) error {
@@ -145,7 +140,13 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 		return fmt.Errorf("failed to update oracle market map: %w", err)
 	}
 
+	expectedNumPrices := len(mm.Markets)
+	if expectedNumPrices == 0 {
+		return fmt.Errorf("cannot test with empty market map")
+	}
+
 	go o.Start(ctx)
+	time.Sleep(cfg.BurnInInterval)
 
 	ticker := time.NewTicker(cfg.PollInterval)
 	defer ticker.Stop()
@@ -156,9 +157,11 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 	for {
 		select {
 		case <-ticker.C:
-			// do something
-			hm := o.GetPrices()
-			o.logger.Info("provider prices", zap.Any("prices", hm))
+			prices := o.GetPrices()
+			if len(prices) != expectedNumPrices {
+				return fmt.Errorf("expected %d prices, got %d", expectedNumPrices, len(prices))
+			}
+			o.logger.Info("provider prices", zap.Any("prices", prices))
 
 		case <-timer.C:
 			o.Stop()
@@ -186,9 +189,10 @@ func TestProvider(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = p.RunMarketMap(ctx, marketMap, ProviderTestConfig{
-		TestDuration: 20 * time.Second,
-		PollInterval: 1 * time.Second,
+	err = p.RunMarket(ctx, usdtusd, ProviderTestConfig{
+		TestDuration:   20 * time.Second,
+		PollInterval:   1 * time.Second,
+		BurnInInterval: 10 * time.Second,
 	})
 	if err != nil {
 		t.Fatal(err)
