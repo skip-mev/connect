@@ -1,7 +1,8 @@
-package test
+package providertest_test
 
 import (
 	"context"
+	"github.com/skip-mev/connect/v2/providers/providertest"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -38,14 +39,14 @@ var (
 )
 
 func TestProvider(t *testing.T) {
-	marketsPerProvider := FilterMarketMapToProviders(mm)
+	marketsPerProvider := providertest.FilterMarketMapToProviders(mm)
 
 	for provider, marketMap := range marketsPerProvider {
 		ctx := context.Background()
-		p, err := NewTestingOracle(ctx, provider)
+		p, err := providertest.NewTestingOracle(ctx, provider)
 		require.NoError(t, err)
 
-		err = p.RunMarketMap(ctx, marketMap, DefaultProviderTestConfig())
+		err = p.RunMarketMap(ctx, marketMap, providertest.DefaultProviderTestConfig())
 		require.NoError(t, err)
 	}
 
