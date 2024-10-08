@@ -3,6 +3,8 @@ package providers
 import (
 	"context"
 	"fmt"
+	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
+	"github.com/skip-mev/connect/v2/cmd/constants"
 	"testing"
 	"time"
 
@@ -95,22 +97,90 @@ func (o *TestingOracle) UpdateMarketMap(mm mmtypes.MarketMap) error {
 	return o.Oracle.UpdateMarketMap(mm)
 }
 
-func NewTestingOracle(ctx context.Context) (TestingOracle, error) {
-	cfg := log.NewDefaultConfig()
-	cfg.StdOutLogLevel = "debug"
-	logger := log.NewLogger(cfg)
+func FilterMarketMapToProviders(mm mmtypes.MarketMap) map[string]mmtypes.MarketMap {
+	m := make(map[string]mmtypes.MarketMap)
+
+	for _, market := range mm.Markets {
+		// check each provider config
+		for _, pc := range market.ProviderConfigs {
+			// create a market from the given provider config
+			isolatedMarket := mmtypes.Market{
+				Ticker: market.Ticker,
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					pc,
+				},
+			}
+
+			// init mm if necessary
+			if _, found := m[pc.Name]; !found {
+				m[pc.Name] = mmtypes.MarketMap{
+					Markets: map[string]mmtypes.Market{
+						isolatedMarket.Ticker.String(): isolatedMarket,
+					},
+				}
+				// otherwise insert
+			} else {
+				m[pc.Name].Markets[isolatedMarket.Ticker.String()] = isolatedMarket
+			}
+		}
+	}
+
+	return m
+}
+
+func OracleConfigForProvider(providerNames ...string) (config.OracleConfig, error) {
+	cfg := config.OracleConfig{
+		UpdateInterval: cmdconfig.DefaultUpdateInterval,
+		MaxPriceAge:    cmdconfig.DefaultMaxPriceAge,
+		Metrics: config.MetricsConfig{
+			Enabled: false,
+			Telemetry: config.TelemetryConfig{
+				Disabled: true,
+			},
+		},
+		Providers: make(map[string]config.ProviderConfig),
+		Host:      cmdconfig.DefaultHost,
+		Port:      cmdconfig.DefaultPort,
+	}
+
+	for _, provider := range append(constants.Providers, constants.AlternativeMarketMapProviders...) {
+		for _, providerName := range providerNames {
+			if provider.Name == providerName {
+				cfg.Providers[provider.Name] = provider
+			}
+		}
+	}
+
+	if err := cfg.ValidateBasic(); err != nil {
+
+		return cfg, fmt.Errorf("default oracle config is invalid: %s", err)
+	}
+
+	return cfg, nil
+}
+
+func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOracle, error) {
+	logCfg := log.NewDefaultConfig()
+	logCfg.StdOutLogLevel = "debug"
+	logger := log.NewLogger(logCfg)
 
 	agg, err := oraclemath.NewIndexPriceAggregator(logger, mmtypes.MarketMap{}, oraclemetrics.NewNopMetrics())
 	if err != nil {
 		return TestingOracle{}, fmt.Errorf("failed to create oracle index price aggregator: %w", err)
 	}
 
+	cfg, err := OracleConfigForProvider(providerNames...)
+	if err != nil {
+		return TestingOracle{}, fmt.Errorf("failed to create oracle config: %w", err)
+	}
+
 	orc, err := oracle.New(
-		oracleCfg,
+		cfg,
 		agg,
 		oracle.WithLogger(logger),
 		oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 		oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
 	)
 	if err != nil {
 		return TestingOracle{}, fmt.Errorf("failed to create oracle: %w", err)
@@ -184,7 +254,7 @@ func (o *TestingOracle) RunMarket(ctx context.Context, market mmtypes.Market, cf
 
 func TestProvider(t *testing.T) {
 	ctx := context.Background()
-	p, err := NewTestingOracle(ctx)
+	p, err := NewTestingOracle(ctx, okx.Name)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +262,7 @@ func TestProvider(t *testing.T) {
 	err = p.RunMarket(ctx, usdtusd, ProviderTestConfig{
 		TestDuration:   20 * time.Second,
 		PollInterval:   1 * time.Second,
-		BurnInInterval: 10 * time.Second,
+		BurnInInterval: 2 * time.Second,
 	})
 	if err != nil {
 		t.Fatal(err)
