@@ -2,12 +2,13 @@ package providertest_test
 
 import (
 	"context"
-	"github.com/skip-mev/connect/v2/providers/providertest"
+	"go.uber.org/zap"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
+	"github.com/skip-mev/connect/v2/providers/providertest"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 )
 
@@ -39,15 +40,18 @@ var (
 )
 
 func TestProvider(t *testing.T) {
+	// take in a market map and filter it to output N market maps with only a single provider
 	marketsPerProvider := providertest.FilterMarketMapToProviders(mm)
 
+	// run this check for each provider (here only okx_ws)
 	for provider, marketMap := range marketsPerProvider {
 		ctx := context.Background()
 		p, err := providertest.NewTestingOracle(ctx, provider)
 		require.NoError(t, err)
 
-		err = p.RunMarketMap(ctx, marketMap, providertest.DefaultProviderTestConfig())
+		results, err := p.RunMarketMap(ctx, marketMap, providertest.DefaultProviderTestConfig())
 		require.NoError(t, err)
-	}
 
+		p.Logger.Info("results", zap.Any("results", results))
+	}
 }
