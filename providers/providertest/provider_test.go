@@ -2,8 +2,9 @@ package providertest_test
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"testing"
+
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/require"
 

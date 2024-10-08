@@ -95,7 +95,7 @@ func OracleConfigForProvider(providerNames ...string) (config.OracleConfig, erro
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {
-		return cfg, fmt.Errorf("default oracle config is invalid: %s", err)
+		return cfg, fmt.Errorf("default oracle config is invalid: %w", err)
 	}
 
 	return cfg, nil
@@ -104,6 +104,8 @@ func OracleConfigForProvider(providerNames ...string) (config.OracleConfig, erro
 func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOracle, error) {
 	logCfg := log.NewDefaultConfig()
 	logCfg.StdOutLogLevel = "debug"
+	logCfg.FileOutLogLevel = "debug"
+	logCfg.LogSamplePeriod = 250 * time.Millisecond
 	logger := log.NewLogger(logCfg)
 
 	agg, err := oraclemath.NewIndexPriceAggregator(logger, mmtypes.MarketMap{}, oraclemetrics.NewNopMetrics())
