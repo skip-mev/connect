@@ -23,6 +23,10 @@ func FilterMarketMapToProviders(mm mmtypes.MarketMap) map[string]mmtypes.MarketM
 				},
 			}
 
+			// always enable and set minprovider count to 1 so that it can be run isolated
+			isolatedMarket.Ticker.Enabled = true
+			isolatedMarket.Ticker.MinProviderCount = 1
+
 			// init mm if necessary
 			if _, found := m[pc.Name]; !found {
 				m[pc.Name] = mmtypes.MarketMap{

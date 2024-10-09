@@ -21,6 +21,26 @@ var (
 		Enabled:          true,
 	}
 
+	usdtusdTickerDisabled = mmtypes.Ticker{
+		CurrencyPair: connecttypes.CurrencyPair{
+			Base:  "USDT",
+			Quote: "USD",
+		},
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          false,
+	}
+
+	usdtusdTickerMinProvider = mmtypes.Ticker{
+		CurrencyPair: connecttypes.CurrencyPair{
+			Base:  "USDT",
+			Quote: "USD",
+		},
+		Decimals:         8,
+		MinProviderCount: 10,
+		Enabled:          true,
+	}
+
 	usdtusdProviderCfgOkx = mmtypes.ProviderConfig{
 		Name:           "okx_ws",
 		OffChainTicker: "USDC-USDT",
@@ -102,6 +122,36 @@ func TestFilterMarketMapToProviders(t *testing.T) {
 			input: mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
 					usdtusdTicker.String(): usdtusdSingleProvider,
+				},
+			},
+			want: map[string]mmtypes.MarketMap{
+				"okx_ws": {
+					Markets: map[string]mmtypes.Market{
+						usdtusdTicker.String(): usdtusdSingleProvider,
+					},
+				},
+			},
+		},
+		{
+			name: "enable disabled markets for testing",
+			input: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					usdtusdTickerDisabled.String(): usdtusdSingleProvider,
+				},
+			},
+			want: map[string]mmtypes.MarketMap{
+				"okx_ws": {
+					Markets: map[string]mmtypes.Market{
+						usdtusdTicker.String(): usdtusdSingleProvider,
+					},
+				},
+			},
+		},
+		{
+			name: "set min provider count to 1 for testing",
+			input: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					usdtusdTickerMinProvider.String(): usdtusdSingleProvider,
 				},
 			},
 			want: map[string]mmtypes.MarketMap{
