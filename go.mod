@@ -18,7 +18,7 @@ require (
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/interchain-security/v6 v6.1.0
-	github.com/ethereum/go-ethereum v1.14.10
+	github.com/ethereum/go-ethereum v1.14.11
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
 	github.com/golang/mock v1.6.0
