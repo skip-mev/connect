@@ -1,3 +1,10 @@
+# Provider testing
+
+## Example
+
+The following example can be used as a base for testing providers.
+
+```go
 package providertest_test
 
 import (
@@ -56,3 +63,5 @@ func TestProvider(t *testing.T) {
 		p.Logger.Info("results", zap.Any("results", results))
 	}
 }
+
+```

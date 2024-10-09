@@ -7,10 +7,7 @@ import (
 
 	"go.uber.org/zap"
 
-	cmdconfig "github.com/skip-mev/connect/v2/cmd/connect/config"
-	"github.com/skip-mev/connect/v2/cmd/constants"
 	"github.com/skip-mev/connect/v2/oracle"
-	"github.com/skip-mev/connect/v2/oracle/config"
 	oraclemetrics "github.com/skip-mev/connect/v2/oracle/metrics"
 	oracletypes "github.com/skip-mev/connect/v2/oracle/types"
 	"github.com/skip-mev/connect/v2/pkg/log"
@@ -38,67 +35,6 @@ func (o *TestingOracle) GetPrices() oracletypes.Prices {
 
 func (o *TestingOracle) UpdateMarketMap(mm mmtypes.MarketMap) error {
 	return o.Oracle.UpdateMarketMap(mm)
-}
-
-func FilterMarketMapToProviders(mm mmtypes.MarketMap) map[string]mmtypes.MarketMap {
-	m := make(map[string]mmtypes.MarketMap)
-
-	for _, market := range mm.Markets {
-		// check each provider config
-		for _, pc := range market.ProviderConfigs {
-			// create a market from the given provider config
-			isolatedMarket := mmtypes.Market{
-				Ticker: market.Ticker,
-				ProviderConfigs: []mmtypes.ProviderConfig{
-					pc,
-				},
-			}
-
-			// init mm if necessary
-			if _, found := m[pc.Name]; !found {
-				m[pc.Name] = mmtypes.MarketMap{
-					Markets: map[string]mmtypes.Market{
-						isolatedMarket.Ticker.String(): isolatedMarket,
-					},
-				}
-				// otherwise insert
-			} else {
-				m[pc.Name].Markets[isolatedMarket.Ticker.String()] = isolatedMarket
-			}
-		}
-	}
-
-	return m
-}
-
-func OracleConfigForProvider(providerNames ...string) (config.OracleConfig, error) {
-	cfg := config.OracleConfig{
-		UpdateInterval: cmdconfig.DefaultUpdateInterval,
-		MaxPriceAge:    cmdconfig.DefaultMaxPriceAge,
-		Metrics: config.MetricsConfig{
-			Enabled: false,
-			Telemetry: config.TelemetryConfig{
-				Disabled: true,
-			},
-		},
-		Providers: make(map[string]config.ProviderConfig),
-		Host:      cmdconfig.DefaultHost,
-		Port:      cmdconfig.DefaultPort,
-	}
-
-	for _, provider := range append(constants.Providers, constants.AlternativeMarketMapProviders...) {
-		for _, providerName := range providerNames {
-			if provider.Name == providerName {
-				cfg.Providers[provider.Name] = provider
-			}
-		}
-	}
-
-	if err := cfg.ValidateBasic(); err != nil {
-		return cfg, fmt.Errorf("default oracle config is invalid: %w", err)
-	}
-
-	return cfg, nil
 }
 
 func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOracle, error) {
@@ -142,6 +78,7 @@ func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOrac
 	}, nil
 }
 
+// Config is used to configure tests when calling RunMarket or RunMarketMap.
 type Config struct {
 	// TestDuration is the total duration of testing time.
 	TestDuration time.Duration
@@ -167,12 +104,25 @@ func (c *Config) Validate() error {
 	return nil
 }
 
+// DefaultProviderTestConfig tests by:
+// - allow the providers to run for 5 seconds
+// - test for a total of 1 minute
+// - poll each 5 seconds for prices
 func DefaultProviderTestConfig() Config {
 	return Config{
-		TestDuration:   5 * time.Minute,
-		PollInterval:   30 * time.Second,
-		BurnInInterval: 2 * time.Second,
+		TestDuration:   1 * time.Minute,
+		PollInterval:   5 * time.Second,
+		BurnInInterval: 5 * time.Second,
 	}
+}
+
+// PriceResults is a type alias for an array of PriceResult.
+type PriceResults []PriceResult
+
+// PriceResult is a snapshot of Prices results at a given time point when testing.
+type PriceResult struct {
+	Prices oracletypes.Prices
+	Time   time.Time
 }
 
 func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, cfg Config) (PriceResults, error) {
@@ -221,13 +171,6 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 			return priceResults, nil
 		}
 	}
-}
-
-type PriceResults []PriceResult
-
-type PriceResult struct {
-	Prices oracletypes.Prices
-	Time   time.Time
 }
 
 func (o *TestingOracle) RunMarket(ctx context.Context, market mmtypes.Market, cfg Config) (PriceResults, error) {
