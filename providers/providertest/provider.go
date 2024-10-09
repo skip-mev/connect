@@ -107,7 +107,7 @@ func (c *Config) Validate() error {
 // DefaultProviderTestConfig tests by:
 // - allow the providers to run for 5 seconds
 // - test for a total of 1 minute
-// - poll each 5 seconds for prices
+// - poll each 5 seconds for prices.
 func DefaultProviderTestConfig() Config {
 	return Config{
 		TestDuration:   1 * time.Minute,
