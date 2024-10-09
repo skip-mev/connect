@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
 	//nolint: gosec
 	_ "net/http/pprof"
 	"os"
@@ -349,7 +348,7 @@ func runOracle() error {
 
 	isValidateMode := runMode(mode) == modeValidate
 
-	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics, nodeClient)
+	metrics := oraclemetrics.NewDynamicMetrics(ctx, cfg.Metrics, nodeClient)
 
 	aggregator, err := oraclemath.NewIndexPriceAggregator(
 		logger,
