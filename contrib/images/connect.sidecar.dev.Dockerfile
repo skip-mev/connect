@@ -14,7 +14,11 @@ FROM ubuntu:rolling
 EXPOSE 8080 8002
 
 COPY --from=builder /src/connect/build/* /usr/local/bin/
-RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
+RUN apt-get update && \
+    apt-get install jq -y && \
+    apt-get install ca-certificates -y && \
+    useradd -d /home/connect -s /sbin/nologin -M connect
 
 WORKDIR /usr/local/bin/
+USER connect
 ENTRYPOINT [ "connect" ]
