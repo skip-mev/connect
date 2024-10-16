@@ -15,6 +15,7 @@ import (
 
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/pkg/slices"
 	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/connect/v2/providers/apis/defi/uniswapv3/pool"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
@@ -197,17 +198,23 @@ func (u *PriceFetcher) Fetch(
 		pools[i] = pool
 	}
 
-	// Batch call to the EVM.
-	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
-		u.logger.Debug(
-			"failed to batch call to ethereum network for all tickers",
-			zap.Error(err),
-		)
+	// process 10 tickers at a time
+	const batchSize = 10
+	batchChunks := slices.Chunk(batchElems, batchSize)
 
-		return types.NewPriceResponseWithErr(
-			tickers,
-			providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
-		)
+	for _, chunk := range batchChunks {
+		// Batch call to the EVM.
+		if err := u.client.BatchCallContext(ctx, chunk); err != nil {
+			u.logger.Debug(
+				"failed to batch call to ethereum network for all tickers",
+				zap.Error(err),
+			)
+
+			return types.NewPriceResponseWithErr(
+				tickers,
+				providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
+			)
+		}
 	}
 
 	// Parse the result from the batch call for each ticker.
