@@ -332,16 +332,45 @@ func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtyp
 	return res.Market, nil
 }
 
+// QueryMarketMap queries the market map.
+func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	if res == nil {
+		return nil, fmt.Errorf("response is nil")
+	}
+
+	return res, nil
+}
+
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	rand := rand.Str(10)
+	randStr := rand.Str(10)
 	protoMsgs := make([]cosmos.ProtoMessage, len(msgs))
 	for i, msg := range msgs {
 		protoMsgs[i] = msg
 	}
 
-	prop, err := chain.BuildProposal(protoMsgs, rand, rand, rand, deposit.String(), submitter, false)
+	prop, err := chain.BuildProposal(protoMsgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}
@@ -413,15 +442,30 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
+	ctx := context.Background()
+
 	// broadcast the tx
-	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	txResp, err := client.BroadcastTxCommit(ctx, tx)
 	if err != nil {
 		return err
 	}
 
-	if resp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(resp.TxResult.Log)
+	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(txResp.TxResult.Log)
 	}
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market exists
+	for _, create := range creates {
+		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
+		s.Require().True(found)
+		s.Require().Equal(create, got)
+	}
+
+	s.Require().Equal(txResp.Height, mmResp.LastUpdated)
 
 	return nil
 }
