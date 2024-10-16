@@ -465,7 +465,7 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 		s.Require().Equal(create, got)
 	}
 
-	s.Require().Equal(txResp.Height, mmResp.LastUpdated)
+	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
 
 	return nil
 }
@@ -512,14 +512,27 @@ func (s *ConnectIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, 
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 	// broadcast the tx
-	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	txResp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
 		return err
 	}
 
-	if resp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(resp.TxResult.Log)
+	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(txResp.TxResult.Log)
 	}
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market exists
+	for _, create := range markets {
+		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
+		s.Require().True(found)
+		s.Require().Equal(create, got)
+	}
+
+	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
 
 	return nil
 }
