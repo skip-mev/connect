@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.uber.org/zap/zaptest"
 	"os"
 	"testing"
 	"time"
@@ -13,9 +12,104 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/connect/v2/oracle"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	oraclefactory "github.com/skip-mev/connect/v2/providers/factories/oracle"
+	"github.com/skip-mev/connect/v2/providers/providertest"
 	mmclienttypes "github.com/skip-mev/connect/v2/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+)
+
+var (
+	btcusdt = mmtypes.Market{
+		Ticker: mmtypes.Ticker{
+			CurrencyPair: connecttypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []mmtypes.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "btc-usdt",
+			},
+		},
+	}
+
+	usdtusd = mmtypes.Market{
+		Ticker: mmtypes.Ticker{
+			CurrencyPair: connecttypes.CurrencyPair{
+				Base:  "USDT",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []mmtypes.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
+	usdcusd = mmtypes.Market{
+		Ticker: mmtypes.Ticker{
+			CurrencyPair: connecttypes.CurrencyPair{
+				Base:  "USDC",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []mmtypes.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdc-usd",
+			},
+		},
+	}
+
+	ethusdt = mmtypes.Market{
+		Ticker: mmtypes.Ticker{
+			CurrencyPair: connecttypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []mmtypes.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "eth-usdt",
+				// include a normalize pair
+				NormalizeByPair: &usdcusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
+	marketsMap = map[string]mmtypes.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		usdcusd.Ticker.String(): usdcusd,
+		usdtusd.Ticker.String(): usdtusd,
+		ethusdt.Ticker.String(): ethusdt,
+	}
+
+	// invalid because we are excluding the usdcusd pair which
+	// is used as a normalization in ethusdt
+	marketsMapInvalid = map[string]mmtypes.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		usdtusd.Ticker.String(): usdtusd,
+		ethusdt.Ticker.String(): ethusdt,
+	}
+
+	// remove the ethusdt which was requiring a normalization pair that wasn't in the map
+	marketsMapValidSubset = map[string]mmtypes.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		usdtusd.Ticker.String(): usdtusd,
+	}
 )
 
 func TestListenForMarketMapUpdates(t *testing.T) {
@@ -352,17 +446,79 @@ func TestOracleImpl_IsMarketMapValidUpdated(t *testing.T) {
 		wantErr          bool
 	}{
 		{
-			name: "empty",
+			name:    "error on nil response",
+			wantErr: true,
+		},
+		{
+			name:        "do nothing on empty response - no initial state",
+			resp:        &mmtypes.MarketMapResponse{},
+			wantErr:     false,
+			wantUpdated: false,
+		},
+		{
+			name: "response is empty - initial state - update to empty",
+			initialMarketMap: mmtypes.MarketMap{
+				Markets: marketsMap,
+			},
+			resp:        &mmtypes.MarketMapResponse{},
+			wantErr:     false,
+			wantUpdated: true,
+			wantMM: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{},
+			},
+		},
+		{
+			name: "response is equal - initial state - do nothing",
+			initialMarketMap: mmtypes.MarketMap{
+				Markets: marketsMap,
+			},
+			resp: &mmtypes.MarketMapResponse{
+				MarketMap: mmtypes.MarketMap{
+					Markets: marketsMap,
+				},
+			},
+			wantErr:     false,
+			wantUpdated: false,
+		},
+		{
+			name: "response is invalid - initial state - update to valid",
+			initialMarketMap: mmtypes.MarketMap{
+				Markets: marketsMap,
+			},
+			resp: &mmtypes.MarketMapResponse{
+				MarketMap: mmtypes.MarketMap{
+					Markets: marketsMapInvalid,
+				},
+			},
+			wantErr:     false,
+			wantUpdated: true,
+			wantMM: mmtypes.MarketMap{
+				Markets: marketsMapValidSubset,
+			},
+		},
+		{
+			name: "response is invalid - no initial state - update to valid",
+			resp: &mmtypes.MarketMapResponse{
+				MarketMap: mmtypes.MarketMap{
+					Markets: marketsMapInvalid,
+				},
+			},
+			wantErr:     false,
+			wantUpdated: true,
+			wantMM: mmtypes.MarketMap{
+				Markets: marketsMapValidSubset,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			o := &oracle.OracleImpl{
-				logger:      zaptest.NewLogger(t),
-				marketMap:   tt.initialMarketMap,
-				lastUpdated: tt.lastUpdated,
-			}
-			gotMM, isUpdated, err := o.IsMarketMapValidUpdated(tt.resp)
+			ctx := context.Background()
+			o, err := providertest.NewTestingOracle(ctx, []string{},
+				oracle.WithLastUpdated(tt.lastUpdated),
+				oracle.WithMarketMap(tt.initialMarketMap),
+			)
+			require.NoError(t, err)
+			gotMM, isUpdated, err := o.Oracle.IsMarketMapValidUpdated(tt.resp)
 
 			if tt.wantErr {
 				require.Error(t, err)
