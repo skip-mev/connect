@@ -175,7 +175,7 @@ var (
 )
 
 func (s *KeeperTestSuite) TestGets() {
-	const testBlockHeight = 100
+	testBlockHeight := r.Int63()
 	ctx := s.ctx.WithBlockHeight(testBlockHeight)
 	defer func() {
 		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
@@ -328,7 +328,7 @@ func (s *KeeperTestSuite) TestInvalidCreateDisabledNormalizeBy() {
 }
 
 func (s *KeeperTestSuite) TestDeleteMarket() {
-	const testBlockHeight = 1000
+	testBlockHeight := r.Int63()
 	ctx := s.ctx.WithBlockHeight(testBlockHeight)
 	defer func() {
 		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
@@ -365,7 +365,7 @@ func (s *KeeperTestSuite) TestDeleteMarket() {
 }
 
 func (s *KeeperTestSuite) TestEnableDisableMarket() {
-	const testBlockHeight = 10000
+	testBlockHeight := r.Int63()
 	ctx := s.ctx.WithBlockHeight(testBlockHeight)
 	defer func() {
 		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
