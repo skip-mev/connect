@@ -142,11 +142,6 @@ func NewPriceFetcherWithClient(
 	}, nil
 }
 
-type PoolRequest struct {
-	batchElem  rpc.BatchElem
-	poolConfig PoolConfig
-}
-
 // Fetch returns the price of a given set of tickers. This fetch utilizes the batch call to lower
 // overhead of making individual RPC calls for each ticker. The fetcher will query the Uniswap V3
 // pool contract for the price of the pool. The price is derived from the slot 0 data of the pool
