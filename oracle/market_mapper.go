@@ -20,7 +20,6 @@ import (
 func (o *OracleImpl) IsMarketMapValidUpdated(resp *mmtypes.MarketMapResponse) (mmtypes.MarketMap, bool, error) {
 	if resp == nil {
 		return mmtypes.MarketMap{}, false, fmt.Errorf("nil response")
-
 	}
 
 	// TODO: restore LastUpdated check when on-chain logic is fixed

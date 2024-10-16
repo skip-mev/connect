@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/zap/zaptest"
 	"os"
 	"testing"
 	"time"
@@ -338,4 +339,46 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		cancel()
 		o.Stop()
 	})
+}
+
+func TestOracleImpl_IsMarketMapValidUpdated(t *testing.T) {
+	tests := []struct {
+		name             string
+		resp             *mmtypes.MarketMapResponse
+		initialMarketMap mmtypes.MarketMap
+		lastUpdated      uint64
+		wantMM           mmtypes.MarketMap
+		wantUpdated      bool
+		wantErr          bool
+	}{
+		{
+			name: "empty",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &oracle.OracleImpl{
+				logger:      zaptest.NewLogger(t),
+				marketMap:   tt.initialMarketMap,
+				lastUpdated: tt.lastUpdated,
+			}
+			gotMM, isUpdated, err := o.IsMarketMapValidUpdated(tt.resp)
+
+			if tt.wantErr {
+				require.Error(t, err)
+				require.False(t, isUpdated)
+				return
+			}
+
+			require.NoError(t, err)
+
+			if tt.wantUpdated {
+				require.Equal(t, tt.wantMM, gotMM)
+				require.Equal(t, tt.wantUpdated, isUpdated)
+				return
+			}
+
+			require.Equal(t, tt.wantUpdated, isUpdated)
+		})
+	}
 }
