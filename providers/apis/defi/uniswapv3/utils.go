@@ -80,7 +80,7 @@ func (pc *PoolConfig) ValidateBasic() error {
 }
 
 // MustToJSON converts the pool configuration to JSON.
-func (pc PoolConfig) MustToJSON() string {
+func (pc *PoolConfig) MustToJSON() string {
 	b, err := json.Marshal(pc)
 	if err != nil {
 		panic(err)

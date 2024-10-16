@@ -7,12 +7,11 @@ import (
 	"math/big"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
@@ -158,6 +157,7 @@ func (u *PriceFetcher) Fetch(
 	// Create a batch element for each ticker and pool.
 	batchElems := make([]rpc.BatchElem, len(tickers))
 	pools := make([]PoolConfig, len(tickers))
+
 	for i, ticker := range tickers {
 		pool, err := u.GetPool(ticker)
 		if err != nil {
