@@ -197,7 +197,7 @@ func (k *Keeper) DeleteMarket(ctx context.Context, tickerStr string) (bool, erro
 		return false, err
 	}
 
-	return true, nil
+	return true, k.setLastUpdatedFromContext(ctx)
 }
 
 // HasMarket checks if a market exists in the store.

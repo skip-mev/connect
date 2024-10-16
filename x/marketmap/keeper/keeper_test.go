@@ -3,21 +3,19 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/skip-mev/chaintestutil/sample"
-
-	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
-
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	"github.com/skip-mev/chaintestutil/sample"
 	"github.com/stretchr/testify/suite"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
+	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 var r = sample.Rand()
@@ -177,32 +175,42 @@ var (
 )
 
 func (s *KeeperTestSuite) TestGets() {
+	const testBlockHeight = 100
+	ctx := s.ctx.WithBlockHeight(testBlockHeight)
+
 	s.Run("get empty market map", func() {
-		got, err := s.keeper.GetAllMarkets(s.ctx)
+		got, err := s.keeper.GetAllMarkets(ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(map[string]types.Market{}, got)
 	})
 
 	s.Run("setup initial markets", func() {
 		for _, market := range markets {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
+			s.Require().NoError(s.keeper.CreateMarket(ctx, market))
 		}
 
 		s.Run("unable to set markets again", func() {
 			for _, market := range markets {
-				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
+				s.Require().ErrorIs(s.keeper.CreateMarket(ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
 			}
 		})
 
-		s.Require().NoError(s.keeper.ValidateState(s.ctx, markets))
+		s.Require().NoError(s.keeper.ValidateState(ctx, markets))
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllMarkets(s.ctx)
+		got, err := s.keeper.GetAllMarkets(ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(markets), len(got))
 		s.Require().Equal(marketsMap, got)
+	})
+
+	s.Run("check last updated", func() {
+		got, err := s.keeper.GetLastUpdated(ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(uint64(testBlockHeight), got)
 	})
 }
 
