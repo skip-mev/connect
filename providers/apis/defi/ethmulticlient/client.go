@@ -100,9 +100,9 @@ func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc
 
 	if err = c.client.BatchCallContext(ctx, calls); err != nil {
 		c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeError)
-		return
+		return err
 	}
 
 	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
-	return
+	return nil
 }
