@@ -110,8 +110,8 @@ func (c *Config) Validate() error {
 // - poll each 5 seconds for prices.
 func DefaultProviderTestConfig() Config {
 	return Config{
-		TestDuration:   10 * time.Minute,
-		PollInterval:   5 * time.Second,
+		TestDuration:   1 * time.Minute,
+		PollInterval:   20 * time.Second,
 		BurnInInterval: 5 * time.Second,
 	}
 }
@@ -163,11 +163,6 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 				Prices: prices,
 				Time:   time.Now(),
 			})
-
-			o.Stop()
-
-			// cleanup
-			return priceResults, nil
 
 		case <-timer.C:
 			o.Stop()
