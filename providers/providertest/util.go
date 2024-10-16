@@ -15,6 +15,9 @@ func FilterMarketMapToProviders(mm mmtypes.MarketMap) map[string]mmtypes.MarketM
 	for _, market := range mm.Markets {
 		// check each provider config
 		for _, pc := range market.ProviderConfigs {
+			// remove normalizations to isolate markets
+			pc.NormalizeByPair = nil
+
 			// create a market from the given provider config
 			isolatedMarket := mmtypes.Market{
 				Ticker: market.Ticker,

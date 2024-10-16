@@ -110,9 +110,9 @@ func (c *Config) Validate() error {
 // - poll each 5 seconds for prices.
 func DefaultProviderTestConfig() Config {
 	return Config{
-		TestDuration:   1 * time.Minute,
+		TestDuration:   10 * time.Minute,
 		PollInterval:   5 * time.Second,
-		BurnInInterval: 5 * time.Second,
+		BurnInInterval: 10 * time.Second,
 	}
 }
 

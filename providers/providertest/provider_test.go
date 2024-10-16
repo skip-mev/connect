@@ -1,7 +1,7 @@
 package providertest_test
 
 import (
-	"fmt"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,37 @@ func TestUniswapMarkets(t *testing.T) {
 	providerMM := providertest.FilterMarketMapToProviders(mm)
 	for provider, mm := range providerMM {
 		if provider == "uniswapv3_api-ethereum" {
-			fmt.Println(mm)
+			ctx := context.Background()
+			o, err := providertest.NewTestingOracle(ctx, provider)
+			require.NoError(t, err)
+
+			res, err := o.RunMarketMap(ctx, mm, providertest.DefaultProviderTestConfig())
+			require.NoError(t, err)
+
+			t.Log(res)
+
+		}
+	}
+}
+
+func TestUniswapMarketsIsolated(t *testing.T) {
+	mm, err := mmtypes.ReadMarketMapFromFile("./output.json")
+	require.NoError(t, err)
+
+	providerMM := providertest.FilterMarketMapToProviders(mm)
+	for provider, mm := range providerMM {
+		if provider == "uniswapv3_api-ethereum" {
+			ctx := context.Background()
+			o, err := providertest.NewTestingOracle(ctx, provider)
+			require.NoError(t, err)
+
+			for name, market := range mm.Markets {
+				res, err := o.RunMarket(ctx, market, providertest.DefaultProviderTestConfig())
+				require.NoError(t, err)
+
+				t.Log(name, res)
+			}
+
 		}
 	}
 }
