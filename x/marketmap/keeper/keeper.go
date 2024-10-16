@@ -89,7 +89,18 @@ func (k *Keeper) GetMarket(ctx context.Context, tickerStr string) (types.Market,
 
 // setMarket sets a market.
 func (k *Keeper) setMarket(ctx context.Context, market types.Market) error {
-	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+	if err := k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market); err != nil {
+		return err
+	}
+
+	// always set LastUpdated when the market is updated.
+	return k.setLastUpdatedFromContext(ctx)
+}
+
+// setLastUpdatedFromContext calls SetLastUpdated using the ctx BlockHeight() value.
+func (k *Keeper) setLastUpdatedFromContext(ctx context.Context) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	return k.SetLastUpdated(ctx, uint64(sdkCtx.BlockHeight()))
 }
 
 // EnableMarket sets the Enabled field of a Market Ticker to true.
