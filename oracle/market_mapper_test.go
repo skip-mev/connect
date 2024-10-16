@@ -98,14 +98,14 @@ var (
 	}
 
 	// invalid because we are excluding the usdcusd pair which
-	// is used as a normalization in ethusdt
+	// is used as a normalization in ethusdt.
 	marketsMapInvalid = map[string]mmtypes.Market{
 		btcusdt.Ticker.String(): btcusdt,
 		usdtusd.Ticker.String(): usdtusd,
 		ethusdt.Ticker.String(): ethusdt,
 	}
 
-	// remove the ethusdt which was requiring a normalization pair that wasn't in the map
+	// remove the ethusdt which was requiring a normalization pair that wasn't in the map.
 	marketsMapValidSubset = map[string]mmtypes.Market{
 		btcusdt.Ticker.String(): btcusdt,
 		usdtusd.Ticker.String(): usdtusd,

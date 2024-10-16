@@ -16,7 +16,7 @@ import (
 // IsMarketMapValidUpdated checks if the given MarketMapResponse is an update to the existing MarketMap.
 // - returns an error if the market map is fully invalid or the response is invalid
 // - returns false if the market map is not updated
-// - returns true and the new market map if the new market map is updated and valid
+// - returns true and the new market map if the new market map is updated and valid.
 func (o *OracleImpl) IsMarketMapValidUpdated(resp *mmtypes.MarketMapResponse) (mmtypes.MarketMap, bool, error) {
 	if resp == nil {
 		return mmtypes.MarketMap{}, false, fmt.Errorf("nil response")
