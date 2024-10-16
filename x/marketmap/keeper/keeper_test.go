@@ -180,7 +180,7 @@ func (s *KeeperTestSuite) TestGets() {
 	defer func() {
 		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(lastUpdated, uint64(testBlockHeight))
+		s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
 	}()
 
 	s.Run("get empty market map", func() {
@@ -333,7 +333,7 @@ func (s *KeeperTestSuite) TestDeleteMarket() {
 	defer func() {
 		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(lastUpdated, uint64(testBlockHeight))
+		s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
 	}()
 
 	// create a valid markets
@@ -372,11 +372,10 @@ func (s *KeeperTestSuite) TestEnableDisableMarket() {
 		defer func() {
 			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
 			s.Require().NoError(err)
-			s.Require().Equal(lastUpdated, uint64(testBlockHeight))
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
 		}()
 
 		s.Require().NoError(s.keeper.CreateMarket(ctx, btcusdt))
-
 	})
 
 	s.Run("invalid enable/disable fails", func() {
@@ -393,7 +392,7 @@ func (s *KeeperTestSuite) TestEnableDisableMarket() {
 		defer func() {
 			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
 			s.Require().NoError(err)
-			s.Require().Equal(lastUpdated, uint64(testBlockHeight))
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
 		}()
 
 		// valid enable works
@@ -409,7 +408,7 @@ func (s *KeeperTestSuite) TestEnableDisableMarket() {
 		defer func() {
 			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
 			s.Require().NoError(err)
-			s.Require().Equal(lastUpdated, uint64(testBlockHeight))
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
 		}()
 
 		// valid disable works
@@ -418,5 +417,4 @@ func (s *KeeperTestSuite) TestEnableDisableMarket() {
 		s.Require().NoError(err)
 		s.Require().False(market.Ticker.Enabled)
 	})
-
 }
