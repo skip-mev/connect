@@ -111,7 +111,7 @@ func (c *Config) Validate() error {
 func DefaultProviderTestConfig() Config {
 	return Config{
 		TestDuration:   1 * time.Minute,
-		PollInterval:   5 * time.Second,
+		PollInterval:   20 * time.Second,
 		BurnInInterval: 5 * time.Second,
 	}
 }
@@ -158,7 +158,7 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 			if len(prices) != expectedNumPrices {
 				return nil, fmt.Errorf("expected %d prices, got %d", expectedNumPrices, len(prices))
 			}
-			o.Logger.Info("provider prices", zap.Any("prices", prices))
+
 			priceResults = append(priceResults, PriceResult{
 				Prices: prices,
 				Time:   time.Now(),
