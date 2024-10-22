@@ -169,7 +169,7 @@ func (s *ConnectCCVSuite) TestCCVAggregation() {
 		}
 
 		// update the market
-		s.UpdateCurrencyPair(s.chain, []mmtypes.Market{
+		err = s.UpdateCurrencyPair(ctx, s.chain, []mmtypes.Market{
 			{
 				Ticker: mmtypes.Ticker{
 					CurrencyPair:     ethusdc,
@@ -187,6 +187,7 @@ func (s *ConnectCCVSuite) TestCCVAggregation() {
 				},
 			},
 		})
+		s.Require().NoError(err)
 
 		priceDelta := big.NewInt(-60000000000)
 		bz, err := priceDelta.GobEncode()

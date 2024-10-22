@@ -306,7 +306,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair, 
 }
 
 // QueryMarket queries a market from the market map.
-func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtypes.Market, error) {
+func QueryMarket(ctx context.Context, chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtypes.Market, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
 	// create the client
@@ -318,8 +318,6 @@ func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtyp
 
 	// create the mm client
 	client := mmtypes.NewQueryClient(cc)
-
-	ctx := context.Background()
 
 	// query the currency pairs
 	res, err := client.Market(ctx, &mmtypes.MarketRequest{
@@ -333,7 +331,7 @@ func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtyp
 }
 
 // QueryMarketMap queries the market map.
-func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
+func QueryMarketMap(ctx context.Context, chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
 	// create the client
@@ -345,8 +343,6 @@ func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, erro
 
 	// create the mm client
 	client := mmtypes.NewQueryClient(cc)
-
-	ctx := context.Background()
 
 	// query the currency pairs
 	res, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
@@ -455,7 +451,7 @@ func (s *ConnectIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, us
 	}
 
 	// check market map and lastUpdated
-	mmResp, err := QueryMarketMap(chain)
+	mmResp, err := QueryMarketMap(ctx, chain)
 	s.Require().NoError(err)
 
 	// ensure that the market exists
@@ -501,7 +497,7 @@ func (s *ConnectIntegrationSuite) RemoveMarket(
 	return nil
 }
 
-func (s *ConnectIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
+func (s *ConnectIntegrationSuite) UpdateCurrencyPair(ctx context.Context, chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
 	msg := &mmtypes.MsgUpsertMarkets{
 		Authority: s.user.FormattedAddress(),
 		Markets:   markets,
@@ -522,7 +518,7 @@ func (s *ConnectIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, 
 	}
 
 	// check market map and lastUpdated
-	mmResp, err := QueryMarketMap(chain)
+	mmResp, err := QueryMarketMap(ctx, chain)
 	s.Require().NoError(err)
 
 	// ensure that the market exists
