@@ -37,7 +37,7 @@ func (o *TestingOracle) UpdateMarketMap(mm mmtypes.MarketMap) error {
 	return o.Oracle.UpdateMarketMap(mm)
 }
 
-func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOracle, error) {
+func NewTestingOracle(ctx context.Context, providerNames []string, extraOpts ...oracle.Option) (TestingOracle, error) {
 	logCfg := log.NewDefaultConfig()
 	logCfg.StdOutLogLevel = "debug"
 	logCfg.FileOutLogLevel = "debug"
@@ -54,13 +54,18 @@ func NewTestingOracle(ctx context.Context, providerNames ...string) (TestingOrac
 		return TestingOracle{}, fmt.Errorf("failed to create oracle config: %w", err)
 	}
 
-	orc, err := oracle.New(
-		cfg,
-		agg,
+	opts := []oracle.Option{
 		oracle.WithLogger(logger),
 		oracle.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 		oracle.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		oracle.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+	}
+	opts = append(opts, extraOpts...)
+
+	orc, err := oracle.New(
+		cfg,
+		agg,
+		opts...,
 	)
 	if err != nil {
 		return TestingOracle{}, fmt.Errorf("failed to create oracle: %w", err)
