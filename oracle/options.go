@@ -34,6 +34,13 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 	}
 }
 
+// WithLastUpdated sets the last updated for the oracle.
+func WithLastUpdated(lastUpdated uint64) Option {
+	return func(m *OracleImpl) {
+		m.lastUpdated = lastUpdated
+	}
+}
+
 // WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the oracle.
 // Specifically, this is what is utilized to construct price providers that are API based.
 func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
