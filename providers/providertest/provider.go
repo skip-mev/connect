@@ -116,7 +116,7 @@ func (c *Config) Validate() error {
 func DefaultProviderTestConfig() Config {
 	return Config{
 		TestDuration:   1 * time.Minute,
-		PollInterval:   20 * time.Second,
+		PollInterval:   5 * time.Second,
 		BurnInInterval: 5 * time.Second,
 	}
 }
