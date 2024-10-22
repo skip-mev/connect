@@ -18,7 +18,7 @@ func TestUniswapMarkets(t *testing.T) {
 	for provider, mm := range providerMM {
 		if provider == "uniswapv3_api-ethereum" {
 			ctx := context.Background()
-			o, err := providertest.NewTestingOracle(ctx, provider)
+			o, err := providertest.NewTestingOracle(ctx, []string{provider})
 			require.NoError(t, err)
 
 			res, err := o.RunMarketMap(ctx, mm, providertest.DefaultProviderTestConfig())
