@@ -163,7 +163,7 @@ func (o *TestingOracle) RunMarketMap(ctx context.Context, mm mmtypes.MarketMap, 
 			if len(prices) != expectedNumPrices {
 				return nil, fmt.Errorf("expected %d prices, got %d", expectedNumPrices, len(prices))
 			}
-			o.Logger.Info("provider prices", zap.Any("prices", prices))
+
 			priceResults = append(priceResults, PriceResult{
 				Prices: prices,
 				Time:   time.Now(),

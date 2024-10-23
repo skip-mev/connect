@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ethereum/go-ethereum/rpc"
+
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
-
-	"github.com/ethereum/go-ethereum/rpc"
 )
 
 // EVMClient is an interface that abstracts the evm client.
@@ -92,17 +92,17 @@ func NewGoEthereumClientImpl(
 // the corresponding BatchElem.
 //
 // Note that batch calls may not be executed atomically on the server side.
-func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) (err error) {
+func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
 	start := time.Now()
 	defer func() {
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
-	if err = c.client.BatchCallContext(ctx, calls); err != nil {
+	if err := c.client.BatchCallContext(ctx, calls); err != nil {
 		c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeError)
-		return
+		return err
 	}
 
 	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
-	return
+	return nil
 }
