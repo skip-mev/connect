@@ -7,15 +7,15 @@ import (
 	"math/big"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/connect/v2/oracle/config"
 	"github.com/skip-mev/connect/v2/oracle/types"
+	"github.com/skip-mev/connect/v2/pkg/slices"
 	"github.com/skip-mev/connect/v2/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/connect/v2/providers/apis/defi/uniswapv3/pool"
 	"github.com/skip-mev/connect/v2/providers/base/api/metrics"
@@ -158,6 +158,7 @@ func (u *PriceFetcher) Fetch(
 	// Create a batch element for each ticker and pool.
 	batchElems := make([]rpc.BatchElem, len(tickers))
 	pools := make([]PoolConfig, len(tickers))
+
 	for i, ticker := range tickers {
 		pool, err := u.GetPool(ticker)
 		if err != nil {
@@ -192,17 +193,23 @@ func (u *PriceFetcher) Fetch(
 		pools[i] = pool
 	}
 
-	// Batch call to the EVM.
-	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
-		u.logger.Debug(
-			"failed to batch call to ethereum network for all tickers",
-			zap.Error(err),
-		)
+	// process 10 tickers at a time
+	const batchSize = 10
+	batchChunks := slices.Chunk(batchElems, batchSize)
 
-		return types.NewPriceResponseWithErr(
-			tickers,
-			providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
-		)
+	for _, chunk := range batchChunks {
+		// Batch call to the EVM.
+		if err := u.client.BatchCallContext(ctx, chunk); err != nil {
+			u.logger.Debug(
+				"failed to batch call to ethereum network for all tickers",
+				zap.Error(err),
+			)
+
+			return types.NewPriceResponseWithErr(
+				tickers,
+				providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
+			)
+		}
 	}
 
 	// Parse the result from the batch call for each ticker.
