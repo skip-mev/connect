@@ -37,8 +37,8 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "oracle",
-		Short: "Run the connect oracle server.",
+		Use:   "connect",
+		Short: "Run the connect oracle.",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return runOracle()
