@@ -2,8 +2,9 @@ package integration
 
 import (
 	"context"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"time"
+
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 

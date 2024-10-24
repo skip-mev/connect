@@ -53,9 +53,6 @@ func OracleConfigForProvider(providerNames ...string) (config.OracleConfig, erro
 		MaxPriceAge:    cmdconfig.DefaultMaxPriceAge,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
-			Telemetry: config.TelemetryConfig{
-				Disabled: true,
-			},
 		},
 		Providers: make(map[string]config.ProviderConfig),
 		Host:      cmdconfig.DefaultHost,
