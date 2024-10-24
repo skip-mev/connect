@@ -76,20 +76,20 @@ func (c *JSONRPCClient) GetMultipleAccountsWithOpts(
 	ctx context.Context,
 	accounts []solana.PublicKey,
 	opts *rpc.GetMultipleAccountsOpts,
-) (out *rpc.GetMultipleAccountsResult, err error) {
+) (*rpc.GetMultipleAccountsResult, error) {
 	start := time.Now()
 	defer func() {
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
-	out, err = c.client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
+	out, err := c.client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 	if err != nil {
 		c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeError)
-		return
+		return nil, err
 	}
 
 	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
-	return
+	return out, nil
 }
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.

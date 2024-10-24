@@ -16,6 +16,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/slices"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
@@ -24,7 +25,7 @@ import (
 
 var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
 
-// UniswapV3PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
+// PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
 // querying Uniswap V3 pool contracts and returning the price of a given ticker. The price is
 // derived from the slot 0 data of the pool contract.
 //
@@ -158,6 +159,7 @@ func (u *PriceFetcher) Fetch(
 	// Create a batch element for each ticker and pool.
 	batchElems := make([]rpc.BatchElem, len(tickers))
 	pools := make([]PoolConfig, len(tickers))
+
 	for i, ticker := range tickers {
 		pool, err := u.GetPool(ticker)
 		if err != nil {
@@ -192,17 +194,23 @@ func (u *PriceFetcher) Fetch(
 		pools[i] = pool
 	}
 
-	// Batch call to the EVM.
-	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
-		u.logger.Debug(
-			"failed to batch call to ethereum network for all tickers",
-			zap.Error(err),
-		)
+	// process 10 tickers at a time
+	const batchSize = 10
+	batchChunks := slices.Chunk(batchElems, batchSize)
 
-		return types.NewPriceResponseWithErr(
-			tickers,
-			providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
-		)
+	for _, chunk := range batchChunks {
+		// Batch call to the EVM.
+		if err := u.client.BatchCallContext(ctx, chunk); err != nil {
+			u.logger.Debug(
+				"failed to batch call to ethereum network for all tickers",
+				zap.Error(err),
+			)
+
+			return types.NewPriceResponseWithErr(
+				tickers,
+				providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
+			)
+		}
 	}
 
 	// Parse the result from the batch call for each ticker.
