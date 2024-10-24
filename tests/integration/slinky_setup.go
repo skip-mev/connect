@@ -305,16 +305,72 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
+// QueryMarket queries a market from the market map.
+func QueryMarket(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair) (mmtypes.Market, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.Market(ctx, &mmtypes.MarketRequest{
+		CurrencyPair: cp,
+	})
+	if err != nil {
+		return mmtypes.Market{}, err
+	}
+
+	return res.Market, nil
+}
+
+// QueryMarketMap queries the market map.
+func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	if res == nil {
+		return nil, fmt.Errorf("response is nil")
+	}
+
+	return res, nil
+}
+
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	rand := rand.Str(10)
+	randStr := rand.Str(10)
 	protoMsgs := make([]cosmos.ProtoMessage, len(msgs))
 	for i, msg := range msgs {
 		protoMsgs[i] = msg
 	}
 
-	prop, err := chain.BuildProposal(protoMsgs, rand, rand, rand, deposit.String(), submitter, false)
+	prop, err := chain.BuildProposal(protoMsgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}
@@ -359,30 +415,26 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...slinkytypes.CurrencyPair) error {
-	creates := make([]mmtypes.Market, len(cps))
-	for i, cp := range cps {
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64,
+	tickers ...mmtypes.Ticker,
+) error {
+	creates := make([]mmtypes.Market, len(tickers))
+	for i, ticker := range tickers {
 		creates[i] = mmtypes.Market{
-			Ticker: mmtypes.Ticker{
-				CurrencyPair:     cp,
-				Decimals:         8,
-				MinProviderCount: 1,
-				Metadata_JSON:    "",
-				Enabled:          true,
-			},
+			Ticker: ticker,
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
 					Name:           static.Name,
-					OffChainTicker: cp.String(),
+					OffChainTicker: ticker.String(),
 					Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 				},
 			},
 		}
 	}
 
-	msg := &mmtypes.MsgCreateMarkets{
-		Authority:     s.user.FormattedAddress(),
-		CreateMarkets: creates,
+	msg := &mmtypes.MsgUpsertMarkets{
+		Authority: s.user.FormattedAddress(),
+		Markets:   creates,
 	}
 
 	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
@@ -390,15 +442,32 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
+	ctx := context.Background()
+
 	// broadcast the tx
-	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	txResp, err := client.BroadcastTxCommit(ctx, tx)
 	if err != nil {
 		return err
 	}
 
-	if resp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(resp.TxResult.Log)
+	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(txResp.TxResult.Log)
 	}
+
+	time.Sleep(2 * time.Second)
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market exists
+	for _, create := range creates {
+		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
+		s.Require().True(found)
+		s.Require().Equal(create, got)
+	}
+
+	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
 
 	return nil
 }
@@ -414,14 +483,27 @@ func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, m
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 	// broadcast the tx
-	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	txResp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
 		return err
 	}
 
-	if resp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(resp.TxResult.Log)
+	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(txResp.TxResult.Log)
 	}
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market exists
+	for _, create := range markets {
+		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
+		s.Require().True(found)
+		s.Require().Equal(create, got)
+	}
+
+	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
 
 	return nil
 }
@@ -451,7 +533,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForProposalStatus, waits for the deposit period for the proposal to end
+// WaitForProposalStatus waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)

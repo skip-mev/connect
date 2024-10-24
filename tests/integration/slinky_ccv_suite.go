@@ -42,10 +42,30 @@ func NewSlinkyCCVIntegrationSuite(
 	}
 }
 
+func enabledTicker(pair slinkytypes.CurrencyPair) mmtypes.Ticker {
+	return mmtypes.Ticker{
+		CurrencyPair:     pair,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          true,
+		Metadata_JSON:    "",
+	}
+}
+
+func disabledTicker(pair slinkytypes.CurrencyPair) mmtypes.Ticker {
+	return mmtypes.Ticker{
+		CurrencyPair:     pair,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          false,
+		Metadata_JSON:    "",
+	}
+}
+
 func (s *SlinkyCCVSuite) TestCCVAggregation() {
 	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, ethusdc))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 3600, enabledTicker(ethusdc)))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)

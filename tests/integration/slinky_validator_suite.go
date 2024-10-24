@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"time"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -30,13 +31,13 @@ func (s *SlinkyOracleValidatorIntegrationSuite) TestUnbonding() {
 	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	cps := []slinkytypes.CurrencyPair{
-		ethusdcCP,
-		ethusdtCP,
-		ethusdCP,
+	tickers := []mmtypes.Ticker{
+		enabledTicker(ethusdcCP),
+		enabledTicker(ethusdtCP),
+		enabledTicker(ethusdCP),
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
