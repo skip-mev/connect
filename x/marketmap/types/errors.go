@@ -43,3 +43,18 @@ func NewMarketIsEnabledError(ticker TickerString) MarketIsEnabledError {
 func (e MarketIsEnabledError) Error() string {
 	return fmt.Sprintf("market is currently enabled %s", e.ticker)
 }
+
+// CannotChangeDecimalOfEnabledMarketError is an error indicating that the update to a
+// given enabled market is trying to change the Decimals value.
+type CannotChangeDecimalOfEnabledMarketError struct {
+	ticker TickerString
+}
+
+func NewCannotChangeDecimalOfEnabledMarketError(ticker TickerString) CannotChangeDecimalOfEnabledMarketError {
+	return CannotChangeDecimalOfEnabledMarketError{ticker: ticker}
+}
+
+// Error returns the error string for CannotChangeDecimalOfEnabledMarketError.
+func (e CannotChangeDecimalOfEnabledMarketError) Error() string {
+	return fmt.Sprintf("Decimals value cannot be changed for an enabled market: %s", e.ticker)
+}

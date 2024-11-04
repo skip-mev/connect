@@ -161,6 +161,14 @@ func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 	if !alreadyExists {
 		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
 	}
+
+	existingMarket, err := k.markets.Get(ctx, types.TickerString(market.Ticker.String()))
+	if err != nil {
+		return err
+	}
+	if existingMarket.Ticker.Enabled && market.Ticker.Decimals != existingMarket.Ticker.Decimals {
+		return types.NewCannotChangeDecimalOfEnabledMarketError(types.TickerString(market.Ticker.String()))
+	}
 	// Create the config
 	return k.setMarket(ctx, market)
 }
