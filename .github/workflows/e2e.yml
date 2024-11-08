@@ -24,9 +24,6 @@ jobs:
             **/*.go
             go.mod
             go.sum
-      - name: check_version
-        run: |
-          go version
       - name: tests
         if: env.GIT_DIFF
         run: |
