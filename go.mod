@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/store v1.1.1
 	github.com/DataDog/datadog-go v3.2.0+incompatible
 	github.com/client9/misspell v0.3.4
-	github.com/cometbft/cometbft v0.38.14
+	github.com/cometbft/cometbft v0.38.15
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogogateway v1.2.0
