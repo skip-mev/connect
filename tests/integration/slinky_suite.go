@@ -307,11 +307,11 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
-			{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			enabledTicker(slinkytypes.CurrencyPair{
 				Base:  "BTC",
 				Quote: "USD",
-			},
+			}),
 		}...))
 
 		// check that the currency-pair is added to state
@@ -325,8 +325,8 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
-			cp1, cp2,
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			enabledTicker(cp1), enabledTicker(cp2),
 		}...))
 
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -342,8 +342,8 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
-		ethusdcCP,
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+		enabledTicker(ethusdcCP),
 	}...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
@@ -543,13 +543,13 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	cps := []slinkytypes.CurrencyPair{
-		ethusdcCP,
-		ethusdtCP,
-		ethusdCP,
+	tickers := []mmtypes.Ticker{
+		enabledTicker(ethusdcCP),
+		enabledTicker(ethusdtCP),
+		enabledTicker(ethusdCP),
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
@@ -631,8 +631,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, cp := range cps {
-			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
+		for _, ticker := range tickers {
+			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
@@ -699,8 +699,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, cp := range cps {
-			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
+		for _, ticker := range tickers {
+			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}

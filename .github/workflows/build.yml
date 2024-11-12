@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}, {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
+        image: [{file: "slinky.base.Dockerfile", name: "slinky-base"},file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}, {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
     runs-on: ubuntu-latest-m
     permissions:
       contents: read
