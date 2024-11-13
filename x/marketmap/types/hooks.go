@@ -17,6 +17,10 @@ type MarketMapHooks interface {
 
 	// AfterMarketRemoved is called after a market is removed.
 	AfterMarketRemoved(ctx sdk.Context, key string) error
+
+	// BeforeMarketUpdate is called with the current market state and the pending market update.
+	// Return an error to abort updating the market.
+	BeforeMarketUpdate(ctx sdk.Context, current, update Market) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -68,6 +72,16 @@ func (mh MultiMarketMapHooks) AfterMarketRemoved(ctx sdk.Context, key string) er
 	return nil
 }
 
+func (mh MultiMarketMapHooks) BeforeMarketUpdate(ctx sdk.Context, current, update Market) error {
+	for i := range mh {
+		if err := mh[i].BeforeMarketUpdate(ctx, current, update); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // MarketMapHooksWrapper is a wrapper for modules to inject MarketMapHooks using depinject.
 type MarketMapHooksWrapper struct{ MarketMapHooks }
 
@@ -91,3 +105,5 @@ func (n *NoopMarketMapHooks) AfterMarketGenesis(_ sdk.Context, _ map[string]Mark
 func (n *NoopMarketMapHooks) AfterMarketRemoved(_ sdk.Context, _ string) error {
 	return nil
 }
+
+func (n *NoopMarketMapHooks) BeforeMarketUpdate(_ sdk.Context, _, _ Market) error { return nil }

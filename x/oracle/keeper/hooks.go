@@ -54,3 +54,8 @@ func (h Hooks) AfterMarketRemoved(ctx sdk.Context, key string) error {
 
 	return nil
 }
+
+func (h Hooks) BeforeMarketUpdate(ctx sdk.Context, current, update marketmaptypes.Market) error {
+	ctx.Logger().Info(fmt.Sprintf("attempting to update market %q", current.Ticker.String()))
+	return nil
+}

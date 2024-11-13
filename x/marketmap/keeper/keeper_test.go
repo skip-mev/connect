@@ -1,10 +1,12 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/skip-mev/chaintestutil/sample"
 
+	mmmocks "github.com/skip-mev/connect/v2/x/marketmap/types/mocks"
 	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
@@ -274,6 +276,37 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
+}
+
+func (s *KeeperTestSuite) TestBeforeUpdateHook() {
+	hooks := mmmocks.NewMarketMapHooks(s.T())
+	// init keeper w/ mocked hooks
+	s.keeper = s.initKeeperWithHooks(hooks)
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, ethusdt))
+
+	// valid market with a normalize pair that is in state
+	validMarket := btcusdt
+	validMarket.ProviderConfigs = append(validMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &ethusdt.Ticker.CurrencyPair,
+	})
+
+	// when the hook returns an error, market should remain the same.
+	hooks.EXPECT().BeforeMarketUpdate(s.ctx, btcusdt, validMarket).Return(fmt.Errorf("not today, batman")).Once()
+	s.Require().Error(s.keeper.UpdateMarket(s.ctx, validMarket))
+	updated, err := s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
+	s.Require().NoError(err)
+	s.Require().True(updated.Equal(btcusdt))
+
+	// when the hook returns nil, market should update.
+	hooks.EXPECT().BeforeMarketUpdate(s.ctx, btcusdt, validMarket).Return(nil).Once()
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
+	updated, err = s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
+	s.Require().NoError(err)
+	s.Require().True(updated.Equal(validMarket))
 }
 
 func (s *KeeperTestSuite) TestInvalidUpdateDisabledNormalizeBy() {

@@ -154,12 +154,12 @@ func (k *Keeper) CreateMarket(ctx context.Context, market types.Market) error {
 // The Ticker.String corresponds to a market, and exists uniquely.
 func (k *Keeper) UpdateMarket(ctx context.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
-	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
+	existing, err := k.markets.Get(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
 		return err
 	}
-	if !alreadyExists {
-		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
+	if err := k.hooks.BeforeMarketUpdate(sdk.UnwrapSDKContext(ctx), existing, market); err != nil {
+		return fmt.Errorf("BeforeMarketUpdate hook returned an error, aborting market update: %w", err)
 	}
 	// Create the config
 	return k.setMarket(ctx, market)
