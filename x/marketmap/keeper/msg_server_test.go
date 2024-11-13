@@ -211,6 +211,27 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
+
+	s.Run("unable to update decimals for an enabled market", func() {
+		ethEnabled := ethusdt
+		ethEnabled.Ticker.Enabled = true
+
+		err := s.keeper.CreateMarket(s.ctx, ethEnabled)
+		s.Require().NoError(err)
+
+		marketUpdate := ethEnabled
+		marketUpdate.Ticker.Decimals++
+
+		msg := &types.MsgUpdateMarkets{
+			Authority: s.authority.String(),
+			UpdateMarkets: []types.Market{
+				marketUpdate,
+			},
+		}
+		resp, err := msgServer.UpdateMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
 }
 
 func (s *KeeperTestSuite) TestMsgServerParams() {
@@ -518,6 +539,40 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
+
+	s.Run("unable to change Decimals for an existing enabled market", func() {
+		// enable market
+		ethEnabled := ethusdt
+		ethEnabled.Ticker.Enabled = true
+
+		msg := &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				ethEnabled,
+			},
+		}
+
+		hooks.On("AfterMarketUpdated", mock.Anything, ethEnabled).Return(nil).Once()
+
+		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// try to change decimals
+		marketUpsert := ethEnabled
+		marketUpsert.Ticker.Decimals++
+		msg = &types.MsgUpsertMarkets{
+			Authority: s.marketAuthorities[0],
+			Markets: []types.Market{
+				marketUpsert,
+			},
+		}
+
+		resp, err = msgServer.UpsertMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
 }
 
 func (s *KeeperTestSuite) TestMsgServerRemoveMarkets() {

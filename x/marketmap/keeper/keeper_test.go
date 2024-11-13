@@ -257,6 +257,12 @@ func (s *KeeperTestSuite) TestInvalidUpdate() {
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, invalidMarket))
 	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
+
+	// invalid update with change to Decimals value for enabled market
+	s.keeper.EnableMarket(s.ctx, btcusdt.Ticker.String())
+	invalidUpdate := btcusdt
+	invalidUpdate.Ticker.Decimals++
+	s.Require().Error(s.keeper.UpdateMarket(s.ctx, invalidUpdate))
 }
 
 func (s *KeeperTestSuite) TestValidUpdate() {
@@ -273,6 +279,12 @@ func (s *KeeperTestSuite) TestValidUpdate() {
 	})
 
 	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
+	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
+
+	// valid update with change to Decimals value for disabled market
+	validUpdate := btcusdt
+	validUpdate.Ticker.Decimals++
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validUpdate))
 	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
 }
 
