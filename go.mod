@@ -2,8 +2,6 @@ module github.com/skip-mev/slinky
 
 go 1.22.7
 
-toolchain go1.23.2
-
 require (
 	cosmossdk.io/api v0.7.5
 	cosmossdk.io/client/v2 v2.0.0-beta.4
@@ -389,7 +387,9 @@ replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-20230719143845-dff6b0e26aa4
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/GeertJohan/go.rice => github.com/GeertJohan/go.rice v1.0.3
+	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+
 )
 
 retract [v0.4.0, v1.0.0] // raydium provider is broken for these releases
