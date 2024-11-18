@@ -85,7 +85,7 @@ func (ms msgServer) UpsertMarkets(goCtx context.Context, msg *types.MsgUpsertMar
 		return nil, err
 	}
 
-	return &types.MsgUpsertMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight())) //nolint:gosec
+	return &types.MsgUpsertMarketsResponse{}, nil
 }
 
 // CreateMarkets updates the marketmap by creating markets from the given message.  All updates are made to the market
@@ -126,7 +126,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgCreateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight())) //nolint:gosec
+	return &types.MsgCreateMarketsResponse{}, nil
 }
 
 // UpdateMarkets updates the marketmap by updating markets from the given message.  All updates are made to the market
@@ -166,7 +166,7 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgUpdateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight())) //nolint:gosec
+	return &types.MsgUpdateMarketsResponse{}, nil
 }
 
 // verifyMarketAuthorities verifies that the msg-submitter is a market-authority

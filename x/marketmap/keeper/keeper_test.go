@@ -3,21 +3,19 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/skip-mev/chaintestutil/sample"
-
-	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
-
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	"github.com/skip-mev/chaintestutil/sample"
 	"github.com/stretchr/testify/suite"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
 	"github.com/skip-mev/connect/v2/x/marketmap/types"
+	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 var r = sample.Rand()
@@ -177,28 +175,36 @@ var (
 )
 
 func (s *KeeperTestSuite) TestGets() {
+	testBlockHeight := r.Int63()
+	ctx := s.ctx.WithBlockHeight(testBlockHeight)
+	defer func() {
+		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
+	}()
+
 	s.Run("get empty market map", func() {
-		got, err := s.keeper.GetAllMarkets(s.ctx)
+		got, err := s.keeper.GetAllMarkets(ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(map[string]types.Market{}, got)
 	})
 
 	s.Run("setup initial markets", func() {
 		for _, market := range markets {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
+			s.Require().NoError(s.keeper.CreateMarket(ctx, market))
 		}
 
 		s.Run("unable to set markets again", func() {
 			for _, market := range markets {
-				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
+				s.Require().ErrorIs(s.keeper.CreateMarket(ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
 			}
 		})
 
-		s.Require().NoError(s.keeper.ValidateState(s.ctx, markets))
+		s.Require().NoError(s.keeper.ValidateState(ctx, markets))
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllMarkets(s.ctx)
+		got, err := s.keeper.GetAllMarkets(ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(markets), len(got))
@@ -322,51 +328,93 @@ func (s *KeeperTestSuite) TestInvalidCreateDisabledNormalizeBy() {
 }
 
 func (s *KeeperTestSuite) TestDeleteMarket() {
+	testBlockHeight := r.Int63()
+	ctx := s.ctx.WithBlockHeight(testBlockHeight)
+	defer func() {
+		lastUpdated, err := s.keeper.GetLastUpdated(ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
+	}()
+
 	// create a valid markets
 	btcCopy := btcusdt
 	btcCopy.Ticker.Enabled = true
-	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcCopy))
+	s.Require().NoError(s.keeper.CreateMarket(ctx, btcCopy))
 
 	// invalid delete will return nil - idempotent
-	deleted, err := s.keeper.DeleteMarket(s.ctx, "foobar")
+	deleted, err := s.keeper.DeleteMarket(ctx, "foobar")
 	s.Require().NoError(err)
 	s.Require().False(deleted)
 
 	// cannot delete enabled markets
-	deleted, err = s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String())
+	deleted, err = s.keeper.DeleteMarket(ctx, btcCopy.Ticker.String())
 	s.Require().Error(err)
 	s.Require().False(deleted)
 
 	// disable market
 	btcCopy.Ticker.Enabled = false
-	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, btcCopy))
+	s.Require().NoError(s.keeper.UpdateMarket(ctx, btcCopy))
 
 	// delete disabled markets
-	deleted, err = s.keeper.DeleteMarket(s.ctx, btcCopy.Ticker.String())
+	deleted, err = s.keeper.DeleteMarket(ctx, btcCopy.Ticker.String())
 	s.Require().NoError(err)
 	s.Require().True(deleted)
 
-	_, err = s.keeper.GetMarket(s.ctx, btcCopy.Ticker.String())
+	_, err = s.keeper.GetMarket(ctx, btcCopy.Ticker.String())
 	s.Require().Error(err)
 }
 
 func (s *KeeperTestSuite) TestEnableDisableMarket() {
 	// create a valid markets
-	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+	s.Run("create a valid markets", func() {
+		testBlockHeight := r.Int63()
+		ctx := s.ctx.WithBlockHeight(testBlockHeight)
+		defer func() {
+			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
+			s.Require().NoError(err)
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
+		}()
 
-	// invalid enable/disable fails
-	s.Require().Error(s.keeper.EnableMarket(s.ctx, "foobar"))
-	s.Require().Error(s.keeper.DisableMarket(s.ctx, "foobar"))
+		s.Require().NoError(s.keeper.CreateMarket(ctx, btcusdt))
+	})
 
-	// valid enable works
-	s.Require().NoError(s.keeper.EnableMarket(s.ctx, btcusdt.Ticker.String()))
-	market, err := s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
-	s.Require().NoError(err)
-	s.Require().True(market.Ticker.Enabled)
+	s.Run("invalid enable/disable fails", func() {
+		testBlockHeight := r.Int63()
+		ctx := s.ctx.WithBlockHeight(testBlockHeight)
 
-	// valid disable works
-	s.Require().NoError(s.keeper.DisableMarket(s.ctx, btcusdt.Ticker.String()))
-	market, err = s.keeper.GetMarket(s.ctx, btcusdt.Ticker.String())
-	s.Require().NoError(err)
-	s.Require().False(market.Ticker.Enabled)
+		s.Require().Error(s.keeper.EnableMarket(ctx, "foobar"))
+		s.Require().Error(s.keeper.DisableMarket(ctx, "foobar"))
+	})
+
+	s.Run("valid enable works", func() {
+		testBlockHeight := r.Int63()
+		ctx := s.ctx.WithBlockHeight(testBlockHeight)
+		defer func() {
+			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
+			s.Require().NoError(err)
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
+		}()
+
+		// valid enable works
+		s.Require().NoError(s.keeper.EnableMarket(ctx, btcusdt.Ticker.String()))
+		market, err := s.keeper.GetMarket(ctx, btcusdt.Ticker.String())
+		s.Require().NoError(err)
+		s.Require().True(market.Ticker.Enabled)
+	})
+
+	s.Run("valid enable works", func() {
+		testBlockHeight := r.Int63()
+		ctx := s.ctx.WithBlockHeight(testBlockHeight)
+		defer func() {
+			lastUpdated, err := s.keeper.GetLastUpdated(ctx)
+			s.Require().NoError(err)
+			s.Require().Equal(lastUpdated, uint64(testBlockHeight)) //nolint:gosec
+		}()
+
+		// valid disable works
+		s.Require().NoError(s.keeper.DisableMarket(ctx, btcusdt.Ticker.String()))
+		market, err := s.keeper.GetMarket(ctx, btcusdt.Ticker.String())
+		s.Require().NoError(err)
+		s.Require().False(market.Ticker.Enabled)
+	})
 }

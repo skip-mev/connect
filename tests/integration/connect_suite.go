@@ -337,6 +337,8 @@ func NewConnectOracleIntegrationSuite(suite *ConnectIntegrationSuite) *ConnectOr
 }
 
 func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
+	ctx := context.Background()
+
 	// query the oracle module grpc service for any CurrencyPairs
 	s.Run("QueryCurrencyPairs - no currency-pairs reported", func() {
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -377,7 +379,7 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 			s.Require().Error(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{cp1}))
 
 			// check not removed
-			market, err := QueryMarket(s.chain, cp1)
+			market, err := QueryMarket(ctx, s.chain, cp1)
 			s.Require().NoError(err)
 			s.Require().NotNil(market)
 		})
@@ -389,14 +391,14 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 			disabledTicker(disabledCP),
 		}...))
 
-		market, err := QueryMarket(s.chain, disabledCP)
+		market, err := QueryMarket(ctx, s.chain, disabledCP)
 		s.Require().NoError(err)
 		s.Require().NotNil(market)
 
 		s.Require().NoError(s.RemoveMarket(s.chain, []connecttypes.CurrencyPair{disabledCP}))
 
 		// check removed
-		_, err = QueryMarket(s.chain, disabledCP)
+		_, err = QueryMarket(ctx, s.chain, disabledCP)
 		s.Require().Error(err)
 	})
 
@@ -404,7 +406,7 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 		nonexistentCP := connecttypes.NewCurrencyPair("NON", "EXIST")
 
 		// check removed doesnt exist
-		_, err := QueryMarket(s.chain, nonexistentCP)
+		_, err := QueryMarket(ctx, s.chain, nonexistentCP)
 		s.Require().Error(err)
 
 		// tx will not error
