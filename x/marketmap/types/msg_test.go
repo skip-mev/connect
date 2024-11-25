@@ -528,39 +528,39 @@ func TestValidateBasicMsgRemoveMarkets(t *testing.T) {
 		{
 			"if the Authority is not an acc-address - fail",
 			types.MsgRemoveMarkets{
-				Admin: "invalid",
+				Authority: "invalid",
 			},
 			false,
 		},
 		{
 			name: "invalid message (no markets) - fail",
 			msg: types.MsgRemoveMarkets{
-				Markets: nil,
-				Admin:   sample.Address(rng),
+				Markets:   nil,
+				Authority: sample.Address(rng),
 			},
 			expectPass: false,
 		},
 		{
 			name: "valid message - single market",
 			msg: types.MsgRemoveMarkets{
-				Markets: []string{"USDT/USD"},
-				Admin:   sample.Address(rng),
+				Markets:   []string{"USDT/USD"},
+				Authority: sample.Address(rng),
 			},
 			expectPass: true,
 		},
 		{
 			name: "valid message - multiple markets",
 			msg: types.MsgRemoveMarkets{
-				Markets: []string{"USDT/USD", "ETH/USD"},
-				Admin:   sample.Address(rng),
+				Markets:   []string{"USDT/USD", "ETH/USD"},
+				Authority: sample.Address(rng),
 			},
 			expectPass: true,
 		},
 		{
 			name: "invalid message (duplicate markets",
 			msg: types.MsgRemoveMarkets{
-				Markets: []string{"USDT/USD", "USDT/USD"},
-				Admin:   sample.Address(rng),
+				Markets:   []string{"USDT/USD", "USDT/USD"},
+				Authority: sample.Address(rng),
 			},
 			expectPass: false,
 		},
