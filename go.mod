@@ -374,6 +374,8 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
 
-retract (
- 	[v2.0.0, v2.1.2]
-)
+// Connect v2.2.0 contains proto-breaking changes to `MsgRemoveMarkets` that allows for easier removal of markets.
+// This change is not compatible with chains that have been running on an older v2 family release of Connect.
+// Chains that are currently deployed on a retracted version of Connect v2 should NOT upgrade to v2.2.0+
+// and may continue running as they are.
+retract [v2.0.0, v2.1.2]
