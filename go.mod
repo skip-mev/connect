@@ -10,7 +10,7 @@ require (
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.1.0
 	cosmossdk.io/log v1.5.0
-	cosmossdk.io/math v1.3.0
+	cosmossdk.io/math v1.4.0
 	cosmossdk.io/store v1.1.1
 	github.com/DataDog/datadog-go v3.2.0+incompatible
 	github.com/client9/misspell v0.3.4
