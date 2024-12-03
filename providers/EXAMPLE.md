@@ -10,9 +10,9 @@ The [Binance API provider](./apis/binance/README.md) can be used as a reference 
 
 The package is laid out as follows:
 
-- **binance/**: Contains the source code of the package.
-    - `api_handler.go`: Main implementation of the `PriceAPIDataHandler` interface.
-    - `utils.go`: Helper functions and configuration of the expected types to receive from the Binance API.
+* **binance/**: Contains the source code of the package.
+  * `api_handler.go`: Main implementation of the `PriceAPIDataHandler` interface.
+  * `utils.go`: Helper functions and configuration of the expected types to receive from the Binance API.
 
 
 The logic below defines our implementation of the Binance API provider and its constructor.
@@ -82,9 +82,9 @@ func (h *APIHandler) CreateURL(
 
 The `ParseResponse()` function implementation for the Binance APIHandler handles the response returned from the Binance API.
 The function:
-- Decodes the response to a known type (using JSON parsing)
-- Resolves the response tickers to the requested tickers
-- Converts the returned price for each ticker to a `*big.Float` for internal oracle use
+* Decodes the response to a known type (using JSON parsing)
+* Resolves the response tickers to the requested tickers
+* Converts the returned price for each ticker to a `*big.Float` for internal oracle use
 
 ```go
 // ParseResponse parses the response from the Binance API and returns a GetResponse. Each
