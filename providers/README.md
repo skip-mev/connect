@@ -13,16 +13,16 @@ Each base provider implementation will be run in a separate goroutine by the mai
 
 The base provider constructs a response channel that it is always listening to and making updates as needed. Every interval, the base provider will fetch the data from the underlying data source and send the response to the response channel, respecting the number of concurrent requests to the rate limit parameters of the underlying source (if it has any).
 
-![Architecture Overview](./architecture.png)
+![Architecture Overview](architecture.png)
 
 
 ## API (HTTP) Based Providers
 
-In order to implement API based providers, you must implement the [`APIDataHandler`](./api/handlers/api_data_handler.go) interface and the [`RequestHandler`](./api/handlers/request_handler.go) interfaces. The `APIDataHandler` is responsible for creating the URL to be sent to the HTTP client and parsing the response from the HTTP response. The `RequestHandler` is responsible for making the HTTP request and returning the response.
+In order to implement API based providers, you must implement the [`APIDataHandler`](base/api/handlers/api_data_handler.go) interface and the [`RequestHandler`](base/api/handlers/request_handler.go) interfaces. The `APIDataHandler` is responsible for creating the URL to be sent to the HTTP client and parsing the response from the HTTP response. The `RequestHandler` is responsible for making the HTTP request and returning the response.
 
-Once these two interfaces are implemented, you can then instantiate an [`APIQueryHandler`](./api/handlers/api_query_handler.go) and pass it to the base provider. The `APIQueryHandler` is abstracts away the logic for making the HTTP request and parsing the response. The base provider will then take care of the rest. The responses from the `APIQueryHandler` are sent to the base provider via a buffered channel. The base provider will then store the data in a thread safe map. To read more about the various API provider configurations available, please visit the [API provider configuration](../../oracle/config/api.go) documentation.
+Once these two interfaces are implemented, you can then instantiate an [`APIQueryHandler`](base/api/handlers/api_query_handler.go) and pass it to the base provider. The `APIQueryHandler` is abstracts away the logic for making the HTTP request and parsing the response. The base provider will then take care of the rest. The responses from the `APIQueryHandler` are sent to the base provider via a buffered channel. The base provider will then store the data in a thread safe map. To read more about the various API provider configurations available, please visit the [API provider configuration](../oracle/config/api.go) documentation.
 
-Alternatively, you can directly implement the [`APIFetcher`](./api/handlers/api_query_handler.go) interface. This is appropriate if you want to abstract over the various processes of interacting with GRPC, JSON-RPC, REST, etc. APIs.
+Alternatively, you can directly implement the [`APIFetcher`](base/api/handlers/api_query_handler.go) interface. This is appropriate if you want to abstract over the various processes of interacting with GRPC, JSON-RPC, REST, etc. APIs.
 
 ### APIDataHandler
 
@@ -93,9 +93,9 @@ type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] inte
 
 ## Websocket-Based Providers
 
-In order to implement websocket-based providers, you must implement the [`WebSocketDataHandler`](./websocket/handlers/ws_data_handler.go) interface and the [`WebSocketConnHandler`](./websocket/handlers/ws_conn_handler.go) interfaces. The `WebSocketDataHandler` is responsible for parsing messages from the websocket connection, constructing heartbeats, and constructing the initial subscription message(s). This handler must manage all state associated with the websocket connection i.e. connection identifiers. The `WebSocketConnHandler` is responsible for making the websocket connection and maintaining it - including reads, writes, dialing, and closing.
+In order to implement websocket-based providers, you must implement the [`WebSocketDataHandler`](base/websocket/handlers/ws_data_handler.go) interface and the [`WebSocketConnHandler`](base/websocket/handlers/ws_conn_handler.go) interfaces. The `WebSocketDataHandler` is responsible for parsing messages from the websocket connection, constructing heartbeats, and constructing the initial subscription message(s). This handler must manage all state associated with the websocket connection i.e. connection identifiers. The `WebSocketConnHandler` is responsible for making the websocket connection and maintaining it - including reads, writes, dialing, and closing.
 
-Once these two interfaces are implemented, you can then instantiate an [`WebSocketQueryHandler`](./websocket/handlers/ws_query_handler.go) and pass it to the base provider. The `WebSocketQueryHandler` abstracts away the logic for connecting, reading, sending updates, and parsing responses all using the two interfaces above. The base provider will then take care of the rest - including storing the data in a thread safe manner. To read more about the various configurations available for websocket providers, please visit the [websocket provider configuration](../../oracle/config/websocket.go) documentation.
+Once these two interfaces are implemented, you can then instantiate an [`WebSocketQueryHandler`](base/websocket/handlers/ws_query_handler.go) and pass it to the base provider. The `WebSocketQueryHandler` abstracts away the logic for connecting, reading, sending updates, and parsing responses all using the two interfaces above. The base provider will then take care of the rest - including storing the data in a thread safe manner. To read more about the various configurations available for websocket providers, please visit the [websocket provider configuration](../oracle/config/websocket.go) documentation.
 
 ### WebSocketDataHandler
 
