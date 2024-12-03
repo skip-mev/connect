@@ -11,8 +11,8 @@ The [Binance API provider](./apis/binance/README.md) can be used as a reference 
 The package is laid out as follows:
 
 * **binance/**: Contains the source code of the package.
-  * `api_handler.go`: Main implementation of the `PriceAPIDataHandler` interface.
-  * `utils.go`: Helper functions and configuration of the expected types to receive from the Binance API.
+    * `api_handler.go`: Main implementation of the `PriceAPIDataHandler` interface.
+    * `utils.go`: Helper functions and configuration of the expected types to receive from the Binance API.
 
 
 The logic below defines our implementation of the Binance API provider and its constructor.
@@ -51,8 +51,7 @@ func NewAPIHandler(
 }
 ```
 
-The `CreateURL()` function implementation for the Binance APIHandler creates the URL needed for querying
-the Binance API.  The URL is created by appending a list of desired tickers to the base URL of `https://api.binance.com/api/v3/ticker/price?symbols`.
+The `CreateURL()` function implementation for the Binance APIHandler creates the URL needed for querying the Binance API.  The URL is created by appending a list of desired tickers to the base URL of `https://api.binance.com/api/v3/ticker/price?symbols`.
 The URL and logic for appending ticker IDs were chosen based on the [Binance API documentation](https://binance-docs.github.io/apidocs/spot/en/#symbol-price-ticker).
 
 ```go
@@ -82,6 +81,7 @@ func (h *APIHandler) CreateURL(
 
 The `ParseResponse()` function implementation for the Binance APIHandler handles the response returned from the Binance API.
 The function:
+
 * Decodes the response to a known type (using JSON parsing)
 * Resolves the response tickers to the requested tickers
 * Converts the returned price for each ticker to a `*big.Float` for internal oracle use
