@@ -15,6 +15,9 @@ The base provider constructs a response channel that it is always listening to a
 
 ![Architecture Overview](architecture.png)
 
+## Example Provider Walkthrough
+
+A walkthrough of the implementation of an example provider can be found [here](./EXAMPLE.md) for reference.
 
 ## API (HTTP) Based Providers
 
