@@ -403,7 +403,7 @@ func (s *ConnectOracleIntegrationSuite) TestOracleModule() {
 	s.Run("remove a non existent market", func() {
 		nonexistentCP := connecttypes.NewCurrencyPair("NON", "EXIST")
 
-		// check removed doesnt exist
+		// check removed doesn't exist
 		_, err := QueryMarket(s.chain, nonexistentCP)
 		s.Require().Error(err)
 
