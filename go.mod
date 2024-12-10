@@ -1,4 +1,4 @@
-module github.com/skip-mev/connect/v2
+module github.com/skip-mev/slinky
 
 go 1.23.1
 
@@ -6,20 +6,22 @@ toolchain go1.23.2
 
 require (
 	cosmossdk.io/api v0.7.6
+	cosmossdk.io/client/v2 v2.0.0-beta.3
 	cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.1.0
 	cosmossdk.io/log v1.4.1
 	cosmossdk.io/math v1.4.0
 	cosmossdk.io/store v1.1.1
-	github.com/DataDog/datadog-go v3.2.0+incompatible
+	cosmossdk.io/tools/confix v0.1.2
+	cosmossdk.io/x/circuit v0.1.1
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.15
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/interchain-security/v6 v6.3.0
+	github.com/cosmos/interchain-security/v5 v5.2.0
 	github.com/ethereum/go-ethereum v1.14.11
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.11.0
@@ -39,29 +41,58 @@ require (
 	github.com/vektra/mockery/v2 v2.46.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
-	golang.org/x/net v0.31.0
-	golang.org/x/sync v0.9.0
+	golang.org/x/net v0.32.0
+	golang.org/x/sync v0.10.0
 	golang.org/x/vuln v1.1.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1
-	google.golang.org/grpc v1.68.0
+	google.golang.org/grpc v1.68.1
 	google.golang.org/protobuf v1.35.2
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	mvdan.cc/gofumpt v0.7.0
 )
 
 require (
+	cloud.google.com/go v0.115.1 // indirect
+	cloud.google.com/go/auth v0.9.4 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
+	cloud.google.com/go/compute/metadata v0.5.1 // indirect
+	cloud.google.com/go/storage v1.43.0 // indirect
+	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
+	github.com/aws/aws-sdk-go v1.44.224 // indirect
+	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
+	github.com/chzyer/readline v1.5.1 // indirect
+	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
+	github.com/creachadair/atomicfile v0.3.1 // indirect
+	github.com/creachadair/tomledit v0.0.24 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golangci/go-printf-func-name v0.1.0 // indirect
+	github.com/google/s2a-go v0.1.8 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
+	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-safetemp v1.0.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/raeperd/recvcheck v0.1.2 // indirect
+	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/uudashr/iface v1.2.1 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
+	go.opentelemetry.io/otel v1.29.0 // indirect
+	go.opentelemetry.io/otel/metric v1.29.0 // indirect
+	go.opentelemetry.io/otel/trace v1.29.0 // indirect
+	golang.org/x/oauth2 v0.23.0 // indirect
+	google.golang.org/api v0.198.0 // indirect
 )
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
-	cloud.google.com/go/iam v1.1.12 // indirect
+	cloud.google.com/go/iam v1.2.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/x/tx v0.13.5 // indirect
-	cosmossdk.io/x/upgrade v0.1.4 // indirect
+	cosmossdk.io/x/tx v0.13.5
+	cosmossdk.io/x/upgrade v0.1.4
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -90,7 +121,7 @@ require (
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
-	github.com/bits-and-blooms/bitset v1.14.2 // indirect
+	github.com/bits-and-blooms/bitset v1.14.2
 	github.com/bkielbasa/cyclop v1.2.3 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
@@ -119,7 +150,7 @@ require (
 	github.com/consensys/bavard v0.1.13 // indirect
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-db v1.0.2 // indirect
+	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v1.2.0 // indirect
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
@@ -172,7 +203,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/gogo/protobuf v1.3.2
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
@@ -301,7 +332,7 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.5
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091 // indirect
@@ -337,16 +368,16 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
-	golang.org/x/crypto v0.29.0 // indirect
+	golang.org/x/crypto v0.30.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20241108190413-2d47ceb2692f // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
-	golang.org/x/term v0.26.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/tools v0.27.0 // indirect
-	google.golang.org/genproto v0.0.0-20240722135656-d784300faade // indirect
+	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240930140551-af27646dc61f // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -366,9 +397,3 @@ replace (
 	github.com/GeertJohan/go.rice => github.com/GeertJohan/go.rice v1.0.3
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
-
-// Connect v2.2.1 contains proto-breaking changes to `MsgRemoveMarkets` that allows for easier removal of markets.
-// This change is not compatible with chains that have been running on an older v2 family release of Connect.
-// Chains that are currently deployed on a retracted version of Connect v2 should NOT upgrade to v2.2.0+
-// and may continue running as they are.
-retract [v2.0.0, v2.2.0]
