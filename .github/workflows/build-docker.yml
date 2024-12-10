@@ -1,0 +1,114 @@
+name: Build Slinky docker images
+on:
+  push:
+    paths-ignore:
+      - docs/**
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        image: [{file: "slinky.base.Dockerfile", name: "slinky-base"},{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}, {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
+    runs-on: ubuntu-latest-m
+    permissions:
+      contents: read
+      packages: write
+    env:
+      registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
+      repo_name: skip-mev/${{ matrix.image.name }}
+    steps:
+      - name: Check out the PR commit head
+        uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-region: us-east-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Create ECR repository if it does not exist
+        run: |
+          aws ecr describe-repositories --region us-east-2 --repository-names $repo_name || aws ecr create-repository --repository-name $repo_name --region us-east-2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        env:
+          DOCKER_METADATA_PR_HEAD_SHA: true
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ${{ env.registry_url }}
+            ghcr.io/skip-mev/${{ matrix.image.name }}
+          tags: |
+            type=ref,event=pr
+            type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
+            type=semver,pattern=v{{major}}
+            type=sha,priority=700,prefix=
+            type=ref,event=branch
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: "./contrib/images/${{ matrix.image.file }}"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          platforms: ${{ startsWith(github.ref, 'refs/tags/v') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+      - uses: cloudposse/github-action-matrix-outputs-write@1.0.0
+        id: out
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
+          matrix-key: ${{ matrix.image.name }}
+          outputs: |-
+            image: ${{ steps.meta.outputs.version }}
+  deploy:
+    needs: [build]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - uses: cloudposse/github-action-matrix-outputs-read@main
+        id: matrix_output
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
+      - name: Update the image tags
+        uses: skip-mev/gitops-actions/update-values@main
+        with:
+          service: "slinky"
+          app_id: ${{ vars.DEPLOYER_APP_ID }}
+          app_private_key: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          manifests_repo: "slinky-manifests"
+          values_file_name: "values-dev.yaml"
+          modified_values: |
+            {
+              ".chain.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-testapp'] }}",
+              ".sidecar.image.tag": "${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-e2e-sidecar'] }}",
+            }
