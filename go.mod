@@ -22,7 +22,7 @@ require (
 	github.com/cosmos/interchain-security/v6 v6.3.0
 	github.com/ethereum/go-ethereum v1.14.11
 	github.com/gagliardetto/binary v0.8.0
-	github.com/gagliardetto/solana-go v1.11.0
+	github.com/gagliardetto/solana-go v1.12.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
 	github.com/golangci/golangci-lint v1.62.2
@@ -332,7 +332,7 @@ require (
 	go-simpler.org/musttag v0.13.0 // indirect
 	go-simpler.org/sloglint v0.7.2 // indirect
 	go.etcd.io/bbolt v1.4.0-alpha.0.0.20240404170359-43604f3112c5 // indirect
-	go.mongodb.org/mongo-driver v1.11.0 // indirect
+	go.mongodb.org/mongo-driver v1.12.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
