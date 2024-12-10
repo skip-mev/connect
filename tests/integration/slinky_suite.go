@@ -376,7 +376,7 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 	return chain.GetGRPCAddress()
 }
 
-func (s *SlinkyIntegrationSuite) TestNodeFailures() {
+func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
 	tickerETHUSDC := mmtypes.Ticker{
 		CurrencyPair:     ethusdcCP,
