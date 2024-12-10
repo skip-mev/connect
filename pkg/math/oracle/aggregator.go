@@ -91,13 +91,13 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		m.metrics.AddProviderCountForMarket(target.String(), len(convertedPrices))
 
 		// We need to have at least the minimum number of providers to calculate the median.
-		if len(convertedPrices) < int(target.MinProviderCount) {
+		if len(convertedPrices) < int(target.MinProviderCount) { //nolint:gosec
 			m.logger.Error(
 				"insufficient amount of converted prices",
 				zap.String("target_ticker", ticker),
 				zap.Int("num_converted_prices", len(convertedPrices)),
 				zap.Any("converted_prices", convertedPrices),
-				zap.Int("min_provider_count", int(target.MinProviderCount)),
+				zap.Int("min_provider_count", int(target.MinProviderCount)), //nolint:gosec
 			)
 
 			continue

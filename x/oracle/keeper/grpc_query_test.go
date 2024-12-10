@@ -229,7 +229,7 @@ func (s *KeeperTestSuite) TestGetCurrencyPairMappingGRPC() {
 		res, err := qs.GetCurrencyPairMapping(s.ctx, nil)
 		s.Require().Nil(err)
 		for idx, cp := range currencyPairs {
-			s.Require().Equal(cp, res.CurrencyPairMapping[uint64(idx)])
+			s.Require().Equal(cp, res.CurrencyPairMapping[uint64(idx)]) //nolint:gosec
 		}
 	})
 }
