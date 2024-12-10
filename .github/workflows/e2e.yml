@@ -5,6 +5,7 @@ on:
       - docs/**
     branches:
       - main
+      - release/v1.x.x
   workflow_dispatch:
     
 jobs:
