@@ -2,7 +2,7 @@
 
 ## Overview
 
-Websocket providers utilize websocket APIs / clients to retrieve data from external sources. The data is then transformed into a common format and aggregated across multiple providers. To implement a new provider, please read over the base provider documentation in [`providers/base/README.md`](../base/README.md).
+Websocket providers utilize websocket APIs / clients to retrieve data from external sources. The data is then transformed into a common format and aggregated across multiple providers. To implement a new provider, please read over the base provider documentation in [`providers/base/README.md`](../README.md).
 
 Websockets are preferred over REST APIs for real-time data as they only require a single connection to the server, whereas HTTP APIs require a new connection for each request. This makes websockets more efficient for real-time data. Additionally, web sockets typically have lower latency than HTTP APIs, which is important for real-time data.
 

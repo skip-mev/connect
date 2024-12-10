@@ -2,7 +2,7 @@
 
 ## Overview
 
-API providers utilize rest APIs to retrieve data from external sources. The data is then transformed into a common format and aggregated across multiple providers. To implement a new provider, please read over the base provider documentation in [`providers/base/README.md`](../base/README.md).
+API providers utilize rest APIs to retrieve data from external sources. The data is then transformed into a common format and aggregated across multiple providers. To implement a new provider, please read over the base provider documentation in [`providers/base/README.md`](../README.md).
 
 ## Supported Providers
 
