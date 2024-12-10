@@ -15,6 +15,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgCreateMarkets{}, "slinky/x/marketmap/MsgCreateMarkets")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateMarkets{}, "slinky/x/marketmap/MsgUpdateMarkets")
 	legacy.RegisterAminoMsg(cdc, &MsgParams{}, "slinky/x/marketmap/MsgParams")
+	legacy.RegisterAminoMsg(cdc, &MsgUpsertMarkets{}, "slinky/x/marketmap/MsgUpsertMarkets")
+	legacy.RegisterAminoMsg(cdc, &MsgRemoveMarkets{}, "slinky/x/marketmap/MsgRemoveMarkets")
 }
 
 // RegisterInterfaces registers the x/marketmap messages + message service w/ the InterfaceRegistry (registry).
@@ -24,6 +26,9 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgCreateMarkets{},
 		&MsgUpdateMarkets{},
 		&MsgParams{},
+		&MsgUpsertMarkets{},
+		&MsgRemoveMarkets{},
+		&MsgRemoveMarketAuthorities{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

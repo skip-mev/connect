@@ -13,7 +13,7 @@ echo "Cleaning API directory"
 (cd api; find ./ -type f \( -iname \*.pulsar.go -o -iname \*.pb.go -o -iname \*.cosmos_orm.go -o -iname \*.pb.gw.go \) -delete; find . -empty -type d -delete; cd ..)
 
 echo "Generating API module"
-(cd proto; buf generate --template buf.gen.pulsar.yaml)
+(cd proto; buf generate --template buf.gen.pulsar.yaml --exclude-path slinky/service)
 
 echo "fixing alerts.pulsar.go"
 sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/alerts/v1/alerts.pulsar.go && rm ./api/slinky/alerts/v1/alerts.pulsar.go.bak

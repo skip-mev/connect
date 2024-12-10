@@ -35,7 +35,6 @@ const (
 	defaultDenom          = "stake"
 	validatorKey          = "validator"
 	yes                   = "yes"
-	deposit               = 1000000
 	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 )
@@ -326,12 +325,50 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-			enabledTicker(cp1), enabledTicker(cp2),
+			enabledTicker(cp1),
+			enabledTicker(cp2),
 		}...))
 
 		resp, err := QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
 		s.Require().True(len(resp.CurrencyPairs) == 3)
+
+		s.Run("fail to remove an enabled market", func() {
+			s.Require().Error(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{cp1}))
+
+			// check not removed
+			market, err := QueryMarket(s.chain, cp1)
+			s.Require().NoError(err)
+			s.Require().NotNil(market)
+		})
+	})
+
+	s.Run("remove a disabled market", func() {
+		disabledCP := slinkytypes.NewCurrencyPair("DIS", "ABLE")
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
+			disabledTicker(disabledCP),
+		}...))
+
+		market, err := QueryMarket(s.chain, disabledCP)
+		s.Require().NoError(err)
+		s.Require().NotNil(market)
+
+		s.Require().NoError(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{disabledCP}))
+
+		// check removed
+		_, err = QueryMarket(s.chain, disabledCP)
+		s.Require().Error(err)
+	})
+
+	s.Run("remove a non existent market", func() {
+		nonexistentCP := slinkytypes.NewCurrencyPair("NON", "EXIST")
+
+		// check removed doesnt exist
+		_, err := QueryMarket(s.chain, nonexistentCP)
+		s.Require().Error(err)
+
+		// tx will not error
+		s.Require().NoError(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{nonexistentCP}))
 	})
 }
 
@@ -339,11 +376,18 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 	return chain.GetGRPCAddress()
 }
 
-func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
+func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
+	tickerETHUSDC := mmtypes.Ticker{
+		CurrencyPair:     ethusdcCP,
+		Decimals:         8,
+		MinProviderCount: 1,
+		Enabled:          true,
+		Metadata_JSON:    "",
+	}
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-		enabledTicker(ethusdcCP),
+		tickerETHUSDC,
 	}...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
@@ -537,12 +581,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	})
 }
 
-func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
+func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
 	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
 	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
-	// add multiple currency pairs
+	// add multiple tickers
 	tickers := []mmtypes.Ticker{
 		enabledTicker(ethusdcCP),
 		enabledTicker(ethusdtCP),

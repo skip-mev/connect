@@ -516,3 +516,64 @@ func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateBasicMsgRemoveMarkets(t *testing.T) {
+	rng := sample.Rand()
+
+	tcs := []struct {
+		name       string
+		msg        types.MsgRemoveMarkets
+		expectPass bool
+	}{
+		{
+			"if the Authority is not an acc-address - fail",
+			types.MsgRemoveMarkets{
+				Admin: "invalid",
+			},
+			false,
+		},
+		{
+			name: "invalid message (no markets) - fail",
+			msg: types.MsgRemoveMarkets{
+				Markets: nil,
+				Admin:   sample.Address(rng),
+			},
+			expectPass: false,
+		},
+		{
+			name: "valid message - single market",
+			msg: types.MsgRemoveMarkets{
+				Markets: []string{"USDT/USD"},
+				Admin:   sample.Address(rng),
+			},
+			expectPass: true,
+		},
+		{
+			name: "valid message - multiple markets",
+			msg: types.MsgRemoveMarkets{
+				Markets: []string{"USDT/USD", "ETH/USD"},
+				Admin:   sample.Address(rng),
+			},
+			expectPass: true,
+		},
+		{
+			name: "invalid message (duplicate markets",
+			msg: types.MsgRemoveMarkets{
+				Markets: []string{"USDT/USD", "USDT/USD"},
+				Admin:   sample.Address(rng),
+			},
+			expectPass: false,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}

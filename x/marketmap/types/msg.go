@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -12,6 +14,7 @@ var (
 	_ sdk.Msg = &MsgParams{}
 	_ sdk.Msg = &MsgRemoveMarketAuthorities{}
 	_ sdk.Msg = &MsgUpsertMarkets{}
+	_ sdk.Msg = &MsgRemoveMarkets{}
 )
 
 // ValidateBasic asserts that the authority address in the upsert-markets message is formatted correctly.
@@ -120,6 +123,34 @@ func (m *MsgRemoveMarketAuthorities) ValidateBasic() error {
 		}
 
 		seenAuthorities[authority] = struct{}{}
+	}
+
+	return nil
+}
+
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
+// whether the signer is a valid acc-address.
+func (m *MsgRemoveMarkets) ValidateBasic() error {
+	// validate signer address
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return err
+	}
+
+	if len(m.Markets) == 0 {
+		return fmt.Errorf("markets to remove cannot be nil")
+	}
+
+	seenMarkets := make(map[string]struct{}, len(m.Markets))
+	for _, market := range m.Markets {
+		if _, seen := seenMarkets[market]; seen {
+			return fmt.Errorf("duplicate market %s found", market)
+		}
+
+		if _, err := slinkytypes.CurrencyPairFromString(market); err != nil {
+			return fmt.Errorf("invalid market pair string: %w", err)
+		}
+
+		seenMarkets[market] = struct{}{}
 	}
 
 	return nil
