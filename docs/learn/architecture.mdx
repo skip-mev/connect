@@ -28,7 +28,7 @@ The `ExtendVote` and `VerifyVote` methods of ABCI++ are where a price is first q
 
 During `PrepareProposal`, the vote extensions from the previous block are aggregated by the block proposer into their block proposal, after various checks are run on them.
 
-- Connect ensures that the set of vote extensions comprise the required minimum stake required for a price update (default of 2/3).
+- Connect ensures that the set of vote extensions comprise the minimum stake required for a price update (default of 2/3).
 - It also ensures that the vote extensions are valid and can be understood by the application.
 - Finally, it encodes the vote extensions and injects them into the top of the block proposal as a pseudo-transaction ignored by the chain.
 
