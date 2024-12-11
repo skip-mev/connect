@@ -51,17 +51,17 @@ func (_m *MarketMapHooks) AfterMarketGenesis(ctx types.Context, tickers map[stri
 	return r0
 }
 
-// AfterMarketRemoved provides a mock function with given fields: ctx, market
-func (_m *MarketMapHooks) AfterMarketRemoved(ctx types.Context, market marketmaptypes.Market) error {
-	ret := _m.Called(ctx, market)
+// AfterMarketRemoved provides a mock function with given fields: ctx, key
+func (_m *MarketMapHooks) AfterMarketRemoved(ctx types.Context, key string) error {
+	ret := _m.Called(ctx, key)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AfterMarketRemoved")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(types.Context, marketmaptypes.Market) error); ok {
-		r0 = rf(ctx, market)
+	if rf, ok := ret.Get(0).(func(types.Context, string) error); ok {
+		r0 = rf(ctx, key)
 	} else {
 		r0 = ret.Error(0)
 	}

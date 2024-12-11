@@ -16,7 +16,7 @@ type MarketMapHooks interface {
 	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Market) error
 
 	// AfterMarketRemoved is called after a market is removed.
-	AfterMarketRemoved(ctx sdk.Context, market Market) error
+	AfterMarketRemoved(ctx sdk.Context, key string) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -58,9 +58,9 @@ func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, markets map[st
 }
 
 // AfterMarketRemoved calls all AfterMarketRemoved hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketRemoved(ctx sdk.Context, market Market) error {
+func (mh MultiMarketMapHooks) AfterMarketRemoved(ctx sdk.Context, key string) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketRemoved(ctx, market); err != nil {
+		if err := mh[i].AfterMarketRemoved(ctx, key); err != nil {
 			return err
 		}
 	}
@@ -88,6 +88,6 @@ func (n *NoopMarketMapHooks) AfterMarketGenesis(_ sdk.Context, _ map[string]Mark
 	return nil
 }
 
-func (n *NoopMarketMapHooks) AfterMarketRemoved(_ sdk.Context, _ Market) error {
+func (n *NoopMarketMapHooks) AfterMarketRemoved(_ sdk.Context, _ string) error {
 	return nil
 }

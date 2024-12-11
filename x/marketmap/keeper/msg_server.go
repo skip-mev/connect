@@ -263,13 +263,9 @@ func (ms msgServer) RemoveMarkets(
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	params, err := ms.k.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Admin != params.Admin {
-		return nil, fmt.Errorf("request admin %s does not match module admin %s", msg.Admin, params.Admin)
+	// perform basic msg validity checks
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
+		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
 	}
 
 	deletedMarkets := make([]string, 0, len(msg.Markets))
@@ -282,6 +278,10 @@ func (ms msgServer) RemoveMarkets(
 		if deleted {
 			ctx.Logger().Info(fmt.Sprintf("deleted market %s", market))
 			deletedMarkets = append(deletedMarkets, market)
+		}
+
+		if err := ms.k.hooks.AfterMarketRemoved(ctx, market); err != nil {
+			return nil, fmt.Errorf("unable to run market removal hook: %w", err)
 		}
 	}
 
