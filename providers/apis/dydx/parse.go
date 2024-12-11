@@ -96,7 +96,7 @@ func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error
 
 	t := mmtypes.Ticker{
 		CurrencyPair:     cp,
-		Decimals:         uint64(market.Exponent * -1),
+		Decimals:         uint64(market.Exponent * -1), //nolint:gosec
 		MinProviderCount: uint64(market.MinExchanges),
 		Enabled:          true,
 	}

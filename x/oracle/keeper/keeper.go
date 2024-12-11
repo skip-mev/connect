@@ -335,13 +335,13 @@ func (k *Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp slinkytypes.Cu
 // with the x/oracle module, the legacy Decimals function is used.
 func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (decimals uint64, err error) {
 	if k.mmKeeper == nil {
-		return uint64(cp.LegacyDecimals()), nil
+		return uint64(cp.LegacyDecimals()), nil //nolint:gosec
 	}
 
 	market, err := k.mmKeeper.GetMarket(ctx, cp.String())
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return uint64(cp.LegacyDecimals()), nil
+			return uint64(cp.LegacyDecimals()), nil //nolint:gosec
 		}
 
 		return 0, err

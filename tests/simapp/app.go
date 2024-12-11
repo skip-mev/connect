@@ -67,10 +67,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
 	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-	"github.com/skip-mev/slinky/x/alerts"
-	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
-	"github.com/skip-mev/slinky/x/incentives"
-	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
 	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
 	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
@@ -110,8 +106,6 @@ var (
 		vesting.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 		oracle.AppModuleBasic{},
-		incentives.AppModuleBasic{},
-		alerts.AppModuleBasic{},
 		marketmapmodule.AppModuleBasic{},
 	)
 )
@@ -146,8 +140,6 @@ type SimApp struct {
 	ConsensusParamsKeeper consensuskeeper.Keeper
 	CircuitBreakerKeeper  circuitkeeper.Keeper
 	OracleKeeper          *oraclekeeper.Keeper
-	IncentivesKeeper      incentiveskeeper.Keeper
-	AlertsKeeper          alertskeeper.Keeper
 	MarketMapKeeper       *marketmapkeeper.Keeper
 
 	// simulation manager
@@ -235,8 +227,6 @@ func NewSimApp(
 		&app.CircuitBreakerKeeper,
 		&app.MarketMapKeeper,
 		&app.OracleKeeper,
-		&app.IncentivesKeeper,
-		&app.AlertsKeeper,
 	); err != nil {
 		panic(err)
 	}

@@ -221,13 +221,16 @@ func (k *Keeper) IsMarketValid(ctx sdk.Context, market types.Market) error {
 	// check that all markets already exist in the keeper store:
 	for _, providerConfig := range market.ProviderConfigs {
 		if providerConfig.NormalizeByPair != nil {
-			has, err := k.markets.Has(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
+			norm, err := k.markets.Get(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
 			if err != nil {
-				return err
+				return fmt.Errorf("unable to get normalize market %s for market %s: %w",
+					providerConfig.NormalizeByPair.String(), market.Ticker.String(), err)
 			}
 
-			if !has {
-				return fmt.Errorf("currency pair %s in provider config does not exist", providerConfig.NormalizeByPair.String())
+			// if the new market is enabled, its normalize by market must also be enabled
+			if market.Ticker.Enabled && !norm.Ticker.Enabled {
+				return fmt.Errorf("needed normalize market %s for market %s is not enabled",
+					providerConfig.NormalizeByPair.String(), market.Ticker.String())
 			}
 		}
 	}

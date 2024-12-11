@@ -399,7 +399,7 @@ func calculatePrice(
 	baseTokenBalance, quoteTokenBalance *big.Int,
 	baseTokenDecimals, quoteTokenDecimals uint64,
 ) *big.Float {
-	scalingFactor := math.GetScalingFactor(int64(baseTokenDecimals), int64(quoteTokenDecimals))
+	scalingFactor := math.GetScalingFactor(int64(baseTokenDecimals), int64(quoteTokenDecimals)) //nolint:gosec
 
 	// calculate the price as quote / base
 	quo := new(big.Float).Quo(
