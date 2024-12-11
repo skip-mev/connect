@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"encoding/hex"
-
 	"math/big"
 	"os"
 	"os/signal"
