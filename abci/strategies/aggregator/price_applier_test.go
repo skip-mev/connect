@@ -208,7 +208,7 @@ func TestPriceApplier(t *testing.T) {
 
 			require.Equal(t, qp.Price.BigInt(), big.NewInt(150))
 			require.Equal(t, qp.BlockTimestamp, ctx.BlockHeader().Time)
-			require.Equal(t, qp.BlockHeight, uint64(ctx.BlockHeight()))
+			require.Equal(t, qp.BlockHeight, uint64(ctx.BlockHeight())) //nolint:gosec
 		})
 
 		prices, err := pa.ApplyPricesFromVoteExtensions(ctx, &abcitypes.RequestFinalizeBlock{
