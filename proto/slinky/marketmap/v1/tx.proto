@@ -143,11 +143,11 @@ message MsgRemoveMarketAuthoritiesResponse {}
 // MsgRemoveMarkets defines the Msg/RemoveMarkets request type. It contains the
 // new markets to be removed from the market map.
 message MsgRemoveMarkets {
-  option (cosmos.msg.v1.signer) = "admin";
+  option (cosmos.msg.v1.signer) = "authority";
 
-  // Admin defines the authority that is the x/marketmap
-  // Admin account.  This account is set in the module parameters.
-  string admin = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // Authority is the signer of this transaction.  This authority must be
+  // authorized by the module to execute the message.
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 
   // Markets is the list of markets to remove.
   repeated string markets = 2;

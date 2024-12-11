@@ -482,8 +482,8 @@ func (s *SlinkyIntegrationSuite) RemoveMarket(
 	}
 
 	msg := &mmtypes.MsgRemoveMarkets{
-		Admin:   s.user.FormattedAddress(),
-		Markets: marketString,
+		Authority: s.user.FormattedAddress(),
+		Markets:   marketString,
 	}
 
 	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
