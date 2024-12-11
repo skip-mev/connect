@@ -3,6 +3,8 @@ package log
 import (
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -27,6 +29,8 @@ type Config struct {
 	MaxAge int
 	// Compress determines if the rotated log files should be compressed.
 	Compress bool
+	// LogSamplePeriod is the duration in which we de-dupe identical log messages.
+	LogSamplePeriod time.Duration
 }
 
 // NewDefaultConfig creates a default configuration for the logger.
@@ -40,6 +44,7 @@ func NewDefaultConfig() Config {
 		MaxBackups:      1,
 		MaxAge:          3, // 3 days
 		Compress:        false,
+		LogSamplePeriod: 10 * time.Second,
 	}
 }
 
@@ -92,6 +97,10 @@ func NewLogger(config Config) *zap.Logger {
 		core = zapcore.NewTee(stdCore, fileCore)
 	} else {
 		core = stdCore
+	}
+	if strings.ToUpper(config.StdOutLogLevel) != zap.DebugLevel.CapitalString() && strings.ToUpper(config.FileOutLogLevel) != zap.DebugLevel.CapitalString() {
+		// If we're not in debug log level anywhere, filter any logs which have non-unique messages within a 10-second period
+		core = zapcore.NewSamplerWithOptions(core, config.LogSamplePeriod, 1, 0)
 	}
 
 	return zap.New(
