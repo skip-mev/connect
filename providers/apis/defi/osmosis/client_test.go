@@ -82,15 +82,15 @@ func TestMultiClient(t *testing.T) {
 		defer cancel()
 
 		// mocks
-		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedPrice,
+		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedPrice},
 		}, nil).Once()
 
-		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedPrice,
+		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedPrice},
 		}, nil).Once()
 
-		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{},
+		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{},
 			fmt.Errorf("error")).Once()
 
 		resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)
@@ -112,14 +112,14 @@ func TestMultiClient(t *testing.T) {
 		defer cancel()
 
 		// mocks
-		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedPrice,
+		client1.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedPrice},
 		}, nil).Once()
-		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedPrice,
+		client2.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedPrice},
 		}, nil).Once()
-		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.SpotPriceResponse{
-			SpotPrice: expectedPrice,
+		client3.On("SpotPrice", mock.Anything, poolID, baseAsset, quoteAsset).Return(osmosis.WrappedSpotPriceResponse{
+			SpotPriceResponse: osmosis.SpotPriceResponse{SpotPrice: expectedPrice},
 		}, nil).Once()
 
 		resp, err := client.SpotPrice(ctx, poolID, baseAsset, quoteAsset)

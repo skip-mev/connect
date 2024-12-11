@@ -7,9 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/sync/errgroup"
-
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
@@ -203,6 +202,6 @@ func (pf *APIPriceFetcher) Fetch(
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
-func calculatePrice(resp SpotPriceResponse) (*big.Float, error) {
+func calculatePrice(resp WrappedSpotPriceResponse) (*big.Float, error) {
 	return math.Float64StringToBigFloat(resp.SpotPrice)
 }
