@@ -19,7 +19,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/pelletier/go-toml/v2 v2.2.3
 	github.com/skip-mev/connect/v2 v2.0.1
-	github.com/strangelove-ventures/interchaintest/v8 v8.7.0
+	github.com/strangelove-ventures/interchaintest/v8 v8.8.0
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.68.1
@@ -91,7 +91,7 @@ require (
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
 	github.com/cosmos/ibc-go/v8 v8.5.1 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
-	github.com/cosmos/interchain-security/v5 v5.0.0-alpha1.0.20240424193412-7cd900ad2a74 // indirect
+	github.com/cosmos/interchain-security/v5 v5.1.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240223125850-b1e8a79f509c // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
@@ -282,10 +282,10 @@ require (
 	gotest.tools/v3 v3.5.1 // indirect
 	lukechampine.com/blake3 v1.2.1 // indirect
 	modernc.org/gc/v3 v3.0.0-20240107210532-573471604cb6 // indirect
-	modernc.org/libc v1.52.1 // indirect
+	modernc.org/libc v1.55.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
-	modernc.org/sqlite v1.30.1 // indirect
+	modernc.org/sqlite v1.31.1 // indirect
 	modernc.org/strutil v1.2.0 // indirect
 	modernc.org/token v1.1.0 // indirect
 	nhooyr.io/websocket v1.8.10 // indirect
