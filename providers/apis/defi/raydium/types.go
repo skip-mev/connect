@@ -150,4 +150,5 @@ var DefaultAPIConfig = config.APIConfig{
 			URL: "https://api.mainnet-beta.solana.com",
 		},
 	},
+	MaxBlockHeightAge: 30 * time.Second,
 }
