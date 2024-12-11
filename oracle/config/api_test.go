@@ -136,6 +136,36 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name: "good config with max_block_height_age",
+			config: config.APIConfig{
+				Enabled:           true,
+				Timeout:           time.Second,
+				Interval:          time.Second,
+				ReconnectTimeout:  time.Second,
+				MaxQueries:        1,
+				Name:              "test",
+				Endpoints:         []config.Endpoint{{URL: "http://test.com"}},
+				BatchSize:         1,
+				MaxBlockHeightAge: 10 * time.Second,
+			},
+			expectedErr: false,
+		},
+		{
+			name: "bad config with negative max_block_height_age",
+			config: config.APIConfig{
+				Enabled:           true,
+				Timeout:           time.Second,
+				Interval:          time.Second,
+				ReconnectTimeout:  time.Second,
+				MaxQueries:        1,
+				Name:              "test",
+				Endpoints:         []config.Endpoint{{URL: "http://test.com"}},
+				BatchSize:         1,
+				MaxBlockHeightAge: -10 * time.Second,
+			},
+			expectedErr: true,
+		},
+		{
 			name: "bad config with invalid endpoint (no url)",
 			config: config.APIConfig{
 				Enabled:          true,
