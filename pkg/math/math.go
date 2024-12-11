@@ -68,7 +68,7 @@ func Float64ToBigInt(val float64, decimals uint64) *big.Int {
 // BigFloatToBigInt converts a big.Float to a big.Int.
 func BigFloatToBigInt(f *big.Float, decimals uint64) *big.Int {
 	bigFloat := new(big.Float)
-	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil) //nolint:gosec
 	bigFloat.SetInt(factor)
 
 	f.Mul(f, bigFloat)
@@ -92,7 +92,7 @@ func Float64StringToBigFloat(s string) (*big.Float, error) {
 // ScaleBigFloat scales a big.Float by the given decimals.
 func ScaleBigFloat(f *big.Float, decimals uint64) *big.Float {
 	bigFloat := new(big.Float)
-	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil) //nolint:gosec
 	bigFloat.SetInt(factor)
 
 	f.Mul(f, bigFloat)

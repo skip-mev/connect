@@ -24,10 +24,6 @@ import (
 	"cosmossdk.io/depinject"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
-	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
-	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
-
 	_ "cosmossdk.io/x/circuit"                        // import for side-effects
 	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config" // import for side-effects
@@ -44,9 +40,8 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
 
-	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
-	_ "github.com/skip-mev/slinky/x/marketmap"  // import for side-effects
-	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
+	_ "github.com/skip-mev/slinky/x/marketmap" // import for side-effects
+	_ "github.com/skip-mev/slinky/x/oracle"    // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -70,20 +65,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
 	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
-
-// ProvideIncentives provides the incentive strategies for the incentive module, wrt the expected Keeper dependencies for
-// incentive handler.
-func ProvideIncentives(bk alerttypes.BankKeeper, sk alerttypes.StakingKeeper) map[incentivetypes.Incentive]incentivetypes.Strategy {
-	return map[incentivetypes.Incentive]incentivetypes.Strategy{
-		&strategies.ValidatorAlertIncentive{}: strategies.DefaultValidatorAlertIncentiveStrategy(sk, bk),
-	}
-}
 
 var (
 	// module account permissions.
@@ -95,8 +80,6 @@ var (
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		{Account: oracletypes.ModuleName, Permissions: []string{}},
-		{Account: incentivetypes.ModuleName, Permissions: []string{}},
-		{Account: alerttypes.ModuleName, Permissions: []string{authtypes.Burner, authtypes.Minter}},
 	}
 
 	// blocked account addresses.
@@ -130,8 +113,6 @@ var (
 						genutiltypes.ModuleName,
 						authz.ModuleName,
 						oracletypes.ModuleName,
-						incentivetypes.ModuleName,
-						alerttypes.ModuleName,
 						marketmaptypes.ModuleName,
 					},
 					EndBlockers: []string{
@@ -140,9 +121,6 @@ var (
 						genutiltypes.ModuleName,
 						group.ModuleName,
 						oracletypes.ModuleName,
-						// alert Endblock must precede incentives types EndBlocker (issued incentives should be executed same block)
-						alerttypes.ModuleName,
-						incentivetypes.ModuleName,
 						marketmaptypes.ModuleName,
 					},
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
@@ -171,8 +149,6 @@ var (
 						consensustypes.ModuleName,
 						circuittypes.ModuleName,
 						oracletypes.ModuleName,
-						incentivetypes.ModuleName,
-						alerttypes.ModuleName,
 						// market map genesis must be called AFTER all consuming modules (i.e. x/oracle, etc.)
 						marketmaptypes.ModuleName,
 					},
@@ -224,10 +200,6 @@ var (
 				Config: appconfig.WrapAny(&oraclemodulev1.Module{}),
 			},
 			{
-				Name:   incentivetypes.ModuleName,
-				Config: appconfig.WrapAny(&incentivesmodulev1.Module{}),
-			},
-			{
 				Name:   genutiltypes.ModuleName,
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),
 			},
@@ -268,12 +240,6 @@ var (
 				Config: appconfig.WrapAny(&circuitmodulev1.Module{}),
 			},
 			{
-				Name: alerttypes.ModuleName,
-				Config: appconfig.WrapAny(&alertmodulev1.Module{
-					Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-				}),
-			},
-			{
 				Name: marketmaptypes.ModuleName,
 				Config: appconfig.WrapAny(&marketmapmodulev1.Module{
 					Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -281,8 +247,6 @@ var (
 			},
 		},
 	}),
-		depinject.Provide(alerttypes.ProvideMsgAlertGetSigners),
-		depinject.Provide(ProvideIncentives),
 		depinject.Supply(
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
@@ -293,8 +257,5 @@ var (
 					},
 				),
 			},
-
-			// Supply the Incentive Handler for the Alerts module's ProvideModule Inputs
-			strategies.DefaultHandleValidatorIncentive(),
 		))
 )
