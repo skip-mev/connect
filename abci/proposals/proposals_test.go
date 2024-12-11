@@ -576,6 +576,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 		currencyPairStrategy func() currencypair.CurrencyPairStrategy
 		expectedError        bool
 		expectedResp         *cometabci.ResponseProcessProposal
+		checkTxs             func(before, after [][]byte)
 	}{
 		{
 			name: "returns an error on nil request",
@@ -696,6 +697,9 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			expectedError: false,
 			expectedResp: &cometabci.ResponseProcessProposal{
 				Status: cometabci.ResponseProcessProposal_ACCEPT,
+			},
+			checkTxs: func(before, after [][]byte) {
+				s.Require().Equal(before, after)
 			},
 		},
 		{
@@ -936,6 +940,16 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				))
 			}
 
+			// make a copy of the txs before we run the proposal
+			var before [][]byte
+			if req != nil { // some tests use a nil request.
+				before = make([][]byte, len(req.Txs))
+				for i, tx := range req.Txs {
+					before[i] = make([]byte, len(tx))
+					copy(before[i], tx)
+				}
+			}
+
 			response, err := s.proposalHandler.ProcessProposalHandler()(s.ctx, req)
 
 			s.Require().Equal(tc.expectedResp, response)
@@ -943,6 +957,10 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
+			}
+
+			if tc.checkTxs != nil {
+				tc.checkTxs(before, req.Txs)
 			}
 		})
 	}
