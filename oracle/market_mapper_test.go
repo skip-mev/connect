@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle"
-	connecttypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	"github.com/skip-mev/slinky/providers/providertest"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -22,7 +22,7 @@ import (
 var (
 	btcusdt = mmtypes.Market{
 		Ticker: mmtypes.Ticker{
-			CurrencyPair: connecttypes.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "BITCOIN",
 				Quote: "USDT",
 			},
@@ -39,7 +39,7 @@ var (
 
 	usdtusd = mmtypes.Market{
 		Ticker: mmtypes.Ticker{
-			CurrencyPair: connecttypes.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "USDT",
 				Quote: "USD",
 			},
@@ -56,7 +56,7 @@ var (
 
 	usdcusd = mmtypes.Market{
 		Ticker: mmtypes.Ticker{
-			CurrencyPair: connecttypes.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "USDC",
 				Quote: "USD",
 			},
@@ -73,7 +73,7 @@ var (
 
 	ethusdt = mmtypes.Market{
 		Ticker: mmtypes.Ticker{
-			CurrencyPair: connecttypes.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "ETHEREUM",
 				Quote: "USDT",
 			},
