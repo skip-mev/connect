@@ -51,12 +51,6 @@ require (
 require (
 	cloud.google.com/go/storage v1.43.0 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
-	github.com/golangci/go-printf-func-name v0.1.0 // indirect
-	github.com/raeperd/recvcheck v0.1.2 // indirect
-	github.com/uudashr/iface v1.2.1 // indirect
-)
-
-require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
@@ -80,7 +74,6 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
-	github.com/alecthomas/assert/v2 v2.6.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.2.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.5 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect

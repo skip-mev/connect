@@ -16,7 +16,7 @@ import (
 
 var (
 	providerChainID       = "provider-1"
-	providerNumValidators = int(4)
+	providerNumValidators = 4
 	providerVersion       = "v5.0.0-rc0"
 )
 

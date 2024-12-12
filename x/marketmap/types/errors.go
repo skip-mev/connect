@@ -29,3 +29,17 @@ func NewMarketDoesNotExistsError(ticker TickerString) MarketDoesNotExistsError {
 func (e MarketDoesNotExistsError) Error() string {
 	return fmt.Sprintf("market does not exist for ticker %s", e.ticker)
 }
+
+// MarketIsEnabledError is an error indicating the given Market does not exist in state.
+type MarketIsEnabledError struct {
+	ticker TickerString
+}
+
+func NewMarketIsEnabledError(ticker TickerString) MarketIsEnabledError {
+	return MarketIsEnabledError{ticker: ticker}
+}
+
+// Error returns the error string for MarketIsEnabledError.
+func (e MarketIsEnabledError) Error() string {
+	return fmt.Sprintf("market is currently enabled %s", e.ticker)
+}
