@@ -250,6 +250,57 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 	return &types.MsgRemoveMarketAuthoritiesResponse{}, nil
 }
 
+// RemoveMarkets attempts to remove the provided markets from the MarketMap. Stateful validation is performed on these
+// markets using the configured ValidationHooks.
+func (ms msgServer) RemoveMarkets(
+	goCtx context.Context,
+	msg *types.MsgRemoveMarkets) (
+	*types.MsgRemoveMarketsResponse, error,
+) {
+	if msg == nil {
+		return nil, fmt.Errorf("unable to process nil msg")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// perform basic msg validity checks
+	if err := ms.verifyMarketAuthorities(ctx, msg); err != nil {
+		return nil, fmt.Errorf("unable to verify market authorities: %w", err)
+	}
+
+	deletedMarkets := make([]string, 0, len(msg.Markets))
+	for _, market := range msg.Markets {
+		deleted, err := ms.k.DeleteMarket(ctx, market)
+		if err != nil {
+			return nil, fmt.Errorf("unable to delete market: %w", err)
+		}
+
+		if deleted {
+			ctx.Logger().Info(fmt.Sprintf("deleted market %s", market))
+			deletedMarkets = append(deletedMarkets, market)
+		}
+
+		if err := ms.k.hooks.AfterMarketRemoved(ctx, market); err != nil {
+			return nil, fmt.Errorf("unable to run market removal hook: %w", err)
+		}
+	}
+
+	// check if the resulting state is valid: it may not be valid if the removed market is used as a normalization pair
+	allMarkets, err := ms.k.GetAllMarkets(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	mm := types.MarketMap{Markets: allMarkets}
+	if err := mm.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid state resulting from removals: %w", err)
+	}
+
+	return &types.MsgRemoveMarketsResponse{
+		DeletedMarkets: deletedMarkets,
+	}, nil
+}
+
 // checkMarketAuthority checks if the given authority is the x/marketmap's list of MarketAuthorities.
 func checkMarketAuthority(authority string, params types.Params) bool {
 	if len(params.MarketAuthorities) == 0 {

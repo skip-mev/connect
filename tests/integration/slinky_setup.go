@@ -472,6 +472,37 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	return nil
 }
 
+func (s *SlinkyIntegrationSuite) RemoveMarket(
+	chain *cosmos.CosmosChain,
+	markets []slinkytypes.CurrencyPair,
+) error {
+	marketString := make([]string, len(markets))
+	for i, market := range markets {
+		marketString[i] = market.String()
+	}
+
+	msg := &mmtypes.MsgRemoveMarkets{
+		Authority: s.user.FormattedAddress(),
+		Markets:   marketString,
+	}
+
+	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	if err != nil {
+		return err
+	}
+
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	return nil
+}
+
 func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
 	msg := &mmtypes.MsgUpsertMarkets{
 		Authority: s.user.FormattedAddress(),
