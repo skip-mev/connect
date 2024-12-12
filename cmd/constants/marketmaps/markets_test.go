@@ -17,6 +17,7 @@ func TestMarkets(t *testing.T) {
 		marketmaps.CoinGeckoMarketMap.Markets,
 		marketmaps.OsmosisMarketMap.Markets,
 		marketmaps.PolymarketMarketMap.Markets,
+		marketmaps.ForexMarketMap.Markets,
 	}
 	for _, m := range markets {
 		require.NotEmpty(t, m)
