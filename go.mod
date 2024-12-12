@@ -49,10 +49,15 @@ require (
 )
 
 require (
-	cloud.google.com/go/storage v1.43.0 // indirect
-	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
+	github.com/golangci/go-printf-func-name v0.1.0 // indirect
+	github.com/raeperd/recvcheck v0.1.2 // indirect
+	github.com/uudashr/iface v1.2.1 // indirect
+)
+
+require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
+	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/x/tx v0.13.5 // indirect
 	cosmossdk.io/x/upgrade v0.1.4 // indirect
@@ -66,6 +71,7 @@ require (
 	github.com/Antonboom/testifylint v1.5.2 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/Crocmagnon/fatcontext v0.5.3 // indirect
+	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.3.0 // indirect
