@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,11 +29,11 @@ var _ types.MsgServer = (*msgServer)(nil)
 func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCurrencyPairs) (*types.MsgAddCurrencyPairsResponse, error) {
 	// check the validity of the message
 	if req == nil {
-		return nil, fmt.Errorf("message cannot be empty")
+		return nil, errors.New("message cannot be empty")
 	}
 
 	if m.k.mmKeeper != nil {
-		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
+		return nil, errors.New("x/oracle message server is disabled when using x/marketmap")
 	}
 
 	// check that the authority of the message is the authority of the module
@@ -62,11 +63,11 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRemoveCurrencyPairs) (*types.MsgRemoveCurrencyPairsResponse, error) {
 	// check validity of message
 	if req == nil {
-		return nil, fmt.Errorf("message cannot be empty")
+		return nil, errors.New("message cannot be empty")
 	}
 
 	if m.k.mmKeeper != nil {
-		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
+		return nil, errors.New("x/oracle message server is disabled when using x/marketmap")
 	}
 
 	// check that the authority of the message is the authority of the module

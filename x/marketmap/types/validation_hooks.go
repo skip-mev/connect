@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -39,7 +40,7 @@ func DefaultDeleteMarketValidationHooks() MarketValidationHooks {
 func DefaultDeleteMarketValidationHook() MarketValidationHook {
 	return func(_ context.Context, market Market) error {
 		if market.Ticker.Enabled {
-			return fmt.Errorf("market is enabled - cannot be deleted")
+			return errors.New("market is enabled - cannot be deleted")
 		}
 
 		return nil

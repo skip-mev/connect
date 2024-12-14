@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
@@ -26,7 +27,7 @@ func (m *MsgUpsertMarkets) ValidateBasic() error {
 	}
 
 	if len(m.Markets) == 0 {
-		return fmt.Errorf("no markets to upsert")
+		return errors.New("no markets to upsert")
 	}
 
 	seenTickers := make(map[string]struct{})
@@ -56,7 +57,7 @@ func (m *MsgCreateMarkets) ValidateBasic() error {
 	}
 
 	if len(m.CreateMarkets) == 0 {
-		return fmt.Errorf("no markets to create")
+		return errors.New("no markets to create")
 	}
 
 	for _, market := range m.CreateMarkets {
@@ -77,7 +78,7 @@ func (m *MsgUpdateMarkets) ValidateBasic() error {
 	}
 
 	if len(m.UpdateMarkets) == 0 {
-		return fmt.Errorf("no markets to update")
+		return errors.New("no markets to update")
 	}
 
 	for _, market := range m.UpdateMarkets {
@@ -109,7 +110,7 @@ func (m *MsgRemoveMarketAuthorities) ValidateBasic() error {
 	}
 
 	if len(m.RemoveAddresses) == 0 {
-		return fmt.Errorf("addresses to remove cannot be nil")
+		return errors.New("addresses to remove cannot be nil")
 	}
 
 	seenAuthorities := make(map[string]struct{}, len(m.RemoveAddresses))
@@ -137,7 +138,7 @@ func (m *MsgRemoveMarkets) ValidateBasic() error {
 	}
 
 	if len(m.Markets) == 0 {
-		return fmt.Errorf("markets to remove cannot be nil")
+		return errors.New("markets to remove cannot be nil")
 	}
 
 	seenMarkets := make(map[string]struct{}, len(m.Markets))
