@@ -7,9 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/skip-mev/chaintestutil/sample"
+	"github.com/stretchr/testify/mock"
 
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	"github.com/skip-mev/connect/v2/x/marketmap/keeper"
@@ -394,7 +393,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 
 		hooks.On("AfterMarketCreated", mock.Anything, btcusdt).Return(nil).Once()
 
-		s.ctx = s.ctx.WithBlockHeight(12)
+		s.ctx = s.ctx.WithBlockHeight(r.Int63())
 
 		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
 		s.Require().NoError(err)
@@ -436,7 +435,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		hooks.On("AfterMarketCreated", mock.Anything, usdtusd).Return(nil).Once()
 		hooks.On("AfterMarketUpdated", mock.Anything, btcusdt).Return(err).Once()
 
-		s.ctx = s.ctx.WithBlockHeight(13)
+		s.ctx = s.ctx.WithBlockHeight(r.Int63())
 
 		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -457,7 +456,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		hooks.On("AfterMarketUpdated", mock.Anything, btcusdt).Return(nil).Once()
 		hooks.On("AfterMarketCreated", mock.Anything, ethusdt).Return(nil).Once()
 
-		s.ctx = s.ctx.WithBlockHeight(13)
+		s.ctx = s.ctx.WithBlockHeight(r.Int63())
 
 		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
 		s.Require().NoError(err)
@@ -512,7 +511,7 @@ func (s *KeeperTestSuite) TestMsgServerUpsertMarkets() {
 		}
 		hooks.On("AfterMarketUpdated", mock.Anything, mock.Anything).Return(nil).Once()
 
-		s.ctx = s.ctx.WithBlockHeight(13)
+		s.ctx = s.ctx.WithBlockHeight(r.Int63())
 
 		resp, err := msgServer.UpsertMarkets(s.ctx, msg)
 		s.Require().Error(err)
