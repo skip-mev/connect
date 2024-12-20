@@ -26,7 +26,7 @@ type PriceApplier interface {
 	// otherwise an error is returned + nil prices.
 	ApplyPricesFromVoteExtensions(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (map[connecttypes.CurrencyPair]*big.Int, error)
 
-	// GetPriceForValidator gets the prices reported by a given validator. This method depends
+	// GetPricesForValidator gets the prices reported by a given validator. This method depends
 	// on the prices from the latest set of aggregated votes.
 	GetPricesForValidator(validator sdk.ConsAddress) map[connecttypes.CurrencyPair]*big.Int
 }
