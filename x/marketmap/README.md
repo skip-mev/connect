@@ -3,7 +3,7 @@
 ## Contents
 
 * [Concepts](#concepts)
-* [Integration](#integtration)
+* [Integration](#integration)
 * [State](#state)
     * [MarketMap](#marketmap)
     * [Params](#params)
@@ -304,7 +304,7 @@ The `MarketMap` endpoint queries the full state of the market map as well as ass
 Example:
 
 ```shell
-  connectd q marketmap market-map
+  connected q marketmap market-map
 ```
 
 #### LastUpdated
