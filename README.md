@@ -61,7 +61,7 @@ After a few minutes, run the following commands to see the prices written to the
 $ docker exec -it compose-blockchain-1 bash
 
 # query the price of bitcoin in USD on the node
-$ (compose-blockchain-1) ./build/connectd q oracle price BTC USD
+$ (compose-blockchain-1) ./build/connected q oracle price BTC USD
 ```
 
 Result:
