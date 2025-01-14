@@ -45,9 +45,17 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRe
 }
 
 // Markets returns all markets stored in the x/marketmap module.
-func (q queryServerImpl) Markets(ctx context.Context, request *types.MarketsRequest) (*types.MarketsResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (q queryServerImpl) Markets(ctx context.Context, req *types.MarketsRequest) (*types.MarketsResponse, error) {
+	if req == nil {
+		return nil, fmt.Errorf("request cannot be nil")
+	}
+
+	markets, err := q.k.GetAllMarketsList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MarketsResponse{Markets: markets}, nil
 }
 
 // Market returns the requested market stored in the x/marketmap module.
