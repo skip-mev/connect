@@ -143,7 +143,16 @@ func (k *Keeper) GetAllMarketsList(ctx context.Context) ([]types.Market, error) 
 		return nil, err
 	}
 
-	return iter.Values()
+	markets := make([]types.Market, 0)
+	for ; iter.Valid(); iter.Next() {
+		market, err := iter.Value()
+		if err != nil {
+			return nil, err
+		}
+		markets = append(markets, market)
+	}
+
+	return markets, nil
 }
 
 // CreateMarket initializes a new Market.
