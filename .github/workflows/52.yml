@@ -1,0 +1,51 @@
+name: CodeQL Lint (Go, No Security Alerts)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  codeql-lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          languages: go
+
+      - name: Build (Make Install)
+        run: |
+          make install
+
+      - name: Run CodeQL Analysis (No upload)
+        run: |
+          codeql database analyze \
+            --format=sarif-latest \
+            --output=codeql-results.sarif \
+            db \
+            ghcr.io/skip-mev/cosmos-52-ql@v0.0.1
+
+      - name: Annotate code with findings
+        run: |
+          issues=$(jq -r '
+            .runs[].results[] |
+            . as $r |
+            ($r.locations[0].physicalLocation.artifactLocation.uri | select(. != null)) as $file |
+            ($r.locations[0].physicalLocation.region.startLine | select(. != null)) as $line |
+            ($r.message.text | gsub("[\r\n]"; " ")) as $msg |
+            [$file, $line, $msg] | @tsv
+          ' codeql-results.sarif)
+
+          while IFS=$'\t' read -r file line msg; do
+            file="${file#file://}"
+            echo "::warning file=$file,line=$line::$msg"
+          done <<< "$issues"
+
