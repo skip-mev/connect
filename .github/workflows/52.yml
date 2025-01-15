@@ -20,18 +20,17 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           languages: go
+          queries: ghcr.io/skip-mev/cosmos-52-ql@v0.0.1
 
       - name: Build (Make Install)
         run: |
           make install
 
-      - name: Run CodeQL Analysis (No upload)
-        run: |
-          codeql database analyze \
-            --format=sarif-latest \
-            --output=codeql-results.sarif \
-            db \
-            ghcr.io/skip-mev/cosmos-52-ql@v0.0.1
+      - name: Analyze with CodeQL (no upload)
+        uses: github/codeql-action/analyze@v3
+        with:
+          upload: false              
+          output: codeql-results.sarif
 
       - name: Annotate code with findings
         run: |
