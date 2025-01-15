@@ -365,10 +365,6 @@ func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, erro
 		return nil, err
 	}
 
-	if listRes == nil {
-		return nil, fmt.Errorf("list response is nil")
-	}
-
 	if len(listRes.Markets) != len(mapRes.MarketMap.Markets) {
 		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
 			len(listRes.Markets),
