@@ -23,6 +23,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.35.2
+	github.com/skip-mev/slinky v1.0.1
 )
 
 require (
@@ -202,6 +203,6 @@ require (
 replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-20230719143845-dff6b0e26aa4
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-	github.com/skip-mev/connect/v2 => ../../
+	github.com/skip-mev/slinky => ../../
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )

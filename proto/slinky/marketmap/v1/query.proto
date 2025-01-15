@@ -22,7 +22,7 @@ service Query {
   // module as a sorted list.
   rpc Markets(MarketsRequest) returns (MarketsResponse) {
     option (google.api.http) = {
-      get : "/connect/marketmap/v2/markets"
+      get : "/slinky/marketmap/v1/markets"
     };
   }
 
