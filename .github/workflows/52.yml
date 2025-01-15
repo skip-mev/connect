@@ -20,7 +20,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           languages: go
-          queries: skip-mev/cosmos-52-ql@v0.0.1
+          queries: skip-mev/cosmos-52-ql
 
       - name: Build (Make Install)
         run: |
