@@ -35,6 +35,8 @@ jobs:
 
       - name: Annotate code with findings
         run: |
+          set -eoux pipefail
+
           issues=$(jq -r '
             .runs[].results[] |
             . as $r |
