@@ -134,6 +134,26 @@ func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error)
 	return m, nil
 }
 
+// GetAllMarketsList returns the set of Market objects currently stored in state
+// as a list.
+func (k *Keeper) GetAllMarketsList(ctx sdk.Context) ([]types.Market, error) {
+	iter, err := k.markets.Iterate(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	markets := make([]types.Market, 0)
+	for ; iter.Valid(); iter.Next() {
+		market, err := iter.Value()
+		if err != nil {
+			return nil, err
+		}
+		markets = append(markets, market)
+	}
+
+	return markets, nil
+}
+
 // CreateMarket initializes a new Market.
 // The Ticker.String corresponds to a market, and must be unique.
 func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
