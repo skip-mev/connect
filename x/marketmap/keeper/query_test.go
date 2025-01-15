@@ -54,6 +54,47 @@ func (s *KeeperTestSuite) TestMarketMap() {
 	})
 }
 
+func (s *KeeperTestSuite) TestMarkets() {
+	qs := keeper.NewQueryServer(s.keeper)
+	s.ctx = s.ctx.WithChainID("test-chain")
+
+	s.Run("invalid for nil request", func() {
+		_, err := qs.Markets(s.ctx, nil)
+		s.Require().Error(err)
+	})
+
+	s.Run("run query with no state", func() {
+		resp, err := qs.Markets(s.ctx, &types.MarketsRequest{})
+		s.Require().NoError(err)
+
+		expected := &types.MarketsResponse{
+			Markets: []types.Market{},
+		}
+
+		s.Require().Equal(expected, resp)
+	})
+
+	s.Run("run query with state", func() {
+		for _, market := range markets {
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
+		}
+
+		resp, err := qs.Markets(s.ctx, &types.MarketsRequest{})
+		s.Require().NoError(err)
+
+		expected := &types.MarketsResponse{
+			Markets: marketsKeySorted,
+		}
+
+		nonSortedResp := &types.MarketsResponse{
+			Markets: markets,
+		}
+
+		s.Require().Equal(expected, resp)
+		s.Require().NotEqual(nonSortedResp, resp)
+	})
+}
+
 func (s *KeeperTestSuite) TestMarket() {
 	qs := keeper.NewQueryServer(s.keeper)
 	s.ctx = s.ctx.WithChainID("test-chain")

@@ -12,10 +12,19 @@ option go_package = "github.com/skip-mev/connect/v2/x/marketmap/types";
 // Query is the query service for the x/marketmap module.
 service Query {
   // MarketMap returns the full market map stored in the x/marketmap
-  // module.
+  // module.  NOTE: the value returned by this query is not safe for on-chain
+  // code.
   rpc MarketMap(MarketMapRequest) returns (MarketMapResponse) {
     option (google.api.http) = {
       get : "/connect/marketmap/v2/marketmap"
+    };
+  }
+
+  // Market returns all stored in the x/marketmap
+  // module as a sorted list.
+  rpc Markets(MarketsRequest) returns (MarketsResponse) {
+    option (google.api.http) = {
+      get : "/connect/marketmap/v2/markets"
     };
   }
 
@@ -59,6 +68,15 @@ message MarketMapResponse {
 
   // ChainId is the chain identifier for the market map.
   string chain_id = 3;
+}
+
+// MarketsRequest is the query request for the Market query.
+message MarketsRequest {}
+
+// MarketsResponse is the query response for the Markets query.
+message MarketsResponse {
+  // Markets is a sorted list of all markets in the module.
+  repeated Market markets = 1 [ (gogoproto.nullable) = false ];
 }
 
 // MarketRequest is the query request for the Market query.
