@@ -33,6 +33,8 @@ jobs:
           upload: never              
           output: ../codeql-results.sarif
 
+      - name: Install jq
+        uses: dcarbone/install-jq-action@v3.0.1
       - name: Annotate code with findings
         run: |
           set -eoux pipefail
