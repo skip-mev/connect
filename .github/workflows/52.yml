@@ -28,9 +28,10 @@ jobs:
 
       - name: Analyze with CodeQL (no upload)
         uses: github/codeql-action/analyze@v3
+        id: analyze
         with:
-          upload: false              
-          output: codeql-results.sarif
+          upload: never              
+          output: ../codeql-results.sarif
 
       - name: Annotate code with findings
         run: |
@@ -41,7 +42,7 @@ jobs:
             ($r.locations[0].physicalLocation.region.startLine | select(. != null)) as $line |
             ($r.message.text | gsub("[\r\n]"; " ")) as $msg |
             [$file, $line, $msg] | @tsv
-          ' codeql-results.sarif)
+          ' ${{ steps.analyze.outputs.sarif-output }} )
 
           while IFS=$'\t' read -r file line msg; do
             file="${file#file://}"
