@@ -39,6 +39,8 @@ jobs:
         run: |
           set -eoux pipefail
 
+          cat ${{ steps.analyze.outputs.sarif-output }}
+
           issues=$(jq -r '
             .runs[].results[] |
             . as $r |
