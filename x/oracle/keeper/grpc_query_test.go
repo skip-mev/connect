@@ -233,3 +233,43 @@ func (s *KeeperTestSuite) TestGetCurrencyPairMappingGRPC() {
 		}
 	})
 }
+
+func (s *KeeperTestSuite) TestGetCurrencyPairMappingListGRPC() {
+	cp1 := slinkytypes.CurrencyPair{Base: "TEST", Quote: "COIN1"}
+	cp2 := slinkytypes.CurrencyPair{Base: "TEST", Quote: "COIN2"}
+	cp3 := slinkytypes.CurrencyPair{Base: "TEST", Quote: "COIN3"}
+
+	qs := keeper.NewQueryServer(s.oracleKeeper)
+	// test that after CurrencyPairs are registered, all of them are returned from the query
+	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
+		currencyPairs := []slinkytypes.CurrencyPair{
+			cp1,
+			cp2,
+			cp3,
+		}
+		for _, cp := range currencyPairs {
+			s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp))
+		}
+
+		// manually insert a new CurrencyPair as well
+		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, types.QuotePrice{Price: sdkmath.NewInt(100)}))
+
+		// query for pairs
+		res, err := qs.GetCurrencyPairMappingList(s.ctx, nil)
+		s.Require().Nil(err)
+		s.Require().Equal([]types.CurrencyPairMapping{
+			{
+				Id:           0,
+				CurrencyPair: cp1,
+			},
+			{
+				Id:           1,
+				CurrencyPair: cp2,
+			},
+			{
+				Id:           2,
+				CurrencyPair: cp3,
+			},
+		}, res.Mappings)
+	})
+}
