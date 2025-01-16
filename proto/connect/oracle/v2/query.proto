@@ -41,6 +41,17 @@ service Query {
       additional_bindings : []
     };
   }
+
+  // Get the mapping of currency pair ID -> currency pair as a list. This is
+  // useful for indexers that have access to the ID of a currency pair, but no
+  // way to get the underlying currency pair from it.
+  rpc GetCurrencyPairMappingList(GetCurrencyPairMappingListRequest)
+      returns (GetCurrencyPairMappingListResponse) {
+    option (google.api.http) = {
+      get : "/connect/oracle/v2/get_currency_pair_mapping_list"
+      additional_bindings : []
+    };
+  }
 }
 
 message GetAllCurrencyPairsRequest {}
@@ -93,4 +104,21 @@ message GetCurrencyPairMappingResponse {
   // to the currency pair itself.
   map<uint64, connect.types.v2.CurrencyPair> currency_pair_mapping = 1
       [ (gogoproto.nullable) = false ];
+}
+
+// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
+message GetCurrencyPairMappingListRequest {}
+
+message CurrencyPairMapping {
+  // ID is the unique identifier for this currency pair string.
+  uint64 id = 1;
+  // CurrencyPair is the human-readable representation of the currency pair.
+  connect.types.v2.CurrencyPair currency_pair = 2;
+}
+
+// GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
+message GetCurrencyPairMappingListResponse {
+  // mappings is a list of the id representing the currency pair
+  // to the currency pair itself.
+  repeated CurrencyPairMapping mappings = 1 [ (gogoproto.nullable) = false ];
 }
