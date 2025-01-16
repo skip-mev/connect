@@ -19,27 +19,42 @@ jobs:
           go-version: 1.22
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
+        id: codeql-init
         with:
+          db-location: ./tests/simapp/codeql-db
           token: ${{ secrets.GITHUB_TOKEN }}
           languages: go
+          source-root: ./tests/simapp
+          build-mode: manual
           packs: skip-mev/cosmos-52-ql
 
       - name: Build (Make Install)
+        working-directory: ./tests/simapp
         run: |
-          make install
+          go build ./connectd/...
 
-      - name: Analyze with CodeQL (no upload)
-        uses: github/codeql-action/analyze@v3
-        id: analyze
-        with:
-          upload: never              
-          output: ../results
+      - name: Analyze
+        working-directory: ./tests/simapp
+        run: |
+          echo $PWD
+          ls $PWD
+          ${{ steps.codeql-init.outputs.codeql-path }} database finalize \
+            codeql-db/go 
+
+          ${{ steps.codeql-init.outputs.codeql-path }} database analyze \
+            --format=sarif-latest \
+            --output=codeql-results.sarif \
+            codeql-db/go \
+            skip-mev/cosmos-52-ql
 
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
       - name: Annotate code with findings
+        working-directory: ./tests/simapp
         run: |
           set -eoux pipefail
+
+          cat codeql-results.sarif
 
           issues=$(jq -r '
             .runs[].results[] |
@@ -48,7 +63,7 @@ jobs:
             ($r.locations[0].physicalLocation.region.startLine | select(. != null)) as $line |
             ($r.message.text | gsub("[\r\n]"; " ")) as $msg |
             [$file, $line, $msg] | @tsv
-          ' ${{ steps.analyze.outputs.sarif-output }}/go.sarif )
+          ' codeql-results.sarif )
 
           while IFS=$'\t' read -r file line msg; do
             file="${file#file://}"
