@@ -131,6 +131,10 @@ func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCur
 }
 
 func (q queryServer) GetCurrencyPairMappingList(ctx context.Context, request *types.GetCurrencyPairMappingListRequest) (*types.GetCurrencyPairMappingListResponse, error) {
-	// TODO implement me
-	panic("implement me")
+	pairs, err := q.k.GetCurrencyPairMappingList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.GetCurrencyPairMappingListResponse{Mappings: pairs}
 }

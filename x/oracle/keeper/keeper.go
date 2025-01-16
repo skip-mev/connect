@@ -304,15 +304,18 @@ func (k *Keeper) GetCurrencyPairMapping(ctx context.Context) (map[uint64]connect
 }
 
 // GetCurrencyPairMappingList returns a CurrencyPair mapping by ID that have currently been stored to state as a list.
-func (k *Keeper) GetCurrencyPairMappingList(ctx context.Context) (map[uint64]connecttypes.CurrencyPair, error) {
+func (k *Keeper) GetCurrencyPairMappingList(ctx context.Context) ([]types.CurrencyPairMapping, error) {
 	pairs := make([]types.CurrencyPairMapping, 0)
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
-	k.IterateCurrencyPairs(ctx, func(cp connecttypes.CurrencyPair, cps types.CurrencyPairState) {
+	err := k.IterateCurrencyPairs(ctx, func(cp connecttypes.CurrencyPair, cps types.CurrencyPairState) {
 		pairs = append(pairs, types.CurrencyPairMapping{
 			Id:           cps.GetId(),
 			CurrencyPair: cp,
 		})
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return pairs, nil
 }
