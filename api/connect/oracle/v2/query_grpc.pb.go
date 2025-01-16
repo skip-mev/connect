@@ -42,7 +42,7 @@ type QueryClient interface {
 	// indexers that have access to the ID of a currency pair, but no way to get
 	// the underlying currency pair from it.
 	GetCurrencyPairMapping(ctx context.Context, in *GetCurrencyPairMappingRequest, opts ...grpc.CallOption) (*GetCurrencyPairMappingResponse, error)
-	// Get the mapping of currency pair ID -> currency pair as a list. This is
+	// Get the mapping of currency pair ID <-> currency pair as a list. This is
 	// useful for indexers that have access to the ID of a currency pair, but no
 	// way to get the underlying currency pair from it.
 	GetCurrencyPairMappingList(ctx context.Context, in *GetCurrencyPairMappingListRequest, opts ...grpc.CallOption) (*GetCurrencyPairMappingListResponse, error)
@@ -122,7 +122,7 @@ type QueryServer interface {
 	// indexers that have access to the ID of a currency pair, but no way to get
 	// the underlying currency pair from it.
 	GetCurrencyPairMapping(context.Context, *GetCurrencyPairMappingRequest) (*GetCurrencyPairMappingResponse, error)
-	// Get the mapping of currency pair ID -> currency pair as a list. This is
+	// Get the mapping of currency pair ID <-> currency pair as a list. This is
 	// useful for indexers that have access to the ID of a currency pair, but no
 	// way to get the underlying currency pair from it.
 	GetCurrencyPairMappingList(context.Context, *GetCurrencyPairMappingListRequest) (*GetCurrencyPairMappingListResponse, error)

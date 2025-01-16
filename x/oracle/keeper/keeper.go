@@ -288,6 +288,7 @@ func (k *Keeper) GetAllCurrencyPairs(ctx context.Context) []connecttypes.Currenc
 }
 
 // GetCurrencyPairMapping returns a CurrencyPair mapping by ID that have currently been stored to state.
+// NOTE: this map[] type should not be used by on-chain code.
 func (k *Keeper) GetCurrencyPairMapping(ctx context.Context) (map[uint64]connecttypes.CurrencyPair, error) {
 	numPairs, err := k.numCPs.Get(ctx)
 	if err != nil {
@@ -297,6 +298,20 @@ func (k *Keeper) GetCurrencyPairMapping(ctx context.Context) (map[uint64]connect
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
 	k.IterateCurrencyPairs(ctx, func(cp connecttypes.CurrencyPair, cps types.CurrencyPairState) {
 		pairs[cps.GetId()] = cp
+	})
+
+	return pairs, nil
+}
+
+// GetCurrencyPairMappingList returns a CurrencyPair mapping by ID that have currently been stored to state as a list.
+func (k *Keeper) GetCurrencyPairMappingList(ctx context.Context) (map[uint64]connecttypes.CurrencyPair, error) {
+	pairs := make([]types.CurrencyPairMapping, 0)
+	// aggregate CurrencyPairs stored under KeyPrefixNonce
+	k.IterateCurrencyPairs(ctx, func(cp connecttypes.CurrencyPair, cps types.CurrencyPairState) {
+		pairs = append(pairs, types.CurrencyPairMapping{
+			Id:           cps.GetId(),
+			CurrencyPair: cp,
+		})
 	})
 
 	return pairs, nil

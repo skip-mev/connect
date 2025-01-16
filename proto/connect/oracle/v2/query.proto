@@ -42,7 +42,7 @@ service Query {
     };
   }
 
-  // Get the mapping of currency pair ID -> currency pair as a list. This is
+  // Get the mapping of currency pair ID <-> currency pair as a list. This is
   // useful for indexers that have access to the ID of a currency pair, but no
   // way to get the underlying currency pair from it.
   rpc GetCurrencyPairMappingList(GetCurrencyPairMappingListRequest)
@@ -113,7 +113,8 @@ message CurrencyPairMapping {
   // ID is the unique identifier for this currency pair string.
   uint64 id = 1;
   // CurrencyPair is the human-readable representation of the currency pair.
-  connect.types.v2.CurrencyPair currency_pair = 2;
+  connect.types.v2.CurrencyPair currency_pair = 2
+      [ (gogoproto.nullable) = false ];
 }
 
 // GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.

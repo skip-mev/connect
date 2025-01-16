@@ -129,3 +129,8 @@ func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCur
 	}
 	return &types.GetCurrencyPairMappingResponse{CurrencyPairMapping: pairs}, nil
 }
+
+func (q queryServer) GetCurrencyPairMappingList(ctx context.Context, request *types.GetCurrencyPairMappingListRequest) (*types.GetCurrencyPairMappingListResponse, error) {
+	// TODO implement me
+	panic("implement me")
+}
