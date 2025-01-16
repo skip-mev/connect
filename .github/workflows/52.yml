@@ -46,6 +46,12 @@ jobs:
             --output=codeql-results.csv \
             codeql-db/go \
             skip-mev/cosmos-52-ql
+
+          ${{ steps.codeql-init.outputs.codeql-path }} database analyze \
+            --format=sarif-latest\
+            --output=codeql-results.sarif \
+            codeql-db/go \
+            skip-mev/cosmos-52-ql
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
       - name: Add problem matcher
@@ -56,3 +62,9 @@ jobs:
           set -eoux pipefail
 
           cat codeql-results.csv
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./tests/simapp/codeql-results.sarif
+          category: migration-lint
