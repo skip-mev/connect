@@ -332,7 +332,8 @@ func QueryMarket(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair) (mmtype
 	return res.Market, nil
 }
 
-// QueryMarketMap queries the market map.
+// QueryMarketMap queries the market map.  This query util provides an additional query to the list endpoint
+// and ensures that the response data in both queries is equal.
 func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
@@ -349,7 +350,59 @@ func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, erro
 	ctx := context.Background()
 
 	// query the currency pairs
-	res, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	mapRes, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	if mapRes == nil {
+		return nil, fmt.Errorf("map response is nil")
+	}
+
+	// query markets to check that there is 1-1 correspondence to the map query
+	listRes, err := QueryMarkets(chain)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(listRes.Markets) != len(mapRes.MarketMap.Markets) {
+		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
+			len(listRes.Markets),
+			len(mapRes.MarketMap.Markets),
+		)
+	}
+	for _, market := range listRes.Markets {
+		mapMarket, found := mapRes.MarketMap.Markets[market.Ticker.String()]
+		if !found {
+			return nil, fmt.Errorf("market %s not found", market.Ticker.String())
+		}
+
+		if !market.Equal(mapMarket) {
+			return nil, fmt.Errorf("market %s is not equal to %s", market.Ticker.String(), mapMarket.String())
+		}
+	}
+
+	return mapRes, nil
+}
+
+// QueryMarkets queries all markets .
+func QueryMarkets(chain *cosmos.CosmosChain) (*mmtypes.MarketsResponse, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.Markets(ctx, &mmtypes.MarketsRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -498,6 +551,16 @@ func (s *SlinkyIntegrationSuite) RemoveMarket(
 
 	if resp.TxResult.Code != abcitypes.CodeTypeOK {
 		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market no longer exist
+	for _, market := range markets {
+		_, found := mmResp.MarketMap.Markets[market.String()]
+		s.Require().False(found)
 	}
 
 	return nil
