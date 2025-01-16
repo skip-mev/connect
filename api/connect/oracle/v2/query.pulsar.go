@@ -3863,6 +3863,1339 @@ func (x *fastReflection_GetCurrencyPairMappingResponse) ProtoMethods() *protoifa
 	}
 }
 
+var (
+	md_GetCurrencyPairMappingListRequest protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_connect_oracle_v2_query_proto_init()
+	md_GetCurrencyPairMappingListRequest = File_connect_oracle_v2_query_proto.Messages().ByName("GetCurrencyPairMappingListRequest")
+}
+
+var _ protoreflect.Message = (*fastReflection_GetCurrencyPairMappingListRequest)(nil)
+
+type fastReflection_GetCurrencyPairMappingListRequest GetCurrencyPairMappingListRequest
+
+func (x *GetCurrencyPairMappingListRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_GetCurrencyPairMappingListRequest)(x)
+}
+
+func (x *GetCurrencyPairMappingListRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_connect_oracle_v2_query_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_GetCurrencyPairMappingListRequest_messageType fastReflection_GetCurrencyPairMappingListRequest_messageType
+var _ protoreflect.MessageType = fastReflection_GetCurrencyPairMappingListRequest_messageType{}
+
+type fastReflection_GetCurrencyPairMappingListRequest_messageType struct{}
+
+func (x fastReflection_GetCurrencyPairMappingListRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_GetCurrencyPairMappingListRequest)(nil)
+}
+func (x fastReflection_GetCurrencyPairMappingListRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_GetCurrencyPairMappingListRequest)
+}
+func (x fastReflection_GetCurrencyPairMappingListRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_GetCurrencyPairMappingListRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_GetCurrencyPairMappingListRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Type() protoreflect.MessageType {
+	return _fastReflection_GetCurrencyPairMappingListRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) New() protoreflect.Message {
+	return new(fastReflection_GetCurrencyPairMappingListRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Interface() protoreflect.ProtoMessage {
+	return (*GetCurrencyPairMappingListRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListRequest"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in connect.oracle.v2.GetCurrencyPairMappingListRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_GetCurrencyPairMappingListRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GetCurrencyPairMappingListRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GetCurrencyPairMappingListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_CurrencyPairMapping               protoreflect.MessageDescriptor
+	fd_CurrencyPairMapping_id            protoreflect.FieldDescriptor
+	fd_CurrencyPairMapping_currency_pair protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_connect_oracle_v2_query_proto_init()
+	md_CurrencyPairMapping = File_connect_oracle_v2_query_proto.Messages().ByName("CurrencyPairMapping")
+	fd_CurrencyPairMapping_id = md_CurrencyPairMapping.Fields().ByName("id")
+	fd_CurrencyPairMapping_currency_pair = md_CurrencyPairMapping.Fields().ByName("currency_pair")
+}
+
+var _ protoreflect.Message = (*fastReflection_CurrencyPairMapping)(nil)
+
+type fastReflection_CurrencyPairMapping CurrencyPairMapping
+
+func (x *CurrencyPairMapping) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_CurrencyPairMapping)(x)
+}
+
+func (x *CurrencyPairMapping) slowProtoReflect() protoreflect.Message {
+	mi := &file_connect_oracle_v2_query_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_CurrencyPairMapping_messageType fastReflection_CurrencyPairMapping_messageType
+var _ protoreflect.MessageType = fastReflection_CurrencyPairMapping_messageType{}
+
+type fastReflection_CurrencyPairMapping_messageType struct{}
+
+func (x fastReflection_CurrencyPairMapping_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_CurrencyPairMapping)(nil)
+}
+func (x fastReflection_CurrencyPairMapping_messageType) New() protoreflect.Message {
+	return new(fastReflection_CurrencyPairMapping)
+}
+func (x fastReflection_CurrencyPairMapping_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_CurrencyPairMapping
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_CurrencyPairMapping) Descriptor() protoreflect.MessageDescriptor {
+	return md_CurrencyPairMapping
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_CurrencyPairMapping) Type() protoreflect.MessageType {
+	return _fastReflection_CurrencyPairMapping_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_CurrencyPairMapping) New() protoreflect.Message {
+	return new(fastReflection_CurrencyPairMapping)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_CurrencyPairMapping) Interface() protoreflect.ProtoMessage {
+	return (*CurrencyPairMapping)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_CurrencyPairMapping) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_CurrencyPairMapping_id, value) {
+			return
+		}
+	}
+	if x.CurrencyPair != nil {
+		value := protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
+		if !f(fd_CurrencyPairMapping_currency_pair, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_CurrencyPairMapping) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		return x.Id != uint64(0)
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		return x.CurrencyPair != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CurrencyPairMapping) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		x.Id = uint64(0)
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		x.CurrencyPair = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_CurrencyPairMapping) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		value := x.CurrencyPair
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CurrencyPairMapping) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		x.Id = value.Uint()
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		x.CurrencyPair = value.Message().Interface().(*v2.CurrencyPair)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CurrencyPairMapping) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		if x.CurrencyPair == nil {
+			x.CurrencyPair = new(v2.CurrencyPair)
+		}
+		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		panic(fmt.Errorf("field id of message connect.oracle.v2.CurrencyPairMapping is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_CurrencyPairMapping) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "connect.oracle.v2.CurrencyPairMapping.id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "connect.oracle.v2.CurrencyPairMapping.currency_pair":
+		m := new(v2.CurrencyPair)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.CurrencyPairMapping"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.CurrencyPairMapping does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_CurrencyPairMapping) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in connect.oracle.v2.CurrencyPairMapping", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_CurrencyPairMapping) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CurrencyPairMapping) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_CurrencyPairMapping) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_CurrencyPairMapping) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*CurrencyPairMapping)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
+		}
+		if x.CurrencyPair != nil {
+			l = options.Size(x.CurrencyPair)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*CurrencyPairMapping)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.CurrencyPair != nil {
+			encoded, err := options.Marshal(x.CurrencyPair)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*CurrencyPairMapping)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CurrencyPairMapping: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CurrencyPairMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				}
+				x.Id = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Id |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.CurrencyPair == nil {
+					x.CurrencyPair = &v2.CurrencyPair{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CurrencyPair); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_GetCurrencyPairMappingListResponse_1_list)(nil)
+
+type _GetCurrencyPairMappingListResponse_1_list struct {
+	list *[]*CurrencyPairMapping
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*CurrencyPairMapping)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*CurrencyPairMapping)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(CurrencyPairMapping)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) NewElement() protoreflect.Value {
+	v := new(CurrencyPairMapping)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GetCurrencyPairMappingListResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_GetCurrencyPairMappingListResponse          protoreflect.MessageDescriptor
+	fd_GetCurrencyPairMappingListResponse_mappings protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_connect_oracle_v2_query_proto_init()
+	md_GetCurrencyPairMappingListResponse = File_connect_oracle_v2_query_proto.Messages().ByName("GetCurrencyPairMappingListResponse")
+	fd_GetCurrencyPairMappingListResponse_mappings = md_GetCurrencyPairMappingListResponse.Fields().ByName("mappings")
+}
+
+var _ protoreflect.Message = (*fastReflection_GetCurrencyPairMappingListResponse)(nil)
+
+type fastReflection_GetCurrencyPairMappingListResponse GetCurrencyPairMappingListResponse
+
+func (x *GetCurrencyPairMappingListResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_GetCurrencyPairMappingListResponse)(x)
+}
+
+func (x *GetCurrencyPairMappingListResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_connect_oracle_v2_query_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_GetCurrencyPairMappingListResponse_messageType fastReflection_GetCurrencyPairMappingListResponse_messageType
+var _ protoreflect.MessageType = fastReflection_GetCurrencyPairMappingListResponse_messageType{}
+
+type fastReflection_GetCurrencyPairMappingListResponse_messageType struct{}
+
+func (x fastReflection_GetCurrencyPairMappingListResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_GetCurrencyPairMappingListResponse)(nil)
+}
+func (x fastReflection_GetCurrencyPairMappingListResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_GetCurrencyPairMappingListResponse)
+}
+func (x fastReflection_GetCurrencyPairMappingListResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_GetCurrencyPairMappingListResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_GetCurrencyPairMappingListResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Type() protoreflect.MessageType {
+	return _fastReflection_GetCurrencyPairMappingListResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) New() protoreflect.Message {
+	return new(fastReflection_GetCurrencyPairMappingListResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Interface() protoreflect.ProtoMessage {
+	return (*GetCurrencyPairMappingListResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Mappings) != 0 {
+		value := protoreflect.ValueOfList(&_GetCurrencyPairMappingListResponse_1_list{list: &x.Mappings})
+		if !f(fd_GetCurrencyPairMappingListResponse_mappings, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		return len(x.Mappings) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		x.Mappings = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		if len(x.Mappings) == 0 {
+			return protoreflect.ValueOfList(&_GetCurrencyPairMappingListResponse_1_list{})
+		}
+		listValue := &_GetCurrencyPairMappingListResponse_1_list{list: &x.Mappings}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		lv := value.List()
+		clv := lv.(*_GetCurrencyPairMappingListResponse_1_list)
+		x.Mappings = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		if x.Mappings == nil {
+			x.Mappings = []*CurrencyPairMapping{}
+		}
+		value := &_GetCurrencyPairMappingListResponse_1_list{list: &x.Mappings}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings":
+		list := []*CurrencyPairMapping{}
+		return protoreflect.ValueOfList(&_GetCurrencyPairMappingListResponse_1_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: connect.oracle.v2.GetCurrencyPairMappingListResponse"))
+		}
+		panic(fmt.Errorf("message connect.oracle.v2.GetCurrencyPairMappingListResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in connect.oracle.v2.GetCurrencyPairMappingListResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_GetCurrencyPairMappingListResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.Mappings) > 0 {
+			for _, e := range x.Mappings {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Mappings) > 0 {
+			for iNdEx := len(x.Mappings) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Mappings[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*GetCurrencyPairMappingListResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GetCurrencyPairMappingListResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GetCurrencyPairMappingListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Mappings", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Mappings = append(x.Mappings, &CurrencyPairMapping{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Mappings[len(x.Mappings)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -4183,6 +5516,116 @@ func (x *GetCurrencyPairMappingResponse) GetCurrencyPairMapping() map[uint64]*v2
 	return nil
 }
 
+// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
+type GetCurrencyPairMappingListRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetCurrencyPairMappingListRequest) Reset() {
+	*x = GetCurrencyPairMappingListRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_oracle_v2_query_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCurrencyPairMappingListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrencyPairMappingListRequest) ProtoMessage() {}
+
+// Deprecated: Use GetCurrencyPairMappingListRequest.ProtoReflect.Descriptor instead.
+func (*GetCurrencyPairMappingListRequest) Descriptor() ([]byte, []int) {
+	return file_connect_oracle_v2_query_proto_rawDescGZIP(), []int{8}
+}
+
+type CurrencyPairMapping struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// ID is the unique identifier for this currency pair string.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// CurrencyPair is the human-readable representation of the currency pair.
+	CurrencyPair *v2.CurrencyPair `protobuf:"bytes,2,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
+}
+
+func (x *CurrencyPairMapping) Reset() {
+	*x = CurrencyPairMapping{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_oracle_v2_query_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CurrencyPairMapping) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CurrencyPairMapping) ProtoMessage() {}
+
+// Deprecated: Use CurrencyPairMapping.ProtoReflect.Descriptor instead.
+func (*CurrencyPairMapping) Descriptor() ([]byte, []int) {
+	return file_connect_oracle_v2_query_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CurrencyPairMapping) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *CurrencyPairMapping) GetCurrencyPair() *v2.CurrencyPair {
+	if x != nil {
+		return x.CurrencyPair
+	}
+	return nil
+}
+
+// GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
+type GetCurrencyPairMappingListResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// mappings is a list of the id representing the currency pair
+	// to the currency pair itself.
+	Mappings []*CurrencyPairMapping `protobuf:"bytes,1,rep,name=mappings,proto3" json:"mappings,omitempty"`
+}
+
+func (x *GetCurrencyPairMappingListResponse) Reset() {
+	*x = GetCurrencyPairMappingListResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_connect_oracle_v2_query_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCurrencyPairMappingListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrencyPairMappingListResponse) ProtoMessage() {}
+
+// Deprecated: Use GetCurrencyPairMappingListResponse.ProtoReflect.Descriptor instead.
+func (*GetCurrencyPairMappingListResponse) Descriptor() ([]byte, []int) {
+	return file_connect_oracle_v2_query_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetCurrencyPairMappingListResponse) GetMappings() []*CurrencyPairMapping {
+	if x != nil {
+		return x.Mappings
+	}
+	return nil
+}
+
 var File_connect_oracle_v2_query_proto protoreflect.FileDescriptor
 
 var file_connect_oracle_v2_query_proto_rawDesc = []byte{
@@ -4246,57 +5689,86 @@ var file_connect_oracle_v2_query_proto_rawDesc = []byte{
 	0x65, 0x79, 0x12, 0x34, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x0b, 0x32, 0x1e, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x74, 0x79, 0x70, 0x65,
 	0x73, 0x2e, 0x76, 0x32, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69,
-	0x72, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x32, 0xda, 0x04, 0x0a,
-	0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0xa0, 0x01, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x41, 0x6c,
-	0x6c, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x73, 0x12, 0x2d,
-	0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e,
-	0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63,
-	0x79, 0x50, 0x61, 0x69, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e,
+	0x72, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x23, 0x0a, 0x21,
+	0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d,
+	0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x22, 0x70, 0x0a, 0x13, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69,
+	0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x49, 0x0a, 0x0d, 0x63, 0x75, 0x72, 0x72,
+	0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1e, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
+	0x76, 0x32, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x42,
+	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
+	0x61, 0x69, 0x72, 0x22, 0x6e, 0x0a, 0x22, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e,
+	0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73,
+	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x48, 0x0a, 0x08, 0x6d, 0x61, 0x70,
+	0x70, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e,
+	0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70,
+	0x69, 0x6e, 0x67, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x08, 0x6d, 0x61, 0x70, 0x70, 0x69,
+	0x6e, 0x67, 0x73, 0x32, 0xa1, 0x06, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0xa0, 0x01,
+	0x0a, 0x13, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
+	0x50, 0x61, 0x69, 0x72, 0x73, 0x12, 0x2d, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e,
+	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c,
+	0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f,
+	0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43,
+	0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x24, 0x12, 0x22, 0x2f, 0x63,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32,
+	0x2f, 0x67, 0x65, 0x74, 0x5f, 0x61, 0x6c, 0x6c, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73,
+	0x12, 0x79, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x22, 0x2e, 0x63,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32,
+	0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x23, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c,
+	0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f,
+	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76,
+	0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x7d, 0x0a, 0x09, 0x47,
+	0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x12, 0x23, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74,
+	0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e,
 	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76,
-	0x32, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
-	0x50, 0x61, 0x69, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x24, 0x12, 0x22, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f,
-	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x61, 0x6c,
-	0x6c, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73, 0x12, 0x79, 0x0a, 0x08, 0x47, 0x65, 0x74,
-	0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x22, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e,
-	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69,
-	0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x63, 0x6f, 0x6e, 0x6e,
-	0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65,
-	0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
-	0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x70,
-	0x72, 0x69, 0x63, 0x65, 0x12, 0x7d, 0x0a, 0x09, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65,
-	0x73, 0x12, 0x23, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
-	0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72,
-	0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x25, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x1f, 0x12, 0x1d, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x70, 0x72, 0x69,
-	0x63, 0x65, 0x73, 0x12, 0xb3, 0x01, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65,
-	0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x12, 0x30,
-	0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e,
-	0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61,
-	0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x31, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c,
-	0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
-	0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x34, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2e, 0x12, 0x2c, 0x2f, 0x63, 0x6f,
+	0x32, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x12, 0x1d, 0x2f, 0x63, 0x6f,
 	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f,
-	0x67, 0x65, 0x74, 0x5f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69,
-	0x72, 0x5f, 0x6d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x42, 0xb6, 0x01, 0x0a, 0x15, 0x63, 0x6f,
-	0x6d, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
-	0x2e, 0x76, 0x32, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x2b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x2f, 0x76, 0x32, 0x3b, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x76, 0x32, 0xa2, 0x02,
-	0x03, 0x43, 0x4f, 0x58, 0xaa, 0x02, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x4f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
-	0x63, 0x74, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x1d, 0x43,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x32,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x13, 0x43,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x3a, 0x3a, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x3a, 0x3a,
-	0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x65, 0x74, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x73, 0x12, 0xb3, 0x01, 0x0a, 0x16, 0x47,
+	0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61,
+	0x70, 0x70, 0x69, 0x6e, 0x67, 0x12, 0x30, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e,
+	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43,
+	0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69,
+	0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x34, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x2e, 0x12, 0x2c, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61,
+	0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x63, 0x75, 0x72, 0x72, 0x65,
+	0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x6d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x12, 0xc4, 0x01, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
+	0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74, 0x12,
+	0x34, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
+	0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x35, 0x2e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e,
+	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x32, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x39, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x33, 0x12, 0x31, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f,
+	0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x32, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x63, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x6d, 0x61, 0x70, 0x70, 0x69,
+	0x6e, 0x67, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x42, 0xb6, 0x01, 0x0a, 0x15, 0x63, 0x6f, 0x6d, 0x2e,
+	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76,
+	0x32, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x2b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x2f, 0x76, 0x32, 0x3b, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x43,
+	0x4f, 0x58, 0xaa, 0x02, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x4f, 0x72, 0x61,
+	0x63, 0x6c, 0x65, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x1d, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x32, 0x5c, 0x47,
+	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x13, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x3a, 0x3a, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x3a, 0x3a, 0x56, 0x32,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4311,39 +5783,46 @@ func file_connect_oracle_v2_query_proto_rawDescGZIP() []byte {
 	return file_connect_oracle_v2_query_proto_rawDescData
 }
 
-var file_connect_oracle_v2_query_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_connect_oracle_v2_query_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_connect_oracle_v2_query_proto_goTypes = []interface{}{
-	(*GetAllCurrencyPairsRequest)(nil),     // 0: connect.oracle.v2.GetAllCurrencyPairsRequest
-	(*GetAllCurrencyPairsResponse)(nil),    // 1: connect.oracle.v2.GetAllCurrencyPairsResponse
-	(*GetPriceRequest)(nil),                // 2: connect.oracle.v2.GetPriceRequest
-	(*GetPriceResponse)(nil),               // 3: connect.oracle.v2.GetPriceResponse
-	(*GetPricesRequest)(nil),               // 4: connect.oracle.v2.GetPricesRequest
-	(*GetPricesResponse)(nil),              // 5: connect.oracle.v2.GetPricesResponse
-	(*GetCurrencyPairMappingRequest)(nil),  // 6: connect.oracle.v2.GetCurrencyPairMappingRequest
-	(*GetCurrencyPairMappingResponse)(nil), // 7: connect.oracle.v2.GetCurrencyPairMappingResponse
-	nil,                                    // 8: connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry
-	(*v2.CurrencyPair)(nil),                // 9: connect.types.v2.CurrencyPair
-	(*QuotePrice)(nil),                     // 10: connect.oracle.v2.QuotePrice
+	(*GetAllCurrencyPairsRequest)(nil),         // 0: connect.oracle.v2.GetAllCurrencyPairsRequest
+	(*GetAllCurrencyPairsResponse)(nil),        // 1: connect.oracle.v2.GetAllCurrencyPairsResponse
+	(*GetPriceRequest)(nil),                    // 2: connect.oracle.v2.GetPriceRequest
+	(*GetPriceResponse)(nil),                   // 3: connect.oracle.v2.GetPriceResponse
+	(*GetPricesRequest)(nil),                   // 4: connect.oracle.v2.GetPricesRequest
+	(*GetPricesResponse)(nil),                  // 5: connect.oracle.v2.GetPricesResponse
+	(*GetCurrencyPairMappingRequest)(nil),      // 6: connect.oracle.v2.GetCurrencyPairMappingRequest
+	(*GetCurrencyPairMappingResponse)(nil),     // 7: connect.oracle.v2.GetCurrencyPairMappingResponse
+	(*GetCurrencyPairMappingListRequest)(nil),  // 8: connect.oracle.v2.GetCurrencyPairMappingListRequest
+	(*CurrencyPairMapping)(nil),                // 9: connect.oracle.v2.CurrencyPairMapping
+	(*GetCurrencyPairMappingListResponse)(nil), // 10: connect.oracle.v2.GetCurrencyPairMappingListResponse
+	nil,                     // 11: connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry
+	(*v2.CurrencyPair)(nil), // 12: connect.types.v2.CurrencyPair
+	(*QuotePrice)(nil),      // 13: connect.oracle.v2.QuotePrice
 }
 var file_connect_oracle_v2_query_proto_depIdxs = []int32{
-	9,  // 0: connect.oracle.v2.GetAllCurrencyPairsResponse.currency_pairs:type_name -> connect.types.v2.CurrencyPair
-	10, // 1: connect.oracle.v2.GetPriceResponse.price:type_name -> connect.oracle.v2.QuotePrice
+	12, // 0: connect.oracle.v2.GetAllCurrencyPairsResponse.currency_pairs:type_name -> connect.types.v2.CurrencyPair
+	13, // 1: connect.oracle.v2.GetPriceResponse.price:type_name -> connect.oracle.v2.QuotePrice
 	3,  // 2: connect.oracle.v2.GetPricesResponse.prices:type_name -> connect.oracle.v2.GetPriceResponse
-	8,  // 3: connect.oracle.v2.GetCurrencyPairMappingResponse.currency_pair_mapping:type_name -> connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry
-	9,  // 4: connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry.value:type_name -> connect.types.v2.CurrencyPair
-	0,  // 5: connect.oracle.v2.Query.GetAllCurrencyPairs:input_type -> connect.oracle.v2.GetAllCurrencyPairsRequest
-	2,  // 6: connect.oracle.v2.Query.GetPrice:input_type -> connect.oracle.v2.GetPriceRequest
-	4,  // 7: connect.oracle.v2.Query.GetPrices:input_type -> connect.oracle.v2.GetPricesRequest
-	6,  // 8: connect.oracle.v2.Query.GetCurrencyPairMapping:input_type -> connect.oracle.v2.GetCurrencyPairMappingRequest
-	1,  // 9: connect.oracle.v2.Query.GetAllCurrencyPairs:output_type -> connect.oracle.v2.GetAllCurrencyPairsResponse
-	3,  // 10: connect.oracle.v2.Query.GetPrice:output_type -> connect.oracle.v2.GetPriceResponse
-	5,  // 11: connect.oracle.v2.Query.GetPrices:output_type -> connect.oracle.v2.GetPricesResponse
-	7,  // 12: connect.oracle.v2.Query.GetCurrencyPairMapping:output_type -> connect.oracle.v2.GetCurrencyPairMappingResponse
-	9,  // [9:13] is the sub-list for method output_type
-	5,  // [5:9] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	11, // 3: connect.oracle.v2.GetCurrencyPairMappingResponse.currency_pair_mapping:type_name -> connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry
+	12, // 4: connect.oracle.v2.CurrencyPairMapping.currency_pair:type_name -> connect.types.v2.CurrencyPair
+	9,  // 5: connect.oracle.v2.GetCurrencyPairMappingListResponse.mappings:type_name -> connect.oracle.v2.CurrencyPairMapping
+	12, // 6: connect.oracle.v2.GetCurrencyPairMappingResponse.CurrencyPairMappingEntry.value:type_name -> connect.types.v2.CurrencyPair
+	0,  // 7: connect.oracle.v2.Query.GetAllCurrencyPairs:input_type -> connect.oracle.v2.GetAllCurrencyPairsRequest
+	2,  // 8: connect.oracle.v2.Query.GetPrice:input_type -> connect.oracle.v2.GetPriceRequest
+	4,  // 9: connect.oracle.v2.Query.GetPrices:input_type -> connect.oracle.v2.GetPricesRequest
+	6,  // 10: connect.oracle.v2.Query.GetCurrencyPairMapping:input_type -> connect.oracle.v2.GetCurrencyPairMappingRequest
+	8,  // 11: connect.oracle.v2.Query.GetCurrencyPairMappingList:input_type -> connect.oracle.v2.GetCurrencyPairMappingListRequest
+	1,  // 12: connect.oracle.v2.Query.GetAllCurrencyPairs:output_type -> connect.oracle.v2.GetAllCurrencyPairsResponse
+	3,  // 13: connect.oracle.v2.Query.GetPrice:output_type -> connect.oracle.v2.GetPriceResponse
+	5,  // 14: connect.oracle.v2.Query.GetPrices:output_type -> connect.oracle.v2.GetPricesResponse
+	7,  // 15: connect.oracle.v2.Query.GetCurrencyPairMapping:output_type -> connect.oracle.v2.GetCurrencyPairMappingResponse
+	10, // 16: connect.oracle.v2.Query.GetCurrencyPairMappingList:output_type -> connect.oracle.v2.GetCurrencyPairMappingListResponse
+	12, // [12:17] is the sub-list for method output_type
+	7,  // [7:12] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_connect_oracle_v2_query_proto_init() }
@@ -4449,6 +5928,42 @@ func file_connect_oracle_v2_query_proto_init() {
 				return nil
 			}
 		}
+		file_connect_oracle_v2_query_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetCurrencyPairMappingListRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_oracle_v2_query_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CurrencyPairMapping); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_connect_oracle_v2_query_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetCurrencyPairMappingListResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -4456,7 +5971,7 @@ func file_connect_oracle_v2_query_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_connect_oracle_v2_query_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -364,3 +364,90 @@ func (s *KeeperTestSuite) TestGetNumCurrencyPairs() {
 		s.Require().Equal(cps, uint64(2))
 	})
 }
+
+func (s *KeeperTestSuite) TestGetCurrencyPairMapping() {
+	cp1 := connecttypes.CurrencyPair{Base: "TEST", Quote: "COIN1"}
+	cp2 := connecttypes.CurrencyPair{Base: "TEST", Quote: "COIN2"}
+
+	s.Run("get 0 with no state", func() {
+		s.SetupTest()
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Empty(mapping)
+	})
+
+	s.Run("get 1 with 1 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(map[uint64]connecttypes.CurrencyPair{
+			0: cp1,
+		}, mapping)
+	})
+
+	s.Run("get 2 with 2 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMapping(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(map[uint64]connecttypes.CurrencyPair{
+			0: cp1,
+			1: cp2,
+		}, mapping)
+	})
+}
+
+func (s *KeeperTestSuite) TestGetCurrencyPairMappingList() {
+	cp1 := connecttypes.CurrencyPair{Base: "TEST", Quote: "COIN1"}
+	cp2 := connecttypes.CurrencyPair{Base: "TEST", Quote: "COIN2"}
+
+	s.Run("get 0 with no state", func() {
+		s.SetupTest()
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMappingList(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Empty(mapping)
+	})
+
+	s.Run("get 1 with 1 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMappingList(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal([]types.CurrencyPairMapping{
+			{
+				Id:           0,
+				CurrencyPair: cp1,
+			},
+		}, mapping)
+	})
+
+	s.Run("get 2 with 2 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
+
+		mapping, err := s.oracleKeeper.GetCurrencyPairMappingList(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal([]types.CurrencyPairMapping{
+			{
+				Id:           0,
+				CurrencyPair: cp1,
+			},
+			{
+				Id:           1,
+				CurrencyPair: cp2,
+			},
+		}, mapping)
+	})
+}

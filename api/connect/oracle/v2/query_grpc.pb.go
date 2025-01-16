@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_GetAllCurrencyPairs_FullMethodName    = "/connect.oracle.v2.Query/GetAllCurrencyPairs"
-	Query_GetPrice_FullMethodName               = "/connect.oracle.v2.Query/GetPrice"
-	Query_GetPrices_FullMethodName              = "/connect.oracle.v2.Query/GetPrices"
-	Query_GetCurrencyPairMapping_FullMethodName = "/connect.oracle.v2.Query/GetCurrencyPairMapping"
+	Query_GetAllCurrencyPairs_FullMethodName        = "/connect.oracle.v2.Query/GetAllCurrencyPairs"
+	Query_GetPrice_FullMethodName                   = "/connect.oracle.v2.Query/GetPrice"
+	Query_GetPrices_FullMethodName                  = "/connect.oracle.v2.Query/GetPrices"
+	Query_GetCurrencyPairMapping_FullMethodName     = "/connect.oracle.v2.Query/GetCurrencyPairMapping"
+	Query_GetCurrencyPairMappingList_FullMethodName = "/connect.oracle.v2.Query/GetCurrencyPairMappingList"
 )
 
 // QueryClient is the client API for Query service.
@@ -41,6 +42,10 @@ type QueryClient interface {
 	// indexers that have access to the ID of a currency pair, but no way to get
 	// the underlying currency pair from it.
 	GetCurrencyPairMapping(ctx context.Context, in *GetCurrencyPairMappingRequest, opts ...grpc.CallOption) (*GetCurrencyPairMappingResponse, error)
+	// Get the mapping of currency pair ID <-> currency pair as a list. This is
+	// useful for indexers that have access to the ID of a currency pair, but no
+	// way to get the underlying currency pair from it.
+	GetCurrencyPairMappingList(ctx context.Context, in *GetCurrencyPairMappingListRequest, opts ...grpc.CallOption) (*GetCurrencyPairMappingListResponse, error)
 }
 
 type queryClient struct {
@@ -91,6 +96,16 @@ func (c *queryClient) GetCurrencyPairMapping(ctx context.Context, in *GetCurrenc
 	return out, nil
 }
 
+func (c *queryClient) GetCurrencyPairMappingList(ctx context.Context, in *GetCurrencyPairMappingListRequest, opts ...grpc.CallOption) (*GetCurrencyPairMappingListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCurrencyPairMappingListResponse)
+	err := c.cc.Invoke(ctx, Query_GetCurrencyPairMappingList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility.
@@ -107,6 +122,10 @@ type QueryServer interface {
 	// indexers that have access to the ID of a currency pair, but no way to get
 	// the underlying currency pair from it.
 	GetCurrencyPairMapping(context.Context, *GetCurrencyPairMappingRequest) (*GetCurrencyPairMappingResponse, error)
+	// Get the mapping of currency pair ID <-> currency pair as a list. This is
+	// useful for indexers that have access to the ID of a currency pair, but no
+	// way to get the underlying currency pair from it.
+	GetCurrencyPairMappingList(context.Context, *GetCurrencyPairMappingListRequest) (*GetCurrencyPairMappingListResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -128,6 +147,9 @@ func (UnimplementedQueryServer) GetPrices(context.Context, *GetPricesRequest) (*
 }
 func (UnimplementedQueryServer) GetCurrencyPairMapping(context.Context, *GetCurrencyPairMappingRequest) (*GetCurrencyPairMappingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCurrencyPairMapping not implemented")
+}
+func (UnimplementedQueryServer) GetCurrencyPairMappingList(context.Context, *GetCurrencyPairMappingListRequest) (*GetCurrencyPairMappingListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCurrencyPairMappingList not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 func (UnimplementedQueryServer) testEmbeddedByValue()               {}
@@ -222,6 +244,24 @@ func _Query_GetCurrencyPairMapping_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetCurrencyPairMappingList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCurrencyPairMappingListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetCurrencyPairMappingList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetCurrencyPairMappingList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetCurrencyPairMappingList(ctx, req.(*GetCurrencyPairMappingListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -244,6 +284,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCurrencyPairMapping",
 			Handler:    _Query_GetCurrencyPairMapping_Handler,
+		},
+		{
+			MethodName: "GetCurrencyPairMappingList",
+			Handler:    _Query_GetCurrencyPairMappingList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
