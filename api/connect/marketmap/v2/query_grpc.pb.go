@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Query_MarketMap_FullMethodName   = "/connect.marketmap.v2.Query/MarketMap"
+	Query_Markets_FullMethodName     = "/connect.marketmap.v2.Query/Markets"
 	Query_Market_FullMethodName      = "/connect.marketmap.v2.Query/Market"
 	Query_LastUpdated_FullMethodName = "/connect.marketmap.v2.Query/LastUpdated"
 	Query_Params_FullMethodName      = "/connect.marketmap.v2.Query/Params"
@@ -32,8 +33,12 @@ const (
 // Query is the query service for the x/marketmap module.
 type QueryClient interface {
 	// MarketMap returns the full market map stored in the x/marketmap
-	// module.
+	// module.  NOTE: the value returned by this query is not safe for on-chain
+	// code.
 	MarketMap(ctx context.Context, in *MarketMapRequest, opts ...grpc.CallOption) (*MarketMapResponse, error)
+	// Market returns all stored in the x/marketmap
+	// module as a sorted list.
+	Markets(ctx context.Context, in *MarketsRequest, opts ...grpc.CallOption) (*MarketsResponse, error)
 	// Market returns a market stored in the x/marketmap
 	// module.
 	Market(ctx context.Context, in *MarketRequest, opts ...grpc.CallOption) (*MarketResponse, error)
@@ -55,6 +60,16 @@ func (c *queryClient) MarketMap(ctx context.Context, in *MarketMapRequest, opts 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MarketMapResponse)
 	err := c.cc.Invoke(ctx, Query_MarketMap_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Markets(ctx context.Context, in *MarketsRequest, opts ...grpc.CallOption) (*MarketsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MarketsResponse)
+	err := c.cc.Invoke(ctx, Query_Markets_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +113,12 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 // Query is the query service for the x/marketmap module.
 type QueryServer interface {
 	// MarketMap returns the full market map stored in the x/marketmap
-	// module.
+	// module.  NOTE: the value returned by this query is not safe for on-chain
+	// code.
 	MarketMap(context.Context, *MarketMapRequest) (*MarketMapResponse, error)
+	// Market returns all stored in the x/marketmap
+	// module as a sorted list.
+	Markets(context.Context, *MarketsRequest) (*MarketsResponse, error)
 	// Market returns a market stored in the x/marketmap
 	// module.
 	Market(context.Context, *MarketRequest) (*MarketResponse, error)
@@ -119,6 +138,9 @@ type UnimplementedQueryServer struct{}
 
 func (UnimplementedQueryServer) MarketMap(context.Context, *MarketMapRequest) (*MarketMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MarketMap not implemented")
+}
+func (UnimplementedQueryServer) Markets(context.Context, *MarketsRequest) (*MarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Markets not implemented")
 }
 func (UnimplementedQueryServer) Market(context.Context, *MarketRequest) (*MarketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Market not implemented")
@@ -164,6 +186,24 @@ func _Query_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).MarketMap(ctx, req.(*MarketMapRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Markets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarketsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Markets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Markets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Markets(ctx, req.(*MarketsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -232,6 +272,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MarketMap",
 			Handler:    _Query_MarketMap_Handler,
+		},
+		{
+			MethodName: "Markets",
+			Handler:    _Query_Markets_Handler,
 		},
 		{
 			MethodName: "Market",
