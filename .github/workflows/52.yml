@@ -42,31 +42,17 @@ jobs:
             codeql-db/go 
 
           ${{ steps.codeql-init.outputs.codeql-path }} database analyze \
-            --format=sarif-latest \
-            --output=codeql-results.sarif \
+            --format=csv\
+            --output=codeql-results.csv \
             codeql-db/go \
             skip-mev/cosmos-52-ql
-
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
+      - name: Add problem matcher
+        run: echo "::add-matcher::.github/52-problem-matcher.json"
       - name: Annotate code with findings
         working-directory: ./tests/simapp
         run: |
           set -eoux pipefail
 
-          cat codeql-results.sarif
-
-          issues=$(jq -r '
-            .runs[].results[] |
-            . as $r |
-            ($r.locations[0].physicalLocation.artifactLocation.uri | select(. != null)) as $file |
-            ($r.locations[0].physicalLocation.region.startLine | select(. != null)) as $line |
-            ($r.message.text | gsub("[\r\n]"; " ")) as $msg |
-            [$file, $line, $msg] | @tsv
-          ' codeql-results.sarif )
-
-          while IFS=$'\t' read -r file line msg; do
-            file="${file#file://}"
-            echo "::warning file=$file,line=$line::$msg"
-          done <<< "$issues"
-
+          cat codeql-results.csv
