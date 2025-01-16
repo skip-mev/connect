@@ -14,7 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -31,15 +33,13 @@ jobs:
         id: analyze
         with:
           upload: never              
-          output: ../codeql-results.sarif
+          output: ../results
 
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
       - name: Annotate code with findings
         run: |
           set -eoux pipefail
-
-          cat ${{ steps.analyze.outputs.sarif-output }}
 
           issues=$(jq -r '
             .runs[].results[] |
@@ -48,7 +48,7 @@ jobs:
             ($r.locations[0].physicalLocation.region.startLine | select(. != null)) as $line |
             ($r.message.text | gsub("[\r\n]"; " ")) as $msg |
             [$file, $line, $msg] | @tsv
-          ' ${{ steps.analyze.outputs.sarif-output }} )
+          ' ${{ steps.analyze.outputs.sarif-output }}/go.sarif )
 
           while IFS=$'\t' read -r file line msg; do
             file="${file#file://}"
