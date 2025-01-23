@@ -10,7 +10,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -31,13 +30,13 @@ func (s *SlinkyOracleValidatorIntegrationSuite) TestUnbonding() {
 	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
-	tickers := []mmtypes.Ticker{
-		enabledTicker(ethusdcCP),
-		enabledTicker(ethusdtCP),
-		enabledTicker(ethusdCP),
+	cps := []slinkytypes.CurrencyPair{
+		ethusdcCP,
+		ethusdtCP,
+		ethusdCP,
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)

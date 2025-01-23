@@ -3,8 +3,10 @@ package integration
 import (
 	"bytes"
 	"context"
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"math/big"
 	"sort"
 	"strconv"
@@ -42,6 +44,7 @@ import (
 const (
 	oracleConfigPath = "oracle.json"
 	appConfigPath    = "config/app.toml"
+	gasPrice         = 100
 )
 
 var (
@@ -269,81 +272,7 @@ func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyP
 	client := oracletypes.NewQueryClient(cc)
 
 	// query the currency pairs
-	resp, err := client.GetAllCurrencyPairs(context.Background(), &oracletypes.GetAllCurrencyPairsRequest{})
-
-	// check that there is a correspondence between mappings and the raw response
-	mappingResp, err := QueryCurrencyPairMappings(chain)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(resp.CurrencyPairs) != len(mappingResp.CurrencyPairMapping) {
-		return nil, fmt.Errorf("list and map responses should be the same length: got %d list, %d map",
-			len(resp.CurrencyPairs),
-			len(mappingResp.CurrencyPairMapping),
-		)
-	}
-	for _, v := range mappingResp.CurrencyPairMapping {
-		found := false
-		for _, cp := range resp.CurrencyPairs {
-			if v.Equal(cp) {
-				found = true
-			}
-		}
-
-		if !found {
-			return nil, fmt.Errorf("currency pair %v was found in mapping response but not in currency pair list", v)
-		}
-	}
-
-	return resp, err
-}
-
-// QueryCurrencyPairMappings queries the chain for the given currency pair mappings
-func QueryCurrencyPairMappings(chain *cosmos.CosmosChain) (*oracletypes.GetCurrencyPairMappingResponse, error) {
-	// get grpc address
-	grpcAddr := chain.GetHostGRPCAddress()
-
-	// create the client
-	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	defer cc.Close()
-
-	// create the oracle client
-	client := oracletypes.NewQueryClient(cc)
-
-	// query the currency pairs map
-	mapRes, err := client.GetCurrencyPairMapping(context.Background(), &oracletypes.GetCurrencyPairMappingRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	// query the currency pairs list
-	listRes, err := client.GetCurrencyPairMappingList(context.Background(), &oracletypes.GetCurrencyPairMappingListRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	if len(listRes.Mappings) != len(mapRes.CurrencyPairMapping) {
-		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
-			len(listRes.Mappings),
-			len(mapRes.CurrencyPairMapping),
-		)
-	}
-	for _, m := range listRes.Mappings {
-		cp, found := mapRes.CurrencyPairMapping[m.Id]
-		if !found {
-			return nil, fmt.Errorf("mapping for %d not found", m.Id)
-		}
-
-		if !m.CurrencyPair.Equal(cp) {
-			return nil, fmt.Errorf("market %s is not equal to %s", m.CurrencyPair.String(), cp.String())
-		}
-	}
-
-	return mapRes, nil
+	return client.GetAllCurrencyPairs(context.Background(), &oracletypes.GetAllCurrencyPairsRequest{})
 }
 
 // QueryCurrencyPair queries the price for the given currency-pair given a desired height to query from
@@ -379,125 +308,16 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
-// QueryMarket queries a market from the market map.
-func QueryMarket(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair) (mmtypes.Market, error) {
-	grpcAddr := chain.GetHostGRPCAddress()
-
-	// create the client
-	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return mmtypes.Market{}, err
-	}
-	defer cc.Close()
-
-	// create the mm client
-	client := mmtypes.NewQueryClient(cc)
-
-	ctx := context.Background()
-
-	// query the currency pairs
-	res, err := client.Market(ctx, &mmtypes.MarketRequest{
-		CurrencyPair: cp,
-	})
-	if err != nil {
-		return mmtypes.Market{}, err
-	}
-
-	return res.Market, nil
-}
-
-// QueryMarketMap queries the market map.  This query util provides an additional query to the list endpoint
-// and ensures that the response data in both queries is equal.
-func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
-	grpcAddr := chain.GetHostGRPCAddress()
-
-	// create the client
-	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	defer cc.Close()
-
-	// create the mm client
-	client := mmtypes.NewQueryClient(cc)
-
-	ctx := context.Background()
-
-	// query the currency pairs
-	mapRes, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	if mapRes == nil {
-		return nil, fmt.Errorf("map response is nil")
-	}
-
-	// query markets to check that there is 1-1 correspondence to the map query
-	listRes, err := QueryMarkets(chain)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(listRes.Markets) != len(mapRes.MarketMap.Markets) {
-		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
-			len(listRes.Markets),
-			len(mapRes.MarketMap.Markets),
-		)
-	}
-	for _, market := range listRes.Markets {
-		mapMarket, found := mapRes.MarketMap.Markets[market.Ticker.String()]
-		if !found {
-			return nil, fmt.Errorf("market %s not found", market.Ticker.String())
-		}
-
-		if !market.Equal(mapMarket) {
-			return nil, fmt.Errorf("market %s is not equal to %s", market.Ticker.String(), mapMarket.String())
-		}
-	}
-
-	return mapRes, nil
-}
-
-// QueryMarkets queries all markets .
-func QueryMarkets(chain *cosmos.CosmosChain) (*mmtypes.MarketsResponse, error) {
-	grpcAddr := chain.GetHostGRPCAddress()
-
-	// create the client
-	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	defer cc.Close()
-
-	// create the mm client
-	client := mmtypes.NewQueryClient(cc)
-
-	ctx := context.Background()
-
-	// query the currency pairs
-	res, err := client.Markets(ctx, &mmtypes.MarketsRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	if res == nil {
-		return nil, fmt.Errorf("response is nil")
-	}
-
-	return res, nil
-}
-
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	randStr := rand.Str(10)
+	rand := rand.Str(10)
 	protoMsgs := make([]cosmos.ProtoMessage, len(msgs))
 	for i, msg := range msgs {
 		protoMsgs[i] = msg
 	}
 
-	prop, err := chain.BuildProposal(protoMsgs, randStr, randStr, randStr, deposit.String(), submitter, false)
+	prop, err := chain.BuildProposal(protoMsgs, rand, rand, rand, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}
@@ -542,26 +362,30 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64,
-	tickers ...mmtypes.Ticker,
-) error {
-	creates := make([]mmtypes.Market, len(tickers))
-	for i, ticker := range tickers {
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...slinkytypes.CurrencyPair) error {
+	creates := make([]mmtypes.Market, len(cps))
+	for i, cp := range cps {
 		creates[i] = mmtypes.Market{
-			Ticker: ticker,
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     cp,
+				Decimals:         8,
+				MinProviderCount: 1,
+				Metadata_JSON:    "",
+				Enabled:          true,
+			},
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
 					Name:           static.Name,
-					OffChainTicker: ticker.String(),
+					OffChainTicker: cp.String(),
 					Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 				},
 			},
 		}
 	}
 
-	msg := &mmtypes.MsgUpsertMarkets{
-		Authority: s.user.FormattedAddress(),
-		Markets:   creates,
+	msg := &mmtypes.MsgCreateMarkets{
+		Authority:     s.user.FormattedAddress(),
+		CreateMarkets: creates,
 	}
 
 	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
@@ -569,54 +393,6 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
-	ctx := context.Background()
-
-	// broadcast the tx
-	txResp, err := client.BroadcastTxCommit(ctx, tx)
-	if err != nil {
-		return err
-	}
-
-	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(txResp.TxResult.Log)
-	}
-
-	time.Sleep(2 * time.Second)
-
-	// check market map and lastUpdated
-	mmResp, err := QueryMarketMap(chain)
-	s.Require().NoError(err)
-
-	// ensure that the market exists
-	for _, create := range creates {
-		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
-		s.Require().True(found)
-		s.Require().Equal(create, got)
-	}
-
-	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
-
-	return nil
-}
-
-func (s *SlinkyIntegrationSuite) RemoveMarket(
-	chain *cosmos.CosmosChain,
-	markets []slinkytypes.CurrencyPair,
-) error {
-	marketString := make([]string, len(markets))
-	for i, market := range markets {
-		marketString[i] = market.String()
-	}
-
-	msg := &mmtypes.MsgRemoveMarkets{
-		Authority: s.user.FormattedAddress(),
-		Markets:   marketString,
-	}
-
-	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
-
-	// get an rpc endpoint for the chain
-	client := chain.Nodes()[0].Client
 	// broadcast the tx
 	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
@@ -625,16 +401,6 @@ func (s *SlinkyIntegrationSuite) RemoveMarket(
 
 	if resp.TxResult.Code != abcitypes.CodeTypeOK {
 		return fmt.Errorf(resp.TxResult.Log)
-	}
-
-	// check market map and lastUpdated
-	mmResp, err := QueryMarketMap(chain)
-	s.Require().NoError(err)
-
-	// ensure that the market no longer exist
-	for _, market := range markets {
-		_, found := mmResp.MarketMap.Markets[market.String()]
-		s.Require().False(found)
 	}
 
 	return nil
@@ -651,27 +417,14 @@ func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, m
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 	// broadcast the tx
-	txResp, err := client.BroadcastTxCommit(context.Background(), tx)
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
 		return err
 	}
 
-	if txResp.TxResult.Code != abcitypes.CodeTypeOK {
-		return fmt.Errorf(txResp.TxResult.Log)
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
 	}
-
-	// check market map and lastUpdated
-	mmResp, err := QueryMarketMap(chain)
-	s.Require().NoError(err)
-
-	// ensure that the market exists
-	for _, create := range markets {
-		got, found := mmResp.MarketMap.Markets[create.Ticker.String()]
-		s.Require().True(found)
-		s.Require().Equal(create, got)
-	}
-
-	s.Require().Equal(uint64(txResp.Height), mmResp.LastUpdated)
 
 	return nil
 }
@@ -701,7 +454,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForProposalStatus waits for the deposit period for the proposal to end
+// WaitForProposalStatus, waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)
@@ -788,6 +541,42 @@ func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves 
 
 	// we want to wait for the application state to reflect the proposed state from blockHeight
 	return uint64(blockHeight), WaitForHeight(chain, uint64(blockHeight+1), timeout)
+}
+
+// CreateTx creates a new transaction to be signed by the given user, including a provided set of messages
+func CreateTx(t *testing.T, chain *cosmos.CosmosChain, user cosmos.User, GasPrice int64, msgs ...sdk.Msg) []byte {
+	bc := cosmos.NewBroadcaster(t, chain)
+
+	ctx := context.Background()
+	// create tx factory + Client Context
+	txf, err := bc.GetFactory(ctx, user)
+	require.NoError(t, err)
+
+	cc, err := bc.GetClientContext(ctx, user)
+	require.NoError(t, err)
+
+	txf = txf.WithSimulateAndExecute(true)
+
+	txf, err = txf.Prepare(cc)
+	require.NoError(t, err)
+
+	// get gas for tx
+	txf.WithGas(25000000)
+
+	// update sequence number
+	txf = txf.WithSequence(txf.Sequence())
+	txf = txf.WithGasPrices(sdk.NewDecCoins(sdk.NewDecCoin(chain.Config().Denom, math.NewInt(GasPrice))).String())
+
+	// sign the tx
+	txBuilder, err := txf.BuildUnsignedTx(msgs...)
+	require.NoError(t, err)
+
+	require.NoError(t, tx.Sign(cc.CmdContext, txf, cc.GetFromName(), txBuilder, true))
+
+	// encode and return
+	bz, err := cc.TxConfig.TxEncoder()(txBuilder.GetTx())
+	require.NoError(t, err)
+	return bz
 }
 
 // wrapper around extendedVoteInfo for use in sorting (to make ordering deterministic in tests)
