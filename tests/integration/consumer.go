@@ -16,8 +16,8 @@ import (
 
 var (
 	providerChainID       = "provider-1"
-	providerNumValidators = int(4)
-	providerVersion       = "v5.0.0-rc0"
+	providerNumValidators = 4
+	providerVersion       = "v5.2.0"
 )
 
 // CCVChainConstructor is a constructor for the CCV chain
