@@ -29,16 +29,20 @@ func CCVChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos
 		zaptest.NewLogger(t),
 		[]*interchaintest.ChainSpec{
 			spec,
-			{Name: "ics-provider", Version: providerVersion, NumValidators: &providerNumValidators, ChainConfig: ibc.ChainConfig{
-				GasPrices:      "0.0uatom",
-				ChainID:        providerChainID,
-				TrustingPeriod: "336h",
-				ModifyGenesis: cosmos.ModifyGenesis(
-					[]cosmos.GenesisKV{
-						cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", "1"),
-					},
-				),
-			}},
+			{
+				Name:          "ics-provider",
+				Version:       providerVersion,
+				NumValidators: &providerNumValidators,
+				ChainConfig: ibc.ChainConfig{
+					GasPrices:      "0.0uatom",
+					ChainID:        providerChainID,
+					TrustingPeriod: "336h",
+					ModifyGenesis: cosmos.ModifyGenesis(
+						[]cosmos.GenesisKV{
+							cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", "1"),
+						},
+					),
+				}},
 		},
 	)
 
