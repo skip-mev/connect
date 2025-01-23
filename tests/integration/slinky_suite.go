@@ -255,7 +255,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 		panic("no chains created")
 	}
 
-	s.T().Log("chains set up", len(chains), chains)
+	s.T().Log("chains set up", len(chains), chains[0], chains[1])
 
 	chains[0].WithPreStartNodes(func(c *cosmos.CosmosChain) {
 		// for each node in the chain, set the sidecars
