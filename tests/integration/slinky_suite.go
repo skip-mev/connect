@@ -7,11 +7,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"testing"
 	"time"
 
 	"cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -19,7 +17,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
@@ -38,9 +35,9 @@ const (
 	defaultDenom          = "stake"
 	validatorKey          = "validator"
 	yes                   = "yes"
+	deposit               = 1000000
 	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
-	gasPrice              = 100
 )
 
 func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
@@ -164,42 +161,6 @@ func WithChainConstructor(cc ChainConstructor) Option {
 	return func(s *SlinkyIntegrationSuite) {
 		s.cc = cc
 	}
-}
-
-// CreateTx creates a new transaction to be signed by the given user, including a provided set of messages
-func CreateTx(t *testing.T, chain *cosmos.CosmosChain, user cosmos.User, GasPrice int64, msgs ...sdk.Msg) []byte {
-	bc := cosmos.NewBroadcaster(t, chain)
-
-	ctx := context.Background()
-	// create tx factory + Client Context
-	txf, err := bc.GetFactory(ctx, user)
-	require.NoError(t, err)
-
-	cc, err := bc.GetClientContext(ctx, user)
-	require.NoError(t, err)
-
-	txf = txf.WithSimulateAndExecute(true)
-
-	txf, err = txf.Prepare(cc)
-	require.NoError(t, err)
-
-	// get gas for tx
-	txf.WithGas(25000000)
-
-	// update sequence number
-	txf = txf.WithSequence(txf.Sequence())
-	txf = txf.WithGasPrices(sdk.NewDecCoins(sdk.NewDecCoin(chain.Config().Denom, math.NewInt(GasPrice))).String())
-
-	// sign the tx
-	txBuilder, err := txf.BuildUnsignedTx(msgs...)
-	require.NoError(t, err)
-
-	require.NoError(t, tx.Sign(cc.CmdContext, txf, cc.GetFromName(), txBuilder, true))
-
-	// encode and return
-	bz, err := cc.TxConfig.TxEncoder()(txBuilder.GetTx())
-	require.NoError(t, err)
-	return bz
 }
 
 func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *SlinkyIntegrationSuite {
@@ -346,11 +307,11 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-			enabledTicker(slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+			{
 				Base:  "BTC",
 				Quote: "USD",
-			}),
+			},
 		}...))
 
 		// check that the currency-pair is added to state
@@ -364,51 +325,13 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-			enabledTicker(cp1),
-			enabledTicker(cp2),
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+			cp1, cp2,
 		}...))
 
 		resp, err := QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
 		s.Require().True(len(resp.CurrencyPairs) == 3)
-
-		s.Run("fail to remove an enabled market", func() {
-			s.Require().Error(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{cp1}))
-
-			// check not removed
-			market, err := QueryMarket(s.chain, cp1)
-			s.Require().NoError(err)
-			s.Require().NotNil(market)
-		})
-	})
-
-	s.Run("remove a disabled market", func() {
-		disabledCP := slinkytypes.NewCurrencyPair("DIS", "ABLE")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-			disabledTicker(disabledCP),
-		}...))
-
-		market, err := QueryMarket(s.chain, disabledCP)
-		s.Require().NoError(err)
-		s.Require().NotNil(market)
-
-		s.Require().NoError(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{disabledCP}))
-
-		// check removed
-		_, err = QueryMarket(s.chain, disabledCP)
-		s.Require().Error(err)
-	})
-
-	s.Run("remove a non existent market", func() {
-		nonexistentCP := slinkytypes.NewCurrencyPair("NON", "EXIST")
-
-		// check removed doesnt exist
-		_, err := QueryMarket(s.chain, nonexistentCP)
-		s.Require().Error(err)
-
-		// tx will not error
-		s.Require().NoError(s.RemoveMarket(s.chain, []slinkytypes.CurrencyPair{nonexistentCP}))
 	})
 }
 
@@ -418,16 +341,9 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
-	tickerETHUSDC := mmtypes.Ticker{
-		CurrencyPair:     ethusdcCP,
-		Decimals:         8,
-		MinProviderCount: 1,
-		Enabled:          true,
-		Metadata_JSON:    "",
-	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []mmtypes.Ticker{
-		tickerETHUSDC,
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
+		ethusdcCP,
 	}...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
@@ -621,19 +537,19 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	})
 }
 
-func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
+func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	ethusdcCP := slinkytypes.NewCurrencyPair("ETH", "USDC")
 	ethusdtCP := slinkytypes.NewCurrencyPair("ETH", "USDT")
 	ethusdCP := slinkytypes.NewCurrencyPair("ETH", "USD")
 
-	// add multiple tickers
-	tickers := []mmtypes.Ticker{
-		enabledTicker(ethusdcCP),
-		enabledTicker(ethusdtCP),
-		enabledTicker(ethusdCP),
+	// add multiple currency pairs
+	cps := []slinkytypes.CurrencyPair{
+		ethusdcCP,
+		ethusdtCP,
+		ethusdCP,
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, tickers...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, cps...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
@@ -715,8 +631,8 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, ticker := range tickers {
-			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
+		for _, cp := range cps {
+			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
@@ -783,8 +699,8 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for _, ticker := range tickers {
-			resp, _, err := QueryCurrencyPair(s.chain, ticker.CurrencyPair, height)
+		for _, cp := range cps {
+			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
 			s.Require().NoError(err)
 			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
