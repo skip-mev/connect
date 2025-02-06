@@ -84,12 +84,12 @@ func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
 // StartServerWithListener starts the oracle gRPC server with a given listener. The server is killed on any errors from the listener, or if ctx is cancelled.
 // This method returns an error via any failure from the listener. This is a blocking call, i.e. until the server is closed or the server errors,
 // this method will block.
-func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.Listener) error {
+func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.Listener, opts ...grpc.ServerOption) error {
 	os.httpSrv = &http.Server{
 		ReadHeaderTimeout: DefaultServerShutdownTimeout,
 	}
 	// create grpc server
-	os.grpcSrv = grpc.NewServer()
+	os.grpcSrv = grpc.NewServer(opts...)
 	// register oracle server
 	types.RegisterOracleServer(os.grpcSrv, os)
 
@@ -102,8 +102,8 @@ func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.List
 			OrigName:     true,
 		}),
 	)
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithNoProxy()}
-	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, ln.Addr().String(), opts)
+	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithNoProxy()}
+	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, ln.Addr().String(), dialOpts)
 	if err != nil {
 		return err
 	}
@@ -152,13 +152,13 @@ func (os *OracleServer) StartServerWithListener(ctx context.Context, ln net.List
 // StartServer starts the oracle gRPC server on the given host and port. The server is killed on any errors from the listener, or if ctx is cancelled.
 // This method returns an error via any failure from the listener. This is a blocking call, i.e. until the server is closed or the server errors,
 // this method will block.
-func (os *OracleServer) StartServer(ctx context.Context, host, port string) error {
+func (os *OracleServer) StartServer(ctx context.Context, host, port string, opts ...grpc.ServerOption) error {
 	addr := fmt.Sprintf("%s:%s", host, port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-	return os.StartServerWithListener(ctx, ln)
+	return os.StartServerWithListener(ctx, ln, opts...)
 }
 
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
