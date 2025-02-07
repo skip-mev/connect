@@ -188,7 +188,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 	return nil
 }
 
-// filterAccountsResponses chooses the rpc response with the highest block number.
+// filterResponses chooses the rpc response with the highest block number.
 func (m *MultiRPCClient) filterResponses(responses []result) ([]rpc.BatchElem, error) {
 	// see which of the results had the largest height, and store the index of that result.
 	var (
