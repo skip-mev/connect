@@ -304,7 +304,7 @@ The `MarketMap` endpoint queries the full state of the market map as well as ass
 Example:
 
 ```shell
-  connectd q marketmap market-map
+  connected q marketmap market-map
 ```
 
 #### LastUpdated
@@ -316,7 +316,7 @@ must be updated using the heavier `MarketMap` query.
 Example:
 
 ```shell
-  connectd q marketmap last-updated
+  connected q marketmap last-updated
 ```
 
 #### Params
@@ -326,5 +326,5 @@ The params query allows users to query values set as marketmap parameters.
 Example:
 
 ```shell
-  connectd q marketmap params
+  connected q marketmap params
 ```
