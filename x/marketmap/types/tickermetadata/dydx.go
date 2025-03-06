@@ -16,14 +16,19 @@ type DyDx struct {
 	// AggregateIDs contains a list of AggregatorIDs associated with the ticker.
 	// This field may not be populated if no aggregator currently indexes this Ticker.
 	AggregateIDs []AggregatorID `json:"aggregate_ids"`
+	// CrossLaunch is an optional bool that indicates whether this ticker should be
+	// launched as a cross-margin market (instead of isolated margin).
+	// If omitted, it is set to false by default.
+	CrossLaunch bool `json:"cross_launch,omitempty"`
 }
 
 // NewDyDx returns a new DyDx instance.
-func NewDyDx(referencePrice, liquidity uint64, aggregateIDs []AggregatorID) DyDx {
+func NewDyDx(referencePrice, liquidity uint64, aggregateIDs []AggregatorID, crossLaunch bool) DyDx {
 	return DyDx{
 		ReferencePrice: referencePrice,
 		Liquidity:      liquidity,
 		AggregateIDs:   aggregateIDs,
+		CrossLaunch:    crossLaunch,
 	}
 }
 
