@@ -1,4 +1,4 @@
-# Connect
+# Connect [End of Life -- Please fork to use or contribute]
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD041 -->
