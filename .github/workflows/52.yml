@@ -1,0 +1,70 @@
+name: CodeQL Lint (Go, No Security Alerts)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  codeql-lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        id: codeql-init
+        with:
+          db-location: ./tests/simapp/codeql-db
+          token: ${{ secrets.GITHUB_TOKEN }}
+          languages: go
+          source-root: ./tests/simapp
+          build-mode: manual
+          packs: skip-mev/cosmos-52-ql
+
+      - name: Build (Make Install)
+        working-directory: ./tests/simapp
+        run: |
+          go build ./connectd/...
+
+      - name: Analyze
+        working-directory: ./tests/simapp
+        run: |
+          echo $PWD
+          ls $PWD
+          ${{ steps.codeql-init.outputs.codeql-path }} database finalize \
+            codeql-db/go 
+
+          ${{ steps.codeql-init.outputs.codeql-path }} database analyze \
+            --format=csv\
+            --output=codeql-results.csv \
+            codeql-db/go \
+            skip-mev/cosmos-52-ql
+
+          ${{ steps.codeql-init.outputs.codeql-path }} database analyze \
+            --format=sarif-latest\
+            --output=codeql-results.sarif \
+            codeql-db/go \
+            skip-mev/cosmos-52-ql
+      - name: Install jq
+        uses: dcarbone/install-jq-action@v3.0.1
+      - name: Add problem matcher
+        run: echo "::add-matcher::.github/52-problem-matcher.json"
+      - name: Annotate code with findings
+        working-directory: ./tests/simapp
+        run: |
+          set -eoux pipefail
+
+          cat codeql-results.csv
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./tests/simapp/codeql-results.sarif
+          category: migration-lint
