@@ -23,7 +23,7 @@ var (
 	image = ibc.DockerImage{
 		Repository: "skip-mev/connect-e2e",
 		Version:    "latest",
-		UidGid:     "1000:1000",
+		UIDGID:     "1000:1000",
 	}
 
 	numValidators = 4
@@ -34,7 +34,7 @@ var (
 	oracleImage = ibc.DockerImage{
 		Repository: "skip-mev/connect-e2e-oracle",
 		Version:    "latest",
-		UidGid:     "1000:1000",
+		UIDGID:     "1000:1000",
 	}
 	encodingConfig = testutil.MakeTestEncodingConfig(
 		bank.AppModuleBasic{},

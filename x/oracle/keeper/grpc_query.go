@@ -122,10 +122,22 @@ func (q queryServer) GetPrices(ctx context.Context, req *types.GetPricesRequest)
 	}, nil
 }
 
+// GetCurrencyPairMapping returns a map of ID -> CurrencyPair.
+//
+// NOTE: the map type returned by this query is NOT SAFE. Use GetCurrencyPairMappingList instead for a safe value.
 func (q queryServer) GetCurrencyPairMapping(ctx context.Context, _ *types.GetCurrencyPairMappingRequest) (*types.GetCurrencyPairMappingResponse, error) {
 	pairs, err := q.k.GetCurrencyPairMapping(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &types.GetCurrencyPairMappingResponse{CurrencyPairMapping: pairs}, nil
+}
+
+func (q queryServer) GetCurrencyPairMappingList(ctx context.Context, _ *types.GetCurrencyPairMappingListRequest) (*types.GetCurrencyPairMappingListResponse, error) {
+	pairs, err := q.k.GetCurrencyPairMappingList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.GetCurrencyPairMappingListResponse{Mappings: pairs}, nil
 }

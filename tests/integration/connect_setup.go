@@ -269,7 +269,81 @@ func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyP
 	client := oracletypes.NewQueryClient(cc)
 
 	// query the currency pairs
-	return client.GetAllCurrencyPairs(context.Background(), &oracletypes.GetAllCurrencyPairsRequest{})
+	resp, err := client.GetAllCurrencyPairs(context.Background(), &oracletypes.GetAllCurrencyPairsRequest{})
+
+	// check that there is a correspondence between mappings and the raw response
+	mappingResp, err := QueryCurrencyPairMappings(chain)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp.CurrencyPairs) != len(mappingResp.CurrencyPairMapping) {
+		return nil, fmt.Errorf("list and map responses should be the same length: got %d list, %d map",
+			len(resp.CurrencyPairs),
+			len(mappingResp.CurrencyPairMapping),
+		)
+	}
+	for _, v := range mappingResp.CurrencyPairMapping {
+		found := false
+		for _, cp := range resp.CurrencyPairs {
+			if v.Equal(cp) {
+				found = true
+			}
+		}
+
+		if !found {
+			return nil, fmt.Errorf("currency pair %v was found in mapping response but not in currency pair list", v)
+		}
+	}
+
+	return resp, err
+}
+
+// QueryCurrencyPairMappings queries the chain for the given currency pair mappings
+func QueryCurrencyPairMappings(chain *cosmos.CosmosChain) (*oracletypes.GetCurrencyPairMappingResponse, error) {
+	// get grpc address
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer cc.Close()
+
+	// create the oracle client
+	client := oracletypes.NewQueryClient(cc)
+
+	// query the currency pairs map
+	mapRes, err := client.GetCurrencyPairMapping(context.Background(), &oracletypes.GetCurrencyPairMappingRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	// query the currency pairs list
+	listRes, err := client.GetCurrencyPairMappingList(context.Background(), &oracletypes.GetCurrencyPairMappingListRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(listRes.Mappings) != len(mapRes.CurrencyPairMapping) {
+		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
+			len(listRes.Mappings),
+			len(mapRes.CurrencyPairMapping),
+		)
+	}
+	for _, m := range listRes.Mappings {
+		cp, found := mapRes.CurrencyPairMapping[m.Id]
+		if !found {
+			return nil, fmt.Errorf("mapping for %d not found", m.Id)
+		}
+
+		if !m.CurrencyPair.Equal(cp) {
+			return nil, fmt.Errorf("market %s is not equal to %s", m.CurrencyPair.String(), cp.String())
+		}
+	}
+
+	return mapRes, nil
 }
 
 // QueryCurrencyPair queries the price for the given currency-pair given a desired height to query from
@@ -332,7 +406,8 @@ func QueryMarket(chain *cosmos.CosmosChain, cp connecttypes.CurrencyPair) (mmtyp
 	return res.Market, nil
 }
 
-// QueryMarketMap queries the market map.
+// QueryMarketMap queries the market map.  This query util provides an additional query to the list endpoint
+// and ensures that the response data in both queries is equal.
 func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
@@ -349,7 +424,59 @@ func QueryMarketMap(chain *cosmos.CosmosChain) (*mmtypes.MarketMapResponse, erro
 	ctx := context.Background()
 
 	// query the currency pairs
-	res, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	mapRes, err := client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	if mapRes == nil {
+		return nil, fmt.Errorf("map response is nil")
+	}
+
+	// query markets to check that there is 1-1 correspondence to the map query
+	listRes, err := QueryMarkets(chain)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(listRes.Markets) != len(mapRes.MarketMap.Markets) {
+		return nil, fmt.Errorf("map and list responses should be the same length: got %d list, %d map",
+			len(listRes.Markets),
+			len(mapRes.MarketMap.Markets),
+		)
+	}
+	for _, market := range listRes.Markets {
+		mapMarket, found := mapRes.MarketMap.Markets[market.Ticker.String()]
+		if !found {
+			return nil, fmt.Errorf("market %s not found", market.Ticker.String())
+		}
+
+		if !market.Equal(mapMarket) {
+			return nil, fmt.Errorf("market %s is not equal to %s", market.Ticker.String(), mapMarket.String())
+		}
+	}
+
+	return mapRes, nil
+}
+
+// QueryMarkets queries all markets .
+func QueryMarkets(chain *cosmos.CosmosChain) (*mmtypes.MarketsResponse, error) {
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer cc.Close()
+
+	// create the mm client
+	client := mmtypes.NewQueryClient(cc)
+
+	ctx := context.Background()
+
+	// query the currency pairs
+	res, err := client.Markets(ctx, &mmtypes.MarketsRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -496,6 +623,16 @@ func (s *ConnectIntegrationSuite) RemoveMarket(
 
 	if resp.TxResult.Code != abcitypes.CodeTypeOK {
 		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	// check market map and lastUpdated
+	mmResp, err := QueryMarketMap(chain)
+	s.Require().NoError(err)
+
+	// ensure that the market no longer exist
+	for _, market := range markets {
+		_, found := mmResp.MarketMap.Markets[market.String()]
+		s.Require().False(found)
 	}
 
 	return nil

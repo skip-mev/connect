@@ -19,6 +19,8 @@ func NewQueryServer(k *Keeper) types.QueryServer {
 }
 
 // MarketMap returns the full MarketMap and associated information stored in the x/marketmap module.
+//
+// NOTE: the map type returned by this query is NOT SAFE. Use Markets instead for a safe value.
 func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRequest) (*types.MarketMapResponse, error) {
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -42,6 +44,20 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRe
 			ChainId:     ctx.ChainID(),
 		},
 		err
+}
+
+// Markets returns all markets stored in the x/marketmap module.
+func (q queryServerImpl) Markets(ctx context.Context, req *types.MarketsRequest) (*types.MarketsResponse, error) {
+	if req == nil {
+		return nil, fmt.Errorf("request cannot be nil")
+	}
+
+	markets, err := q.k.GetAllMarketsList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MarketsResponse{Markets: markets}, nil
 }
 
 // Market returns the requested market stored in the x/marketmap module.

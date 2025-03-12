@@ -168,6 +168,13 @@ var (
 		ethusdt,
 	}
 
+	marketsKeySorted = []types.Market{
+		btcusdt,
+		ethusdt,
+		usdcusd,
+		usdtusd,
+	}
+
 	marketsMap = map[string]types.Market{
 		btcusdt.Ticker.String(): btcusdt,
 		usdcusd.Ticker.String(): usdcusd,
@@ -197,12 +204,30 @@ func (s *KeeperTestSuite) TestGets() {
 		s.Require().NoError(s.keeper.ValidateState(s.ctx, markets))
 	})
 
-	s.Run("get all tickers", func() {
+	s.Run("get all tickers map", func() {
 		got, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(markets), len(got))
 		s.Require().Equal(marketsMap, got)
+	})
+
+	s.Run("get all tickers list", func() {
+		got, err := s.keeper.GetAllMarketsList(s.ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(len(marketsKeySorted), len(got))
+		s.Require().Equal(marketsKeySorted, got)
+	})
+
+	s.Run("get all tickers list - deterministic", func() {
+		for range 100 {
+			got, err := s.keeper.GetAllMarketsList(s.ctx)
+			s.Require().NoError(err)
+
+			s.Require().Equal(len(marketsKeySorted), len(got))
+			s.Require().Equal(marketsKeySorted, got)
+		}
 	})
 }
 
