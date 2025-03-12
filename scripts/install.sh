@@ -11,7 +11,7 @@ OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 # Fetch the latest release information
 echo "Fetching latest release information..."
 RELEASE_INFO=$(curl -Ls ${CONNECT_RELEASES_URL})
-VERSION=$(echo "${RELEASE_INFO}" | grep -o '"tag_name": "v[^"]*' | cut -d'"' -f4)
+VERSION=$(echo "${RELEASE_INFO}" | jq -r '.tag_name' | sed 's/^v//')
 VERSION=${VERSION#v}  # Remove the 'v' prefix
 
 # Map architecture to release file name
